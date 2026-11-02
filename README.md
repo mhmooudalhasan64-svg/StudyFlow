@@ -20,7 +20,8 @@ npm install
 npm run icons    # مرة واحدة: يولّد أيقونات PWA (PNG) من public/icon.svg
 npm run dev      # للتطوير
 npm test         # الاختبارات (Vitest)
-npm run build    # بناء الإنتاج (مع فحص TypeScript)
+npm run build    # بناء الإنتاج (يولّد الأيقونات تلقائياً)
+npm run typecheck # فحص TypeScript
 npm run preview  # معاينة نسخة الإنتاج
 ```
 
