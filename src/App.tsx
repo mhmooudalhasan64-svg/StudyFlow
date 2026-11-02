@@ -1,6 +1,7 @@
 import { useEffect, type ComponentType } from 'react';
 import {
   BarChart3,
+  Bot,
   CalendarCheck,
   CalendarClock,
   GraduationCap,
@@ -18,6 +19,7 @@ import Planner from './pages/Planner';
 import TimerPage from './pages/TimerPage';
 import Exams from './pages/Exams';
 import Quiz from './pages/Quiz';
+import Assistant from './pages/Assistant';
 import Stats from './pages/Stats';
 import SettingsPage from './pages/SettingsPage';
 
@@ -27,6 +29,7 @@ const NAV: { route: Route; label: string; Icon: ComponentType<{ size?: number }>
   { route: 'timer', label: 'المؤقت', Icon: TimerIcon },
   { route: 'exams', label: 'الامتحانات', Icon: CalendarClock },
   { route: 'quiz', label: 'الأسئلة', Icon: ListChecks },
+  { route: 'assistant', label: 'المساعد', Icon: Bot },
   { route: 'stats', label: 'إحصاءات', Icon: BarChart3 },
 ];
 
@@ -36,6 +39,7 @@ const PAGES: Record<Route, ComponentType> = {
   timer: TimerPage,
   exams: Exams,
   quiz: Quiz,
+  assistant: Assistant,
   stats: Stats,
   settings: SettingsPage,
 };
@@ -115,7 +119,7 @@ export default function App() {
 
         {/* شريط التنقل السفلي (جوال) */}
         <nav
-          className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-6 border-t border-line/70 bg-base/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
+          className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-7 border-t border-line/70 bg-base/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
           aria-label="التنقل الرئيسي"
         >
           {NAV.map(({ route: r, label, Icon }) => (
@@ -123,7 +127,7 @@ export default function App() {
               key={r}
               href={`#/${r}`}
               aria-current={route === r ? 'page' : undefined}
-              className={`flex flex-col items-center gap-0.5 py-2 text-[11px] transition ${
+              className={`flex flex-col items-center gap-0.5 py-2 text-[10px] transition ${
                 route === r ? 'text-accent' : 'text-muted'
               }`}
             >
