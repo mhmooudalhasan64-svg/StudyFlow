@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Bot, Send, Trash2 } from 'lucide-react';
 import { useChat } from '../lib/chatStore';
 import { PageTitle } from '../components/ui';
+import Advisor from '../components/Advisor';
 
 const SUGGESTIONS = [
   'اشرح لي قانون نيوتن الثاني بمثال',
@@ -30,7 +31,7 @@ export default function Assistant() {
     <div className="mx-auto flex max-w-2xl flex-col">
       <PageTitle
         title="المساعد الذكي"
-        subtitle="اسأل عن أي درس أو اطلب خطة مراجعة"
+        subtitle="خطة مراجعة تلقائية، وأسئلة عن دروسك"
         action={
           messages.length > 0 ? (
             <button type="button" className="btn btn-ghost !py-1.5" onClick={clear} aria-label="مسح المحادثة">
@@ -39,6 +40,13 @@ export default function Assistant() {
           ) : undefined
         }
       />
+
+      <Advisor />
+
+      <h2 className="mb-1 font-bold">اسأل عن دروسك</h2>
+      <p className="mb-3 text-xs text-muted">
+        هذا القسم يحتاج إنترنت، ويعمل فقط بعد أن يفعّله صاحب التطبيق بمفتاح الخدمة.
+      </p>
 
       <div className="card mb-3 min-h-[40vh] space-y-3" aria-live="polite">
         {messages.length === 0 && (

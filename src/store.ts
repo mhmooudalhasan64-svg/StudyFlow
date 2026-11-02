@@ -49,6 +49,7 @@ interface AppState {
   removeSubject: (id: number) => Promise<void>;
 
   addTask: (t: NewTask) => Promise<void>;
+  addTasks: (list: NewTask[]) => Promise<void>;
   toggleTask: (id: number) => Promise<void>;
   moveTask: (id: number, date: string) => Promise<void>;
   removeTask: (id: number) => Promise<void>;
@@ -163,6 +164,12 @@ export const useApp = create<AppState>((set, get) => {
 
     addTask: async (t) => {
       await db.tasks.add({ ...t, title: t.title.trim(), done: false });
+      await loadAll();
+    },
+
+    addTasks: async (list) => {
+      if (list.length === 0) return;
+      await db.tasks.bulkAdd(list.map((t) => ({ ...t, title: t.title.trim(), done: false })));
       await loadAll();
     },
 
