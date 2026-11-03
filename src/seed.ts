@@ -19,6 +19,10 @@ export const DEFAULT_SETTINGS: Settings = {
   shortMin: 5,
   longMin: 15,
   sound: true,
+  branch: 'scientific',
+  grade: 12,
+  reviewIntervals: [1, 3, 7, 14, 30],
+  targetPct: 90,
 };
 
 const DEFAULT_SUBJECTS = [
@@ -29,6 +33,7 @@ const DEFAULT_SUBJECTS = [
   'الكيمياء',
   'علوم الحياة',
   'التربية الدينية',
+  // مواد الفرع الأدبي تُضاف تلقائياً عند اختياره من قسم البكالوريا
 ];
 
 interface SampleQuestion {

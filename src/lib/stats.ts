@@ -64,8 +64,14 @@ export function computeBadges(input: {
   streak: number;
   answered: number;
   correct: number;
+  lessonsDone?: number;
+  cardReviews?: number;
+  simulators?: number;
 }): Badge[] {
   const { totalMin, streak, answered, correct } = input;
+  const lessonsDone = input.lessonsDone ?? 0;
+  const cardReviews = input.cardReviews ?? 0;
+  const simulators = input.simulators ?? 0;
   return [
     { id: 'first', title: 'البداية', desc: 'أكمل أول جلسة دراسة', earned: totalMin > 0 },
     { id: 'streak3', title: 'ثلاثة أيام', desc: 'ادرس 3 أيام متتالية', earned: streak >= 3 },
@@ -75,5 +81,9 @@ export function computeBadges(input: {
     { id: 'h50', title: '50 ساعة', desc: 'اجمع 50 ساعة من الدراسة', earned: totalMin >= 3000 },
     { id: 'q50', title: 'مجتهد الأسئلة', desc: 'أجب عن 50 سؤالاً', earned: answered >= 50 },
     { id: 'q100c', title: 'دقّة عالية', desc: '100 إجابة صحيحة', earned: correct >= 100 },
+    { id: 'l10', title: 'منهاج يتقدّم', desc: 'أنجز 10 دروس', earned: lessonsDone >= 10 },
+    { id: 'l50', title: 'نصف الطريق', desc: 'أنجز 50 درساً', earned: lessonsDone >= 50 },
+    { id: 'c50', title: 'حافظ البطاقات', desc: 'راجع 50 بطاقة', earned: cardReviews >= 50 },
+    { id: 'sim1', title: 'أول امتحان تجريبي', desc: 'أنهِ امتحاناً تجريبياً', earned: simulators >= 1 },
   ];
 }

@@ -1,16 +1,25 @@
-import { useEffect, type ComponentType } from 'react';
+import { useEffect, useState, type ComponentType } from 'react';
 import {
+  Award,
   BarChart3,
+  BookOpen,
   Bot,
+  Calculator as CalcIcon,
   CalendarCheck,
   CalendarClock,
+  FileBarChart,
   GraduationCap,
+  Landmark,
+  Layers,
   LayoutDashboard,
   ListChecks,
+  MoreHorizontal,
   Moon,
+  Repeat,
   Settings as SettingsIcon,
   Sun,
   Timer as TimerIcon,
+  WifiOff,
 } from 'lucide-react';
 import { useApp } from './store';
 import { useHashRoute, type Route } from './lib/route';
@@ -22,15 +31,46 @@ import Quiz from './pages/Quiz';
 import Assistant from './pages/Assistant';
 import Stats from './pages/Stats';
 import SettingsPage from './pages/SettingsPage';
+import Bac from './pages/Bac';
+import Library from './pages/Library';
+import Curriculum from './pages/Curriculum';
+import Review from './pages/Review';
+import Cards from './pages/Cards';
+import Simulator from './pages/Simulator';
+import Calculator from './pages/Calculator';
+import Achievements from './pages/Achievements';
+import Reports from './pages/Reports';
+import More from './pages/More';
 
-const NAV: { route: Route; label: string; Icon: ComponentType<{ size?: number }> }[] = [
+type NavItem = { route: Route; label: string; Icon: ComponentType<{ size?: number }> };
+
+/** الشريط الجانبي (شاشات كبيرة) */
+const NAV: NavItem[] = [
   { route: 'home', label: 'الرئيسية', Icon: LayoutDashboard },
   { route: 'plan', label: 'الخطة', Icon: CalendarCheck },
   { route: 'timer', label: 'المؤقت', Icon: TimerIcon },
+  { route: 'bac', label: 'البكالوريا', Icon: Landmark },
+  { route: 'library', label: 'مكتبة الكتب', Icon: BookOpen },
+  { route: 'quiz', label: 'الأسئلة والاختبارات', Icon: ListChecks },
+  { route: 'curriculum', label: 'خطة المنهاج', Icon: CalendarCheck },
+  { route: 'review', label: 'المراجعة الذكية', Icon: Repeat },
+  { route: 'cards', label: 'البطاقات', Icon: Layers },
+  { route: 'simulator', label: 'محاكي الامتحان', Icon: TimerIcon },
+  { route: 'calc', label: 'حاسبة العلامات', Icon: CalcIcon },
   { route: 'exams', label: 'الامتحانات', Icon: CalendarClock },
-  { route: 'quiz', label: 'الأسئلة', Icon: ListChecks },
-  { route: 'assistant', label: 'المساعد', Icon: Bot },
+  { route: 'achievements', label: 'الإنجازات', Icon: Award },
+  { route: 'reports', label: 'التقارير', Icon: FileBarChart },
   { route: 'stats', label: 'إحصاءات', Icon: BarChart3 },
+  { route: 'assistant', label: 'المساعد', Icon: Bot },
+];
+
+/** شريط الجوال السفلي: الأهم فقط والباقي في «المزيد» */
+const MOBILE_NAV: NavItem[] = [
+  { route: 'home', label: 'الرئيسية', Icon: LayoutDashboard },
+  { route: 'plan', label: 'الخطة', Icon: CalendarCheck },
+  { route: 'timer', label: 'المؤقت', Icon: TimerIcon },
+  { route: 'bac', label: 'البكالوريا', Icon: Landmark },
+  { route: 'more', label: 'المزيد', Icon: MoreHorizontal },
 ];
 
 const PAGES: Record<Route, ComponentType> = {
@@ -42,7 +82,32 @@ const PAGES: Record<Route, ComponentType> = {
   assistant: Assistant,
   stats: Stats,
   settings: SettingsPage,
+  bac: Bac,
+  library: Library,
+  curriculum: Curriculum,
+  review: Review,
+  cards: Cards,
+  simulator: Simulator,
+  calc: Calculator,
+  achievements: Achievements,
+  reports: Reports,
+  more: More,
 };
+
+function useOnline(): boolean {
+  const [online, setOnline] = useState(() => navigator.onLine);
+  useEffect(() => {
+    const on = () => setOnline(true);
+    const off = () => setOnline(false);
+    window.addEventListener('online', on);
+    window.addEventListener('offline', off);
+    return () => {
+      window.removeEventListener('online', on);
+      window.removeEventListener('offline', off);
+    };
+  }, []);
+  return online;
+}
 
 export default function App() {
   const init = useApp((s) => s.init);
@@ -51,6 +116,7 @@ export default function App() {
   const theme = useApp((s) => s.settings.theme);
   const updateSettings = useApp((s) => s.updateSettings);
   const route = useHashRoute();
+  const online = useOnline();
 
   useEffect(() => {
     void init();
@@ -80,7 +146,7 @@ export default function App() {
   return (
     <div className="mx-auto flex min-h-screen max-w-6xl flex-col md:flex-row">
       {/* الشريط الجانبي (شاشات كبيرة) */}
-      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 p-4 md:flex">
+      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
         <Brand />
         <nav className="mt-4 flex flex-col gap-1" aria-label="التنقل الرئيسي">
           {NAV.map(({ route: r, label, Icon }) => (
@@ -99,7 +165,8 @@ export default function App() {
             </a>
           ))}
         </nav>
-        <div className="mt-auto flex gap-2">
+        <div className="mt-auto flex items-center gap-2 pt-3">
+          {!online && <OfflineChip />}
           <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} />
         </div>
       </aside>
@@ -108,7 +175,8 @@ export default function App() {
         {/* ترويسة الجوال */}
         <header className="sticky top-0 z-10 flex items-center justify-between border-b border-line/70 bg-base/80 px-4 py-3 backdrop-blur-md md:hidden">
           <Brand />
-          <div className="flex gap-1">
+          <div className="flex items-center gap-1">
+            {!online && <OfflineChip />}
             <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} />
           </div>
         </header>
@@ -119,25 +187,36 @@ export default function App() {
 
         {/* شريط التنقل السفلي (جوال) */}
         <nav
-          className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-7 border-t border-line/70 bg-base/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
+          className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-line/70 bg-base/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
           aria-label="التنقل الرئيسي"
         >
-          {NAV.map(({ route: r, label, Icon }) => (
+          {MOBILE_NAV.map(({ route: r, label, Icon }) => {
+            const active = route === r || (r === 'more' && !MOBILE_NAV.some((n) => n.route === route));
+            return (
             <a
               key={r}
               href={`#/${r}`}
-              aria-current={route === r ? 'page' : undefined}
+              aria-current={active ? 'page' : undefined}
               className={`flex flex-col items-center gap-0.5 py-2 text-[10px] transition ${
-                route === r ? 'text-accent' : 'text-muted'
+                active ? 'text-accent' : 'text-muted'
               }`}
             >
               <Icon size={20} />
               {label}
             </a>
-          ))}
+            );
+          })}
         </nav>
       </div>
     </div>
+  );
+}
+
+function OfflineChip() {
+  return (
+    <span className="chip text-bad" role="status">
+      <WifiOff size={13} /> دون إنترنت
+    </span>
   );
 }
 

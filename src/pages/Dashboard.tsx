@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { CalendarClock, Flame, ListChecks, Play, Target } from 'lucide-react';
+import { CalendarClock, Flame, ListChecks, Play, Repeat, Target } from 'lucide-react';
 import { useApp } from '../store';
 import { TaskRow } from '../components/TaskRow';
 import { Empty, PageTitle, ProgressRing } from '../components/ui';
@@ -12,12 +12,17 @@ export default function Dashboard() {
   const tasks = useApp((s) => s.tasks);
   const exams = useApp((s) => s.exams);
   const goal = useApp((s) => s.settings.dailyGoalMin);
+  const lessons = useApp((s) => s.lessons);
+  const cards = useApp((s) => s.cards);
 
   const today = toDateKey();
   const byDay = useMemo(() => minutesByDay(sessions), [sessions]);
   const todayMin = byDay[today] ?? 0;
   const streak = useMemo(() => computeStreak(byDay), [byDay]);
   const pct = goal > 0 ? todayMin / goal : 0;
+
+  const dueLessons = lessons.filter((l) => l.done && l.nextReview !== null && l.nextReview <= today).length;
+  const dueCards = cards.filter((c) => c.due <= today).length;
 
   const todayTasks = tasks.filter((t) => t.date === today);
   const doneCount = todayTasks.filter((t) => t.done).length;
@@ -93,6 +98,18 @@ export default function Dashboard() {
           </ul>
         )}
       </section>
+
+      {dueLessons + dueCards > 0 && (
+        <a href="#/review" className="card flex items-center gap-3 border-accent/60 transition hover:border-accent">
+          <Repeat className="text-accent" />
+          <div>
+            <p className="font-bold">لديك مراجعات مستحقة</p>
+            <p className="text-sm text-muted">
+              {dueLessons} درس و{dueCards} بطاقة بانتظارك اليوم
+            </p>
+          </div>
+        </a>
+      )}
 
       <a href="#/quiz" className="card flex items-center gap-3 transition hover:border-accent">
         <ListChecks className="text-accent" />

@@ -1,8 +1,10 @@
-import { useState, type FormEvent } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { Download, HardDrive, Plus, Trash2, Upload } from 'lucide-react';
 import { useApp } from '../store';
 import { NumberField, PageTitle } from '../components/ui';
 import { SUBJECT_COLORS } from '../seed';
+import { exportBackup } from '../lib/backup';
+import { toDateKey } from '../lib/utils';
 
 export default function SettingsPage() {
   const settings = useApp((s) => s.settings);
@@ -11,6 +13,7 @@ export default function SettingsPage() {
   const addSubject = useApp((s) => s.addSubject);
   const removeSubject = useApp((s) => s.removeSubject);
   const resetAll = useApp((s) => s.resetAll);
+  const importBackupText = useApp((s) => s.importBackupText);
 
   const [name, setName] = useState('');
   const [color, setColor] = useState(SUBJECT_COLORS[0]);
@@ -24,6 +27,57 @@ export default function SettingsPage() {
 
   const confirmRemove = (id: number, subjectName: string) => {
     if (window.confirm(`حذف «${subjectName}»؟ سيتم حذف أسئلتها ونتائجها أيضاً.`)) void removeSubject(id);
+  };
+
+  const [storage, setStorage] = useState<{ usage: number; quota: number } | null>(null);
+  const [persisted, setPersisted] = useState<boolean | null>(null);
+  const [backupMsg, setBackupMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const est = await navigator.storage?.estimate?.();
+        if (est?.usage !== undefined && est.quota !== undefined) setStorage({ usage: est.usage, quota: est.quota });
+        setPersisted((await navigator.storage?.persisted?.()) ?? null);
+      } catch {
+        /* غير مدعوم */
+      }
+    })();
+  }, []);
+
+  const mb = (n: number) => `${(n / (1024 * 1024)).toFixed(1)} م.ب`;
+
+  const askPersist = async () => {
+    try {
+      setPersisted((await navigator.storage?.persist?.()) ?? false);
+    } catch {
+      setPersisted(false);
+    }
+  };
+
+  const doExport = async () => {
+    const blob = new Blob([await exportBackup()], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `studyflow-backup-${toDateKey()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setBackupMsg({ kind: 'ok', text: 'تم تنزيل النسخة الاحتياطية' });
+  };
+
+  const doImport = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!window.confirm('سيتم استبدال بياناتك الحالية بمحتوى النسخة (الكتب لا تتأثر). متابعة؟')) return;
+    try {
+      await importBackupText(await file.text());
+      setBackupMsg({ kind: 'ok', text: 'تمت استعادة النسخة' });
+    } catch (err) {
+      setBackupMsg({ kind: 'err', text: err instanceof Error ? err.message : 'تعذّرت الاستعادة' });
+    }
   };
 
   const confirmReset = () => {
@@ -123,9 +177,43 @@ export default function SettingsPage() {
       </section>
 
       <section className="card space-y-3">
-        <h2 className="font-bold">البيانات</h2>
+        <h2 className="font-bold">البيانات دون إنترنت</h2>
         <p className="text-sm text-muted">
-          لا يوجد خادم ولا حساب: كل شيء مخزّن في متصفحك. حذف بيانات الموقع من المتصفح يمسح تقدمك.
+          التطبيق وبياناتك وكتبك المحمّلة تعمل دون إنترنت بعد أول تحميل. لا توجد مزامنة سحابية بعد (لا حسابات)، لذلك استخدم النسخة الاحتياطية لنقل بياناتك بين الأجهزة.
+        </p>
+        {storage && (
+          <p className="flex items-center gap-2 text-sm">
+            <HardDrive size={16} className="text-accent" />
+            المستخدم {mb(storage.usage)} من {mb(storage.quota)} تقريباً
+          </p>
+        )}
+        {persisted === false && (
+          <button type="button" className="btn btn-ghost" onClick={() => void askPersist()}>
+            اطلب حماية البيانات من الحذف التلقائي
+          </button>
+        )}
+        {persisted === true && <p className="text-xs text-ok">التخزين محمي من الحذف التلقائي.</p>}
+        <div className="flex flex-wrap gap-2">
+          <button type="button" className="btn btn-ghost" onClick={() => void doExport()}>
+            <Download size={16} /> تصدير نسخة احتياطية
+          </button>
+          <button type="button" className="btn btn-ghost" onClick={() => fileRef.current?.click()}>
+            <Upload size={16} /> استعادة نسخة
+          </button>
+          <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={doImport} />
+        </div>
+        <p className="text-xs text-muted">النسخة لا تتضمن ملفات PDF للكتب؛ أعد إضافتها على الجهاز الجديد.</p>
+        {backupMsg && (
+          <p role="status" className={`text-sm ${backupMsg.kind === 'ok' ? 'text-ok' : 'text-bad'}`}>
+            {backupMsg.text}
+          </p>
+        )}
+      </section>
+
+      <section className="card space-y-3">
+        <h2 className="font-bold">مسح البيانات</h2>
+        <p className="text-sm text-muted">
+          حذف بيانات الموقع من المتصفح أو مسح كل البيانات يمحو تقدمك وكتبك.
         </p>
         <button type="button" className="btn btn-danger" onClick={confirmReset}>
           <Trash2 size={16} /> مسح كل البيانات

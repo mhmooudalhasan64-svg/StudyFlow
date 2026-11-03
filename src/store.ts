@@ -2,7 +2,15 @@ import { create } from 'zustand';
 import {
   db,
   type Attempt,
+  type Book,
+  type Branch,
+  type CardCategory,
   type Exam,
+  type ExamResult,
+  type Flashcard,
+  type Grade,
+  type Lesson,
+  type Mark,
   type Question,
   type Settings,
   type StudySession,
@@ -15,6 +23,10 @@ import { beep, primeAudio } from './lib/sound';
 import { notify, requestNotifyPermission } from './lib/notify';
 import { modeMs, type TimerMode } from './lib/timer';
 import { toDateKey } from './lib/utils';
+import { cardDue, nextStep, sanitizeIntervals, scheduleNext } from './lib/spaced';
+import { DEFAULT_MAX } from './lib/calc';
+import { missingBranchSubjects } from './lib/bac';
+import { importBackup as writeBackup, parseBackup } from './lib/backup';
 import type { ExportedQuestion } from './lib/questionsIO';
 
 export interface TimerState {
@@ -29,6 +41,24 @@ export interface TimerState {
 type NewTask = Omit<Task, 'id' | 'done'>;
 type NewExam = Omit<Exam, 'id'>;
 type NewQuestion = Omit<Question, 'id'>;
+type NewResult = Omit<ExamResult, 'id' | 'at' | 'dateKey'>;
+export interface NewBook {
+  subjectId: number | null;
+  title: string;
+  unit: string;
+  lesson: string;
+}
+export interface NewLesson {
+  subjectId: number;
+  unit: string;
+  title: string;
+}
+export interface NewCard {
+  subjectId: number | null;
+  category: CardCategory;
+  front: string;
+  back: string;
+}
 
 interface AppState {
   ready: boolean;
@@ -39,6 +69,11 @@ interface AppState {
   exams: Exam[];
   questions: Question[];
   attempts: Attempt[];
+  books: Book[];
+  lessons: Lesson[];
+  cards: Flashcard[];
+  marks: Mark[];
+  results: ExamResult[];
   timer: TimerState;
 
   init: () => Promise<void>;
@@ -61,6 +96,26 @@ interface AppState {
   removeQuestion: (id: number) => Promise<void>;
   importQuestions: (list: ExportedQuestion[]) => Promise<number>;
   recordAttempt: (q: Question, correct: boolean) => Promise<void>;
+  saveResult: (r: NewResult) => Promise<void>;
+
+  setBranch: (branch: Branch, grade: Grade) => Promise<void>;
+
+  addBook: (file: File, meta: NewBook) => Promise<void>;
+  removeBook: (id: number) => Promise<void>;
+  getBookBlob: (id: number) => Promise<Blob | null>;
+
+  addLessons: (list: NewLesson[]) => Promise<number>;
+  toggleLesson: (id: number) => Promise<void>;
+  reviewLesson: (id: number, remembered: boolean) => Promise<void>;
+  removeLesson: (id: number) => Promise<void>;
+
+  addCard: (c: NewCard) => Promise<void>;
+  reviewCard: (id: number, known: boolean) => Promise<void>;
+  removeCard: (id: number) => Promise<void>;
+
+  setMark: (subjectId: number, patch: Partial<Omit<Mark, 'subjectId'>>) => Promise<void>;
+
+  importBackupText: (json: string) => Promise<void>;
 
   addSession: (minutes: number, subjectId: number | null) => Promise<void>;
 
@@ -82,17 +137,31 @@ const initialTimer = (s: Settings = DEFAULT_SETTINGS): TimerState => ({
   cycles: 0,
 });
 
+/** يدمج الإعدادات المخزنة مع الافتراضية (لإضافة حقول الإصدارات الجديدة) */
+async function readSettings(): Promise<Settings> {
+  const stored = await db.settings.get('app');
+  const merged: Settings = { ...DEFAULT_SETTINGS, ...(stored ?? {}), key: 'app' };
+  merged.reviewIntervals = sanitizeIntervals(merged.reviewIntervals);
+  return merged;
+}
+
 export const useApp = create<AppState>((set, get) => {
   const loadAll = async () => {
-    const [subjects, tasks, sessions, exams, questions, attempts] = await Promise.all([
-      db.subjects.toArray(),
-      db.tasks.toArray(),
-      db.sessions.toArray(),
-      db.exams.toArray(),
-      db.questions.toArray(),
-      db.attempts.toArray(),
-    ]);
-    set({ subjects, tasks, sessions, exams, questions, attempts });
+    const [subjects, tasks, sessions, exams, questions, attempts, books, lessons, cards, marks, results] =
+      await Promise.all([
+        db.subjects.toArray(),
+        db.tasks.toArray(),
+        db.sessions.toArray(),
+        db.exams.toArray(),
+        db.questions.toArray(),
+        db.attempts.toArray(),
+        db.books.toArray(),
+        db.lessons.toArray(),
+        db.cards.toArray(),
+        db.marks.toArray(),
+        db.results.toArray(),
+      ]);
+    set({ subjects, tasks, sessions, exams, questions, attempts, books, lessons, cards, marks, results });
   };
 
   return {
@@ -104,11 +173,16 @@ export const useApp = create<AppState>((set, get) => {
     exams: [],
     questions: [],
     attempts: [],
+    books: [],
+    lessons: [],
+    cards: [],
+    marks: [],
+    results: [],
     timer: initialTimer(),
 
     init: async () => {
       await seedIfNeeded();
-      const settings = (await db.settings.get('app')) ?? DEFAULT_SETTINGS;
+      const settings = await readSettings();
       await loadAll();
       applyTheme(settings.theme);
       set({ settings, timer: initialTimer(settings), ready: true });
@@ -131,7 +205,7 @@ export const useApp = create<AppState>((set, get) => {
     resetAll: async () => {
       for (const table of db.tables) await table.clear();
       await seedIfNeeded();
-      const settings = (await db.settings.get('app')) ?? DEFAULT_SETTINGS;
+      const settings = await readSettings();
       await loadAll();
       applyTheme(settings.theme);
       set({ settings, timer: initialTimer(settings) });
@@ -147,9 +221,29 @@ export const useApp = create<AppState>((set, get) => {
     removeSubject: async (id) => {
       await db.transaction(
         'rw',
-        [db.subjects, db.tasks, db.sessions, db.exams, db.questions, db.attempts],
+        [
+          db.subjects,
+          db.tasks,
+          db.sessions,
+          db.exams,
+          db.questions,
+          db.attempts,
+          db.books,
+          db.bookFiles,
+          db.lessons,
+          db.cards,
+          db.marks,
+          db.results,
+        ],
         async () => {
           await db.subjects.delete(id);
+          const bookIds = await db.books.where('subjectId').equals(id).primaryKeys();
+          await db.bookFiles.bulkDelete(bookIds);
+          await db.books.bulkDelete(bookIds);
+          await db.lessons.where('subjectId').equals(id).delete();
+          await db.cards.where('subjectId').equals(id).delete();
+          await db.marks.delete(id);
+          await db.results.where('subjectId').equals(id).modify({ subjectId: null });
           await db.tasks.toCollection().filter((t) => t.subjectId === id).modify({ subjectId: null });
           await db.sessions.toCollection().filter((s) => s.subjectId === id).modify({ subjectId: null });
           await db.exams.toCollection().filter((e) => e.subjectId === id).modify({ subjectId: null });
@@ -228,6 +322,9 @@ export const useApp = create<AppState>((set, get) => {
           options: item.options,
           answerIndex: item.answerIndex,
           explanation: item.explanation,
+          unit: item.unit,
+          year: item.year,
+          session: item.session,
         });
         count++;
       }
@@ -244,6 +341,158 @@ export const useApp = create<AppState>((set, get) => {
         dateKey: toDateKey(),
       });
       await loadAll();
+    },
+
+    saveResult: async (r) => {
+      await db.results.add({ ...r, at: Date.now(), dateKey: toDateKey() });
+      await loadAll();
+    },
+
+    // ---------- قسم البكالوريا ----------
+
+    setBranch: async (branch, grade) => {
+      const missing = missingBranchSubjects(get().subjects, branch);
+      let n = get().subjects.length;
+      for (const name of missing) {
+        await db.subjects.add({ name, color: SUBJECT_COLORS[n % SUBJECT_COLORS.length] });
+        n++;
+      }
+      await get().updateSettings({ branch, grade });
+      await loadAll();
+    },
+
+    // ---------- مكتبة الكتب ----------
+
+    addBook: async (file, meta) => {
+      const title = meta.title.trim() || file.name.replace(/\.pdf$/i, '');
+      await db.transaction('rw', [db.books, db.bookFiles], async () => {
+        const id = await db.books.add({
+          subjectId: meta.subjectId,
+          title,
+          unit: meta.unit.trim(),
+          lesson: meta.lesson.trim(),
+          fileName: file.name,
+          size: file.size,
+          addedAt: Date.now(),
+        });
+        await db.bookFiles.put({ bookId: id, blob: file });
+      });
+      await loadAll();
+    },
+
+    removeBook: async (id) => {
+      await db.transaction('rw', [db.books, db.bookFiles], async () => {
+        await db.books.delete(id);
+        await db.bookFiles.delete(id);
+      });
+      await loadAll();
+    },
+
+    getBookBlob: async (id) => (await db.bookFiles.get(id))?.blob ?? null,
+
+    // ---------- خطة إنهاء المنهاج والمراجعة ----------
+
+    addLessons: async (list) => {
+      const rows: Omit<Lesson, 'id'>[] = list
+        .map((l) => ({ ...l, unit: l.unit.trim(), title: l.title.trim() }))
+        .filter((l) => l.title)
+        .map((l) => ({ ...l, done: false, doneAt: null, step: 0, nextReview: null }));
+      if (rows.length === 0) return 0;
+      await db.lessons.bulkAdd(rows as Lesson[]);
+      await loadAll();
+      return rows.length;
+    },
+
+    toggleLesson: async (id) => {
+      const lesson = await db.lessons.get(id);
+      if (!lesson) return;
+      if (lesson.done) {
+        await db.lessons.update(id, { done: false, doneAt: null, step: 0, nextReview: null });
+      } else {
+        const today = toDateKey();
+        const intervals = sanitizeIntervals(get().settings.reviewIntervals);
+        await db.lessons.update(id, {
+          done: true,
+          doneAt: today,
+          step: 0,
+          nextReview: scheduleNext(today, intervals, 0),
+        });
+      }
+      await loadAll();
+    },
+
+    reviewLesson: async (id, remembered) => {
+      const lesson = await db.lessons.get(id);
+      if (!lesson || !lesson.done) return;
+      const today = toDateKey();
+      const intervals = sanitizeIntervals(get().settings.reviewIntervals);
+      const step = nextStep(lesson.step, remembered);
+      await db.lessons.update(id, { step, nextReview: scheduleNext(today, intervals, step) });
+      await loadAll();
+    },
+
+    removeLesson: async (id) => {
+      await db.lessons.delete(id);
+      await loadAll();
+    },
+
+    // ---------- البطاقات التعليمية ----------
+
+    addCard: async (c) => {
+      const front = c.front.trim();
+      const back = c.back.trim();
+      if (!front || !back) return;
+      await db.cards.add({
+        subjectId: c.subjectId,
+        category: c.category,
+        front,
+        back,
+        step: 0,
+        due: toDateKey(),
+        reps: 0,
+      } as Flashcard);
+      await loadAll();
+    },
+
+    reviewCard: async (id, known) => {
+      const card = await db.cards.get(id);
+      if (!card) return;
+      const today = toDateKey();
+      const intervals = sanitizeIntervals(get().settings.reviewIntervals);
+      const step = nextStep(card.step, known);
+      await db.cards.update(id, {
+        step,
+        reps: card.reps + 1,
+        due: known ? cardDue(today, intervals, step) : today,
+      });
+      await loadAll();
+    },
+
+    removeCard: async (id) => {
+      await db.cards.delete(id);
+      await loadAll();
+    },
+
+    // ---------- حاسبة العلامات ----------
+
+    setMark: async (subjectId, patch) => {
+      const cur = (await db.marks.get(subjectId)) ?? { subjectId, mark: null, max: DEFAULT_MAX };
+      const max = patch.max !== undefined ? Math.max(1, patch.max) : cur.max;
+      let mark = patch.mark !== undefined ? patch.mark : cur.mark;
+      if (mark !== null) mark = Math.min(Math.max(0, mark), max);
+      await db.marks.put({ subjectId, mark, max });
+      await loadAll();
+    },
+
+    // ---------- النسخ الاحتياطي ----------
+
+    importBackupText: async (json) => {
+      const file = parseBackup(json);
+      await writeBackup(file);
+      const settings = await readSettings();
+      await loadAll();
+      applyTheme(settings.theme);
+      set({ settings, timer: initialTimer(settings) });
     },
 
     addSession: async (minutes, subjectId) => {

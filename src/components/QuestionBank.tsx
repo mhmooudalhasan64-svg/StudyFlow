@@ -17,12 +17,29 @@ export default function QuestionBank({ onBack }: { onBack: () => void }) {
   const [opts, setOpts] = useState(['', '', '', '']);
   const [correct, setCorrect] = useState(0);
   const [explanation, setExplanation] = useState('');
+  const [unit, setUnit] = useState('');
+  const [year, setYear] = useState('');
+  const [session, setSession] = useState('');
+  const [unitFilter, setUnitFilter] = useState('all');
+  const [yearFilter, setYearFilter] = useState('all');
   const [message, setMessage] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const list = useMemo(
+  const inSubject = useMemo(
     () => (filter === 'all' ? questions : questions.filter((q) => q.subjectId === filter)),
     [questions, filter],
+  );
+  const units = useMemo(() => [...new Set(inSubject.map((q) => q.unit).filter(Boolean))] as string[], [inSubject]);
+  const years = useMemo(
+    () => [...new Set(inSubject.map((q) => q.year).filter((y): y is number => typeof y === 'number'))].sort((a, b) => b - a),
+    [inSubject],
+  );
+  const list = useMemo(
+    () =>
+      inSubject.filter(
+        (q) => (unitFilter === 'all' || q.unit === unitFilter) && (yearFilter === 'all' || String(q.year) === yearFilter),
+      ),
+    [inSubject, unitFilter, yearFilter],
   );
 
   const submit = (e: FormEvent) => {
@@ -35,12 +52,19 @@ export default function QuestionBank({ onBack }: { onBack: () => void }) {
     if (!filled.some((o) => o.i === correct))
       return setMessage({ kind: 'err', text: 'الخيار المحدد كإجابة صحيحة فارغ' });
 
+    const yearNum = Number(year);
+    if (year.trim() && (!Number.isInteger(yearNum) || yearNum < 1990 || yearNum > 2100))
+      return setMessage({ kind: 'err', text: 'سنة الدورة غير صالحة' });
+
     void addQuestion({
       subjectId,
       text: text.trim(),
       options: filled.map((o) => o.t),
       answerIndex: filled.findIndex((o) => o.i === correct),
       explanation: explanation.trim() || undefined,
+      unit: unit.trim() || undefined,
+      year: year.trim() ? yearNum : undefined,
+      session: session.trim() || undefined,
     });
     setText('');
     setOpts(['', '', '', '']);
@@ -103,6 +127,26 @@ export default function QuestionBank({ onBack }: { onBack: () => void }) {
             ))}
           </select>
         </div>
+        <div className="grid grid-cols-3 gap-3">
+          <div>
+            <label className="label" htmlFor="qb-unit">
+              الوحدة
+            </label>
+            <input id="qb-unit" className="input" value={unit} onChange={(e) => setUnit(e.target.value)} maxLength={60} />
+          </div>
+          <div>
+            <label className="label" htmlFor="qb-year">
+              سنة الدورة
+            </label>
+            <input id="qb-year" className="input" inputMode="numeric" placeholder="2024" value={year} onChange={(e) => setYear(e.target.value)} maxLength={4} />
+          </div>
+          <div>
+            <label className="label" htmlFor="qb-session">
+              الدورة
+            </label>
+            <input id="qb-session" className="input" placeholder="الأولى" value={session} onChange={(e) => setSession(e.target.value)} maxLength={30} />
+          </div>
+        </div>
         <div>
           <label className="label" htmlFor="qb-text">
             نص السؤال
@@ -163,7 +207,11 @@ export default function QuestionBank({ onBack }: { onBack: () => void }) {
           className="input"
           aria-label="تصفية حسب المادة"
           value={filter}
-          onChange={(e) => setFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+          onChange={(e) => {
+            setFilter(e.target.value === 'all' ? 'all' : Number(e.target.value));
+            setUnitFilter('all');
+            setYearFilter('all');
+          }}
         >
           <option value="all">كل المواد</option>
           {subjects.map((s) => (
@@ -172,6 +220,26 @@ export default function QuestionBank({ onBack }: { onBack: () => void }) {
             </option>
           ))}
         </select>
+        {(units.length > 0 || years.length > 0) && (
+          <div className="grid grid-cols-2 gap-3">
+            <select className="input" aria-label="تصفية حسب الوحدة" value={unitFilter} onChange={(e) => setUnitFilter(e.target.value)}>
+              <option value="all">كل الوحدات</option>
+              {units.map((u) => (
+                <option key={u} value={u}>
+                  {u}
+                </option>
+              ))}
+            </select>
+            <select className="input" aria-label="تصفية حسب السنة" value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
+              <option value="all">كل السنوات</option>
+              {years.map((y) => (
+                <option key={y} value={String(y)}>
+                  {y}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         {list.length === 0 ? (
           <Empty>لا أسئلة.</Empty>
         ) : (
@@ -181,8 +249,15 @@ export default function QuestionBank({ onBack }: { onBack: () => void }) {
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium">{q.text}</p>
                   <p className="mt-1 text-xs text-ok">الصحيح: {q.options[q.answerIndex]}</p>
-                  <div className="mt-1.5">
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
                     <SubjectDot subjectId={q.subjectId} />
+                    {q.unit && <span className="chip">{q.unit}</span>}
+                    {q.year && (
+                      <span className="chip">
+                        {q.year}
+                        {q.session ? ` · ${q.session}` : ''}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <button
