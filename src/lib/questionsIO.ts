@@ -6,6 +6,9 @@ export interface ExportedQuestion {
   options: string[];
   answerIndex: number;
   explanation?: string;
+  unit?: string;
+  year?: number;
+  session?: string;
 }
 
 export function exportQuestions(
@@ -19,6 +22,9 @@ export function exportQuestions(
     options: q.options,
     answerIndex: q.answerIndex,
     ...(q.explanation ? { explanation: q.explanation } : {}),
+    ...(q.unit ? { unit: q.unit } : {}),
+    ...(q.year ? { year: q.year } : {}),
+    ...(q.session ? { session: q.session } : {}),
   }));
   return JSON.stringify(data, null, 2);
 }
@@ -56,6 +62,9 @@ export function parseQuestions(json: string): ExportedQuestion[] {
       options: (o.options as string[]).map((x) => x.trim()),
       answerIndex: idx,
       explanation: typeof o.explanation === 'string' && o.explanation.trim() ? o.explanation.trim() : undefined,
+      unit: typeof o.unit === 'string' && o.unit.trim() ? o.unit.trim() : undefined,
+      year: typeof o.year === 'number' && Number.isInteger(o.year) ? o.year : undefined,
+      session: typeof o.session === 'string' && o.session.trim() ? o.session.trim() : undefined,
     };
   });
 }

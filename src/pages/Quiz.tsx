@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { CheckCircle2, Database, RotateCcw, XCircle } from 'lucide-react';
 import { useApp } from '../store';
 import type { Question } from '../db';
@@ -14,6 +14,7 @@ export default function Quiz() {
   const questions = useApp((s) => s.questions);
   const subjects = useApp((s) => s.subjects);
   const recordAttempt = useApp((s) => s.recordAttempt);
+  const saveResult = useApp((s) => s.saveResult);
 
   const [phase, setPhase] = useState<Phase>('menu');
   const [subjectId, setSubjectId] = useState<number | 'all'>('all');
@@ -23,10 +24,25 @@ export default function Quiz() {
   const [picked, setPicked] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [wrong, setWrong] = useState<Question[]>([]);
+  const [unit, setUnit] = useState('all');
+  const [year, setYear] = useState('all');
+  const startedAt = useRef(Date.now());
 
-  const pool = useMemo(
+  const bySubject = useMemo(
     () => (subjectId === 'all' ? questions : questions.filter((q) => q.subjectId === subjectId)),
     [questions, subjectId],
+  );
+  const units = useMemo(() => [...new Set(bySubject.map((q) => q.unit).filter(Boolean))] as string[], [bySubject]);
+  const years = useMemo(
+    () => [...new Set(bySubject.map((q) => q.year).filter((y): y is number => typeof y === 'number'))].sort((a, b) => b - a),
+    [bySubject],
+  );
+  const pool = useMemo(
+    () =>
+      bySubject.filter(
+        (q) => (unit === 'all' || q.unit === unit) && (year === 'all' || String(q.year) === year),
+      ),
+    [bySubject, unit, year],
   );
 
   const begin = (list: Question[]) => {
@@ -36,6 +52,7 @@ export default function Quiz() {
     setPicked(null);
     setScore(0);
     setWrong([]);
+    startedAt.current = Date.now();
     setPhase('play');
   };
 
@@ -54,6 +71,14 @@ export default function Quiz() {
 
   const next = () => {
     if (idx + 1 >= deck.length) {
+      const sameSubject = deck.every((d) => d.subjectId === deck[0].subjectId);
+      void saveResult({
+        kind: 'quiz',
+        subjectId: sameSubject ? deck[0].subjectId : null,
+        score,
+        total: deck.length,
+        seconds: Math.round((Date.now() - startedAt.current) / 1000),
+      });
       setPhase('result');
     } else {
       setIdx(idx + 1);
@@ -190,7 +215,11 @@ export default function Quiz() {
             id="quiz-subject"
             className="input"
             value={subjectId}
-            onChange={(e) => setSubjectId(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+            onChange={(e) => {
+              setSubjectId(e.target.value === 'all' ? 'all' : Number(e.target.value));
+              setUnit('all');
+              setYear('all');
+            }}
           >
             <option value="all">كل المواد ({questions.length})</option>
             {subjects.map((s) => (
@@ -200,6 +229,36 @@ export default function Quiz() {
             ))}
           </select>
         </div>
+        {(units.length > 0 || years.length > 0) && (
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="label" htmlFor="quiz-unit">
+                الوحدة
+              </label>
+              <select id="quiz-unit" className="input" value={unit} onChange={(e) => setUnit(e.target.value)}>
+                <option value="all">كل الوحدات</option>
+                {units.map((u) => (
+                  <option key={u} value={u}>
+                    {u}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="label" htmlFor="quiz-year">
+                سنة الدورة
+              </label>
+              <select id="quiz-year" className="input" value={year} onChange={(e) => setYear(e.target.value)}>
+                <option value="all">كل السنوات</option>
+                {years.map((y) => (
+                  <option key={y} value={String(y)}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
         <div>
           <span className="label">عدد الأسئلة</span>
           <div className="grid grid-cols-3 gap-2">

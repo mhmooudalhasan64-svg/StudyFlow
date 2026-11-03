@@ -1,5 +1,8 @@
 import Dexie, { type EntityTable } from 'dexie';
 
+export type Branch = 'scientific' | 'literary';
+export type Grade = 10 | 11 | 12;
+
 export interface Subject {
   id: number;
   name: string;
@@ -39,6 +42,12 @@ export interface Question {
   options: string[];
   answerIndex: number;
   explanation?: string;
+  /** اسم الوحدة (اختياري) */
+  unit?: string;
+  /** سنة الدورة (اختياري) */
+  year?: number;
+  /** اسم الدورة: الأولى / الثانية / التكميلية… (اختياري) */
+  session?: string;
 }
 
 export interface Attempt {
@@ -58,6 +67,79 @@ export interface Settings {
   shortMin: number;
   longMin: number;
   sound: boolean;
+  /** فرع البكالوريا المختار */
+  branch: Branch;
+  grade: Grade;
+  /** فواصل المراجعة المتدرجة بالأيام */
+  reviewIntervals: number[];
+  /** النسبة المئوية المستهدفة في حاسبة العلامات */
+  targetPct: number;
+}
+
+/** كتاب مدرسي (البيانات الوصفية فقط؛ الملف في bookFiles) */
+export interface Book {
+  id: number;
+  subjectId: number | null;
+  title: string;
+  unit: string;
+  lesson: string;
+  fileName: string;
+  size: number;
+  addedAt: number;
+}
+
+export interface BookFile {
+  bookId: number;
+  blob: Blob;
+}
+
+/** درس ضمن خطة إنهاء المنهاج */
+export interface Lesson {
+  id: number;
+  subjectId: number;
+  unit: string;
+  title: string;
+  done: boolean;
+  /** تاريخ الإنجاز YYYY-MM-DD */
+  doneAt: string | null;
+  /** عدد المراحل المنجزة من سلّم المراجعة */
+  step: number;
+  /** موعد المراجعة القادمة، أو null إن اكتمل السلّم أو لم يُنجز الدرس */
+  nextReview: string | null;
+}
+
+export type CardCategory = 'definition' | 'date' | 'term' | 'rule';
+
+export interface Flashcard {
+  id: number;
+  subjectId: number | null;
+  category: CardCategory;
+  front: string;
+  back: string;
+  step: number;
+  /** YYYY-MM-DD */
+  due: string;
+  /** مرات المراجعة الكلية */
+  reps: number;
+}
+
+/** علامة مادة في حاسبة العلامات */
+export interface Mark {
+  subjectId: number;
+  mark: number | null;
+  max: number;
+}
+
+/** نتيجة اختبار أو امتحان تجريبي */
+export interface ExamResult {
+  id: number;
+  kind: 'quiz' | 'simulator';
+  subjectId: number | null;
+  score: number;
+  total: number;
+  at: number;
+  dateKey: string;
+  seconds: number;
 }
 
 class StudyDB extends Dexie {
@@ -68,6 +150,12 @@ class StudyDB extends Dexie {
   questions!: EntityTable<Question, 'id'>;
   attempts!: EntityTable<Attempt, 'id'>;
   settings!: EntityTable<Settings, 'key'>;
+  books!: EntityTable<Book, 'id'>;
+  bookFiles!: EntityTable<BookFile, 'bookId'>;
+  lessons!: EntityTable<Lesson, 'id'>;
+  cards!: EntityTable<Flashcard, 'id'>;
+  marks!: EntityTable<Mark, 'subjectId'>;
+  results!: EntityTable<ExamResult, 'id'>;
 
   constructor() {
     super('studyflow');
@@ -79,6 +167,15 @@ class StudyDB extends Dexie {
       questions: '++id, subjectId',
       attempts: '++id, subjectId, dateKey',
       settings: 'key',
+    });
+    // الإصدار 2: قسم البكالوريا (كتب، منهاج، بطاقات، علامات، نتائج)
+    this.version(2).stores({
+      books: '++id, subjectId',
+      bookFiles: 'bookId',
+      lessons: '++id, subjectId',
+      cards: '++id, subjectId, due',
+      marks: 'subjectId',
+      results: '++id, dateKey, subjectId',
     });
   }
 }
