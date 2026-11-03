@@ -22,8 +22,20 @@ interface Provider {
   headers?: Record<string, string>;
 }
 
-function pickProvider(env: Record<string, string | undefined>): Provider | null {
-  const model = env.AI_MODEL?.trim() || env.XAI_MODEL?.trim();
+/** ينظّف المفتاح الملصوق: مسافات وأسطر جديدة وعلامات اقتباس زائدة */
+function clean(value: string | undefined): string | undefined {
+  const v = value?.trim().replace(/^["']|["']$/g, '').trim();
+  return v ? v : undefined;
+}
+
+function pickProvider(raw: Record<string, string | undefined>): Provider | null {
+  const env = {
+    GROQ_API_KEY: clean(raw.GROQ_API_KEY),
+    OPENROUTER_API_KEY: clean(raw.OPENROUTER_API_KEY),
+    GEMINI_API_KEY: clean(raw.GEMINI_API_KEY),
+    XAI_API_KEY: clean(raw.XAI_API_KEY),
+  };
+  const model = raw.AI_MODEL?.trim() || raw.XAI_MODEL?.trim();
   if (env.GROQ_API_KEY)
     return {
       name: 'Groq',
@@ -158,12 +170,14 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   if (!upstream.ok) {
+    // نذكر المزوّد المستخدم وطول المفتاح (دون كشفه) لتسهيل اكتشاف الإعداد الخاطئ
+    const hint = ` [المزوّد: ${provider.name}، رمز ${upstream.status}، طول المفتاح: ${provider.key.length}]`;
     const msg =
       upstream.status === 401 || upstream.status === 403
-        ? 'مفتاح الخدمة غير صالح أو غير مصرّح له'
+        ? `مفتاح الخدمة غير صالح أو غير مصرّح له${hint}`
         : upstream.status === 429
-          ? 'الخدمة مشغولة أو انتهت الحصة المجانية، جرّب بعد قليل'
-          : 'حدث خطأ من خدمة الذكاء الاصطناعي';
+          ? `الخدمة مشغولة أو انتهت الحصة المجانية، جرّب بعد قليل${hint}`
+          : `حدث خطأ من خدمة الذكاء الاصطناعي${hint}`;
     return json({ error: msg }, 502);
   }
 
