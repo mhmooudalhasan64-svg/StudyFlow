@@ -1,15 +1,61 @@
 /**
- * دالة خادم على Vercel تتوسط بين التطبيق وخدمة Grok (xAI).
- * مفتاح الخدمة يُقرأ من متغيّرات البيئة على الخادم فقط ولا يصل إلى المتصفح أبداً.
+ * دالة خادم على Vercel تتوسط بين التطبيق وخدمة ذكاء اصطناعي متوافقة مع واجهة OpenAI.
+ * المفتاح يُقرأ من متغيّرات البيئة على الخادم فقط ولا يصل إلى المتصفح أبداً.
  *
- * المتغيّرات:
- *   XAI_API_KEY        (مطلوب) مفتاح xAI
- *   XAI_MODEL          (اختياري) اسم النموذج، الافتراضي grok-4.7
- *   CHAT_DAILY_LIMIT   (اختياري) عدد الرسائل اليومي لكل عنوان IP، الافتراضي 30
+ * يُختار المزوّد تلقائياً بحسب أول مفتاح موجود بهذا الترتيب (المجانية أولاً):
+ *   GROQ_API_KEY        Groq: مجاني دون بطاقة بحدود يومية
+ *   OPENROUTER_API_KEY  OpenRouter: نماذج مجانية عبر openrouter/free
+ *   GEMINI_API_KEY      Google Gemini: طبقة مجانية (غير متاحة في بعض الدول)
+ *   XAI_API_KEY         xAI Grok: مدفوع
+ *
+ * متغيّرات اختيارية:
+ *   AI_MODEL            يغيّر اسم النموذج الافتراضي للمزوّد المختار
+ *   CHAT_DAILY_LIMIT    عدد الرسائل اليومي لكل عنوان IP، الافتراضي 30
  */
 
-const ENDPOINT = 'https://api.x.ai/v1/chat/completions';
-const MODEL = process.env.XAI_MODEL || 'grok-4.7';
+interface Provider {
+  name: string;
+  key: string;
+  endpoint: string;
+  model: string;
+  /** ترويسات إضافية يطلبها المزوّد */
+  headers?: Record<string, string>;
+}
+
+function pickProvider(env: Record<string, string | undefined>): Provider | null {
+  const model = env.AI_MODEL?.trim() || env.XAI_MODEL?.trim();
+  if (env.GROQ_API_KEY)
+    return {
+      name: 'Groq',
+      key: env.GROQ_API_KEY,
+      endpoint: 'https://api.groq.com/openai/v1/chat/completions',
+      model: model || 'llama-3.3-70b-versatile',
+    };
+  if (env.OPENROUTER_API_KEY)
+    return {
+      name: 'OpenRouter',
+      key: env.OPENROUTER_API_KEY,
+      endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+      model: model || 'openrouter/free',
+      headers: { 'X-Title': 'StudyFlow' },
+    };
+  if (env.GEMINI_API_KEY)
+    return {
+      name: 'Gemini',
+      key: env.GEMINI_API_KEY,
+      endpoint: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
+      model: model || 'gemini-2.5-flash',
+    };
+  if (env.XAI_API_KEY)
+    return {
+      name: 'xAI',
+      key: env.XAI_API_KEY,
+      endpoint: 'https://api.x.ai/v1/chat/completions',
+      model: model || 'grok-4.7',
+    };
+  return null;
+}
+
 const DAILY_LIMIT = Number(process.env.CHAT_DAILY_LIMIT) > 0 ? Number(process.env.CHAT_DAILY_LIMIT) : 30;
 
 const MAX_MESSAGES = 12;
@@ -73,8 +119,8 @@ function overLimit(ip: string): boolean {
 }
 
 export async function POST(request: Request): Promise<Response> {
-  const key = process.env.XAI_API_KEY;
-  if (!key) return json({ error: 'المساعد غير مفعّل بعد: لم يُضبط مفتاح الخدمة على الخادم.' }, 503);
+  const provider = pickProvider(process.env);
+  if (!provider) return json({ error: 'المساعد غير مفعّل بعد: لم يُضبط مفتاح الخدمة على الخادم.' }, 503);
 
   let body: unknown;
   try {
@@ -91,11 +137,15 @@ export async function POST(request: Request): Promise<Response> {
 
   let upstream: Response;
   try {
-    upstream = await fetch(ENDPOINT, {
+    upstream = await fetch(provider.endpoint, {
       method: 'POST',
-      headers: { 'content-type': 'application/json', authorization: `Bearer ${key}` },
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${provider.key}`,
+        ...provider.headers,
+      },
       body: JSON.stringify({
-        model: MODEL,
+        model: provider.model,
         messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages],
         max_tokens: 1200,
         temperature: 0.4,
@@ -112,7 +162,7 @@ export async function POST(request: Request): Promise<Response> {
       upstream.status === 401 || upstream.status === 403
         ? 'مفتاح الخدمة غير صالح أو غير مصرّح له'
         : upstream.status === 429
-          ? 'الخدمة مشغولة أو انتهى رصيد الحساب'
+          ? 'الخدمة مشغولة أو انتهت الحصة المجانية، جرّب بعد قليل'
           : 'حدث خطأ من خدمة الذكاء الاصطناعي';
     return json({ error: msg }, 502);
   }
