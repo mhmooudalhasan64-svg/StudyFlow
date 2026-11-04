@@ -64,4 +64,17 @@ describe('practice', () => {
     expect(dailyResult([r('daily', '2026-11-01')], '2026-11-02')).toBeUndefined();
     expect(dailyResult([r('daily', '2026-11-02')], '2026-11-02')?.score).toBe(3);
   });
+
+  it('pickDaily mixes subjects instead of one dominating', () => {
+    const qs = Array.from({ length: 12 }, (_, i) => ({
+      id: i + 1,
+      subjectId: i < 8 ? 1 : i < 10 ? 2 : 3,
+      text: 't' + i,
+      options: ['a', 'b'],
+      answerIndex: 0,
+    }));
+    const d = pickDaily(qs, [], '2026-11-05', 5);
+    expect(d).toHaveLength(5);
+    expect(new Set(d.map((q) => q.subjectId)).size).toBe(3);
+  });
 });

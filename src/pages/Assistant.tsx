@@ -10,9 +10,10 @@ import { toDateKey } from '../lib/utils';
 import { ACCEPT, extractFileText } from '../lib/fileText';
 
 const SUGGESTIONS = [
-  'اشرح لي قانون نيوتن الثاني بمثال',
+  'اشرح لي فكرة الاشتقاق ببساطة مع مثال',
+  'لخّص لي أسباب الحرب العالمية الأولى',
+  'كيف أحلل نصاً أدبياً في مادة العربية؟',
   'كيف أنظّم جدول مراجعة قبل الامتحان بشهر؟',
-  'لخّص لي فكرة الاشتقاق ببساطة',
 ];
 
 const FILE_SUGGESTIONS = [

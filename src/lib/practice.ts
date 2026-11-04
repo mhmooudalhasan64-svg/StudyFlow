@@ -66,12 +66,22 @@ export function pickDaily(
     chosen.push(q);
     used.add(q.id);
   }
+  // نوزّع الباقي على المواد بالتناوب كي لا تطغى مادة واحدة على التحدي
+  const groups = new Map<number | null, Question[]>();
   for (const q of shuffle(
     questions.filter((x) => !used.has(x.id)),
     rand,
   )) {
-    if (chosen.length >= n) break;
-    chosen.push(q);
+    const g = groups.get(q.subjectId);
+    if (g) g.push(q);
+    else groups.set(q.subjectId, [q]);
+  }
+  const lists = shuffle([...groups.values()], rand);
+  for (let i = 0; chosen.length < n && lists.some((l) => l.length > i); i++) {
+    for (const l of lists) {
+      if (chosen.length >= n) break;
+      if (l[i]) chosen.push(l[i]);
+    }
   }
   return shuffle(chosen, rand);
 }
