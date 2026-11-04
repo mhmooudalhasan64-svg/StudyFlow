@@ -188,6 +188,12 @@ const QUIZ_PROMPT = `أنت منشئ أسئلة اختيار من متعدد ل�
 - الأسئلة بالعربية الفصحى (والإنجليزية فقط إن كان الموضوع لغة إنجليزية)، صحيحة علمياً، وبمستوى البكالوريا.
 - إن لم تتأكد من معلومة فلا تستخدمها في سؤال.`;
 
+const CARDS_PROMPT = `أنت منشئ بطاقات مراجعة لطلاب البكالوريا.
+أخرج مصفوفة JSON فقط، دون أي نص قبلها أو بعدها ودون علامات markdown.
+كل عنصر بالشكل: {"front":"مصطلح أو سؤال قصير","back":"إجابة مختصرة لا تتجاوز 25 كلمة","category":"definition","quote":"..."}
+- category واحدة من: definition (تعريف) أو date (تاريخ/حدث) أو term (مصطلح) أو rule (قاعدة/قانون).
+- بطاقات متنوعة تغطي أهم ما في النص، دون تكرار.`;
+
 const LEVELS: Record<string, string> = {
   easy: 'سهلة: تعتمد على التذكر المباشر',
   medium: 'متوسطة',
@@ -196,7 +202,7 @@ const LEVELS: Record<string, string> = {
 
 const BOOK_RULES = `قواعد صارمة لهذا الاختبار:
 - اعتمد حصراً على نص الكتاب أدناه، ولا تستخدم أي معلومة من خارجه، ولا تخترع.
-- كل سؤال إجابته مذكورة صراحة في النص، والتفسير مأخوذ منه.
+- كل عنصر محتواه مذكور صراحة في النص، والتفسير أو الإجابة مأخوذان منه.
 - أضف لكل عنصر الحقل "quote": عبارة من 5 إلى 20 كلمة منقولة حرفياً من النص تثبت الإجابة الصحيحة.
 - إن لم يكفِ النص لعدد الأسئلة المطلوب فأنتج أقل ولا تملأ بمعلومات خارجية.`;
 
@@ -204,19 +210,24 @@ const BOOK_RULES = `قواعد صارمة لهذا الاختبار:
 function quizRequest(body: unknown, att: Attachment | null): { system: string; messages: Msg[] } | 'invalid' | null {
   if (typeof body !== 'object' || body === null) return null;
   const b = body as { mode?: unknown; topic?: unknown; count?: unknown; subject?: unknown; difficulty?: unknown; fromBook?: unknown };
-  if (b.mode !== 'quiz') return null;
+  const cards = b.mode === 'cards';
+  if (b.mode !== 'quiz' && !cards) return null;
   const topic = typeof b.topic === 'string' ? b.topic.trim().slice(0, 200) : '';
   const subject = typeof b.subject === 'string' ? b.subject.replace(/[\r\n]+/g, ' ').trim().slice(0, 60) : '';
   if (!topic && !att) return 'invalid';
   const count = Math.min(10, Math.max(3, Math.round(Number(b.count)) || 5));
   return {
     system: att
-      ? `${QUIZ_PROMPT}${b.fromBook === true ? `\n${BOOK_RULES}` : ''}\n\nالمرجع: ملف باسم «${att.name}».\n${fileBlock(att)}`
-      : QUIZ_PROMPT,
+      ? `${cards ? CARDS_PROMPT : QUIZ_PROMPT}${b.fromBook === true ? `\n${BOOK_RULES}` : ''}\n\nالمرجع: ملف باسم «${att.name}».\n${fileBlock(att)}`
+      : cards
+        ? CARDS_PROMPT
+        : QUIZ_PROMPT,
     messages: [
       {
         role: 'user',
-        content: `اصنع ${count} أسئلة${subject ? ` في مادة «${subject}» حصراً` : ''}${typeof b.difficulty === 'string' && LEVELS[b.difficulty] ? ` بصعوبة ${LEVELS[b.difficulty]}` : ''}${topic ? ` عن: ${topic}` : ''}${att ? ' من الملف المرفق' : ''}.`,
+        content: cards
+          ? `اصنع ${count} بطاقات مراجعة${subject ? ` في مادة «${subject}»` : ''} من الملف المرفق.`
+          : `اصنع ${count} أسئلة${subject ? ` في مادة «${subject}» حصراً` : ''}${typeof b.difficulty === 'string' && LEVELS[b.difficulty] ? ` بصعوبة ${LEVELS[b.difficulty]}` : ''}${topic ? ` عن: ${topic}` : ''}${att ? ' من الملف المرفق' : ''}.`,
       },
     ],
   };

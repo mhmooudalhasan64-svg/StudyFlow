@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { chapterRange, chunkText, detectChapters, groundedItems, looksScanned, normalizeArabic, parsePageRange, planRequests } from './bookQuiz';
+import { chapterRange, chunkText, detectChapters, groundedItems, looksScanned, normalizeArabic, parsePageRange, planRequests, toCards } from './bookQuiz';
 
 describe('bookQuiz', () => {
   it('normalizeArabic removes diacritics and unifies letters', () => {
@@ -63,5 +63,20 @@ describe('bookQuiz', () => {
     expect(r.dropped).toBe(2);
     expect('quote' in r.items[0]).toBe(false);
     expect(groundedItems('لا شيء', chunk)).toEqual({ items: [], dropped: 0 });
+  });
+
+  it('toCards keeps valid cards, defaults the category and drops duplicates', () => {
+    const out = toCards([
+      { front: ' ما الاشتقاق؟ ', back: 'معدل التغير', category: 'definition' },
+      { front: 'ما الاشتقاق؟', back: 'تكرار', category: 'term' },
+      { front: 'قانون', back: 'ق = ك × ت', category: 'غير معروف' },
+      { front: '', back: 'x' },
+      { front: 'x'.repeat(300), back: 'y' },
+      { front: 'ناقص' },
+    ]);
+    expect(out).toEqual([
+      { front: 'ما الاشتقاق؟', back: 'معدل التغير', category: 'definition' },
+      { front: 'قانون', back: 'ق = ك × ت', category: 'definition' },
+    ]);
   });
 });

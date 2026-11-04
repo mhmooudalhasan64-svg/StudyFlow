@@ -1,8 +1,9 @@
-import { useMemo, useRef, useState, type ChangeEvent } from 'react';
-import { BookOpen, FileUp, Loader2 } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
+import { BookOpen, Copy, FileUp, Loader2, Trash2 } from 'lucide-react';
 import { useApp } from '../store';
 import type { Question } from '../db';
 import { extractPdfPages, FileTextError } from '../lib/fileText';
+import { bookKey, deleteBookText, getBookText, listBookTexts, saveBookText, type SavedBook } from '../lib/bookCache';
 import { requestQuiz } from '../lib/chatStore';
 import { parseGeneratedQuiz } from '../lib/questionsIO';
 import {
@@ -14,6 +15,7 @@ import {
   parsePageRange,
   planRequests,
   textOfPages,
+  toCards,
 } from '../lib/bookQuiz';
 import { shuffle } from '../lib/utils';
 
@@ -30,6 +32,10 @@ const LEVELS: [Level, string][] = [
 export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => void }) {
   const subjects = useApp((s) => s.subjects);
   const importQuestions = useApp((s) => s.importQuestions);
+  const addCard = useApp((s) => s.addCard);
+  const [saved, setSaved] = useState<SavedBook[]>([]);
+  const refreshSaved = () => void listBookTexts().then(setSaved).catch(() => setSaved([]));
+  useEffect(refreshSaved, []);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState('');
@@ -48,6 +54,13 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
   const chapters = useMemo(() => (pages ? detectChapters(pages) : []), [pages]);
   const subject = subjects.find((s) => s.id === (subjectId === '' ? subjects[0]?.id : subjectId));
 
+  const openBook = (bookName: string, p: string[]) => {
+    setName(bookName);
+    setPages(p);
+    setScope('all');
+    setChapter(0);
+  };
+
   const pick = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
@@ -57,21 +70,38 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
     setPages(null);
     setBusy(true);
     try {
+      const key = bookKey(file);
+      const cached = await getBookText(key).catch(() => undefined);
+      if (cached) {
+        openBook(cached.name, cached.pages);
+        return;
+      }
       const p = await extractPdfPages(file, (n, t) => setProgress(`جارٍ قراءة الكتاب… ${n} / ${t}`));
       if (looksScanned(p)) {
         setError('هذا الكتاب صور ممسوحة ضوئياً ولا يحتوي نصاً يمكن قراءته، لذلك لا أستطيع إنشاء أسئلة منه. جرّب نسخة PDF نصية (غير مصوّرة).');
         return;
       }
-      setName(file.name.replace(/\.pdf$/i, ''));
-      setPages(p);
-      setScope('all');
-      setChapter(0);
+      const title = file.name.replace(/\.pdf$/i, '');
+      openBook(title, p);
+      void saveBookText(key, title, p).then(refreshSaved).catch(() => undefined);
     } catch (err) {
       setError(err instanceof FileTextError ? err.message : 'تعذّرت قراءة الكتاب.');
     } finally {
       setBusy(false);
       setProgress('');
     }
+  };
+
+  const useSaved = async (key: string) => {
+    setError('');
+    setNote('');
+    const b = await getBookText(key).catch(() => undefined);
+    if (b) openBook(b.name, b.pages);
+  };
+
+  const removeSaved = async (key: string) => {
+    await deleteBookText(key).catch(() => undefined);
+    refreshSaved();
   };
 
   const selection = (): { from: number; to: number } | null => {
@@ -81,50 +111,62 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
     return parsePageRange(range, pages.length);
   };
 
-  const generate = async () => {
-    if (!pages || !subject) return;
+  /** يجهّز النص المختار وخطة الطلبات؛ يعيد null مع رسالة خطأ إن لم يصلح */
+  const prepare = () => {
+    if (!pages || !subject) return null;
     const sel = selection();
     if (!sel) {
       setError('حدّد الصفحات بشكل صحيح، مثل 12-40.');
-      return;
+      return null;
     }
     const text = textOfPages(pages, sel.from, sel.to);
     if (text.replace(/\s+/g, '').length < 200) {
       setError('الصفحات المختارة لا تحتوي نصاً كافياً. جرّب نطاقاً آخر.');
-      return;
+      return null;
     }
+    const chunks = chunkText(text);
+    return { sel, chunks, plan: planRequests(count, chunks.length), subject };
+  };
+
+  /** يرسل الأجزاء واحداً واحداً ويجمع العناصر المثبتة بنص الكتاب */
+  const collect = async (job: NonNullable<ReturnType<typeof prepare>>, mode: 'quiz' | 'cards') => {
+    const items: Record<string, unknown>[] = [];
+    let dropped = 0;
+    let lastError = '';
+    for (let i = 0; i < job.plan.length; i++) {
+      setProgress(`جارٍ الإنشاء… (${i + 1} / ${job.plan.length})`);
+      const chunk = job.chunks[job.plan[i].chunk];
+      try {
+        const raw = await requestQuiz({
+          mode,
+          topic: '',
+          count: job.plan[i].n,
+          subject: job.subject.name,
+          difficulty: level,
+          source: { name, text: chunk },
+        });
+        const g = groundedItems(raw, chunk);
+        items.push(...g.items);
+        dropped += g.dropped;
+      } catch (e) {
+        lastError = e instanceof Error ? e.message : 'تعذّر الإنشاء';
+      }
+    }
+    if (items.length === 0) {
+      throw new Error(lastError || 'لم أجد في هذه الصفحات محتوى موثوقاً مبنياً على نص الكتاب. جرّب نطاقاً أوسع أو أعد المحاولة.');
+    }
+    return { items, dropped };
+  };
+
+  const generate = async () => {
+    const job = prepare();
+    if (!job) return;
     setError('');
     setNote('');
     setBusy(true);
     try {
-      const chunks = chunkText(text);
-      const plan = planRequests(count, chunks.length);
-      const items: Record<string, unknown>[] = [];
-      let dropped = 0;
-      let lastError = '';
-      for (let i = 0; i < plan.length; i++) {
-        setProgress(`جارٍ إنشاء الأسئلة… (${i + 1} / ${plan.length})`);
-        try {
-          const raw = await requestQuiz({
-            topic: '',
-            count: plan[i].n,
-            subject: subject.name,
-            difficulty: level,
-            source: { name, text: chunks[plan[i].chunk] },
-          });
-          const g = groundedItems(raw, chunks[plan[i].chunk]);
-          items.push(...g.items);
-          dropped += g.dropped;
-        } catch (e) {
-          lastError = e instanceof Error ? e.message : 'تعذّر إنشاء الأسئلة';
-        }
-      }
-      if (items.length === 0) {
-        throw new Error(
-          lastError || 'لم أجد في هذه الصفحات أسئلة موثوقة مبنية على نص الكتاب. جرّب نطاقاً أوسع أو أعد المحاولة.',
-        );
-      }
-      const label = `${name} (ص${sel.from}${sel.to > sel.from ? `–${sel.to}` : ''})`;
+      const { items, dropped } = await collect(job, 'quiz');
+      const label = `${name} (ص${job.sel.from}${job.sel.to > job.sel.from ? `–${job.sel.to}` : ''})`;
       const seen = new Set<string>();
       const unique = items.filter((x) => {
         const t = String(x.text);
@@ -132,14 +174,35 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
         seen.add(t);
         return true;
       });
-      const parsed = parseGeneratedQuiz(JSON.stringify(unique.slice(0, count)), subject.name, label);
+      const parsed = parseGeneratedQuiz(JSON.stringify(unique.slice(0, count)), job.subject.name, label);
       await importQuestions(parsed);
       const texts = new Set(parsed.map((x) => x.text));
-      const fresh = useApp.getState().questions.filter((x) => x.subjectId === subject.id && texts.has(x.text));
+      const fresh = useApp.getState().questions.filter((x) => x.subjectId === job.subject.id && texts.has(x.text));
       if (dropped > 0) setNote(`استُبعد ${dropped} سؤالاً لأنه لم يُثبَّت بنص الكتاب.`);
       onStart(shuffle(fresh));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'تعذّر إنشاء الاختبار');
+    } finally {
+      setBusy(false);
+      setProgress('');
+    }
+  };
+
+  /** بطاقات مراجعة من الصفحات المختارة (تدخل نظام المراجعة المتباعدة الموجود) */
+  const makeCards = async () => {
+    const job = prepare();
+    if (!job) return;
+    setError('');
+    setNote('');
+    setBusy(true);
+    try {
+      const { items, dropped } = await collect(job, 'cards');
+      const cards = toCards(items).slice(0, count);
+      if (cards.length === 0) throw new Error('لم أستطع إنشاء بطاقات صالحة من هذه الصفحات. جرّب نطاقاً آخر.');
+      for (const c of cards) await addCard({ subjectId: job.subject.id, category: c.category, front: c.front, back: c.back });
+      setNote(`أُضيفت ${cards.length} بطاقة إلى صفحة «المراجعة»${dropped > 0 ? `، واستُبعد ${dropped} غير مثبتة بنص الكتاب` : ''}.`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'تعذّر إنشاء البطاقات');
     } finally {
       setBusy(false);
       setProgress('');
@@ -158,6 +221,30 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
       <button type="button" className="btn btn-ghost w-full" disabled={busy} onClick={() => fileRef.current?.click()}>
         <FileUp size={16} /> {pages ? `تغيير الكتاب (${name})` : 'اختر ملف PDF'}
       </button>
+
+      {!pages && saved.length > 0 && (
+        <div className="space-y-1.5">
+          <p className="text-xs text-muted">كتب محفوظة في جهازك (دون إعادة قراءة):</p>
+          {saved.map((b) => (
+            <div key={b.key} className="flex items-center gap-2 rounded-xl border border-line/70 px-3 py-2 text-sm">
+              <span className="min-w-0 flex-1 truncate">
+                {b.name} <span className="text-xs text-muted">({b.pageCount} ص)</span>
+              </span>
+              <button type="button" className="btn btn-ghost !py-1 text-xs" disabled={busy} onClick={() => void useSaved(b.key)}>
+                استخدم
+              </button>
+              <button
+                type="button"
+                className="rounded-lg p-2 text-muted hover:text-bad"
+                aria-label={`حذف ${b.name} من الجهاز`}
+                onClick={() => void removeSaved(b.key)}
+              >
+                <Trash2 size={15} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       {pages && (
         <>
@@ -255,6 +342,9 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
           <button type="button" className="btn btn-primary w-full" disabled={busy || !subject} onClick={() => void generate()}>
             {busy ? <Loader2 size={16} className="animate-spin" /> : <BookOpen size={16} />}
             {busy ? progress || 'جارٍ العمل…' : 'اختبرني'}
+          </button>
+          <button type="button" className="btn btn-ghost w-full" disabled={busy || !subject} onClick={() => void makeCards()}>
+            <Copy size={16} /> حوّل الصفحات إلى بطاقات مراجعة
           </button>
         </>
       )}

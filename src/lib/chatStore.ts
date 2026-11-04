@@ -115,12 +115,14 @@ export async function requestQuiz(args: {
   difficulty?: 'easy' | 'medium' | 'hard';
   /** نص كتاب: أسئلة مبنية عليه حصراً، ويُستخدم بدل الملف المرفق في المحادثة */
   source?: { name: string; text: string };
+  /** quiz (افتراضي) أو cards لبطاقات مراجعة */
+  mode?: 'quiz' | 'cards';
 }): Promise<string> {
   const att = args.source ?? useChat.getState().attachment;
   let res: Response;
   try {
     res = await postChat({
-      mode: 'quiz',
+      mode: args.mode ?? 'quiz',
       topic: args.topic,
       subject: args.subject,
       ...(args.difficulty ? { difficulty: args.difficulty } : {}),

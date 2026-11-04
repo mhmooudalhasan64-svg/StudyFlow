@@ -142,6 +142,14 @@ export interface ExamResult {
   seconds: number;
 }
 
+/** نص كتاب PDF مستخرج (ذاكرة مؤقتة محلية حتى لا يُعاد استخراجه). لا يدخل في النسخ الاحتياطي. */
+export interface BookText {
+  key: string;
+  name: string;
+  pages: string[];
+  at: number;
+}
+
 class StudyDB extends Dexie {
   subjects!: EntityTable<Subject, 'id'>;
   tasks!: EntityTable<Task, 'id'>;
@@ -156,6 +164,7 @@ class StudyDB extends Dexie {
   cards!: EntityTable<Flashcard, 'id'>;
   marks!: EntityTable<Mark, 'subjectId'>;
   results!: EntityTable<ExamResult, 'id'>;
+  bookTexts!: EntityTable<BookText, 'key'>;
 
   constructor() {
     super('studyflow');
@@ -176,6 +185,10 @@ class StudyDB extends Dexie {
       cards: '++id, subjectId, due',
       marks: 'subjectId',
       results: '++id, dateKey, subjectId',
+    });
+    // الإصدار 3: نصوص الكتب المستخرجة (للاختبار من الكتاب دون إعادة القراءة)
+    this.version(3).stores({
+      bookTexts: 'key, at',
     });
   }
 }

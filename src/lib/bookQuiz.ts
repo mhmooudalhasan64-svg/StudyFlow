@@ -168,3 +168,28 @@ export function groundedItems(raw: string, chunk: string): GroundedResult {
   }
   return { items, dropped };
 }
+
+export type CardKind = 'definition' | 'date' | 'term' | 'rule';
+
+export interface BookCard {
+  front: string;
+  back: string;
+  category: CardKind;
+}
+
+/** يحوّل عناصر JSON المثبتة إلى بطاقات صالحة (واجهة وخلفية نصيتان بطول معقول، دون تكرار) */
+export function toCards(items: readonly Record<string, unknown>[]): BookCard[] {
+  const kinds: CardKind[] = ['definition', 'date', 'term', 'rule'];
+  const seen = new Set<string>();
+  const out: BookCard[] = [];
+  for (const it of items) {
+    const front = typeof it.front === 'string' ? it.front.trim() : '';
+    const back = typeof it.back === 'string' ? it.back.trim() : '';
+    if (!front || !back || front.length > 200 || back.length > 400) continue;
+    if (seen.has(front)) continue;
+    seen.add(front);
+    const c = it.category;
+    out.push({ front, back, category: kinds.includes(c as CardKind) ? (c as CardKind) : 'definition' });
+  }
+  return out;
+}
