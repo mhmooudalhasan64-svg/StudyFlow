@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { Bot, Send, Trash2 } from 'lucide-react';
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { Bot, FileText, Loader2, Paperclip, Send, Trash2, X } from 'lucide-react';
 import { useChat } from '../lib/chatStore';
 import { PageTitle } from '../components/ui';
 import Advisor from '../components/Advisor';
+import { ACCEPT, extractFileText } from '../lib/fileText';
 
 const SUGGESTIONS = [
   'اشرح لي قانون نيوتن الثاني بمثال',
@@ -10,10 +11,35 @@ const SUGGESTIONS = [
   'لخّص لي فكرة الاشتقاق ببساطة',
 ];
 
+const FILE_SUGGESTIONS = [
+  'لخّص لي هذا الملف في نقاط',
+  'اصنع لي 5 أسئلة اختيار من متعدد من هذا الملف',
+  'اشرح لي أهم الأفكار فيه ببساطة',
+];
+
 export default function Assistant() {
-  const { messages, loading, error, send, clear } = useChat();
+  const { messages, attachment, loading, error, send, setAttachment, clear } = useChat();
   const [text, setText] = useState('');
+  const [reading, setReading] = useState(false);
+  const [fileError, setFileError] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const pickFile = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setFileError(null);
+    setReading(true);
+    try {
+      const r = await extractFileText(file);
+      setAttachment({ name: r.name, text: r.text, truncated: r.truncated });
+    } catch (err) {
+      setFileError(err instanceof Error ? err.message : 'تعذّرت قراءة الملف');
+    } finally {
+      setReading(false);
+    }
+  };
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
@@ -52,9 +78,11 @@ export default function Assistant() {
         {messages.length === 0 && (
           <div className="space-y-3 py-4 text-center">
             <Bot className="mx-auto text-accent" size={36} />
-            <p className="text-sm text-muted">مرحباً! أنا مساعدك الدراسي. جرّب أحد هذه الأسئلة:</p>
+            <p className="text-sm text-muted">
+              {attachment ? 'تم إرفاق الملف. اسأل عنه أو اختر مما يلي:' : 'مرحباً! أنا مساعدك الدراسي. جرّب أحد هذه الأسئلة:'}
+            </p>
             <div className="flex flex-col gap-2">
-              {SUGGESTIONS.map((s) => (
+              {(attachment ? FILE_SUGGESTIONS : SUGGESTIONS).map((s) => (
                 <button key={s} type="button" className="btn btn-ghost !justify-start text-start" onClick={() => void send(s)}>
                   {s}
                 </button>
@@ -92,7 +120,61 @@ export default function Assistant() {
         <div ref={endRef} />
       </div>
 
-      <form onSubmit={submit} className="sticky bottom-20 flex gap-2 md:bottom-4">
+      <div className="sticky bottom-20 space-y-2 md:bottom-4">
+        {(attachment || reading || fileError) && (
+          <div className="card !p-2.5 text-sm">
+            {reading && (
+              <p className="flex items-center gap-2 text-muted" role="status">
+                <Loader2 size={16} className="animate-spin" /> جارٍ قراءة الملف…
+              </p>
+            )}
+            {fileError && (
+              <p role="alert" className="text-bad">
+                {fileError}
+              </p>
+            )}
+            {attachment && !reading && (
+              <div className="flex items-center gap-2">
+                <FileText size={18} className="shrink-0 text-accent" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium">{attachment.name}</p>
+                  <p className="text-[11px] text-muted">
+                    {attachment.truncated
+                      ? 'الملف طويل: يقرأ المساعد الجزء الأول منه فقط.'
+                      : 'يقرأ المساعد الملف كاملاً.'}{' '}
+                    محتواه يُرسل إلى خدمة الذكاء الاصطناعي.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  aria-label="إزالة الملف"
+                  className="rounded-lg p-2 text-muted hover:text-bad"
+                  onClick={() => setAttachment(null)}
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      <form onSubmit={submit} className="flex gap-2">
+        <input
+          ref={fileRef}
+          type="file"
+          accept={ACCEPT}
+          hidden
+          onChange={(e) => void pickFile(e)}
+        />
+        <button
+          type="button"
+          className="btn btn-ghost shrink-0 !px-3"
+          aria-label="إرفاق ملف (PDF أو Word أو Excel)"
+          title="إرفاق ملف (PDF أو Word أو Excel)"
+          disabled={reading || loading}
+          onClick={() => fileRef.current?.click()}
+        >
+          <Paperclip size={18} />
+        </button>
         <input
           className="input"
           placeholder="اكتب سؤالك…"
@@ -105,8 +187,9 @@ export default function Assistant() {
           <Send size={18} className="rotate-180" />
         </button>
       </form>
+      </div>
       <p className="mt-2 text-center text-[11px] text-muted">
-        قد يخطئ المساعد، تحقق من المعلومات المهمة في كتابك المدرسي.
+        يقبل PDF وWord (docx) وExcel (xlsx). الملفات الممسوحة ضوئياً كصور لا تُقرأ. قد يخطئ المساعد، فتحقق من المهم في كتابك.
       </p>
     </div>
   );

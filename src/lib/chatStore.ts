@@ -5,8 +5,17 @@ export interface ChatMsg {
   content: string;
 }
 
+export interface ChatAttachment {
+  name: string;
+  text: string;
+  /** هل اقتُطع النص لطوله */
+  truncated: boolean;
+}
+
 interface ChatState {
   messages: ChatMsg[];
+  attachment: ChatAttachment | null;
+  setAttachment: (a: ChatAttachment | null) => void;
   loading: boolean;
   error: string | null;
   send: (text: string) => Promise<void>;
@@ -16,8 +25,11 @@ interface ChatState {
 /** المحادثة تبقى في الذاكرة فقط (لا تُحفظ على الجهاز) */
 export const useChat = create<ChatState>((set, get) => ({
   messages: [],
+  attachment: null,
   loading: false,
   error: null,
+
+  setAttachment: (attachment) => set({ attachment }),
 
   send: async (text) => {
     const content = text.trim();
@@ -30,7 +42,10 @@ export const useChat = create<ChatState>((set, get) => ({
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ messages: messages.slice(-12) }),
+        body: JSON.stringify({
+          messages: messages.slice(-12),
+          ...(get().attachment ? { attachment: { name: get().attachment!.name, text: get().attachment!.text } } : {}),
+        }),
       });
       const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
       if (!res.ok || !data.reply) {
@@ -46,5 +61,5 @@ export const useChat = create<ChatState>((set, get) => ({
     }
   },
 
-  clear: () => set({ messages: [], error: null, loading: false }),
+  clear: () => set({ messages: [], attachment: null, error: null, loading: false }),
 }));
