@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Bot, FileText, Loader2, Mic, Paperclip, Send, Square, Trash2, Volume2, X } from 'lucide-react';
-import { useChat } from '../lib/chatStore';
+import { saveAccessCode, useChat } from '../lib/chatStore';
 import { PageTitle } from '../components/ui';
 import Advisor from '../components/Advisor';
 import { useApp } from '../store';
@@ -23,7 +23,8 @@ const FILE_SUGGESTIONS = [
 ];
 
 export default function Assistant() {
-  const { messages, attachment, loading, error, send, setAttachment, clear, useProfile, setUseProfile } = useChat();
+  const { messages, attachment, loading, error, send, setAttachment, clear, useProfile, setUseProfile, needCode, setNeedCode } = useChat();
+  const [code, setCode] = useState('');
   const app = useApp();
   const profile = useMemo(() => buildLearnerProfile(contextFrom(app, toDateKey())), [app]);
   const [listening, setListening] = useState(false);
@@ -199,6 +200,32 @@ export default function Assistant() {
       </div>
 
       <div className="sticky bottom-20 space-y-2 md:bottom-4">
+        {needCode && (
+          <form
+            className="card flex gap-2 !p-2.5"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!code.trim()) return;
+              saveAccessCode(code);
+              setCode('');
+              setNeedCode(false);
+              useChat.setState({ error: null });
+            }}
+          >
+            <input
+              className="input"
+              type="password"
+              autoComplete="off"
+              placeholder="رمز الدخول إلى المساعد"
+              aria-label="رمز الدخول إلى المساعد"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+            />
+            <button type="submit" className="btn btn-primary shrink-0" disabled={!code.trim()}>
+              حفظ
+            </button>
+          </form>
+        )}
         {voiceError && (
           <p role="alert" className="card !p-2.5 text-sm text-bad">
             {voiceError}
