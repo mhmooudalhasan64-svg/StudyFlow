@@ -87,6 +87,7 @@ interface AppState {
   addTasks: (list: NewTask[]) => Promise<void>;
   toggleTask: (id: number) => Promise<void>;
   moveTask: (id: number, date: string) => Promise<void>;
+  moveTasks: (moves: { id: number; date: string }[]) => Promise<void>;
   removeTask: (id: number) => Promise<void>;
 
   addExam: (e: NewExam) => Promise<void>;
@@ -276,6 +277,14 @@ export const useApp = create<AppState>((set, get) => {
 
     moveTask: async (id, date) => {
       await db.tasks.update(id, { date });
+      await loadAll();
+    },
+
+    moveTasks: async (moves) => {
+      if (moves.length === 0) return;
+      await db.transaction('rw', db.tasks, async () => {
+        for (const m of moves) await db.tasks.update(m.id, { date: m.date });
+      });
       await loadAll();
     },
 

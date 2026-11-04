@@ -205,4 +205,14 @@ describe('store', () => {
     expect(s.branch).toBe('scientific');
     expect(s.reviewIntervals).toEqual([1, 3, 7, 14, 30]);
   });
+
+  it('moveTasks moves several tasks in one go', async () => {
+    await useApp.getState().addTask({ title: 'a', subjectId: null, date: '2026-10-01', minutes: 30 });
+    await useApp.getState().addTask({ title: 'b', subjectId: null, date: '2026-10-02', minutes: 30 });
+    const ids = useApp.getState().tasks.map((t) => t.id);
+    await useApp.getState().moveTasks(ids.map((id) => ({ id, date: toDateKey() })));
+    expect(useApp.getState().tasks.every((t) => t.date === toDateKey())).toBe(true);
+    await useApp.getState().moveTasks([]);
+    expect(useApp.getState().tasks).toHaveLength(2);
+  });
 });

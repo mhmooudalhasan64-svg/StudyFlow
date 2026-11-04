@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Exam, StudySession, Subject, Task } from '../db';
-import { diffDays, generatePlan, getInsights, type AdvisorContext } from './advisor';
+import type { Attempt, Exam, StudySession, Subject, Task } from '../db';
+import { buildLearnerProfile, contextFrom, diffDays, generatePlan, getInsights, rescheduleOverdue, type AdvisorContext } from './advisor';
 
 const subjects: Subject[] = [
   { id: 1, name: 'الفيزياء', color: '#fff' },
@@ -93,5 +93,74 @@ describe('advisor', () => {
   it('insights count overdue tasks', () => {
     const ids = getInsights({ ...base, tasks: [task('2026-11-01', 1, 30)] }).map((i) => i.id);
     expect(ids).toContain('overdue');
+  });
+
+  const withId = (t: Task, id: number): Task => ({ ...t, id });
+
+  it('rescheduleOverdue spreads overdue tasks over upcoming days within the goal', () => {
+    const ctx = {
+      ...base,
+      tasks: [
+        withId(task('2026-10-30', 1, 60), 1),
+        withId(task('2026-10-31', 2, 60), 2),
+        withId(task('2026-11-01', 3, 60), 3),
+        withId(task('2026-11-02', 1, 60, true), 4),
+      ],
+    };
+    const moves = rescheduleOverdue(ctx, 7);
+    expect(moves).toHaveLength(3);
+    expect(moves.map((m) => m.date)).toEqual(['2026-11-02', '2026-11-03', '2026-11-03']);
+    expect(moves.every((m) => m.date >= ctx.today)).toBe(true);
+  });
+
+  it('rescheduleOverdue puts subjects with nearer exams first', () => {
+    const ctx = {
+      ...base,
+      goalMin: 60,
+      exams: [exam(1, 2, '2026-11-05')],
+      tasks: [withId(task('2026-10-30', 1, 60), 1), withId(task('2026-10-31', 2, 60), 2)],
+    };
+    const moves = rescheduleOverdue(ctx, 3);
+    expect(moves.find((m) => m.id === 2)?.date).toBe('2026-11-02');
+    expect(moves.find((m) => m.id === 1)?.date).toBe('2026-11-03');
+  });
+
+  it('rescheduleOverdue never drops a task, even when days are full', () => {
+    const ctx = {
+      ...base,
+      goalMin: 60,
+      tasks: [1, 2, 3].map((i) => withId(task('2026-10-30', 1, 60), i)),
+    };
+    expect(rescheduleOverdue(ctx, 1)).toHaveLength(3);
+    expect(rescheduleOverdue(base, 7)).toEqual([]);
+  });
+
+  it('buildLearnerProfile summarises branch, exams and accuracy without names', () => {
+    const at = (subjectId: number, correct: boolean): Attempt => ({ id: 0, questionId: 1, subjectId, correct, at: 0, dateKey: '2026-11-01' });
+    const attempts = [
+      ...[true, true, false, false, false].map((c) => at(1, c)),
+      ...[true, true, true, true, true].map((c) => at(2, c)),
+    ];
+    const text = buildLearnerProfile({
+      ...base,
+      branch: 'literary',
+      grade: 11,
+      exams: [exam(1, 1, '2026-11-12')],
+      attempts,
+    });
+    expect(text).toContain('أدبي');
+    expect(text).toContain('الفيزياء (40%)');
+    expect(text).toContain('مواد قوية: الكيمياء');
+    expect(buildLearnerProfile({ ...base, subjects: [] })).toBe('');
+  });
+
+  it('contextFrom maps the store shape to an advisor context', () => {
+    const ctx = contextFrom(
+      { subjects, exams: [], tasks: [], sessions: [], attempts: [], settings: { dailyGoalMin: 90, branch: 'scientific', grade: 12 } },
+      '2026-11-02',
+    );
+    expect(ctx.goalMin).toBe(90);
+    expect(ctx.branch).toBe('scientific');
+    expect(ctx.today).toBe('2026-11-02');
   });
 });

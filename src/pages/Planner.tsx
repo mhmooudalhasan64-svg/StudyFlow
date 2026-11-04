@@ -1,14 +1,17 @@
 import { useState, type FormEvent } from 'react';
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { CalendarRange, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { useApp } from '../store';
 import { TaskRow } from '../components/TaskRow';
 import { Empty, PageTitle, SubjectDot, SubjectSelect } from '../components/ui';
+import { contextFrom, rescheduleOverdue } from '../lib/advisor';
 import { addDays, dayNumber, formatLongDate, formatMinutes, toDateKey, weekdayShort } from '../lib/utils';
 
 export default function Planner() {
   const tasks = useApp((s) => s.tasks);
   const addTask = useApp((s) => s.addTask);
   const moveTask = useApp((s) => s.moveTask);
+  const moveTasks = useApp((s) => s.moveTasks);
+  const [note, setNote] = useState('');
 
   const today = toDateKey();
   const [weekOffset, setWeekOffset] = useState(0);
@@ -24,6 +27,15 @@ export default function Planner() {
   const plannedMin = dayTasks.reduce((sum, t) => sum + t.minutes, 0);
   const doneCount = dayTasks.filter((t) => t.done).length;
   const overdue = tasks.filter((t) => !t.done && t.date < today);
+
+  /** خطة مرنة: توزيع المهام المتأخرة على الأيام القادمة بحسب هدفك اليومي وقرب الامتحانات */
+  const reorganize = () => {
+    const moves = rescheduleOverdue(contextFrom(useApp.getState(), today), 7);
+    if (moves.length === 0) return;
+    void moveTasks(moves);
+    const last = moves.reduce((m, x) => (x.date > m ? x.date : m), moves[0].date);
+    setNote(`أُعيد تنظيم ${moves.length} ${moves.length === 1 ? 'مهمة' : 'مهام'} متأخرة حتى ${formatLongDate(last)}، بحسب هدفك اليومي.`);
+  };
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -128,9 +140,20 @@ export default function Planner() {
         </button>
       </form>
 
+      {note && (
+        <p role="status" className="card !py-3 text-sm text-ok">
+          {note}
+        </p>
+      )}
+
       {overdue.length > 0 && (
         <section className="card border-bad/40">
-          <h2 className="mb-3 font-bold text-bad">مهام متأخرة ({overdue.length})</h2>
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <h2 className="font-bold text-bad">مهام متأخرة ({overdue.length})</h2>
+            <button type="button" className="btn btn-primary !py-1.5 text-xs" onClick={reorganize}>
+              <CalendarRange size={14} /> أعد تنظيمها تلقائياً
+            </button>
+          </div>
           <ul className="space-y-2">
             {overdue.map((t) => (
               <li key={t.id} className="flex items-center justify-between gap-2 rounded-xl border border-line/70 bg-base/40 px-3 py-2.5">

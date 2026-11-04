@@ -133,7 +133,7 @@ export interface Mark {
 /** نتيجة اختبار أو امتحان تجريبي */
 export interface ExamResult {
   id: number;
-  kind: 'quiz' | 'simulator';
+  kind: 'quiz' | 'simulator' | 'daily';
   subjectId: number | null;
   score: number;
   total: number;

@@ -1,8 +1,12 @@
-import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
-import { Bot, FileText, Loader2, Paperclip, Send, Trash2, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { Bot, FileText, Loader2, Mic, Paperclip, Send, Square, Trash2, Volume2, X } from 'lucide-react';
 import { useChat } from '../lib/chatStore';
 import { PageTitle } from '../components/ui';
 import Advisor from '../components/Advisor';
+import { useApp } from '../store';
+import { buildLearnerProfile, contextFrom } from '../lib/advisor';
+import { canListen, canSpeak, listen, speak, stopSpeaking } from '../lib/voice';
+import { toDateKey } from '../lib/utils';
 import { ACCEPT, extractFileText } from '../lib/fileText';
 
 const SUGGESTIONS = [
@@ -18,12 +22,58 @@ const FILE_SUGGESTIONS = [
 ];
 
 export default function Assistant() {
-  const { messages, attachment, loading, error, send, setAttachment, clear } = useChat();
+  const { messages, attachment, loading, error, send, setAttachment, clear, useProfile, setUseProfile } = useChat();
+  const app = useApp();
+  const profile = useMemo(() => buildLearnerProfile(contextFrom(app, toDateKey())), [app]);
+  const [listening, setListening] = useState(false);
+  const [speakingIdx, setSpeakingIdx] = useState<number | null>(null);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
+  const stopListenRef = useRef<(() => void) | null>(null);
   const [text, setText] = useState('');
   const [reading, setReading] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // نوقف القراءة والاستماع عند مغادرة الصفحة
+  useEffect(
+    () => () => {
+      stopSpeaking();
+      stopListenRef.current?.();
+    },
+    [],
+  );
+
+  const toggleMic = () => {
+    if (listening) {
+      stopListenRef.current?.();
+      return;
+    }
+    setVoiceError(null);
+    setListening(true);
+    stopListenRef.current = listen({
+      onText: (t) => setText(t),
+      onEnd: () => setListening(false),
+      onError: (m) => setVoiceError(m),
+    });
+  };
+
+  const toggleSpeak = (i: number, content: string) => {
+    if (speakingIdx === i) {
+      stopSpeaking();
+      setSpeakingIdx(null);
+      return;
+    }
+    setVoiceError(null);
+    setSpeakingIdx(i);
+    speak(content, {
+      onEnd: () => setSpeakingIdx(null),
+      onError: (m) => {
+        setVoiceError(m);
+        setSpeakingIdx(null);
+      },
+    });
+  };
 
   const pickFile = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -74,6 +124,22 @@ export default function Assistant() {
         هذا القسم يحتاج إنترنت، ويعمل فقط بعد أن يفعّله صاحب التطبيق بمفتاح الخدمة.
       </p>
 
+      <details className="card mb-3 !p-3 text-sm">
+        <summary className="cursor-pointer font-medium">ما يعرفه المعلّم عن مستواك</summary>
+        <p className="mt-2 text-xs leading-relaxed text-muted">
+          {profile || 'لا توجد بيانات كافية بعد. كلما حللت أسئلة وأضفت امتحاناتك، تحسّن تخصيص الشرح.'}
+        </p>
+        <label className="mt-3 flex items-center justify-between gap-3 text-xs">
+          <span>استخدامه لتخصيص الشرح (يُرسل نص مختصر دون اسمك)</span>
+          <input
+            type="checkbox"
+            className="h-5 w-5 accent-[rgb(var(--accent))]"
+            checked={useProfile}
+            onChange={(e) => setUseProfile(e.target.checked)}
+          />
+        </label>
+      </details>
+
       <div className="card mb-3 min-h-[40vh] space-y-3" aria-live="polite">
         {messages.length === 0 && (
           <div className="space-y-3 py-4 text-center">
@@ -101,6 +167,17 @@ export default function Assistant() {
               }`}
             >
               {m.content}
+              {m.role === 'assistant' && canSpeak() && (
+                <button
+                  type="button"
+                  className="mt-2 flex items-center gap-1 text-xs text-muted hover:text-main"
+                  aria-label={speakingIdx === i ? 'إيقاف القراءة' : 'قراءة الرد بصوت عالٍ'}
+                  onClick={() => toggleSpeak(i, m.content)}
+                >
+                  {speakingIdx === i ? <Square size={13} /> : <Volume2 size={14} />}
+                  {speakingIdx === i ? 'إيقاف' : 'استمع'}
+                </button>
+              )}
             </div>
           </div>
         ))}
@@ -121,6 +198,11 @@ export default function Assistant() {
       </div>
 
       <div className="sticky bottom-20 space-y-2 md:bottom-4">
+        {voiceError && (
+          <p role="alert" className="card !p-2.5 text-sm text-bad">
+            {voiceError}
+          </p>
+        )}
         {(attachment || reading || fileError) && (
           <div className="card !p-2.5 text-sm">
             {reading && (
@@ -175,6 +257,19 @@ export default function Assistant() {
         >
           <Paperclip size={18} />
         </button>
+        {canListen() && (
+          <button
+            type="button"
+            className={`btn shrink-0 !px-3 ${listening ? 'btn-primary' : 'btn-ghost'}`}
+            aria-pressed={listening}
+            aria-label={listening ? 'إيقاف الإملاء الصوتي' : 'إملاء السؤال بصوتك'}
+            title={listening ? 'إيقاف الإملاء' : 'إملاء السؤال بصوتك'}
+            disabled={loading}
+            onClick={toggleMic}
+          >
+            {listening ? <Square size={18} /> : <Mic size={18} />}
+          </button>
+        )}
         <input
           className="input"
           placeholder="اكتب سؤالك…"

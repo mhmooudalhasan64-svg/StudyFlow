@@ -68,3 +68,38 @@ export function parseQuestions(json: string): ExportedQuestion[] {
     };
   });
 }
+
+/**
+ * يقرأ ردّ نموذج ذكاء اصطناعي (مصفوفة JSON قد يحيط بها نص أو علامات ```)،
+ * ويعيد الأسئلة الصالحة فقط بأربعة خيارات تماماً، ويسندها إلى المادة المعطاة.
+ */
+export function parseGeneratedQuiz(raw: string, subject: string, unit?: string): ExportedQuestion[] {
+  const fail = () => new Error('لم يُنتج المساعد اختباراً صالحاً، أعد المحاولة.');
+  const s = raw.replace(/```(?:json)?/gi, '').trim();
+  const a = s.indexOf('[');
+  const b = s.lastIndexOf(']');
+  if (a < 0 || b <= a) throw fail();
+
+  let arr: unknown;
+  try {
+    arr = JSON.parse(s.slice(a, b + 1));
+  } catch {
+    throw fail();
+  }
+  if (!Array.isArray(arr)) throw fail();
+
+  const good: ExportedQuestion[] = [];
+  for (const item of arr) {
+    if (typeof item !== 'object' || item === null) continue;
+    try {
+      const [q] = parseQuestions(JSON.stringify([{ ...item, subject }]));
+      if (q.options.length === 4 && new Set(q.options).size === 4) {
+        good.push({ ...q, subject, unit: unit || q.unit });
+      }
+    } catch {
+      /* نتجاهل السؤال غير الصالح ونكمل */
+    }
+  }
+  if (good.length === 0) throw fail();
+  return good;
+}

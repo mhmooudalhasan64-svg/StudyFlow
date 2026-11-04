@@ -1,10 +1,14 @@
 import { useMemo, useRef, useState } from 'react';
-import { CheckCircle2, Database, RotateCcw, XCircle } from 'lucide-react';
+import { CheckCircle2, ClipboardList, Database, Flame, Loader2, MessageCircleQuestion, RotateCcw, Sparkles, XCircle } from 'lucide-react';
 import { useApp } from '../store';
 import type { Question } from '../db';
 import QuestionBank from '../components/QuestionBank';
 import { Empty, PageTitle } from '../components/ui';
-import { shuffle } from '../lib/utils';
+import { shuffle, toDateKey } from '../lib/utils';
+import { requestQuiz, useChat } from '../lib/chatStore';
+import { parseGeneratedQuiz } from '../lib/questionsIO';
+import { currentMistakes, dailyResult, mistakesBySubject, pickDaily } from '../lib/practice';
+import { XP_RULES } from '../lib/xp';
 
 type Phase = 'menu' | 'play' | 'result' | 'bank';
 
@@ -15,6 +19,10 @@ export default function Quiz() {
   const subjects = useApp((s) => s.subjects);
   const recordAttempt = useApp((s) => s.recordAttempt);
   const saveResult = useApp((s) => s.saveResult);
+  const attempts = useApp((s) => s.attempts);
+  const results = useApp((s) => s.results);
+  const importQuestions = useApp((s) => s.importQuestions);
+  const chatFile = useChat((s) => s.attachment);
 
   const [phase, setPhase] = useState<Phase>('menu');
   const [subjectId, setSubjectId] = useState<number | 'all'>('all');
@@ -27,6 +35,25 @@ export default function Quiz() {
   const [unit, setUnit] = useState('all');
   const [year, setYear] = useState('all');
   const startedAt = useRef(Date.now());
+  const [mode, setMode] = useState<'normal' | 'daily'>('normal');
+  const [dailyFirst, setDailyFirst] = useState(false);
+  const [topic, setTopic] = useState('');
+  const [genCount, setGenCount] = useState(5);
+  const [generating, setGenerating] = useState(false);
+  const [genError, setGenError] = useState('');
+
+  const today = toDateKey();
+  const mistakes = useMemo(() => currentMistakes(attempts, questions), [attempts, questions]);
+  const mistakeStats = useMemo(
+    () =>
+      [...mistakesBySubject(mistakes)]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([id, n]) => `${subjects.find((s) => s.id === id)?.name ?? '—'} (${n})`),
+    [mistakes, subjects],
+  );
+  const dailyDeck = useMemo(() => pickDaily(questions, attempts, today, 5), [questions, attempts, today]);
+  const dailyDone = dailyResult(results, today);
 
   const bySubject = useMemo(
     () => (subjectId === 'all' ? questions : questions.filter((q) => q.subjectId === subjectId)),
@@ -45,8 +72,9 @@ export default function Quiz() {
     [bySubject, unit, year],
   );
 
-  const begin = (list: Question[]) => {
+  const begin = (list: Question[], m: 'normal' | 'daily' = 'normal') => {
     if (list.length === 0) return;
+    setMode(m);
     setDeck(list);
     setIdx(0);
     setPicked(null);
@@ -72,18 +100,52 @@ export default function Quiz() {
   const next = () => {
     if (idx + 1 >= deck.length) {
       const sameSubject = deck.every((d) => d.subjectId === deck[0].subjectId);
-      void saveResult({
-        kind: 'quiz',
-        subjectId: sameSubject ? deck[0].subjectId : null,
-        score,
-        total: deck.length,
-        seconds: Math.round((Date.now() - startedAt.current) / 1000),
-      });
+      const seconds = Math.round((Date.now() - startedAt.current) / 1000);
+      if (mode === 'daily') {
+        // المكافأة مرة واحدة يومياً؛ إعادة المحاولة لا تُسجَّل كنتيجة جديدة
+        const first = !dailyResult(results, today);
+        setDailyFirst(first);
+        if (first) void saveResult({ kind: 'daily', subjectId: null, score, total: deck.length, seconds });
+      } else {
+        void saveResult({
+          kind: 'quiz',
+          subjectId: sameSubject ? deck[0].subjectId : null,
+          score,
+          total: deck.length,
+          seconds,
+        });
+      }
       setPhase('result');
     } else {
       setIdx(idx + 1);
       setPicked(null);
     }
+  };
+
+  const generate = async () => {
+    const subject = subjects.find((x) => x.id === subjectId);
+    if (!subject) return;
+    setGenError('');
+    setGenerating(true);
+    try {
+      const raw = await requestQuiz({ topic: topic.trim(), count: genCount });
+      const parsed = parseGeneratedQuiz(raw, subject.name);
+      await importQuestions(parsed);
+      const texts = new Set(parsed.map((x) => x.text));
+      const fresh = useApp.getState().questions.filter((x) => x.subjectId === subject.id && texts.has(x.text));
+      begin(shuffle(fresh));
+    } catch (e) {
+      setGenError(e instanceof Error ? e.message : 'تعذّر إنشاء الاختبار');
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  /** يطلب من المعلّم الذكي شرح سؤال أخطأ فيه الطالب (ينتقل إلى صفحة المساعد) */
+  const explainWithTutor = (w: Question) => {
+    const prompt = `أخطأت في هذا السؤال، اشرح لي بإيجاز لماذا الإجابة الصحيحة هي ما يلي:\nالسؤال: ${w.text}\nالخيارات: ${w.options.join(' / ')}\nالإجابة الصحيحة: ${w.options[w.answerIndex]}`;
+    void useChat.getState().send(prompt);
+    window.location.hash = '#/assistant';
   };
 
   if (phase === 'bank') {
@@ -163,6 +225,13 @@ export default function Quiz() {
           <p className="mt-3 text-sm">
             {pct >= 80 ? 'ممتاز! مستواك متقدم.' : pct >= 50 ? 'جيد، راجع الأسئلة الخاطئة لترتفع نتيجتك.' : 'لا بأس — الأخطاء أفضل طريقة للتعلّم، أعد المحاولة.'}
           </p>
+          {mode === 'daily' && (
+            <p className="mt-2 text-sm text-accent">
+              {dailyFirst
+                ? `تحدي اليوم: +${XP_RULES.perExamResult} نقطة مكافأة، إضافة إلى نقاط كل إجابة.`
+                : 'حللت تحدي اليوم من قبل. المكافأة تُمنح مرة واحدة يومياً.'}
+            </p>
+          )}
           <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
             <button type="button" className="btn btn-primary" onClick={start}>
               <RotateCcw size={16} /> اختبار جديد
@@ -185,7 +254,13 @@ export default function Quiz() {
                 <li key={w.id} className="rounded-xl border border-line/70 p-3 text-sm">
                   <p className="font-medium">{w.text}</p>
                   <p className="mt-1 text-ok">الصحيح: {w.options[w.answerIndex]}</p>
-                  {w.explanation && <p className="mt-1 text-muted">{w.explanation}</p>}
+                  {w.explanation ? (
+                    <p className="mt-1 text-muted">{w.explanation}</p>
+                  ) : (
+                    <button type="button" className="btn btn-ghost mt-2 !py-1.5 text-xs" onClick={() => explainWithTutor(w)}>
+                      <MessageCircleQuestion size={14} /> اطلب شرحاً من المعلّم
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>
@@ -206,6 +281,90 @@ export default function Quiz() {
           </button>
         }
       />
+      <section className="card space-y-2">
+        <h2 className="flex items-center gap-2 font-bold">
+          <Flame size={18} className="text-accent" /> تحدي اليوم
+        </h2>
+        {dailyDeck.length === 0 ? (
+          <p className="text-sm text-muted">أضف أسئلة إلى البنك ليظهر لك تحدي يومي.</p>
+        ) : (
+          <>
+            <p className="text-sm text-muted">
+              {dailyDone
+                ? `أنجزته اليوم: ${dailyDone.score} من ${dailyDone.total}. عُد غداً لتحدٍّ جديد.`
+                : `${dailyDeck.length} أسئلة بعضها من أخطائك السابقة. تكسب نقاطاً إضافية عند إكماله.`}
+            </p>
+            <button type="button" className="btn btn-primary w-full" onClick={() => begin(dailyDeck, 'daily')}>
+              {dailyDone ? 'أعد المحاولة (بدون مكافأة)' : 'ابدأ تحدي اليوم'}
+            </button>
+          </>
+        )}
+      </section>
+
+      <section className="card space-y-2">
+        <h2 className="flex items-center gap-2 font-bold">
+          <ClipboardList size={18} className="text-accent" /> دفتر أخطائي
+        </h2>
+        {mistakes.length === 0 ? (
+          <p className="text-sm text-muted">لا أخطاء حالية. أي سؤال تخطئ فيه يظهر هنا حتى تجيب عنه صحيحاً.</p>
+        ) : (
+          <>
+            <p className="text-sm text-muted">
+              عندك {mistakes.length} سؤالاً لم تُتقنه بعد. الأكثر: {mistakeStats.join('، ')}.
+            </p>
+            <button type="button" className="btn btn-primary w-full" onClick={() => begin(shuffle(mistakes).slice(0, 20))}>
+              راجع أخطائي ({Math.min(mistakes.length, 20)})
+            </button>
+          </>
+        )}
+      </section>
+
+      <section className="card space-y-3">
+        <h2 className="flex items-center gap-2 font-bold">
+          <Sparkles size={18} className="text-accent" /> اختبار ذكي بالمساعد
+        </h2>
+        <p className="text-xs text-muted">
+          يكتب المساعد أسئلة بأربعة خيارات ويحفظها في بنكك. اختر المادة من الأسفل، واكتب الموضوع.
+          {chatFile ? ` سيُستخدم أيضاً الملف المرفق في المساعد (${chatFile.name}).` : ''}
+        </p>
+        <input
+          className="input"
+          placeholder="الموضوع، مثل: الاشتقاق، أو قانون نيوتن الثاني"
+          aria-label="موضوع الاختبار الذكي"
+          value={topic}
+          maxLength={120}
+          onChange={(e) => setTopic(e.target.value)}
+        />
+        <div className="flex gap-2">
+          {[5, 8, 10].map((c) => (
+            <button
+              key={c}
+              type="button"
+              aria-pressed={genCount === c}
+              onClick={() => setGenCount(c)}
+              className={`btn flex-1 ${genCount === c ? 'btn-primary' : 'btn-ghost'}`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+        {subjectId === 'all' && <p className="text-xs text-bad">اختر مادة محددة من القائمة بالأسفل أولاً.</p>}
+        {genError && (
+          <p role="alert" className="text-sm text-bad">
+            {genError}
+          </p>
+        )}
+        <button
+          type="button"
+          className="btn btn-primary w-full"
+          disabled={generating || subjectId === 'all' || (!topic.trim() && !chatFile)}
+          onClick={() => void generate()}
+        >
+          {generating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+          {generating ? 'جارٍ إنشاء الأسئلة…' : 'أنشئ اختباراً'}
+        </button>
+      </section>
+
       <div className="card space-y-4">
         <div>
           <label className="label" htmlFor="quiz-subject">

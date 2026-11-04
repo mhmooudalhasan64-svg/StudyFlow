@@ -11,6 +11,9 @@ export interface AdvisorContext {
   goalMin: number;
   /** YYYY-MM-DD */
   today: string;
+  /** اختياريان: لملخص مستوى الطالب */
+  branch?: 'scientific' | 'literary';
+  grade?: number;
 }
 
 export interface PlanSuggestion {
@@ -189,7 +192,7 @@ export function getInsights(ctx: AdvisorContext): Insight[] {
     out.push({
       id: 'overdue',
       level: 'warn',
-      text: `عندك ${overdue} ${overdue === 1 ? 'مهمة متأخرة' : 'مهام متأخرة'}. انقلها لليوم من صفحة «الخطة».`,
+      text: `عندك ${overdue} ${overdue === 1 ? 'مهمة متأخرة' : 'مهام متأخرة'}. أعد تنظيمها تلقائياً من صفحة «الخطة».`,
     });
   }
 
@@ -215,4 +218,98 @@ export function getInsights(ctx: AdvisorContext): Insight[] {
   }
 
   return out;
+}
+
+/** يبني سياق المستشار من حالة التطبيق (بنية مطابقة لحالة المتجر) */
+export function contextFrom(
+  a: {
+    subjects: readonly Subject[];
+    exams: readonly Exam[];
+    tasks: readonly Task[];
+    sessions: readonly StudySession[];
+    attempts: readonly Attempt[];
+    settings: { dailyGoalMin: number; branch?: 'scientific' | 'literary'; grade?: number };
+  },
+  today: string,
+): AdvisorContext {
+  return {
+    subjects: a.subjects,
+    exams: a.exams,
+    tasks: a.tasks,
+    sessions: a.sessions,
+    attempts: a.attempts,
+    goalMin: a.settings.dailyGoalMin,
+    today,
+    branch: a.settings.branch,
+    grade: a.settings.grade,
+  };
+}
+
+export interface TaskMove {
+  id: number;
+  date: string;
+}
+
+/**
+ * خطة مرنة: يوزّع المهام المتأخرة على الأيام القادمة بحسب هدفك اليومي.
+ * الأولوية للمواد الأقرب امتحاناً ثم الأقدم تأخراً، ولا تُحذف أي مهمة.
+ */
+export function rescheduleOverdue(ctx: AdvisorContext, days = 7): TaskMove[] {
+  const overdue = ctx.tasks.filter((t) => !t.done && t.date < ctx.today);
+  if (overdue.length === 0) return [];
+
+  const examLeft = new Map(analyse(ctx).map((x) => [x.subject.id, x.examLeft]));
+  const urgency = (t: Task): number => {
+    const left = t.subjectId === null ? null : (examLeft.get(t.subjectId) ?? null);
+    return left === null ? Infinity : left;
+  };
+  const order = [...overdue].sort((a, b) => urgency(a) - urgency(b) || a.date.localeCompare(b.date));
+
+  const slots = Array.from({ length: days }, (_, i) => {
+    const date = addDays(ctx.today, i);
+    const used = ctx.tasks.filter((t) => t.date === date).reduce((sum, t) => sum + t.minutes, 0);
+    return { date, left: ctx.goalMin - used };
+  });
+
+  const moves: TaskMove[] = [];
+  for (const t of order) {
+    // أول يوم يتسع للمهمة؛ وإن لم يوجد فاليوم الأقل ازدحاماً (لا نُسقط مهمة أبداً)
+    const slot = slots.find((c) => c.left >= t.minutes) ?? slots.reduce((best, c) => (c.left > best.left ? c : best), slots[0]);
+    slot.left -= t.minutes;
+    moves.push({ id: t.id, date: slot.date });
+  }
+  return moves;
+}
+
+/** ملخص قصير عن مستوى الطالب يُرسل للمعلّم الذكي ليخصّص الشرح (لا يتضمن اسماً ولا بيانات شخصية). */
+export function buildLearnerProfile(ctx: AdvisorContext): string {
+  const parts: string[] = [];
+  const infos = analyse(ctx);
+
+  if (ctx.branch) {
+    parts.push(`فرع الطالب: ${ctx.branch === 'literary' ? 'أدبي' : 'علمي'}${ctx.grade ? `، الصف ${ctx.grade}` : ''}.`);
+  }
+
+  const soon = infos
+    .filter((x) => x.examLeft !== null && x.examLeft <= 45)
+    .sort((a, b) => (a.examLeft as number) - (b.examLeft as number))
+    .slice(0, 3);
+  if (soon.length) {
+    parts.push(`امتحانات قريبة: ${soon.map((x) => `${x.subject.name} (${daysLabel(x.examLeft as number)})`).join('، ')}.`);
+  }
+
+  const name = (id: number) => ctx.subjects.find((s) => s.id === id)?.name;
+  const acc = [...accuracyBySubject(ctx.attempts as Attempt[])].filter(([, a]) => a.total >= 5);
+  const weak = acc.filter(([, a]) => a.correct / a.total < 0.6).slice(0, 3);
+  const strong = acc.filter(([, a]) => a.correct / a.total >= 0.8).slice(0, 3);
+  const pct = (a: { total: number; correct: number }) => `${Math.round((a.correct / a.total) * 100)}%`;
+  if (weak.length) parts.push(`مواد ضعيفة في الأسئلة: ${weak.map(([id, a]) => `${name(id) ?? '—'} (${pct(a)})`).join('، ')}.`);
+  if (strong.length) parts.push(`مواد قوية: ${strong.map(([id]) => name(id) ?? '—').join('، ')}.`);
+
+  if (ctx.attempts.length > 0) {
+    const ok = ctx.attempts.filter((a) => a.correct).length;
+    parts.push(`حلّ ${ctx.attempts.length} سؤالاً بدقة ${Math.round((ok / ctx.attempts.length) * 100)}%.`);
+  }
+
+  return parts.join(' ').slice(0, 600);
 }

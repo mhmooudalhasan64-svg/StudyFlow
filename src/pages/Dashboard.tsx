@@ -5,6 +5,7 @@ import { TaskRow } from '../components/TaskRow';
 import { Empty, PageTitle, ProgressRing } from '../components/ui';
 import { computeStreak, minutesByDay } from '../lib/stats';
 import { motivationMessage } from '../lib/motivation';
+import { dailyResult } from '../lib/practice';
 import { daysLabel, daysUntil, formatMinutes, toDateKey } from '../lib/utils';
 
 export default function Dashboard() {
@@ -14,6 +15,8 @@ export default function Dashboard() {
   const goal = useApp((s) => s.settings.dailyGoalMin);
   const lessons = useApp((s) => s.lessons);
   const cards = useApp((s) => s.cards);
+  const results = useApp((s) => s.results);
+  const questionCount = useApp((s) => s.questions.length);
 
   const today = toDateKey();
   const byDay = useMemo(() => minutesByDay(sessions), [sessions]);
@@ -115,7 +118,11 @@ export default function Dashboard() {
         <ListChecks className="text-accent" />
         <div>
           <p className="font-bold">اختبر نفسك</p>
-          <p className="text-sm text-muted">حل أسئلة سريعة من بنك الأسئلة لتثبيت المعلومات</p>
+          <p className="text-sm text-muted">
+            {questionCount > 0 && !dailyResult(results, today)
+              ? 'تحدي اليوم ينتظرك: أسئلة قصيرة ونقاط إضافية'
+              : 'حل أسئلة سريعة من بنك الأسئلة لتثبيت المعلومات'}
+          </p>
         </div>
       </a>
     </div>

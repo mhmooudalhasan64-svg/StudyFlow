@@ -1,4 +1,7 @@
 import { create } from 'zustand';
+import { useApp } from '../store';
+import { buildLearnerProfile, contextFrom } from './advisor';
+import { toDateKey } from './utils';
 
 export interface ChatMsg {
   role: 'user' | 'assistant';
@@ -16,6 +19,9 @@ interface ChatState {
   messages: ChatMsg[];
   attachment: ChatAttachment | null;
   setAttachment: (a: ChatAttachment | null) => void;
+  /** إرسال ملخص مستوى الطالب مع الأسئلة لتخصيص الشرح */
+  useProfile: boolean;
+  setUseProfile: (v: boolean) => void;
   loading: boolean;
   error: string | null;
   send: (text: string) => Promise<void>;
@@ -26,6 +32,8 @@ interface ChatState {
 export const useChat = create<ChatState>((set, get) => ({
   messages: [],
   attachment: null,
+  useProfile: true,
+  setUseProfile: (useProfile) => set({ useProfile }),
   loading: false,
   error: null,
 
@@ -44,6 +52,7 @@ export const useChat = create<ChatState>((set, get) => ({
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           messages: messages.slice(-12),
+          ...(get().useProfile ? { profile: learnerProfile() } : {}),
           ...(get().attachment ? { attachment: { name: get().attachment!.name, text: get().attachment!.text } } : {}),
         }),
       });
@@ -63,3 +72,30 @@ export const useChat = create<ChatState>((set, get) => ({
 
   clear: () => set({ messages: [], attachment: null, error: null, loading: false }),
 }));
+
+function learnerProfile(): string {
+  return buildLearnerProfile(contextFrom(useApp.getState(), toDateKey()));
+}
+
+/** يطلب من المساعد إنشاء اختبار (نص JSON خام يُحلَّل لاحقاً بـ parseGeneratedQuiz) */
+export async function requestQuiz(args: { topic: string; count: number }): Promise<string> {
+  const att = useChat.getState().attachment;
+  let res: Response;
+  try {
+    res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        mode: 'quiz',
+        topic: args.topic,
+        count: args.count,
+        ...(att ? { attachment: { name: att.name, text: att.text } } : {}),
+      }),
+    });
+  } catch {
+    throw new Error('لا يوجد اتصال بالإنترنت. المساعد يحتاج إلى اتصال.');
+  }
+  const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
+  if (!res.ok || !data.reply) throw new Error(data.error ?? 'حدث خطأ، حاول مرة أخرى');
+  return data.reply;
+}
