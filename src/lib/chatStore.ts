@@ -78,8 +78,15 @@ function learnerProfile(): string {
 }
 
 /** يطلب من المساعد إنشاء اختبار (نص JSON خام يُحلَّل لاحقاً بـ parseGeneratedQuiz) */
-export async function requestQuiz(args: { topic: string; count: number; subject?: string }): Promise<string> {
-  const att = useChat.getState().attachment;
+export async function requestQuiz(args: {
+  topic: string;
+  count: number;
+  subject?: string;
+  difficulty?: 'easy' | 'medium' | 'hard';
+  /** نص كتاب: أسئلة مبنية عليه حصراً، ويُستخدم بدل الملف المرفق في المحادثة */
+  source?: { name: string; text: string };
+}): Promise<string> {
+  const att = args.source ?? useChat.getState().attachment;
   let res: Response;
   try {
     res = await fetch('/api/chat', {
@@ -89,6 +96,8 @@ export async function requestQuiz(args: { topic: string; count: number; subject?
         mode: 'quiz',
         topic: args.topic,
         subject: args.subject,
+        ...(args.difficulty ? { difficulty: args.difficulty } : {}),
+        ...(args.source ? { fromBook: true } : {}),
         count: args.count,
         ...(att ? { attachment: { name: att.name, text: att.text } } : {}),
       }),

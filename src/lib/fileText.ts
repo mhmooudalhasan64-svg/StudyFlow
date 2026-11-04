@@ -80,6 +80,37 @@ async function readPdf(file: File): Promise<string> {
   return out;
 }
 
+const MAX_BOOK_BYTES = 40 * 1024 * 1024; // الكتب أكبر من الملفات العادية
+const MAX_BOOK_PAGES = 800;
+
+/** يقرأ كل صفحة من PDF على حدة (للكتب). النص يُستخرج محلياً ولا يُرفع الملف. */
+export async function extractPdfPages(file: File, onProgress?: (page: number, total: number) => void): Promise<string[]> {
+  if (detectKind(file.name) !== 'pdf') throw new FileTextError('اختر ملف PDF.');
+  if (file.size > MAX_BOOK_BYTES) throw new FileTextError('الكتاب كبير (الحد 40 ميغابايت).');
+  try {
+    // @ts-ignore: مسار النسخة القديمة (legacy) يدعم متصفحات أكثر
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    // @ts-ignore: ‎?url يعيد عنوان ملف العامل (worker) من Vite
+    const worker = (await import('pdfjs-dist/legacy/build/pdf.worker.min.mjs?url')).default as string;
+    pdfjs.GlobalWorkerOptions.workerSrc = worker;
+    const doc = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+    const total = Math.min(doc.numPages, MAX_BOOK_PAGES);
+    const pages: string[] = [];
+    for (let p = 1; p <= total; p++) {
+      const content = await (await doc.getPage(p)).getTextContent();
+      const text = (content.items as { str?: string; hasEOL?: boolean }[])
+        .map((it) => (typeof it.str === 'string' ? it.str + (it.hasEOL ? '\n' : ' ') : ''))
+        .join('');
+      // NFKC يحوّل أشكال الحروف العربية المتصلة (Presentation Forms) إلى حروفها العادية
+      pages.push(normalizeText(text.normalize('NFKC')));
+      onProgress?.(p, total);
+    }
+    return pages;
+  } catch {
+    throw new FileTextError('تعذّرت قراءة الكتاب. تأكد أنه PDF سليم وغير محمي بكلمة سر.');
+  }
+}
+
 async function readDocx(file: File): Promise<string> {
   // @ts-ignore: نسخة المتصفح من mammoth
   const mod = await import('mammoth/mammoth.browser');

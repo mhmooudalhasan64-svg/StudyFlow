@@ -156,21 +156,35 @@ const QUIZ_PROMPT = `أنت منشئ أسئلة اختيار من متعدد ل�
 - الأسئلة بالعربية الفصحى (والإنجليزية فقط إن كان الموضوع لغة إنجليزية)، صحيحة علمياً، وبمستوى البكالوريا.
 - إن لم تتأكد من معلومة فلا تستخدمها في سؤال.`;
 
+const LEVELS: Record<string, string> = {
+  easy: 'سهلة: تعتمد على التذكر المباشر',
+  medium: 'متوسطة',
+  hard: 'صعبة: تحتاج فهماً وربطاً بين الأفكار',
+};
+
+const BOOK_RULES = `قواعد صارمة لهذا الاختبار:
+- اعتمد حصراً على نص الكتاب أدناه، ولا تستخدم أي معلومة من خارجه، ولا تخترع.
+- كل سؤال إجابته مذكورة صراحة في النص، والتفسير مأخوذ منه.
+- أضف لكل عنصر الحقل "quote": عبارة من 5 إلى 20 كلمة منقولة حرفياً من النص تثبت الإجابة الصحيحة.
+- إن لم يكفِ النص لعدد الأسئلة المطلوب فأنتج أقل ولا تملأ بمعلومات خارجية.`;
+
 /** طلب إنشاء اختبار: يعيد null إن لم يكن وضع الاختبار، و'invalid' إن نقص الموضوع */
 function quizRequest(body: unknown, att: Attachment | null): { system: string; messages: Msg[] } | 'invalid' | null {
   if (typeof body !== 'object' || body === null) return null;
-  const b = body as { mode?: unknown; topic?: unknown; count?: unknown; subject?: unknown };
+  const b = body as { mode?: unknown; topic?: unknown; count?: unknown; subject?: unknown; difficulty?: unknown; fromBook?: unknown };
   if (b.mode !== 'quiz') return null;
   const topic = typeof b.topic === 'string' ? b.topic.trim().slice(0, 200) : '';
   const subject = typeof b.subject === 'string' ? b.subject.replace(/[\r\n]+/g, ' ').trim().slice(0, 60) : '';
   if (!topic && !att) return 'invalid';
   const count = Math.min(10, Math.max(3, Math.round(Number(b.count)) || 5));
   return {
-    system: att ? `${QUIZ_PROMPT}\n\nالمرجع: ملف باسم «${att.name}».\n${fileBlock(att)}` : QUIZ_PROMPT,
+    system: att
+      ? `${QUIZ_PROMPT}${b.fromBook === true ? `\n${BOOK_RULES}` : ''}\n\nالمرجع: ملف باسم «${att.name}».\n${fileBlock(att)}`
+      : QUIZ_PROMPT,
     messages: [
       {
         role: 'user',
-        content: `اصنع ${count} أسئلة${subject ? ` في مادة «${subject}» حصراً` : ''}${topic ? ` عن: ${topic}` : ''}${att ? ' من الملف المرفق' : ''}.`,
+        content: `اصنع ${count} أسئلة${subject ? ` في مادة «${subject}» حصراً` : ''}${typeof b.difficulty === 'string' && LEVELS[b.difficulty] ? ` بصعوبة ${LEVELS[b.difficulty]}` : ''}${topic ? ` عن: ${topic}` : ''}${att ? ' من الملف المرفق' : ''}.`,
       },
     ],
   };

@@ -3,6 +3,7 @@ import { CheckCircle2, ClipboardList, Database, Flame, Loader2, MessageCircleQue
 import { useApp } from '../store';
 import type { Question } from '../db';
 import QuestionBank from '../components/QuestionBank';
+import BookQuiz from '../components/BookQuiz';
 import { Empty, PageTitle } from '../components/ui';
 import { shuffle, toDateKey } from '../lib/utils';
 import { requestQuiz, useChat } from '../lib/chatStore';
@@ -364,6 +365,8 @@ export default function Quiz() {
           {generating ? 'جارٍ إنشاء الأسئلة…' : 'أنشئ اختباراً'}
         </button>
       </section>
+
+      <BookQuiz onStart={(list) => begin(list)} />
 
       <div className="card space-y-4">
         <div>
