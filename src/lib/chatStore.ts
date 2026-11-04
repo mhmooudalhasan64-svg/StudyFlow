@@ -78,7 +78,7 @@ function learnerProfile(): string {
 }
 
 /** يطلب من المساعد إنشاء اختبار (نص JSON خام يُحلَّل لاحقاً بـ parseGeneratedQuiz) */
-export async function requestQuiz(args: { topic: string; count: number }): Promise<string> {
+export async function requestQuiz(args: { topic: string; count: number; subject?: string }): Promise<string> {
   const att = useChat.getState().attachment;
   let res: Response;
   try {
@@ -88,6 +88,7 @@ export async function requestQuiz(args: { topic: string; count: number }): Promi
       body: JSON.stringify({
         mode: 'quiz',
         topic: args.topic,
+        subject: args.subject,
         count: args.count,
         ...(att ? { attachment: { name: att.name, text: att.text } } : {}),
       }),

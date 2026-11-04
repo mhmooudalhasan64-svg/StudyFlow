@@ -81,6 +81,7 @@ const SYSTEM_PROMPT = `أنت «مساعد StudyFlow»، معلّم خصوصي �
 - أجب بالعربية الفصحى المبسطة، وبإيجاز ووضوح، وخطوة بخطوة عند شرح الحلول.
 - ساعد في فهم الدروس والتمارين وتنظيم المراجعة، وشجّع الطالب على المحاولة بنفسه قبل إعطاء الحل الكامل.
 - إن لم تكن متأكداً من معلومة أو من تفاصيل منهاج بلد الطالب فاذكر ذلك صراحة ولا تخترع.
+- تغطي كل مواد البكالوريا بالتساوي: الرياضيات والفيزياء والكيمياء والأحياء والعربية والإنجليزية والتاريخ والجغرافيا والفلسفة والتربية الدينية وغيرها. التزم بالمادة التي يسأل عنها الطالب ولا تفترض أنها علمية.
 - ابتعد عن المواضيع غير الدراسية بلطف وأعد الحديث إلى الدراسة.
 - اكتب نصاً عادياً بدون جداول أو تنسيقات معقدة.`;
 
@@ -158,9 +159,10 @@ const QUIZ_PROMPT = `أنت منشئ أسئلة اختيار من متعدد ل�
 /** طلب إنشاء اختبار: يعيد null إن لم يكن وضع الاختبار، و'invalid' إن نقص الموضوع */
 function quizRequest(body: unknown, att: Attachment | null): { system: string; messages: Msg[] } | 'invalid' | null {
   if (typeof body !== 'object' || body === null) return null;
-  const b = body as { mode?: unknown; topic?: unknown; count?: unknown };
+  const b = body as { mode?: unknown; topic?: unknown; count?: unknown; subject?: unknown };
   if (b.mode !== 'quiz') return null;
   const topic = typeof b.topic === 'string' ? b.topic.trim().slice(0, 200) : '';
+  const subject = typeof b.subject === 'string' ? b.subject.replace(/[\r\n]+/g, ' ').trim().slice(0, 60) : '';
   if (!topic && !att) return 'invalid';
   const count = Math.min(10, Math.max(3, Math.round(Number(b.count)) || 5));
   return {
@@ -168,7 +170,7 @@ function quizRequest(body: unknown, att: Attachment | null): { system: string; m
     messages: [
       {
         role: 'user',
-        content: `اصنع ${count} أسئلة${topic ? ` عن: ${topic}` : ''}${att ? ' من الملف المرفق' : ''}.`,
+        content: `اصنع ${count} أسئلة${subject ? ` في مادة «${subject}» حصراً` : ''}${topic ? ` عن: ${topic}` : ''}${att ? ' من الملف المرفق' : ''}.`,
       },
     ],
   };

@@ -128,7 +128,7 @@ export default function Quiz() {
     setGenError('');
     setGenerating(true);
     try {
-      const raw = await requestQuiz({ topic: topic.trim(), count: genCount });
+      const raw = await requestQuiz({ topic: topic.trim(), count: genCount, subject: subject.name });
       const parsed = parseGeneratedQuiz(raw, subject.name);
       await importQuestions(parsed);
       const texts = new Set(parsed.map((x) => x.text));
