@@ -226,7 +226,10 @@ function Brand() {
       <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-accent to-accent2 text-onaccent">
         <GraduationCap size={20} />
       </span>
-      <span className="text-lg font-extrabold tracking-wide">StudyFlow</span>
+      <span className="flex flex-col leading-tight">
+        <span className="text-lg font-extrabold tracking-wide">StudyFlow</span>
+        <span className="text-[10px] text-muted">مستقبلك يبدأ</span>
+      </span>
     </a>
   );
 }
