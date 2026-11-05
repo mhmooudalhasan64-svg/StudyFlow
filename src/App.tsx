@@ -1,3 +1,4 @@
+import { useEffect, useState, type ComponentType } from 'react';
 import {
   Bot,
   CalendarCheck,
@@ -9,7 +10,8 @@ import {
   Sun,
   Timer as TimerIcon,
   WifiOff,
-} from 'lucide-react';import { useApp } from './store';
+} from 'lucide-react';
+import { useApp } from './store';
 import { useHashRoute, type Route } from './lib/route';
 import Dashboard from './pages/Dashboard';
 import About, { Intro } from './pages/About';
@@ -168,7 +170,7 @@ export default function App() {
               href={`#/${r}`}
               aria-current={(route === r || (r === 'more' && !NAV.some((n) => n.route === route))) ? 'page' : undefined}
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                route === r
+                route === r || (r === 'more' && !NAV.some((n) => n.route === route))
                   ? 'bg-gradient-to-l from-accent/20 to-accent2/20 text-accent'
                   : 'text-muted hover:bg-card/70 hover:text-main'
               }`}
