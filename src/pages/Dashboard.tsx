@@ -4,7 +4,7 @@ import { useApp } from '../store';
 import { TaskRow } from '../components/TaskRow';
 import { Empty, PageTitle, ProgressRing } from '../components/ui';
 import { computeStreak, minutesByDay } from '../lib/stats';
-import { motivationMessage } from '../lib/motivation';
+import { dailyPhrase, motivationMessage, SLOGAN } from '../lib/motivation';
 import { dailyResult } from '../lib/practice';
 import { daysLabel, daysUntil, formatMinutes, toDateKey } from '../lib/utils';
 
@@ -41,6 +41,13 @@ export default function Dashboard() {
   return (
     <div className="mx-auto max-w-3xl space-y-4">
       <PageTitle title="مرحباً بك 👋" subtitle="خطوة صغيرة كل يوم تصنع فرقاً كبيراً في البكالوريا" />
+
+      <section className="card text-center" aria-label="شعار التطبيق">
+        <p className="bg-gradient-to-l from-accent to-accent2 bg-clip-text text-xl font-extrabold text-transparent">
+          {dailyPhrase(today)}
+        </p>
+        <p className="mt-1 text-xs leading-relaxed text-muted">{SLOGAN}</p>
+      </section>
 
       <section className="card flex flex-col items-center gap-5 sm:flex-row">
         <ProgressRing pct={pct} gradientId="ring-home">

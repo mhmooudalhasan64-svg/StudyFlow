@@ -222,7 +222,10 @@ function OfflineChip() {
 function Brand() {
   return (
     <a href="#/home" className="flex items-center gap-2.5">
-      <span className="text-lg font-extrabold tracking-wide">StudyFlow</span>
+      <span className="flex flex-col leading-tight">
+        <span className="text-lg font-extrabold tracking-wide">StudyFlow</span>
+        <span className="text-[10px] text-muted">مستقبلك يبدأ</span>
+      </span>
     </a>
   );
 }

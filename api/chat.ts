@@ -11,7 +11,6 @@
  * متغيّرات اختيارية:
  *   AI_MODEL            يغيّر اسم النموذج الافتراضي للمزوّد المختار
  *   CHAT_DAILY_LIMIT    عدد الرسائل اليومي لكل عنوان IP، الافتراضي 30
- *   ACCESS_CODE         رمز دخول (أو عدة رموز مفصولة بفواصل): إن ضُبط، لا يعمل المساعد إلا لمن يعرفه
  */
 
 interface Provider {
@@ -70,37 +69,6 @@ function pickProvider(raw: Record<string, string | undefined>): Provider | null 
 }
 
 const DAILY_LIMIT = Number(process.env.CHAT_DAILY_LIMIT) > 0 ? Number(process.env.CHAT_DAILY_LIMIT) : 30;
-
-const ACCESS_CODES = (process.env.ACCESS_CODE ?? '')
-  .split(',')
-  .map((c) => clean(c))
-  .filter((c): c is string => !!c);
-
-/** مقارنة بزمن ثابت كي لا يُستنتج الرمز من سرعة الرد */
-function safeEqual(a: string, b: string): boolean {
-  let diff = a.length ^ b.length;
-  for (let i = 0; i < Math.max(a.length, b.length); i++) diff |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
-  return diff === 0;
-}
-
-const failures = new Map<string, { hour: number; count: number }>();
-const MAX_FAILURES_PER_HOUR = 20;
-
-/** يعيد null إن كان الدخول مسموحاً، وإلا الرد المناسب (401 أو 429) */
-function checkAccess(request: Request, ip: string): Response | null {
-  if (ACCESS_CODES.length === 0) return null;
-  const given = (request.headers.get('x-access-code') ?? '').trim();
-  const ok = given !== '' && ACCESS_CODES.some((c) => safeEqual(c, given));
-  if (ok) return null;
-
-  const hour = Math.floor(Date.now() / 3_600_000);
-  if (failures.size > 2000) for (const [k, v] of failures) if (v.hour !== hour) failures.delete(k);
-  const cur = failures.get(ip);
-  const count = cur && cur.hour === hour ? cur.count + 1 : 1;
-  failures.set(ip, { hour, count });
-  if (count > MAX_FAILURES_PER_HOUR) return json({ error: 'محاولات كثيرة خاطئة. جرّب بعد ساعة.' }, 429);
-  return json({ error: 'هذا المساعد محمي. أدخل رمز الدخول الذي أعطاك إياه صاحب التطبيق.', needCode: true }, 401);
-}
 
 const MAX_MESSAGES = 12;
 const MAX_CHARS = 2000;
@@ -265,9 +233,6 @@ function overLimit(ip: string): boolean {
 export async function POST(request: Request): Promise<Response> {
   const provider = pickProvider(process.env);
   if (!provider) return json({ error: 'المساعد غير مفعّل بعد: لم يُضبط مفتاح الخدمة على الخادم.' }, 503);
-
-  const denied = checkAccess(request, clientIp(request));
-  if (denied) return denied;
 
   let body: unknown;
   try {

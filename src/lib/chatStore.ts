@@ -15,39 +15,15 @@ export interface ChatAttachment {
   truncated: boolean;
 }
 
-const CODE_KEY = 'sf-access-code';
-
-/** رمز دخول المساعد (اختياري). تفضيل بسيط على الجهاز وليس من بيانات الدراسة. */
-export function getAccessCode(): string {
-  try {
-    return localStorage.getItem(CODE_KEY) ?? '';
-  } catch {
-    return '';
-  }
-}
-
-export function saveAccessCode(code: string): void {
-  try {
-    if (code.trim()) localStorage.setItem(CODE_KEY, code.trim());
-    else localStorage.removeItem(CODE_KEY);
-  } catch {
-    /* التخزين غير متاح: يُطلب الرمز في كل مرة */
-  }
-}
-
 function postChat(body: unknown): Promise<Response> {
-  const code = getAccessCode();
   return fetch('/api/chat', {
     method: 'POST',
-    headers: { 'content-type': 'application/json', ...(code ? { 'x-access-code': code } : {}) },
+    headers: { 'content-type': 'application/json' },
     body: JSON.stringify(body),
   });
 }
 
 interface ChatState {
-  /** الخادم طلب رمز دخول */
-  needCode: boolean;
-  setNeedCode: (v: boolean) => void;
   messages: ChatMsg[];
   attachment: ChatAttachment | null;
   setAttachment: (a: ChatAttachment | null) => void;
@@ -64,8 +40,6 @@ interface ChatState {
 export const useChat = create<ChatState>((set, get) => ({
   messages: [],
   attachment: null,
-  needCode: false,
-  setNeedCode: (needCode) => set({ needCode }),
   useProfile: true,
   setUseProfile: (useProfile) => set({ useProfile }),
   loading: false,
@@ -86,9 +60,9 @@ export const useChat = create<ChatState>((set, get) => ({
         ...(get().useProfile ? { profile: learnerProfile() } : {}),
         ...(get().attachment ? { attachment: { name: get().attachment!.name, text: get().attachment!.text } } : {}),
       });
-      const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string; needCode?: boolean };
+      const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
       if (!res.ok || !data.reply) {
-        set({ loading: false, error: data.error ?? 'حدث خطأ، حاول مرة أخرى', ...(data.needCode ? { needCode: true } : {}) });
+        set({ loading: false, error: data.error ?? 'حدث خطأ، حاول مرة أخرى' });
         return;
       }
       set({
@@ -133,11 +107,7 @@ export async function requestQuiz(args: {
   } catch {
     throw new Error('لا يوجد اتصال بالإنترنت. المساعد يحتاج إلى اتصال.');
   }
-  const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string; needCode?: boolean };
-  if (data.needCode) {
-    useChat.setState({ needCode: true });
-    throw new Error(`${data.error ?? 'المساعد محمي.'} (يُدخل الرمز من صفحة المساعد)`);
-  }
+  const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
   if (!res.ok || !data.reply) throw new Error(data.error ?? 'حدث خطأ، حاول مرة أخرى');
   return data.reply;
 }
