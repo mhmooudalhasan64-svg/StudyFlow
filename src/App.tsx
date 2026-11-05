@@ -8,6 +8,7 @@ import {
   CalendarCheck,
   CalendarClock,
   FileBarChart,
+  GitBranch,
   Landmark,
   Layers,
   LayoutDashboard,
@@ -43,6 +44,7 @@ import Calculator from './pages/Calculator';
 import Achievements from './pages/Achievements';
 import Reports from './pages/Reports';
 import More from './pages/More';
+import MindMap from './pages/MindMap';
 
 type NavItem = { route: Route; label: string; Icon: ComponentType<{ size?: number }> };
 
@@ -53,6 +55,7 @@ const NAV: NavItem[] = [
   { route: 'timer', label: 'المؤقت', Icon: TimerIcon },
   { route: 'bac', label: 'البكالوريا', Icon: Landmark },
   { route: 'library', label: 'مكتبة الكتب', Icon: BookOpen },
+  { route: 'mindmap', label: 'الخرائط الذهنية', Icon: GitBranch },
   { route: 'quiz', label: 'الأسئلة والاختبارات', Icon: ListChecks },
   { route: 'curriculum', label: 'خطة المنهاج', Icon: CalendarCheck },
   { route: 'review', label: 'المراجعة الذكية', Icon: Repeat },
@@ -86,6 +89,7 @@ const PAGES: Record<Route, ComponentType> = {
   settings: SettingsPage,
   bac: Bac,
   library: Library,
+  mindmap: MindMap,
   curriculum: Curriculum,
   review: Review,
   cards: Cards,
