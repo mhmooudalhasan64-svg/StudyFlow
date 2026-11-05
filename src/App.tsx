@@ -66,7 +66,6 @@ const NAV: NavItem[] = [
   { route: 'achievements', label: 'الإنجازات', Icon: Award },
   { route: 'reports', label: 'التقارير', Icon: FileBarChart },
   { route: 'stats', label: 'إحصاءات', Icon: BarChart3 },
-  { route: 'assistant', label: 'SKOVA AI', Icon: Bot },
 ];
 
 /** شريط الجوال السفلي: الأهم فقط والباقي في «المزيد» */
@@ -165,6 +164,23 @@ export default function App() {
   return (
     <div className="mx-auto flex min-h-screen max-w-6xl flex-col md:flex-row">
       <AlarmRinger />
+      {route !== 'assistant' && (
+        <a
+          href="#/assistant"
+          aria-label="افتح المساعد الدراسي SKOVA AI"
+          title="اسأل SKOVA AI"
+          className="fixed bottom-24 left-4 z-30 inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-gradient-to-l from-[#17131f] via-[#342052] to-[#18334c] px-4 py-3 text-white shadow-xl shadow-purple-950/30 transition hover:-translate-y-1 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-400 md:bottom-6 md:left-6"
+        >
+          <span className="relative grid h-9 w-9 place-items-center rounded-full border border-white/20 bg-white/10">
+            <Bot size={20} />
+            <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#211a30] bg-emerald-400" />
+          </span>
+          <span className="flex flex-col text-right leading-tight">
+            <span className="text-sm font-extrabold tracking-wide">SKOVA AI</span>
+            <span className="text-[10px] text-white/75">مساعدك الدراسي</span>
+          </span>
+        </a>
+      )}
       {/* الشريط الجانبي (شاشات كبيرة) */}
       <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
         <Brand />
