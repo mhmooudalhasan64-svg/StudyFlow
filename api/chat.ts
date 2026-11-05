@@ -201,8 +201,12 @@ function quizRequest(body: unknown, att: Attachment | null): { system: string; m
   };
 }
 
-function systemPrompt(att: Attachment | null, profile = ''): string {
-  let out = SYSTEM_PROMPT;
+const BOOK_ASK_RULES = `وضع «اسأل كتابك»: أجب عن سؤال الطالب اعتماداً حصراً على مقاطع الكتاب أدناه، ولا تضف معلومة من خارجها.
+- كل مقطع يبدأ بعلامة [ص N] فيها رقم صفحته. اذكر في آخر إجابتك أرقام الصفحات المستخدمة بهذا الشكل: (ص12، ص13).
+- إن لم تجد الجواب في المقاطع فقل بوضوح: «لم أجد هذا في الصفحات المقتبسة من الكتاب»، ولا تخمّن.`;
+
+function systemPrompt(att: Attachment | null, profile = '', bookAsk = false): string {
+  let out = bookAsk ? `${SYSTEM_PROMPT}\n\n${BOOK_ASK_RULES}` : SYSTEM_PROMPT;
   if (profile) {
     out += `
 
@@ -262,7 +266,7 @@ export async function POST(request: Request): Promise<Response> {
       },
       body: JSON.stringify({
         model: provider.model,
-        messages: [{ role: 'system', content: quiz ? quiz.system : systemPrompt(attachment, profile) }, ...messages],
+        messages: [{ role: 'system', content: quiz ? quiz.system : systemPrompt(attachment, profile, !!attachment && (body as { bookAsk?: unknown }).bookAsk === true) }, ...messages],
         max_tokens: quiz ? 2600 : 1200,
         temperature: quiz ? 0.3 : 0.4,
         stream: false,

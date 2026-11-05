@@ -193,3 +193,50 @@ export function toCards(items: readonly Record<string, unknown>[]): BookCard[] {
   }
   return out;
 }
+
+const STOP = new Set(['ما', 'ماذا', 'هو', 'هي', 'في', 'من', 'على', 'عن', 'الى', 'التي', 'الذي', 'هل', 'كيف', 'لماذا', 'متى', 'اين', 'كم', 'ان', 'او', 'ثم', 'هذا', 'هذه', 'ذلك', 'مع', 'بين', 'كان', 'يكون', 'عند']);
+
+export interface BookAnswerContext {
+  /** نص الصفحات الأقرب للسؤال مع علامات [ص N] */
+  text: string;
+  /** أرقام الصفحات المستخدمة مرتبة */
+  pages: number[];
+}
+
+/**
+ * بحث محلي (دون أي خدمة): يختار الصفحات الأكثر تطابقاً مع كلمات السؤال حتى حدّ الأحرف،
+ * فيُرسل للمساعد جزء صغير فقط من الكتاب بدل الكتاب كله.
+ */
+export function searchPages(pages: readonly string[], query: string, maxChars = 7000, from = 1, to = pages.length): BookAnswerContext {
+  const words = [...new Set(normalizeArabic(query).split(' ').filter((w) => w.length > 1 && !STOP.has(w)))];
+  const scored: { page: number; score: number }[] = [];
+  for (let p = from; p <= Math.min(to, pages.length); p++) {
+    const set = new Set(normalizeArabic(pages[p - 1]).split(' '));
+    let score = 0;
+    for (const w of words) {
+      if (set.has(w)) score += 2;
+      else if (w.length > 3 && [...set].some((x) => x.length > 3 && (x.startsWith(w.slice(0, 4)) || w.startsWith(x.slice(0, 4))))) score += 1;
+    }
+    if (score > 0) scored.push({ page: p, score });
+  }
+  scored.sort((a, b) => b.score - a.score || a.page - b.page);
+
+  const chosen: number[] = [];
+  let used = 0;
+  for (const { page } of scored) {
+    const len = pages[page - 1].length + 12;
+    if (used + len > maxChars) {
+      if (chosen.length === 0) {
+        chosen.push(page); // صفحة واحدة طويلة: نقتطعها لاحقاً
+        used = maxChars;
+      }
+      continue;
+    }
+    chosen.push(page);
+    used += len;
+    if (chosen.length >= 6) break;
+  }
+  chosen.sort((a, b) => a - b);
+  const text = chosen.map((p) => `[ص${p}]\n${pages[p - 1]}`).join('\n\n').slice(0, maxChars);
+  return { text, pages: chosen };
+}

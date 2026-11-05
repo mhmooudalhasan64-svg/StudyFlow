@@ -74,6 +74,8 @@ export interface Settings {
   reviewIntervals: number[];
   /** النسبة المئوية المستهدفة في حاسبة العلامات */
   targetPct: number;
+  /** وقت آخر نسخة احتياطية نزّلتها (لتذكيرك أسبوعياً) */
+  lastBackup?: number;
 }
 
 /** كتاب مدرسي (البيانات الوصفية فقط؛ الملف في bookFiles) */

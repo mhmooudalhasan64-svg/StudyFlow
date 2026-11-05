@@ -30,3 +30,10 @@ export function dailyPhrase(dateKey: string): string {
   const n = Number(dateKey.replace(/\D/g, '')) || 0;
   return SLOGAN_PHRASES[n % SLOGAN_PHRASES.length];
 }
+
+/** هل حان تذكير النسخة الاحتياطية؟ (لدى الطالب بيانات ولم يحفظ نسخة منذ أكثر من أسبوع) */
+export function backupReminderDue(lastBackup: number | undefined, now: number, hasData: boolean, days = 7): boolean {
+  if (!hasData) return false;
+  if (!lastBackup) return true;
+  return now - lastBackup > days * 86_400_000;
+}

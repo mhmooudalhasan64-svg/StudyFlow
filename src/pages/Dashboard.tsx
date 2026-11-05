@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
-import { CalendarClock, Flame, ListChecks, Play, Repeat, Target } from 'lucide-react';
+import { CalendarClock, Flame, ListChecks, Play, Repeat, ShieldCheck, Target } from 'lucide-react';
 import { useApp } from '../store';
 import { TaskRow } from '../components/TaskRow';
 import { Empty, PageTitle, ProgressRing } from '../components/ui';
 import { computeStreak, minutesByDay } from '../lib/stats';
-import { dailyPhrase, motivationMessage, SLOGAN } from '../lib/motivation';
+import { backupReminderDue, dailyPhrase, motivationMessage, SLOGAN } from '../lib/motivation';
 import { dailyResult } from '../lib/practice';
 import { daysLabel, daysUntil, formatMinutes, toDateKey } from '../lib/utils';
 
@@ -17,6 +17,7 @@ export default function Dashboard() {
   const cards = useApp((s) => s.cards);
   const results = useApp((s) => s.results);
   const questionCount = useApp((s) => s.questions.length);
+  const lastBackup = useApp((s) => s.settings.lastBackup);
 
   const today = toDateKey();
   const byDay = useMemo(() => minutesByDay(sessions), [sessions]);
@@ -117,6 +118,16 @@ export default function Dashboard() {
             <p className="text-sm text-muted">
               {dueLessons} درس و{dueCards} بطاقة بانتظارك اليوم
             </p>
+          </div>
+        </a>
+      )}
+
+      {backupReminderDue(lastBackup, Date.now(), sessions.length + tasks.length + results.length > 0) && (
+        <a href="#/settings" className="card flex items-center gap-3 border-accent/60 transition hover:border-accent">
+          <ShieldCheck className="text-accent" />
+          <div>
+            <p className="font-bold">احفظ نسخة احتياطية</p>
+            <p className="text-sm text-muted">بياناتك على هذا الهاتف فقط. نزّل نسخة من الإعدادات لتحميها من الضياع.</p>
           </div>
         </a>
       )}

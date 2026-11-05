@@ -64,6 +64,7 @@ export default function SettingsPage() {
     a.download = `studyflow-backup-${toDateKey()}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    void update({ lastBackup: Date.now() });
     setBackupMsg({ kind: 'ok', text: 'تم تنزيل النسخة الاحتياطية' });
   };
 

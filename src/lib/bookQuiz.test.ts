@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { chapterRange, chunkText, detectChapters, groundedItems, looksScanned, normalizeArabic, parsePageRange, planRequests, toCards } from './bookQuiz';
+import { chapterRange, chunkText, detectChapters, groundedItems, looksScanned, normalizeArabic, parsePageRange, planRequests, searchPages, toCards } from './bookQuiz';
 
 describe('bookQuiz', () => {
   it('normalizeArabic removes diacritics and unifies letters', () => {
@@ -78,5 +78,21 @@ describe('bookQuiz', () => {
       { front: 'ما الاشتقاق؟', back: 'معدل التغير', category: 'definition' },
       { front: 'قانون', back: 'ق = ك × ت', category: 'definition' },
     ]);
+  });
+
+  it('searchPages picks the pages that match the question, in page order', () => {
+    const pages = [
+      'مقدمة عامة عن الكتاب ومحتوياته',
+      'أسباب الثورة الصناعية في بريطانيا ظهور الآلة البخارية',
+      'الجغرافيا الطبيعية للبحر المتوسط',
+      'نتائج الثورة الصناعية على المجتمع والاقتصاد',
+    ];
+    const r = searchPages(pages, 'ما أسباب الثورة الصناعية؟');
+    expect(r.pages).toEqual([2, 4]);
+    expect(r.text).toContain('[ص2]');
+    expect(r.text).not.toContain('[ص3]');
+    expect(searchPages(pages, 'كلمة غير موجودة إطلاقاً').pages).toEqual([]);
+    expect(searchPages(pages, 'الثورة الصناعية', 7000, 3, 4).pages).toEqual([4]);
+    expect(searchPages(['x'.repeat(5000) + ' ثورة', 'y'.repeat(5000) + ' ثورة'], 'ثورة', 6000).text.length).toBeLessThanOrEqual(6000);
   });
 });

@@ -81,6 +81,23 @@ function learnerProfile(): string {
   return buildLearnerProfile(contextFrom(useApp.getState(), toDateKey()));
 }
 
+/** سؤال حر عن مقاطع من كتاب (يجيب منها فقط ويذكر أرقام الصفحات) */
+export async function askBook(args: { question: string; name: string; text: string }): Promise<string> {
+  let res: Response;
+  try {
+    res = await postChat({
+      messages: [{ role: 'user', content: args.question }],
+      attachment: { name: args.name, text: args.text },
+      bookAsk: true,
+    });
+  } catch {
+    throw new Error('لا يوجد اتصال بالإنترنت. المساعد يحتاج إلى اتصال.');
+  }
+  const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
+  if (!res.ok || !data.reply) throw new Error(data.error ?? 'حدث خطأ، حاول مرة أخرى');
+  return data.reply;
+}
+
 /** يطلب من المساعد إنشاء اختبار (نص JSON خام يُحلَّل لاحقاً بـ parseGeneratedQuiz) */
 export async function requestQuiz(args: {
   topic: string;

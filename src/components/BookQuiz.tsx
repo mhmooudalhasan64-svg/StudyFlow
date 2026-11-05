@@ -4,7 +4,7 @@ import { useApp } from '../store';
 import type { Question } from '../db';
 import { extractPdfPages, FileTextError } from '../lib/fileText';
 import { bookKey, deleteBookText, getBookText, listBookTexts, saveBookText, type SavedBook } from '../lib/bookCache';
-import { requestQuiz } from '../lib/chatStore';
+import { askBook, requestQuiz } from '../lib/chatStore';
 import { parseGeneratedQuiz } from '../lib/questionsIO';
 import {
   chapterRange,
@@ -14,6 +14,7 @@ import {
   looksScanned,
   parsePageRange,
   planRequests,
+  searchPages,
   textOfPages,
   toCards,
 } from '../lib/bookQuiz';
@@ -50,6 +51,8 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [note, setNote] = useState('');
+  const [question, setQuestion] = useState('');
+  const [answer, setAnswer] = useState<{ text: string; pages: number[] } | null>(null);
 
   const chapters = useMemo(() => (pages ? detectChapters(pages) : []), [pages]);
   const subject = subjects.find((s) => s.id === (subjectId === '' ? subjects[0]?.id : subjectId));
@@ -156,6 +159,31 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
       throw new Error(lastError || 'لم أجد في هذه الصفحات محتوى موثوقاً مبنياً على نص الكتاب. جرّب نطاقاً أوسع أو أعد المحاولة.');
     }
     return { items, dropped };
+  };
+
+  /** سؤال حر عن الكتاب: بحث محلي عن أقرب الصفحات ثم إرسالها فقط */
+  const ask = async () => {
+    const q = question.trim();
+    if (!pages || !q) return;
+    const sel = selection() ?? { from: 1, to: pages.length };
+    const ctx = searchPages(pages, q, 7000, sel.from, sel.to);
+    setError('');
+    setAnswer(null);
+    if (ctx.pages.length === 0) {
+      setError('لم أجد في الصفحات المحددة ما يخص سؤالك. جرّب كلمات أخرى أو وسّع نطاق الصفحات.');
+      return;
+    }
+    setBusy(true);
+    setProgress('جارٍ البحث في الكتاب…');
+    try {
+      const text = await askBook({ question: q, name, text: ctx.text });
+      setAnswer({ text, pages: ctx.pages });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'تعذّر الحصول على إجابة');
+    } finally {
+      setBusy(false);
+      setProgress('');
+    }
   };
 
   const generate = async () => {
@@ -343,6 +371,31 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
             {busy ? <Loader2 size={16} className="animate-spin" /> : <BookOpen size={16} />}
             {busy ? progress || 'جارٍ العمل…' : 'اختبرني'}
           </button>
+          <div className="space-y-2 border-t border-line/60 pt-3">
+            <label className="label" htmlFor="book-ask">
+              اسأل كتابك (ضمن الصفحات المحددة أعلاه)
+            </label>
+            <div className="flex gap-2">
+              <input
+                id="book-ask"
+                className="input"
+                placeholder="مثال: ما أسباب الثورة الصناعية؟"
+                value={question}
+                maxLength={300}
+                onChange={(e) => setQuestion(e.target.value)}
+              />
+              <button type="button" className="btn btn-primary shrink-0" disabled={busy || !question.trim()} onClick={() => void ask()}>
+                اسأل
+              </button>
+            </div>
+            {answer && (
+              <div className="rounded-xl border border-line/70 bg-base/40 p-3 text-sm leading-relaxed" aria-live="polite">
+                <p className="whitespace-pre-wrap">{answer.text}</p>
+                <p className="mt-2 text-[11px] text-muted">الصفحات التي بُنيت عليها الإجابة: {answer.pages.join('، ')}</p>
+              </div>
+            )}
+          </div>
+
           <button type="button" className="btn btn-ghost w-full" disabled={busy || !subject} onClick={() => void makeCards()}>
             <Copy size={16} /> حوّل الصفحات إلى بطاقات مراجعة
           </button>
