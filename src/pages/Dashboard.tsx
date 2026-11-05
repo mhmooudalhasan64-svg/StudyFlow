@@ -254,8 +254,16 @@ export default function Dashboard() {
           </p>
         </div>
       </a>
-      <a href="#/about" className="block py-2 text-center text-xs text-muted hover:text-main">
-        متجر سكوفا • عن التطبيق
+      <a href="#/about" className="group block overflow-hidden rounded-3xl border border-accent/25 bg-gradient-to-l from-accent/10 via-card/90 to-accent2/10 p-4 shadow-lg shadow-accent2/10 transition hover:-translate-y-0.5 hover:border-accent/50 sm:p-5" aria-label="التعرّف على التعاون بين Study Flow ومتجر سكوڤا">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <img src="/logo.png" alt="شعار متجر سكوڤا" width={64} height={64} className="h-14 w-14 shrink-0 rounded-2xl object-cover shadow-md sm:h-16 sm:w-16" />
+          <div className="min-w-0 flex-1">
+            <p className="mb-1 text-[10px] font-bold tracking-wider text-accent sm:text-xs">شراكة وتعاون</p>
+            <h2 className="text-base font-black sm:text-lg">STUDY FLOW <span className="text-accent">×</span> SKOVA</h2>
+            <p className="mt-1 text-xs leading-relaxed text-muted sm:text-sm">بالتعاون مع متجر سكوڤا — نتعلّم اليوم، ونصنع الغد.</p>
+          </div>
+          <span className="shrink-0 rounded-full border border-accent/25 bg-accent/10 px-2.5 py-1.5 text-[10px] font-bold text-accent transition group-hover:bg-accent/15 sm:text-xs">اكتشف <span aria-hidden="true">←</span></span>
+        </div>
       </a>
     </div>
   );
