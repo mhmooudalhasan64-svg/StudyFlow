@@ -1,27 +1,15 @@
-import { useEffect, useState, type ComponentType } from 'react';
 import {
-  Award,
-  BarChart3,
-  BookOpen,
   Bot,
-  Calculator as CalcIcon,
   CalendarCheck,
-  CalendarClock,
-  FileBarChart,
-  GitBranch,
   Landmark,
-  Layers,
   LayoutDashboard,
-  ListChecks,
   MoreHorizontal,
   Moon,
-  Repeat,
   Settings as SettingsIcon,
   Sun,
   Timer as TimerIcon,
   WifiOff,
-} from 'lucide-react';
-import { useApp } from './store';
+} from 'lucide-react';import { useApp } from './store';
 import { useHashRoute, type Route } from './lib/route';
 import Dashboard from './pages/Dashboard';
 import About, { Intro } from './pages/About';
