@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { BookOpen, CheckCircle2, ChevronDown, ChevronLeft, Circle, GitBranch, Layers3 } from 'lucide-react';
+import { BookOpen, CheckCircle2, ChevronDown, ChevronLeft, Circle, Layers3 } from 'lucide-react';
 import { useApp } from '../store';
 import { Empty, PageTitle } from '../components/ui';
 
