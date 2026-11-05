@@ -29,7 +29,7 @@ const ITEMS: { href: string; label: string; Icon: ComponentType<{ size?: number;
   { href: '#/achievements', label: 'الإنجازات', Icon: Award },
   { href: '#/reports', label: 'تقارير الدراسة', Icon: FileBarChart },
   { href: '#/stats', label: 'الإحصاءات', Icon: BarChart3 },
-  { href: '#/assistant', label: 'المساعد', Icon: Bot },
+  { href: '#/assistant', label: 'SKOVA AI', Icon: Bot },
   { href: '#/settings', label: 'الإعدادات', Icon: SettingsIcon },
   { href: '#/about', label: 'عن التطبيق (متجر سكوڤا)', Icon: Info },
 ];
