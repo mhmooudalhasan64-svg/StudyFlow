@@ -6,19 +6,21 @@ function PartnershipIdentity() {
       <div className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full border border-accent/15 shadow-[0_0_0_24px_rgb(var(--accent)/0.035),0_0_0_48px_rgb(var(--accent2)/0.025)]" aria-hidden="true" />
       <div className="relative">
         <span className="inline-flex rounded-full border border-accent/25 bg-accent/10 px-3 py-1 text-xs font-bold text-accent">شراكة وتعاون</span>
-        <div className="mt-5 flex items-center justify-center gap-3 sm:gap-5">
-          <div className="min-w-0">
-            <p className="text-lg font-black tracking-tight sm:text-2xl">STUDY FLOW</p>
-            <p className="mt-1 text-[10px] text-muted">منصة تنظيم الدراسة</p>
+        <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-4">
+          <div className="flex min-w-0 flex-col items-center justify-center rounded-2xl border border-white/20 bg-black px-2 py-5 text-white shadow-lg sm:px-4">
+            <span className="mb-2 grid h-12 w-12 place-items-center rounded-xl border-2 border-white text-2xl font-black">A</span>
+            <p className="text-sm font-black tracking-[0.14em] sm:text-lg" dir="ltr">AUREVON</p>
+            <p className="mt-1 text-[10px] text-white/70">TECHNOLOGIES</p>
           </div>
           <span className="text-2xl font-black text-accent sm:text-3xl" aria-label="مع">×</span>
-          <div className="flex min-w-0 flex-col items-center">
-            <img src="/logo.png" alt="شعار متجر سكوڤا" width={76} height={76} className="h-[4.5rem] w-[4.5rem] rounded-2xl object-cover shadow-lg" />
+          <div className="flex min-w-0 flex-col items-center justify-center rounded-2xl border border-line/70 bg-card px-2 py-5 shadow-lg sm:px-4">
+            <img src="/logo.png" alt="شعار متجر سكوڤا" width={76} height={76} className="h-12 w-12 rounded-xl object-cover sm:h-14 sm:w-14" />
             <p className="mt-2 text-sm font-black tracking-widest sm:text-base" dir="ltr">SKOVA</p>
+            <p className="mt-1 text-[10px] text-muted">STORE</p>
           </div>
         </div>
-        <h2 className="mt-6 text-xl font-black leading-relaxed sm:text-2xl">نتعلّم اليوم، ونصنع الغد.</h2>
-        <p className="mx-auto mt-2 max-w-sm text-sm leading-7 text-muted">يجمع هذا التعاون بين Study Flow ومتجر سكوڤا في هوية واحدة، لدعم تجربة دراسية منظمة وطموحة.</p>
+        <h2 className="mt-6 text-xl font-black leading-relaxed sm:text-2xl">شراكة تجمع الابتكار والتقنية.</h2>
+        <p className="mx-auto mt-2 max-w-sm text-sm leading-7 text-muted">AUREVON × SKOVA — تعاون بين منصة AUREVON ومتجر سكوڤا، ضمن تجربة Study Flow.</p>
       </div>
     </section>
   );
