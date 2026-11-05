@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { db } from '../db';
 import { useApp } from '../store';
 import { buildLearnerProfile, contextFrom } from './advisor';
 import { toDateKey } from './utils';
@@ -34,6 +35,8 @@ interface ChatState {
   error: string | null;
   send: (text: string) => Promise<void>;
   clear: () => void;
+  /** يعيد آخر محادثة محفوظة في الجهاز (إن لم توجد محادثة حالية) */
+  load: () => Promise<void>;
 }
 
 /** المحادثة تبقى في الذاكرة فقط (لا تُحفظ على الجهاز) */
@@ -65,16 +68,24 @@ export const useChat = create<ChatState>((set, get) => ({
         set({ loading: false, error: data.error ?? 'حدث خطأ، حاول مرة أخرى' });
         return;
       }
-      set({
-        loading: false,
-        messages: [...get().messages, { role: 'assistant', content: data.reply }],
-      });
+      const done = [...get().messages, { role: 'assistant' as const, content: data.reply }];
+      set({ loading: false, messages: done });
+      void db.chatLogs.put({ key: 'main', messages: done.slice(-40), at: Date.now() }).catch(() => undefined);
     } catch {
       set({ loading: false, error: 'لا يوجد اتصال بالإنترنت. المساعد يحتاج إلى اتصال.' });
     }
   },
 
-  clear: () => set({ messages: [], attachment: null, error: null, loading: false }),
+  clear: () => {
+    set({ messages: [], attachment: null, error: null, loading: false });
+    void db.chatLogs.delete('main').catch(() => undefined);
+  },
+
+  load: async () => {
+    if (get().messages.length > 0) return;
+    const log = await db.chatLogs.get('main').catch(() => undefined);
+    if (log && get().messages.length === 0) set({ messages: log.messages });
+  },
 }));
 
 function learnerProfile(): string {
@@ -107,7 +118,7 @@ export async function requestQuiz(args: {
   /** نص كتاب: أسئلة مبنية عليه حصراً، ويُستخدم بدل الملف المرفق في المحادثة */
   source?: { name: string; text: string };
   /** quiz (افتراضي) أو cards لبطاقات مراجعة */
-  mode?: 'quiz' | 'cards';
+  mode?: 'quiz' | 'cards' | 'exam';
 }): Promise<string> {
   const att = args.source ?? useChat.getState().attachment;
   let res: Response;

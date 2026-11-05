@@ -132,7 +132,7 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
   };
 
   /** يرسل الأجزاء واحداً واحداً ويجمع العناصر المثبتة بنص الكتاب */
-  const collect = async (job: NonNullable<ReturnType<typeof prepare>>, mode: 'quiz' | 'cards') => {
+  const collect = async (job: NonNullable<ReturnType<typeof prepare>>, mode: 'quiz' | 'cards' | 'exam') => {
     const items: Record<string, unknown>[] = [];
     let dropped = 0;
     let lastError = '';
@@ -210,6 +210,42 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
       onStart(shuffle(fresh));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'تعذّر إنشاء الاختبار');
+    } finally {
+      setBusy(false);
+      setProgress('');
+    }
+  };
+
+  /** يستخرج أسئلة الاختيار الموجودة فعلاً في ورقة دورة سابقة (لا يؤلّف أسئلة) */
+  const importExam = async () => {
+    const job = prepare();
+    if (!job) return;
+    setError('');
+    setNote('');
+    setBusy(true);
+    try {
+      const { items, dropped } = await collect(job, 'exam');
+      const seen = new Set<string>();
+      const unique = items
+        .filter((x) => {
+          const t = String(x.text);
+          if (seen.has(t)) return false;
+          seen.add(t);
+          return true;
+        })
+        .map((x) => ({
+          ...x,
+          explanation: `إجابة مقترحة من المساعد، تحقق منها من نموذج الإجابة الرسمي.${x.explanation ? ' ' + String(x.explanation) : ''}`,
+        }));
+      const label = `دورة: ${name} (ص${job.sel.from}${job.sel.to > job.sel.from ? `–${job.sel.to}` : ''})`;
+      const parsed = parseGeneratedQuiz(JSON.stringify(unique.slice(0, count)), job.subject.name, label);
+      await importQuestions(parsed);
+      const texts = new Set(parsed.map((x) => x.text));
+      const fresh = useApp.getState().questions.filter((x) => x.subjectId === job.subject.id && texts.has(x.text));
+      setNote(`أُضيف ${parsed.length} سؤالاً إلى البنك${dropped > 0 ? `، واستُبعد ${dropped} غير موجود نصّه في الملف` : ''}. الإجابات اقتراح من المساعد.`);
+      onStart(shuffle(fresh));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'تعذّر استخراج الأسئلة');
     } finally {
       setBusy(false);
       setProgress('');
@@ -396,6 +432,9 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
             )}
           </div>
 
+          <button type="button" className="btn btn-ghost w-full" disabled={busy || !subject} onClick={() => void importExam()}>
+            <FileUp size={16} /> الملف ورقة دورة؟ استخرج أسئلتها كما هي
+          </button>
           <button type="button" className="btn btn-ghost w-full" disabled={busy || !subject} onClick={() => void makeCards()}>
             <Copy size={16} /> حوّل الصفحات إلى بطاقات مراجعة
           </button>

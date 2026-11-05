@@ -152,6 +152,13 @@ export interface BookText {
   at: number;
 }
 
+/** سجل محادثة المساعد (محلي فقط، لا يدخل في النسخ الاحتياطي) */
+export interface ChatLog {
+  key: 'main';
+  messages: { role: 'user' | 'assistant'; content: string }[];
+  at: number;
+}
+
 class StudyDB extends Dexie {
   subjects!: EntityTable<Subject, 'id'>;
   tasks!: EntityTable<Task, 'id'>;
@@ -167,6 +174,7 @@ class StudyDB extends Dexie {
   marks!: EntityTable<Mark, 'subjectId'>;
   results!: EntityTable<ExamResult, 'id'>;
   bookTexts!: EntityTable<BookText, 'key'>;
+  chatLogs!: EntityTable<ChatLog, 'key'>;
 
   constructor() {
     super('studyflow');
@@ -191,6 +199,10 @@ class StudyDB extends Dexie {
     // الإصدار 3: نصوص الكتب المستخرجة (للاختبار من الكتاب دون إعادة القراءة)
     this.version(3).stores({
       bookTexts: 'key, at',
+    });
+    // الإصدار 4: سجل المحادثة
+    this.version(4).stores({
+      chatLogs: 'key',
     });
   }
 }

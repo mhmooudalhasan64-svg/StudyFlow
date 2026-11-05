@@ -36,6 +36,10 @@ export default function Assistant() {
   const endRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    void useChat.getState().load();
+  }, []);
+
   // نوقف القراءة والاستماع عند مغادرة الصفحة
   useEffect(
     () => () => {

@@ -162,6 +162,14 @@ const CARDS_PROMPT = `أنت منشئ بطاقات مراجعة لطلاب ال�
 - category واحدة من: definition (تعريف) أو date (تاريخ/حدث) أو term (مصطلح) أو rule (قاعدة/قانون).
 - بطاقات متنوعة تغطي أهم ما في النص، دون تكرار.`;
 
+const EXAM_PROMPT = `أنت تستخرج أسئلة الاختيار من متعدد الموجودة فعلاً في نص ورقة امتحان أو دورة سابقة.
+أخرج مصفوفة JSON فقط، دون أي نص قبلها أو بعدها ودون علامات markdown.
+كل عنصر بالشكل: {"text":"نص السؤال كما ورد","options":["...","...","...","..."],"answerIndex":0,"explanation":"سبب الإجابة بإيجاز","quote":"..."}
+- استخرج فقط الأسئلة التي لها أربعة خيارات صريحة في النص، ولا تحوّل الأسئلة المقالية ولا تؤلّف أسئلة جديدة.
+- لا تغيّر صياغة السؤال ولا الخيارات.
+- answerIndex من 0 إلى 3: إن وُجد مفتاح إجابات في النص فاستخدمه، وإلا فاختر الإجابة الأصح علمياً.
+- "quote": أول 5 إلى 20 كلمة من نص السؤال كما وردت حرفياً.`;
+
 const LEVELS: Record<string, string> = {
   easy: 'سهلة: تعتمد على التذكر المباشر',
   medium: 'متوسطة',
@@ -179,21 +187,26 @@ function quizRequest(body: unknown, att: Attachment | null): { system: string; m
   if (typeof body !== 'object' || body === null) return null;
   const b = body as { mode?: unknown; topic?: unknown; count?: unknown; subject?: unknown; difficulty?: unknown; fromBook?: unknown };
   const cards = b.mode === 'cards';
-  if (b.mode !== 'quiz' && !cards) return null;
+  const exam = b.mode === 'exam';
+  if (b.mode !== 'quiz' && !cards && !exam) return null;
   const topic = typeof b.topic === 'string' ? b.topic.trim().slice(0, 200) : '';
   const subject = typeof b.subject === 'string' ? b.subject.replace(/[\r\n]+/g, ' ').trim().slice(0, 60) : '';
   if (!topic && !att) return 'invalid';
   const count = Math.min(10, Math.max(3, Math.round(Number(b.count)) || 5));
   return {
     system: att
-      ? `${cards ? CARDS_PROMPT : QUIZ_PROMPT}${b.fromBook === true ? `\n${BOOK_RULES}` : ''}\n\nالمرجع: ملف باسم «${att.name}».\n${fileBlock(att)}`
+      ? `${cards ? CARDS_PROMPT : exam ? EXAM_PROMPT : QUIZ_PROMPT}${b.fromBook === true ? `\n${BOOK_RULES}` : ''}\n\nالمرجع: ملف باسم «${att.name}».\n${fileBlock(att)}`
       : cards
         ? CARDS_PROMPT
-        : QUIZ_PROMPT,
+        : exam
+          ? EXAM_PROMPT
+          : QUIZ_PROMPT,
     messages: [
       {
         role: 'user',
-        content: cards
+        content: exam
+          ? `استخرج حتى ${count} أسئلة اختيار من متعدد من ورقة الامتحان المرفقة${subject ? ` (مادة «${subject}»)` : ''}.`
+          : cards
           ? `اصنع ${count} بطاقات مراجعة${subject ? ` في مادة «${subject}»` : ''} من الملف المرفق.`
           : `اصنع ${count} أسئلة${subject ? ` في مادة «${subject}» حصراً` : ''}${typeof b.difficulty === 'string' && LEVELS[b.difficulty] ? ` بصعوبة ${LEVELS[b.difficulty]}` : ''}${topic ? ` عن: ${topic}` : ''}${att ? ' من الملف المرفق' : ''}.`,
       },
