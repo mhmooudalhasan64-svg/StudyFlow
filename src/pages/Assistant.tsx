@@ -122,7 +122,7 @@ export default function Assistant() {
   return (
     <div className="mx-auto flex max-w-2xl flex-col">
       <PageTitle
-        title="المساعد الذكي"
+        title="SKOVA AI"
         subtitle="خطة مراجعة تلقائية، وأسئلة عن دروسك"
         action={
           messages.length > 0 ? (
@@ -187,7 +187,7 @@ export default function Assistant() {
           <div className="space-y-3 py-4 text-center">
             <Bot className="mx-auto text-accent" size={36} />
             <p className="text-sm text-muted">
-              {attachment ? 'تم إرفاق الملف. اسأل عنه أو اختر مما يلي:' : 'مرحباً! أنا مساعدك الدراسي. جرّب أحد هذه الأسئلة:'}
+              {attachment ? 'تم إرفاق الملف. اسأل عنه أو اختر مما يلي:' : 'مرحباً! أنا SKOVA AI، مساعدك الدراسي. جرّب أحد هذه الأسئلة:'}
             </p>
             <div className="flex flex-col gap-2">
               {(attachment ? FILE_SUGGESTIONS : SUGGESTIONS).map((s) => (
