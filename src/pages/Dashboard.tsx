@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
-import { CalendarClock, Flame, ListChecks, Play, Repeat, ShieldCheck, Target } from 'lucide-react';
+import { CalendarClock, Check, Circle, Flame, Gauge, ListChecks, Play, Repeat, ShieldCheck, Target } from 'lucide-react';
 import { useApp } from '../store';
 import { TaskRow } from '../components/TaskRow';
 import { Empty, PageTitle, ProgressRing } from '../components/ui';
 import { computeStreak, minutesByDay } from '../lib/stats';
 import { backupReminderDue, dailyPhrase, motivationMessage, SLOGAN } from '../lib/motivation';
-import { dailyResult } from '../lib/practice';
+import { currentMistakes, dailyResult } from '../lib/practice';
+import { buildTodayFlow, computeReadiness } from '../lib/readiness';
 import { daysLabel, daysUntil, formatMinutes, toDateKey } from '../lib/utils';
 
 export default function Dashboard() {
@@ -16,7 +17,10 @@ export default function Dashboard() {
   const lessons = useApp((s) => s.lessons);
   const cards = useApp((s) => s.cards);
   const results = useApp((s) => s.results);
-  const questionCount = useApp((s) => s.questions.length);
+  const questions = useApp((s) => s.questions);
+  const questionCount = questions.length;
+  const attempts = useApp((s) => s.attempts);
+  const subjects = useApp((s) => s.subjects);
   const lastBackup = useApp((s) => s.settings.lastBackup);
 
   const today = toDateKey();
@@ -29,6 +33,27 @@ export default function Dashboard() {
   const dueCards = cards.filter((c) => c.due <= today).length;
 
   const todayTasks = tasks.filter((t) => t.date === today);
+
+  const flow = useMemo(
+    () =>
+      buildTodayFlow({
+        dueReviews: dueLessons + dueCards,
+        mistakes: currentMistakes(attempts, questions).length,
+        dailyAvailable: questionCount > 0,
+        dailyDone: !!dailyResult(results, today),
+        tasksOpen: todayTasks.filter((t) => !t.done).length,
+        tasksTotal: todayTasks.length,
+        todayMin,
+        goalMin: goal,
+      }),
+    [dueLessons, dueCards, attempts, questions, questionCount, results, today, tasks, todayMin, goal],
+  );
+  const flowDone = flow.filter((s) => s.done).length;
+
+  const ready = useMemo(
+    () => computeReadiness({ subjects, exams, attempts, lessons, sessions, today }),
+    [subjects, exams, attempts, lessons, sessions, today],
+  );
   const doneCount = todayTasks.filter((t) => t.done).length;
 
   const nextExam = useMemo(
@@ -67,6 +92,68 @@ export default function Dashboard() {
           </a>
         </div>
       </section>
+
+      <section className="card space-y-3" aria-label="يومك الذكي">
+        <div className="flex items-center justify-between">
+          <h2 className="font-bold">يومك الذكي</h2>
+          <span className="text-xs text-muted">
+            {flowDone}/{flow.length}
+          </span>
+        </div>
+        <div className="h-1.5 overflow-hidden rounded-full bg-line/60">
+          <div
+            className="h-full rounded-full bg-gradient-to-l from-accent to-accent2 transition-all"
+            style={{ width: `${flow.length ? (flowDone / flow.length) * 100 : 0}%` }}
+          />
+        </div>
+        <ul className="space-y-1.5">
+          {flow.map((s) => (
+            <li key={s.id}>
+              <a
+                href={s.href}
+                className={`flex items-center gap-2.5 rounded-xl border border-line/70 px-3 py-2.5 text-sm transition hover:border-accent ${
+                  s.done ? 'text-muted line-through' : ''
+                }`}
+              >
+                {s.done ? <Check size={16} className="shrink-0 text-ok" /> : <Circle size={16} className="shrink-0 text-muted" />}
+                {s.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {ready.overall !== null && (
+        <section className="card space-y-3" aria-label="جاهزيتك">
+          <div className="flex items-center gap-3">
+            <Gauge className="text-accent" />
+            <div className="flex-1">
+              <p className="font-bold">جاهزيتك العامة: {ready.overall}%</p>
+              <p className="text-xs text-muted">من دقتك في الأسئلة، وإنجاز دروسك، ودراستك هذا الأسبوع.</p>
+            </div>
+          </div>
+          <ul className="space-y-2">
+            {ready.subjects
+              .filter((r) => r.score !== null)
+              .slice(0, 3)
+              .map((r) => (
+                <li key={r.subjectId} className="text-sm">
+                  <div className="mb-1 flex justify-between">
+                    <span>
+                      {r.name}
+                      {r.daysToExam !== null && <span className="text-xs text-muted"> • الامتحان {daysLabel(r.daysToExam)}</span>}
+                    </span>
+                    <span className="font-bold">{r.score}%</span>
+                  </div>
+                  <div className="h-1.5 overflow-hidden rounded-full bg-line/60">
+                    <div className="h-full rounded-full bg-gradient-to-l from-accent to-accent2" style={{ width: `${r.score}%` }} />
+                  </div>
+                  <p className="mt-1 text-xs text-muted">{r.tip}</p>
+                </li>
+              ))}
+          </ul>
+        </section>
+      )}
 
       <section className="grid grid-cols-3 gap-3">
         <div className="card text-center">
