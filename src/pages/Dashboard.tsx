@@ -66,7 +66,7 @@ export default function Dashboard() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <PageTitle title="مرحباً بك 👋" subtitle="خطوة صغيرة كل يوم تصنع فرقاً كبيراً في البكالوريا" />
+      <PageTitle title="مرحبًا بك 👋" subtitle="خطوة صغيرة كل يوم تصنع فرقاً كبيراً في البكالوريا" />
 
       <section className="card text-center" aria-label="شعار التطبيق">
         <p className="bg-gradient-to-l from-accent to-accent2 bg-clip-text text-xl font-extrabold text-transparent">
@@ -79,11 +79,11 @@ export default function Dashboard() {
         <ProgressRing pct={pct} gradientId="ring-home">
           <div>
             <div className="text-2xl font-extrabold">{Math.round(Math.min(pct, 9.99) * 100)}%</div>
-            <div className="text-xs text-muted">من هدف اليوم</div>
+            <div className="text-xs text-muted">من هدفك اليومي</div>
           </div>
         </ProgressRing>
         <div className="flex-1 text-center sm:text-start">
-          <p className="text-sm text-muted">درست اليوم</p>
+          <p className="text-sm text-muted">مدة دراستك اليوم</p>
           <p className="text-3xl font-extrabold">{formatMinutes(todayMin)}</p>
           <p className="mt-1 text-sm text-muted">الهدف: {formatMinutes(goal)}</p>
           <p className="mt-3 text-sm">{motivationMessage(pct, streak)}</p>
@@ -231,7 +231,7 @@ export default function Dashboard() {
         </div>
       </a>
       <a href="#/about" className="block py-2 text-center text-xs text-muted hover:text-main">
-        متجر سكوڤا • عن التطبيق
+        متجر سكوفا • عن التطبيق
       </a>
     </div>
   );
