@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Pause, Play, RotateCcw, Save } from 'lucide-react';
+import { Pause, Play, RotateCcw, Save, Volume2, VolumeX } from 'lucide-react';
 import { useApp } from '../store';
 import { PageTitle, ProgressRing, SubjectSelect } from '../components/ui';
 import { MODE_LABEL, modeMs, type TimerMode } from '../lib/timer';
 import { formatClock, formatMinutes, toDateKey } from '../lib/utils';
 import { minutesByDay } from '../lib/stats';
+import { playSound, primeAudio, SOUNDS, type SoundKind } from '../lib/sound';
 
 function useNow(active: boolean, intervalMs = 250): number {
   const [now, setNow] = useState(() => Date.now());
@@ -22,6 +23,7 @@ const MODES: TimerMode[] = ['focus', 'short', 'long'];
 export default function TimerPage() {
   const timer = useApp((s) => s.timer);
   const settings = useApp((s) => s.settings);
+  const updateSettings = useApp((s) => s.updateSettings);
   const sessions = useApp((s) => s.sessions);
   const setMode = useApp((s) => s.setMode);
   const startTimer = useApp((s) => s.startTimer);
@@ -124,6 +126,53 @@ export default function TimerPage() {
           <span>جلسات مكتملة: {timer.cycles}</span>
           <span>درست اليوم: {formatMinutes(todayMin)}</span>
         </div>
+      </div>
+
+      <div className="card space-y-3">
+        <label className="flex items-center justify-between gap-3 text-sm">
+          <span className="flex items-center gap-2">
+            {settings.sound ? <Volume2 size={16} className="text-accent" /> : <VolumeX size={16} className="text-muted" />}
+            تنبيه صوتي عند انتهاء الجلسة
+          </span>
+          <input
+            type="checkbox"
+            className="h-5 w-5 accent-[rgb(var(--accent))]"
+            checked={settings.sound}
+            onChange={(e) => void updateSettings({ sound: e.target.checked })}
+          />
+        </label>
+        {settings.sound && (
+          <div className="flex items-center gap-2">
+            <select
+              className="input"
+              aria-label="صوت التنبيه"
+              value={settings.soundKind ?? 'classic'}
+              onChange={(e) => {
+                const kind = e.target.value as SoundKind;
+                void updateSettings({ soundKind: kind });
+                primeAudio();
+                playSound(kind);
+              }}
+            >
+              {SOUNDS.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              className="btn btn-ghost shrink-0 !px-3"
+              aria-label="تجربة الصوت"
+              onClick={() => {
+                primeAudio();
+                playSound(settings.soundKind);
+              }}
+            >
+              <Volume2 size={16} />
+            </button>
+          </div>
+        )}
       </div>
 
       <p className="px-2 text-center text-xs text-muted">
