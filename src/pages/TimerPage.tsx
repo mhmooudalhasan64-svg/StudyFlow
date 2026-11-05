@@ -53,10 +53,10 @@ export default function TimerPage() {
 
   return (
     <div className="mx-auto max-w-md space-y-4">
-      <PageTitle title="مؤقت التركيز" subtitle="تقنية بومودورو: تركيز ثم استراحة" />
+      <PageTitle title="مؤقت التركيز" subtitle="تقنية بومودورو: جلسات تركيز تتخللها استراحات" />
 
       <div className="card space-y-5">
-        <div className="grid grid-cols-3 gap-1.5 rounded-xl border border-line p-1" role="tablist" aria-label="نمط المؤقت">
+        <div className="grid grid-cols-3 gap-1.5 rounded-xl border border-line p-1" role="tablist" aria-label="وضع المؤقت">
           {MODES.map((m) => (
             <button
               key={m}
@@ -92,14 +92,14 @@ export default function TimerPage() {
         {timer.mode === 'focus' && (
           <div>
             <label className="label" htmlFor="timer-subject">
-              المادة التي تدرسها
+              المادة الدراسية
             </label>
             <SubjectSelect id="timer-subject" value={timer.subjectId} onChange={setSubject} />
           </div>
         )}
 
         <div className="flex items-center justify-center gap-3">
-          <button type="button" className="btn btn-ghost !px-3.5" onClick={resetTimer} aria-label="إعادة ضبط">
+          <button type="button" className="btn btn-ghost !px-3.5" onClick={resetTimer} aria-label="إعادة ضبط المؤقت">
             <RotateCcw size={18} />
           </button>
           {timer.running ? (
@@ -125,7 +125,7 @@ export default function TimerPage() {
 
         <div className="flex justify-between border-t border-line pt-3 text-sm text-muted">
           <span>جلسات مكتملة: {timer.cycles}</span>
-          <span>درست اليوم: {formatMinutes(todayMin)}</span>
+          <span>وقت الدراسة اليوم: {formatMinutes(todayMin)}</span>
         </div>
       </div>
 
@@ -146,7 +146,7 @@ export default function TimerPage() {
           <div className="flex items-center gap-2">
             <select
               className="input"
-              aria-label="صوت التنبيه"
+              aria-label="نغمة التنبيه"
               value={settings.soundKind ?? 'classic'}
               onChange={(e) => {
                 const kind = e.target.value as SoundKind;
@@ -179,7 +179,7 @@ export default function TimerPage() {
       <Alarms />
 
       <p className="px-2 text-center text-xs text-muted">
-        بعد كل 4 جلسات تركيز تأتي استراحة طويلة. يمكنك تعديل المدد من الإعدادات.
+        بعد كل أربع جلسات تركيز، تحصل على استراحة طويلة. يمكنك تعديل مدة الجلسات والاستراحات من الإعدادات.
       </p>
     </div>
   );

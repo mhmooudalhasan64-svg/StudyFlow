@@ -8,7 +8,7 @@ import { toDateKey } from '../lib/utils';
 const SNOOZE_MS = 5 * 60_000;
 const MAX_ALARMS = 8;
 
-/** بطاقة إدارة المنبهات (في صفحة المؤقت) */
+/** بطاقة إدارة المنبّهات في صفحة المؤقّت */
 export default function Alarms() {
   const alarms = useApp((s) => s.settings.alarms) ?? [];
   const updateSettings = useApp((s) => s.updateSettings);
@@ -42,7 +42,7 @@ export default function Alarms() {
         <Bell size={18} className="text-accent" /> منبّه الدراسة
       </h2>
       <p className="text-xs text-muted">
-        يرنّ يومياً في الوقت المحدد بالصوت المختار. يعمل والتطبيق مفتوح (أو في الخلفية)، ولا يرنّ إن أُغلق التطبيق تماماً.
+        يصدر المنبّه صوتًا يوميًا في الوقت المحدد، باستخدام نغمة التنبيه المختارة. يعمل عند فتح التطبيق أو تشغيله في الخلفية، لكنه لا يعمل إذا أُغلق التطبيق تمامًا.
       </p>
 
       <form onSubmit={add} className="flex flex-wrap items-end gap-2">
@@ -54,7 +54,7 @@ export default function Alarms() {
         </div>
         <div className="min-w-[8rem] flex-1">
           <label className="label" htmlFor="alarm-label">
-            الاسم
+            اسم المنبّه
           </label>
           <input
             id="alarm-label"
@@ -66,7 +66,7 @@ export default function Alarms() {
           />
         </div>
         <button type="submit" className="btn btn-primary" disabled={!isValidTime(time) || alarms.length >= MAX_ALARMS}>
-          <Plus size={16} /> أضف
+          <Plus size={16} /> إضافة المنبّه
         </button>
       </form>
 
@@ -77,7 +77,7 @@ export default function Alarms() {
               <input
                 type="checkbox"
                 className="h-5 w-5 shrink-0 accent-[rgb(var(--accent))]"
-                aria-label={`تفعيل منبه ${a.label}`}
+                aria-label={`تفعيل منبّه ${a.label}`}
                 checked={a.enabled}
                 onChange={(e) => save(alarms.map((x) => (x.id === a.id ? { ...x, enabled: e.target.checked } : x)))}
               />
@@ -88,7 +88,7 @@ export default function Alarms() {
               <button
                 type="button"
                 className="rounded-lg p-2 text-muted hover:text-bad"
-                aria-label={`حذف منبه ${a.label}`}
+                aria-label={`حذف منبّه ${a.label}`}
                 onClick={() => save(alarms.filter((x) => x.id !== a.id))}
               >
                 <Trash2 size={16} />
@@ -100,7 +100,7 @@ export default function Alarms() {
 
       {perm === 'default' && (
         <button type="button" className="btn btn-ghost w-full text-xs" onClick={() => void askPermission()}>
-          فعّل إشعارات المتصفح ليصلك التنبيه حتى لو كان التطبيق في الخلفية
+          اسمح بإشعارات المتصفح لتصلك التنبيهات عندما يكون التطبيق في الخلفية
         </button>
       )}
       {perm === 'denied' && <p className="text-xs text-muted">إشعارات المتصفح محظورة. يمكنك السماح بها من إعدادات الموقع.</p>}
@@ -108,7 +108,7 @@ export default function Alarms() {
   );
 }
 
-/** يراقب المنبهات ويُظهر شاشة الرنين. يُركَّب مرة واحدة في التطبيق. */
+/** يراقب المنبّهات ويُظهر شاشة الرنين. يُركَّب مرة واحدة في التطبيق. */
 export function AlarmRinger() {
   const alarms = useApp((s) => s.settings.alarms);
   const soundKind = useApp((s) => s.settings.soundKind);
@@ -132,7 +132,7 @@ export function AlarmRinger() {
     return () => window.clearInterval(id);
   }, [updateSettings]);
 
-  // الصوت يتكرر حتى الإيقاف، ويتوقف تلقائياً بعد دقيقة
+  // يتكرر صوت المنبّه حتى إيقافه، ويتوقف تلقائيًا بعد دقيقة
   useEffect(() => {
     if (!ringing) return;
     playSound(soundKind);
@@ -161,7 +161,7 @@ export function AlarmRinger() {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] grid place-items-center bg-base/90 p-6 backdrop-blur" role="alertdialog" aria-label="المنبه">
+    <div className="fixed inset-0 z-[60] grid place-items-center bg-base/90 p-6 backdrop-blur" role="alertdialog" aria-label="المنبّه">
       <div className="card w-full max-w-sm space-y-5 text-center">
         <BellRing size={44} className="mx-auto animate-pulse text-accent" />
         <div>
@@ -170,10 +170,10 @@ export function AlarmRinger() {
         </div>
         <div className="grid grid-cols-2 gap-3">
           <button type="button" className="btn btn-ghost" onClick={snooze}>
-            غفوة 5 دقائق
+            تأجيل 5 دقائق
           </button>
           <button type="button" className="btn btn-primary" onClick={() => setRinging(null)}>
-            إيقاف
+            إيقاف المنبّه
           </button>
         </div>
       </div>
