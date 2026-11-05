@@ -3,7 +3,7 @@ import { CalendarRange, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { useApp } from '../store';
 import { TaskRow } from '../components/TaskRow';
 import { Empty, PageTitle, SubjectDot, SubjectSelect } from '../components/ui';
-import { contextFrom, rescheduleOverdue } from '../lib/advisor';
+import { contextFrom, generatePlan, rescheduleOverdue, type PlanSuggestion } from '../lib/advisor';
 import { addDays, dayNumber, formatLongDate, formatMinutes, toDateKey, weekdayShort } from '../lib/utils';
 
 export default function Planner() {
@@ -12,6 +12,8 @@ export default function Planner() {
   const moveTask = useApp((s) => s.moveTask);
   const moveTasks = useApp((s) => s.moveTasks);
   const [note, setNote] = useState('');
+  const [suggestions, setSuggestions] = useState<PlanSuggestion[] | null>(null);
+  const [applyingPlan, setApplyingPlan] = useState(false);
 
   const today = toDateKey();
   const [weekOffset, setWeekOffset] = useState(0);
@@ -37,6 +39,24 @@ export default function Planner() {
     setNote(`أُعيدت جدولة ${moves.length} ${moves.length === 1 ? 'مهمة' : 'مهام'} متأخرة حتى ${formatLongDate(last)}، وفقًا لهدفك اليومي.`);
   };
 
+  const createSmartPlan = () => {
+    const plan = generatePlan(contextFrom(useApp.getState(), today), 7);
+    setSuggestions(plan);
+    setNote(plan.length ? '' : 'لا توجد اقتراحات كافية الآن. أضف موادك وحدد هدفك اليومي ومواعيد امتحاناتك ثم حاول مجددًا.');
+  };
+
+  const applySmartPlan = async () => {
+    if (!suggestions?.length || applyingPlan) return;
+    setApplyingPlan(true);
+    try {
+      for (const task of suggestions) await addTask(task);
+      setNote(`تمت إضافة ${suggestions.length} مهمة إلى خطتك الأسبوعية.`);
+      setSuggestions(null);
+    } finally {
+      setApplyingPlan(false);
+    }
+  };
+
   const submit = (e: FormEvent) => {
     e.preventDefault();
     const name = title.trim();
@@ -49,6 +69,50 @@ export default function Planner() {
   return (
     <div className="mx-auto max-w-3xl space-y-4">
       <PageTitle title="خطة الدراسة" subtitle="وزّع موادك على أيام الأسبوع وتابع إنجازك" />
+
+      <section className="card space-y-3 border-accent/40">
+        <div className="flex items-start gap-3">
+          <div className="rounded-xl bg-accent/10 p-2 text-accent"><CalendarRange size={20} /></div>
+          <div className="min-w-0 flex-1">
+            <h2 className="font-bold">المخطط الدراسي الذكي</h2>
+            <p className="mt-1 text-sm text-muted">خطة أسبوعية تراعي هدفك اليومي وموادك ومواعيد امتحاناتك والمهام الموجودة مسبقًا.</p>
+          </div>
+        </div>
+        <button type="button" className="btn btn-primary w-full" onClick={createSmartPlan}>
+          إنشاء خطة أسبوعية ذكية
+        </button>
+        {suggestions !== null && (
+          <div className="space-y-3 border-t border-line pt-3">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="font-semibold">معاينة الخطة المقترحة</h3>
+              <span className="chip">{suggestions.length} مهمة</span>
+            </div>
+            {suggestions.length === 0 ? (
+              <Empty>لم أجد وقتًا مناسبًا لإضافة مهام جديدة. تحقق من هدفك اليومي والمواد ومواعيد الامتحانات.</Empty>
+            ) : (
+              <ul className="space-y-2">
+                {suggestions.map((task, index) => (
+                  <li key={`${task.date}-${task.subjectId}-${index}`} className="rounded-xl border border-line/70 bg-base/40 px-3 py-2.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm font-medium">{task.title}</span>
+                      <span className="chip shrink-0">{formatMinutes(task.minutes)}</span>
+                    </div>
+                    <p className="mt-1 text-xs text-muted">{formatLongDate(task.date)}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {suggestions.length > 0 && (
+              <div className="grid grid-cols-2 gap-2">
+                <button type="button" className="btn btn-primary" onClick={() => void applySmartPlan()} disabled={applyingPlan}>
+                  {applyingPlan ? 'جارٍ اعتماد الخطة...' : 'اعتماد الخطة'}
+                </button>
+                <button type="button" className="btn btn-ghost" onClick={() => setSuggestions(null)} disabled={applyingPlan}>إلغاء</button>
+              </div>
+            )}
+          </div>
+        )}
+      </section>
 
       <section className="card">
         <div className="mb-3 flex items-center justify-between">
