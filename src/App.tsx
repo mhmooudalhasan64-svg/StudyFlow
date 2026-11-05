@@ -23,7 +23,7 @@ import {
 import { useApp } from './store';
 import { useHashRoute, type Route } from './lib/route';
 import Dashboard from './pages/Dashboard';
-import About from './pages/About';
+import About, { Intro } from './pages/About';
 import Planner from './pages/Planner';
 import TimerPage from './pages/TimerPage';
 import Exams from './pages/Exams';
@@ -116,6 +116,8 @@ export default function App() {
   const tick = useApp((s) => s.tick);
   const theme = useApp((s) => s.settings.theme);
   const updateSettings = useApp((s) => s.updateSettings);
+  const hideIntro = useApp((s) => s.settings.hideIntro);
+  const [introDone, setIntroDone] = useState(false);
   const route = useHashRoute();
   const online = useOnline();
 
@@ -143,6 +145,10 @@ export default function App() {
   }
 
   const Page = PAGES[route];
+
+  if (!hideIntro && !introDone) {
+    return <Intro onStart={() => setIntroDone(true)} onHide={() => void updateSettings({ hideIntro: true })} />;
+  }
 
   return (
     <div className="mx-auto flex min-h-screen max-w-6xl flex-col md:flex-row">
