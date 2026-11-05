@@ -230,6 +230,9 @@ export default function Dashboard() {
           </p>
         </div>
       </a>
+      <a href="#/about" className="block py-2 text-center text-xs text-muted hover:text-main">
+        متجر سكوڤا • عن التطبيق
+      </a>
     </div>
   );
 }

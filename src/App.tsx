@@ -23,6 +23,7 @@ import {
 import { useApp } from './store';
 import { useHashRoute, type Route } from './lib/route';
 import Dashboard from './pages/Dashboard';
+import About from './pages/About';
 import Planner from './pages/Planner';
 import TimerPage from './pages/TimerPage';
 import Exams from './pages/Exams';
@@ -91,6 +92,7 @@ const PAGES: Record<Route, ComponentType> = {
   achievements: Achievements,
   reports: Reports,
   more: More,
+  about: About,
 };
 
 function useOnline(): boolean {
@@ -222,6 +224,7 @@ function OfflineChip() {
 function Brand() {
   return (
     <a href="#/home" className="flex items-center gap-2.5">
+      <img src="/logo.png" alt="" width={36} height={36} className="h-9 w-9 rounded-xl object-cover" />
       <span className="flex flex-col leading-tight">
         <span className="text-lg font-extrabold tracking-wide">StudyFlow</span>
         <span className="text-[10px] text-muted">مستقبلك يبدأ</span>

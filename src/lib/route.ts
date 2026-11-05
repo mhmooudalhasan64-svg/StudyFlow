@@ -19,6 +19,7 @@ export const ROUTES = [
   'achievements',
   'reports',
   'more',
+  'about',
 ] as const;
 export type Route = (typeof ROUTES)[number];
 

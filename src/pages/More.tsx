@@ -11,6 +11,7 @@ import {
   Layers,
   ListChecks,
   Repeat,
+  Info,
   Settings as SettingsIcon,
   Timer as TimerIcon,
 } from 'lucide-react';
@@ -30,6 +31,7 @@ const ITEMS: { href: string; label: string; Icon: ComponentType<{ size?: number;
   { href: '#/stats', label: 'الإحصاءات', Icon: BarChart3 },
   { href: '#/assistant', label: 'المساعد', Icon: Bot },
   { href: '#/settings', label: 'الإعدادات', Icon: SettingsIcon },
+  { href: '#/about', label: 'عن التطبيق (متجر سكوڤا)', Icon: Info },
 ];
 
 export default function More() {
