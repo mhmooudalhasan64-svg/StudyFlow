@@ -48,24 +48,13 @@ import MindMap from './pages/MindMap';
 
 type NavItem = { route: Route; label: string; Icon: ComponentType<{ size?: number }> };
 
-/** الشريط الجانبي (شاشات كبيرة) */
+/** التنقل المختصر؛ جميع الصفحات متاحة من «كل الميزات» */
 const NAV: NavItem[] = [
   { route: 'home', label: 'الرئيسية', Icon: LayoutDashboard },
   { route: 'plan', label: 'الخطة', Icon: CalendarCheck },
   { route: 'timer', label: 'المؤقت', Icon: TimerIcon },
   { route: 'bac', label: 'البكالوريا', Icon: Landmark },
-  { route: 'library', label: 'مكتبة الكتب', Icon: BookOpen },
-  { route: 'mindmap', label: 'الخرائط الذهنية', Icon: GitBranch },
-  { route: 'quiz', label: 'الأسئلة والاختبارات', Icon: ListChecks },
-  { route: 'curriculum', label: 'خطة المنهاج', Icon: CalendarCheck },
-  { route: 'review', label: 'المراجعة الذكية', Icon: Repeat },
-  { route: 'cards', label: 'البطاقات', Icon: Layers },
-  { route: 'simulator', label: 'محاكي الامتحان', Icon: TimerIcon },
-  { route: 'calc', label: 'حاسبة العلامات', Icon: CalcIcon },
-  { route: 'exams', label: 'الامتحانات', Icon: CalendarClock },
-  { route: 'achievements', label: 'الإنجازات', Icon: Award },
-  { route: 'reports', label: 'التقارير', Icon: FileBarChart },
-  { route: 'stats', label: 'إحصاءات', Icon: BarChart3 },
+  { route: 'more', label: 'كل الميزات', Icon: MoreHorizontal },
 ];
 
 /** شريط الجوال السفلي: الأهم فقط والباقي في «المزيد» */
@@ -189,7 +178,7 @@ export default function App() {
             <a
               key={r}
               href={`#/${r}`}
-              aria-current={route === r ? 'page' : undefined}
+              aria-current={(route === r || (r === 'more' && !NAV.some((n) => n.route === route))) ? 'page' : undefined}
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
                 route === r
                   ? 'bg-gradient-to-l from-accent/20 to-accent2/20 text-accent'
