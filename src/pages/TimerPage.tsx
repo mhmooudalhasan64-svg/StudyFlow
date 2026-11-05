@@ -6,6 +6,7 @@ import { MODE_LABEL, modeMs, type TimerMode } from '../lib/timer';
 import { formatClock, formatMinutes, toDateKey } from '../lib/utils';
 import { minutesByDay } from '../lib/stats';
 import { playSound, primeAudio, SOUNDS, type SoundKind } from '../lib/sound';
+import Alarms from '../components/Alarms';
 
 function useNow(active: boolean, intervalMs = 250): number {
   const [now, setNow] = useState(() => Date.now());
@@ -174,6 +175,8 @@ export default function TimerPage() {
           </div>
         )}
       </div>
+
+      <Alarms />
 
       <p className="px-2 text-center text-xs text-muted">
         بعد كل 4 جلسات تركيز تأتي استراحة طويلة. يمكنك تعديل المدد من الإعدادات.

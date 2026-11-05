@@ -24,6 +24,8 @@ import { useApp } from './store';
 import { useHashRoute, type Route } from './lib/route';
 import Dashboard from './pages/Dashboard';
 import About, { Intro } from './pages/About';
+import { AlarmRinger } from './components/Alarms';
+import { primeAudio } from './lib/sound';
 import Planner from './pages/Planner';
 import TimerPage from './pages/TimerPage';
 import Exams from './pages/Exams';
@@ -146,11 +148,19 @@ export default function App() {
   const Page = PAGES[route];
 
   if (!introDone) {
-    return <Intro onStart={() => setIntroDone(true)} />;
+    return (
+      <Intro
+        onStart={() => {
+          primeAudio();
+          setIntroDone(true);
+        }}
+      />
+    );
   }
 
   return (
     <div className="mx-auto flex min-h-screen max-w-6xl flex-col md:flex-row">
+      <AlarmRinger />
       {/* الشريط الجانبي (شاشات كبيرة) */}
       <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
         <Brand />

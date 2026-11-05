@@ -68,6 +68,8 @@ export interface Settings {
   longMin: number;
   sound: boolean;
   /** نوع صوت التنبيه (الافتراضي: كلاسيكي) */
+  /** منبهات الدراسة اليومية */
+  alarms?: import('./lib/alarm').Alarm[];
   soundKind?: 'classic' | 'bell' | 'chime' | 'marimba' | 'digital' | 'zen' | 'harp';
   /** فرع البكالوريا المختار */
   branch: Branch;
