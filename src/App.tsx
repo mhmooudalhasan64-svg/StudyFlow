@@ -116,7 +116,6 @@ export default function App() {
   const tick = useApp((s) => s.tick);
   const theme = useApp((s) => s.settings.theme);
   const updateSettings = useApp((s) => s.updateSettings);
-  const hideIntro = useApp((s) => s.settings.hideIntro);
   const [introDone, setIntroDone] = useState(false);
   const route = useHashRoute();
   const online = useOnline();
@@ -146,8 +145,8 @@ export default function App() {
 
   const Page = PAGES[route];
 
-  if (!hideIntro && !introDone) {
-    return <Intro onStart={() => setIntroDone(true)} onHide={() => void updateSettings({ hideIntro: true })} />;
+  if (!introDone) {
+    return <Intro onStart={() => setIntroDone(true)} />;
   }
 
   return (

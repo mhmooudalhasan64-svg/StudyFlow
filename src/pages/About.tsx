@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { PageTitle } from '../components/ui';
 
 const NAME_AR = 'متجر سكوڤا';
@@ -36,28 +35,14 @@ export default function About() {
 }
 
 /** شاشة الترحيب عند فتح التطبيق */
-export function Intro({ onStart, onHide }: { onStart: () => void; onHide: () => void }) {
-  const [never, setNever] = useState(false);
+export function Intro({ onStart }: { onStart: () => void }) {
   return (
     <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-base p-6" role="dialog" aria-label="مرحباً بك">
       <div className="w-full max-w-md space-y-6">
         <Content />
-        <div className="space-y-3">
-          <button
-            type="button"
-            className="btn btn-primary w-full"
-            onClick={() => {
-              if (never) onHide();
-              onStart();
-            }}
-          >
-            ابدأ الآن
-          </button>
-          <label className="flex items-center justify-center gap-2 text-xs text-muted">
-            <input type="checkbox" className="h-4 w-4 accent-[rgb(var(--accent))]" checked={never} onChange={(e) => setNever(e.target.checked)} />
-            لا تعرض هذه الشاشة مرة أخرى
-          </label>
-        </div>
+        <button type="button" className="btn btn-primary w-full" onClick={onStart}>
+          ابدأ الآن
+        </button>
       </div>
     </div>
   );

@@ -76,8 +76,6 @@ export interface Settings {
   targetPct: number;
   /** وقت آخر نسخة احتياطية نزّلتها (لتذكيرك أسبوعياً) */
   lastBackup?: number;
-  /** إخفاء شاشة الترحيب عند فتح التطبيق */
-  hideIntro?: boolean;
 }
 
 /** كتاب مدرسي (البيانات الوصفية فقط؛ الملف في bookFiles) */
