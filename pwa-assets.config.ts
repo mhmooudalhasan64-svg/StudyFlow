@@ -1,7 +1,7 @@
 import { defineConfig, minimal2023Preset } from '@vite-pwa/assets-generator/config';
 
 // خلفية داكنة لحواف الأيقونات القابلة للاقتصاص بدل الأبيض الافتراضي
-const background = '#080b18';
+const background = '#05040f';
 
 export default defineConfig({
   preset: {
