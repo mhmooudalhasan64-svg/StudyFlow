@@ -11,6 +11,7 @@ import {
   ListChecks,
   Repeat,
   Timer as TimerIcon,
+  Target,
 } from 'lucide-react';
 import type { ComponentType } from 'react';
 import { useApp } from '../store';
@@ -38,6 +39,7 @@ export default function Bac() {
   const questions = useApp((s) => s.questions);
   const books = useApp((s) => s.books);
   const cards = useApp((s) => s.cards);
+  const attempts = useApp((s) => s.attempts);
   const setBranch = useApp((s) => s.setBranch);
 
   const [view, setView] = useState<Branch>(settings.branch);
@@ -46,6 +48,20 @@ export default function Bac() {
   const list = useMemo(() => branchSubjects(subjects, view), [subjects, view]);
   const missing = useMemo(() => missingBranchSubjects(subjects, view), [subjects, view]);
   const isCurrent = settings.branch === view;
+  const branchSubjectIds = new Set(list.map((subject) => subject.id));
+  const branchLessons = lessons.filter((lesson) => branchSubjectIds.has(lesson.subjectId));
+  const completedLessons = branchLessons.filter((lesson) => lesson.done).length;
+  const curriculumProgress = branchLessons.length
+    ? Math.round((completedLessons / branchLessons.length) * 100)
+    : null;
+  const branchAttempts = attempts.filter((attempt) => branchSubjectIds.has(attempt.subjectId));
+  const correctAttempts = branchAttempts.filter((attempt) => attempt.correct).length;
+  const quizAccuracy = branchAttempts.length
+    ? Math.round((correctAttempts / branchAttempts.length) * 100)
+    : null;
+  const readiness = curriculumProgress !== null && branchAttempts.length >= 5
+    ? Math.round(curriculumProgress * 0.65 + (quizAccuracy ?? 0) * 0.35)
+    : null;
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
@@ -100,6 +116,48 @@ export default function Bac() {
             ستُضاف المواد التالية عند الاعتماد: {missing.join('، ')}
           </p>
         )}
+      </section>
+
+      <section className="card space-y-3 border-accent/40">
+        <div className="flex items-center gap-2">
+          <Target size={20} className="text-accent" />
+          <div>
+            <h2 className="font-bold">مؤشر الجاهزية للبكالوريا</h2>
+            <p className="text-xs text-muted">تقدير إرشادي من إنجاز المنهاج ونتائج الأسئلة، وليس علامة رسمية.</p>
+          </div>
+        </div>
+        {readiness === null ? (
+          <div className="rounded-xl border border-line/70 bg-base/40 p-3">
+            <p className="font-semibold">نحتاج بيانات أكثر لحساب المؤشر</p>
+            <p className="mt-1 text-sm text-muted">
+              {curriculumProgress === null
+                ? "أضف دروس المنهاج وحدّد ما أنجزته."
+                : `أنجزت ${completedLessons} من ${branchLessons.length} درسًا. أجب عن ${Math.max(0, 5 - branchAttempts.length)} أسئلة إضافية على الأقل لتفعيل تقدير دقة الإجابات.`}
+            </p>
+          </div>
+        ) : (
+          <div className="flex items-center gap-4 rounded-xl border border-line/70 bg-base/40 p-3">
+            <div className="grid h-20 w-20 shrink-0 place-items-center rounded-full border-4 border-accent text-2xl font-extrabold">
+              {readiness}%
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold">{readiness >= 80 ? "تقدّم قوي" : readiness >= 60 ? "تقدّم جيد، واصل" : "هناك مجال واضح للتحسّن"}</p>
+              <p className="mt-1 text-xs text-muted">65٪ إنجاز المنهاج · 35٪ دقة الإجابات</p>
+            </div>
+          </div>
+        )}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-xl bg-base/40 p-3">
+            <p className="text-xs text-muted">إنجاز الدروس</p>
+            <p className="mt-1 text-xl font-bold">{curriculumProgress === null ? "—" : `${curriculumProgress}%`}</p>
+            <p className="text-[11px] text-muted">{completedLessons} من {branchLessons.length} درس</p>
+          </div>
+          <div className="rounded-xl bg-base/40 p-3">
+            <p className="text-xs text-muted">دقة الإجابات</p>
+            <p className="mt-1 text-xl font-bold">{quizAccuracy === null ? "—" : `${quizAccuracy}%`}</p>
+            <p className="text-[11px] text-muted">{correctAttempts} صحيحة من {branchAttempts.length}</p>
+          </div>
+        </div>
       </section>
 
       <section className="card space-y-3">
