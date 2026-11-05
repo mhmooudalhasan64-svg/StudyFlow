@@ -81,7 +81,7 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
       }
       const p = await extractPdfPages(file, (n, t) => setProgress(`جارٍ قراءة الكتاب… ${n} / ${t}`));
       if (looksScanned(p)) {
-        setError('هذا الكتاب صور ممسوحة ضوئياً ولا يحتوي نصاً يمكن قراءته، لذلك لا أستطيع إنشاء أسئلة منه. جرّب نسخة PDF نصية (غير مصوّرة).');
+        setError('هذا الكتاب عبارة عن صور ممسوحة ضوئيًا، ولا يحتوي على نص قابل للقراءة؛ لذلك لا يمكنني إنشاء أسئلة منه. جرّب نسخة PDF نصية غير مصوّرة.');
         return;
       }
       const title = file.name.replace(/\.pdf$/i, '');
@@ -119,7 +119,7 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
     if (!pages || !subject) return null;
     const sel = selection();
     if (!sel) {
-      setError('حدّد الصفحات بشكل صحيح، مثل 12-40.');
+      setError('حدّد نطاق الصفحات بشكل صحيح، مثل 12–40.');
       return null;
     }
     const text = textOfPages(pages, sel.from, sel.to);
@@ -156,7 +156,7 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
       }
     }
     if (items.length === 0) {
-      throw new Error(lastError || 'لم أجد في هذه الصفحات محتوى موثوقاً مبنياً على نص الكتاب. جرّب نطاقاً أوسع أو أعد المحاولة.');
+      throw new Error(lastError || 'لم أجد في هذه الصفحات محتوى موثوقًا يستند إلى نص الكتاب. جرّب نطاقًا أوسع أو أعد المحاولة.');
     }
     return { items, dropped };
   };
@@ -170,7 +170,7 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
     setError('');
     setAnswer(null);
     if (ctx.pages.length === 0) {
-      setError('لم أجد في الصفحات المحددة ما يخص سؤالك. جرّب كلمات أخرى أو وسّع نطاق الصفحات.');
+      setError('لم أجد في الصفحات المحددة ما يتعلق بسؤالك. جرّب كلمات أخرى أو وسّع نطاق الصفحات.');
       return;
     }
     setBusy(true);
@@ -206,7 +206,7 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
       await importQuestions(parsed);
       const texts = new Set(parsed.map((x) => x.text));
       const fresh = useApp.getState().questions.filter((x) => x.subjectId === job.subject.id && texts.has(x.text));
-      if (dropped > 0) setNote(`استُبعد ${dropped} سؤالاً لأنه لم يُثبَّت بنص الكتاب.`);
+      if (dropped > 0) setNote(`استُبعد ${dropped} سؤالًا لعدم ثبوت وروده في نص الكتاب.`);
       onStart(shuffle(fresh));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'تعذّر إنشاء الاختبار');
@@ -235,7 +235,7 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
         })
         .map((x) => ({
           ...x,
-          explanation: `إجابة مقترحة من المساعد، تحقق منها من نموذج الإجابة الرسمي.${x.explanation ? ' ' + String(x.explanation) : ''}`,
+          explanation: `إجابة مقترحة من المساعد؛ تحقّق منها بالرجوع إلى نموذج الإجابة الرسمي.${x.explanation ? ' ' + String(x.explanation) : ''}`,
         }));
       const label = `دورة: ${name} (ص${job.sel.from}${job.sel.to > job.sel.from ? `–${job.sel.to}` : ''})`;
       const parsed = parseGeneratedQuiz(JSON.stringify(unique.slice(0, count)), job.subject.name, label);
@@ -264,7 +264,7 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
       const cards = toCards(items).slice(0, count);
       if (cards.length === 0) throw new Error('لم أستطع إنشاء بطاقات صالحة من هذه الصفحات. جرّب نطاقاً آخر.');
       for (const c of cards) await addCard({ subjectId: job.subject.id, category: c.category, front: c.front, back: c.back });
-      setNote(`أُضيفت ${cards.length} بطاقة إلى صفحة «المراجعة»${dropped > 0 ? `، واستُبعد ${dropped} غير مثبتة بنص الكتاب` : ''}.`);
+      setNote(`أُضيفت ${cards.length} بطاقة إلى صفحة «المراجعة»${dropped > 0 ? `، واستُبعد ${dropped} غير مدعومة بنص الكتاب` : ''}.`);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'تعذّر إنشاء البطاقات');
     } finally {
@@ -288,7 +288,7 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
 
       {!pages && saved.length > 0 && (
         <div className="space-y-1.5">
-          <p className="text-xs text-muted">كتب محفوظة في جهازك (دون إعادة قراءة):</p>
+          <p className="text-xs text-muted">كتب محفوظة على جهازك (من دون الحاجة إلى إعادة قراءتها):</p>
           {saved.map((b) => (
             <div key={b.key} className="flex items-center gap-2 rounded-xl border border-line/70 px-3 py-2 text-sm">
               <span className="min-w-0 flex-1 truncate">
@@ -433,7 +433,7 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
           </div>
 
           <button type="button" className="btn btn-ghost w-full" disabled={busy || !subject} onClick={() => void importExam()}>
-            <FileUp size={16} /> الملف ورقة دورة؟ استخرج أسئلتها كما هي
+            <FileUp size={16} /> الملف ورقة امتحان من دورة سابقة؟ استخرج أسئلتها كما وردت
           </button>
           <button type="button" className="btn btn-ghost w-full" disabled={busy || !subject} onClick={() => void makeCards()}>
             <Copy size={16} /> حوّل الصفحات إلى بطاقات مراجعة

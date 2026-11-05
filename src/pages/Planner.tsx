@@ -34,7 +34,7 @@ export default function Planner() {
     if (moves.length === 0) return;
     void moveTasks(moves);
     const last = moves.reduce((m, x) => (x.date > m ? x.date : m), moves[0].date);
-    setNote(`أُعيد تنظيم ${moves.length} ${moves.length === 1 ? 'مهمة' : 'مهام'} متأخرة حتى ${formatLongDate(last)}، بحسب هدفك اليومي.`);
+    setNote(`أُعيدت جدولة ${moves.length} ${moves.length === 1 ? 'مهمة' : 'مهام'} متأخرة حتى ${formatLongDate(last)}، وفقًا لهدفك اليومي.`);
   };
 
   const submit = (e: FormEvent) => {
@@ -120,7 +120,7 @@ export default function Planner() {
           </div>
           <div>
             <label className="label" htmlFor="task-min">
-              المدة (دقيقة)
+              المدة (بالدقائق)
             </label>
             <input
               id="task-min"
@@ -151,7 +151,7 @@ export default function Planner() {
           <div className="mb-3 flex items-center justify-between gap-2">
             <h2 className="font-bold text-bad">مهام متأخرة ({overdue.length})</h2>
             <button type="button" className="btn btn-primary !py-1.5 text-xs" onClick={reorganize}>
-              <CalendarRange size={14} /> أعد تنظيمها تلقائياً
+              <CalendarRange size={14} /> أعد جدولتها تلقائيًا
             </button>
           </div>
           <ul className="space-y-2">
@@ -165,7 +165,7 @@ export default function Planner() {
                   </div>
                 </div>
                 <button type="button" className="btn btn-ghost shrink-0 !py-1.5" onClick={() => void moveTask(t.id, today)}>
-                  نقل لليوم
+                  انقل إلى اليوم
                 </button>
               </li>
             ))}
@@ -175,7 +175,7 @@ export default function Planner() {
 
       <section className="card">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-bold">مهام اليوم المحدد</h2>
+          <h2 className="font-bold">مهام اليوم المختار</h2>
           <span className="text-sm text-muted">
             {doneCount}/{dayTasks.length} • {formatMinutes(plannedMin)}
           </span>

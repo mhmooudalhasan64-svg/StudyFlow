@@ -34,7 +34,7 @@ export default function Exams() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <PageTitle title="العدّ التنازلي للامتحانات" subtitle="اعرف كم بقي لكل مادة وخطّط وفق ذلك" />
+      <PageTitle title="العدّ التنازلي للامتحانات" subtitle="اعرف المدة المتبقية لكل امتحان وخطّط وفقًا لها" />
 
       <form onSubmit={submit} className="card space-y-3">
         <h2 className="font-bold">إضافة امتحان</h2>
@@ -54,7 +54,7 @@ export default function Exams() {
         </div>
         <div>
           <label className="label" htmlFor="exam-title">
-            العنوان (اختياري)
+            اسم الامتحان (اختياري)
           </label>
           <input
             id="exam-title"
@@ -73,7 +73,7 @@ export default function Exams() {
       <section className="space-y-3">
         <h2 className="font-bold">القادمة</h2>
         {upcoming.length === 0 ? (
-          <Empty>لا امتحانات قادمة. أضف موعد أول امتحان لتبدأ العدّ التنازلي.</Empty>
+          <Empty>لا توجد امتحانات قادمة. أضف موعد أول امتحان لبدء العدّ التنازلي.</Empty>
         ) : (
           <ul className="space-y-3">
             {upcoming.map((e, i) => {

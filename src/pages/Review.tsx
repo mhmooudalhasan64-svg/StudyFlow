@@ -31,7 +31,7 @@ export default function Review() {
   const save = (e: FormEvent) => {
     e.preventDefault();
     const parsed = parseIntervals(text);
-    if (!parsed) return setError('اكتب أرقاماً صحيحة بين 1 و365 مفصولة بفواصل، مثل: 1، 3، 7، 14، 30');
+    if (!parsed) return setError('أدخل أرقامًا صحيحة بين 1 و365، وافصل بينها بفواصل، مثل: 1، 3، 7، 14، 30');
     setError('');
     void updateSettings({ reviewIntervals: parsed });
     setText(parsed.join('، '));
@@ -52,14 +52,14 @@ export default function Review() {
         </a>
         <div className="card text-center">
           <div className="text-xl font-extrabold">{mastered}</div>
-          <div className="text-xs text-muted">دروس أتمّت السلّم</div>
+          <div className="text-xs text-muted">دروس أكملت مراحل المراجعة</div>
         </div>
       </section>
 
       <section className="card space-y-3">
         <h2 className="font-bold">مستحقة اليوم</h2>
         {due.length === 0 ? (
-          <Empty>لا مراجعات مستحقة الآن. أنجز دروساً من «خطة إنهاء المنهاج» لتظهر هنا.</Empty>
+          <Empty>لا توجد مراجعات مستحقة الآن. أنجز بعض الدروس من «خطة إنهاء المنهاج» لتظهر هنا.</Empty>
         ) : (
           <ul className="space-y-2">
             {due.map((l) => (
@@ -77,10 +77,10 @@ export default function Review() {
                   </div>
                   <div className="flex gap-2">
                     <button type="button" className="btn btn-primary !px-3 !py-1.5" onClick={() => void reviewLesson(l.id, true)}>
-                      <Check size={15} /> راجعتها
+                      <Check size={15} /> تمت مراجعتها
                     </button>
                     <button type="button" className="btn btn-ghost !px-3 !py-1.5" onClick={() => void reviewLesson(l.id, false)}>
-                      <RotateCcw size={15} /> نسيتها
+                      <RotateCcw size={15} /> لم أتذكرها
                     </button>
                   </div>
                 </div>
@@ -114,7 +114,7 @@ export default function Review() {
           inputMode="numeric"
         />
         <p className="text-xs text-muted">
-          «راجعتها» تنقل الدرس للفاصل التالي، و«نسيتها» تعيده للأول. تنطبق التغييرات على المراجعات القادمة.
+          «تمت مراجعتها» تنقل الدرس للفاصل التالي، و«لم أتذكرها» تعيده للأول. تنطبق التغييرات على المراجعات القادمة.
         </p>
         {error && (
           <p role="alert" className="text-sm text-bad">

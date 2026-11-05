@@ -88,7 +88,7 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-4">
-      <PageTitle title="الإعدادات" subtitle="كل بياناتك محفوظة على جهازك فقط" />
+      <PageTitle title="الإعدادات" subtitle="تُحفظ جميع بياناتك على هذا الجهاز فقط" />
 
       <section className="card space-y-4">
         <h2 className="font-bold">المؤقت والهدف</h2>
@@ -96,7 +96,7 @@ export default function SettingsPage() {
           <NumberField label="مدة التركيز" unit="دقيقة" value={settings.focusMin} min={1} max={120} onCommit={(n) => void update({ focusMin: n })} />
           <NumberField label="استراحة قصيرة" unit="دقيقة" value={settings.shortMin} min={1} max={60} onCommit={(n) => void update({ shortMin: n })} />
           <NumberField label="استراحة طويلة" unit="دقيقة" value={settings.longMin} min={1} max={60} onCommit={(n) => void update({ longMin: n })} />
-          <NumberField label="هدف الدراسة اليومي" unit="دقيقة" value={settings.dailyGoalMin} min={10} max={720} onCommit={(n) => void update({ dailyGoalMin: n })} />
+          <NumberField label="الهدف اليومي للدراسة" unit="دقيقة" value={settings.dailyGoalMin} min={10} max={720} onCommit={(n) => void update({ dailyGoalMin: n })} />
         </div>
         <label className="flex items-center justify-between gap-3 text-sm">
           <span>تنبيه صوتي عند انتهاء الجلسة</span>
@@ -216,7 +216,7 @@ export default function SettingsPage() {
       <section className="card space-y-3">
         <h2 className="font-bold">البيانات دون إنترنت</h2>
         <p className="text-sm text-muted">
-          التطبيق وبياناتك وكتبك المحمّلة تعمل دون إنترنت بعد أول تحميل. لا توجد مزامنة سحابية بعد (لا حسابات)، لذلك استخدم النسخة الاحتياطية لنقل بياناتك بين الأجهزة.
+          التطبيق وبياناتك وكتبك المحمّلة تعمل دون إنترنت بعد أول تحميل. لا تتوفر مزامنة سحابية حاليًا ولا توجد حسابات مستخدمين؛ لذا استخدم النسخة الاحتياطية لنقل بياناتك بين الأجهزة.
         </p>
         {storage && (
           <p className="flex items-center gap-2 text-sm">
@@ -229,7 +229,7 @@ export default function SettingsPage() {
             اطلب حماية البيانات من الحذف التلقائي
           </button>
         )}
-        {persisted === true && <p className="text-xs text-ok">التخزين محمي من الحذف التلقائي.</p>}
+        {persisted === true && <p className="text-xs text-ok">تم تفعيل حماية التخزين من الحذف التلقائي.</p>}
         <div className="flex flex-wrap gap-2">
           <button type="button" className="btn btn-ghost" onClick={() => void doExport()}>
             <Download size={16} /> تصدير نسخة احتياطية
@@ -239,7 +239,7 @@ export default function SettingsPage() {
           </button>
           <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={doImport} />
         </div>
-        <p className="text-xs text-muted">النسخة لا تتضمن ملفات PDF للكتب؛ أعد إضافتها على الجهاز الجديد.</p>
+        <p className="text-xs text-muted">لا تتضمن النسخة الاحتياطية ملفات الكتب بصيغة PDF؛ لذا أعد إضافتها على الجهاز الجديد.</p>
         {backupMsg && (
           <p role="status" className={`text-sm ${backupMsg.kind === 'ok' ? 'text-ok' : 'text-bad'}`}>
             {backupMsg.text}
@@ -250,7 +250,7 @@ export default function SettingsPage() {
       <section className="card space-y-3">
         <h2 className="font-bold">مسح البيانات</h2>
         <p className="text-sm text-muted">
-          حذف بيانات الموقع من المتصفح أو مسح كل البيانات يمحو تقدمك وكتبك.
+          قد يؤدي حذف بيانات الموقع من المتصفح أو مسح جميع البيانات إلى فقدان تقدمك وكتبك.
         </p>
         <button type="button" className="btn btn-danger" onClick={confirmReset}>
           <Trash2 size={16} /> مسح كل البيانات
