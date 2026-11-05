@@ -90,3 +90,48 @@ export function pickDaily(
 export function dailyResult(results: readonly ExamResult[], today: string): ExamResult | undefined {
   return results.find((r) => r.kind === 'daily' && r.dateKey === today);
 }
+
+export interface WeakUnit {
+  subjectId: number;
+  unit: string;
+  /** 0 إلى 1 */
+  accuracy: number;
+  attempts: number;
+  questions: Question[];
+}
+
+/** الوحدات التي دقتك فيها أقل من 70% (بعد 3 محاولات على الأقل)، الأضعف أولاً */
+export function weakUnits(attempts: readonly Attempt[], questions: readonly Question[], minAttempts = 3, limit = 3): WeakUnit[] {
+  const byId = new Map(questions.map((q) => [q.id, q]));
+  const groups = new Map<string, { subjectId: number; unit: string; ok: number; n: number }>();
+  for (const a of attempts) {
+    const q = byId.get(a.questionId);
+    const unit = q?.unit?.trim();
+    if (!q || !unit) continue;
+    const key = `${q.subjectId}|${unit}`;
+    const g = groups.get(key) ?? { subjectId: q.subjectId, unit, ok: 0, n: 0 };
+    g.n++;
+    if (a.correct) g.ok++;
+    groups.set(key, g);
+  }
+  return [...groups.values()]
+    .filter((g) => g.n >= minAttempts && g.ok / g.n < 0.7)
+    .sort((a, b) => a.ok / a.n - b.ok / b.n || b.n - a.n)
+    .slice(0, limit)
+    .map((g) => ({
+      subjectId: g.subjectId,
+      unit: g.unit,
+      accuracy: g.ok / g.n,
+      attempts: g.n,
+      questions: questions.filter((q) => q.subjectId === g.subjectId && q.unit?.trim() === g.unit),
+    }));
+}
+
+/** طلب للمعلّم: تحليل نمط أخطائي (حتى 6 أسئلة) واقتراح خطة إصلاح قصيرة */
+export function mistakesPrompt(mistakes: readonly Question[], subjectName: (id: number) => string): string {
+  const list = mistakes
+    .slice(0, 6)
+    .map((q, i) => `${i + 1}) [${subjectName(q.subjectId)}] ${q.text}\nالإجابة الصحيحة: ${q.options[q.answerIndex]}`)
+    .join('\n\n');
+  return `هذه أسئلة أخطأت فيها مؤخراً. حلّل لي أنماط أخطائي (ما الذي أخلط فيه؟)، ثم اقترح خطة مراجعة قصيرة من 3 نقاط:\n\n${list}`;
+}

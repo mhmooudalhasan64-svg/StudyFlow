@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { CheckCircle2, ClipboardList, Database, Flame, Loader2, MessageCircleQuestion, RotateCcw, Sparkles, XCircle } from 'lucide-react';
+import { CheckCircle2, ClipboardList, Database, Flame, Target, Loader2, MessageCircleQuestion, RotateCcw, Sparkles, XCircle } from 'lucide-react';
 import { useApp } from '../store';
 import type { Question } from '../db';
 import QuestionBank from '../components/QuestionBank';
@@ -8,7 +8,7 @@ import { Empty, PageTitle } from '../components/ui';
 import { shuffle, toDateKey } from '../lib/utils';
 import { requestQuiz, useChat } from '../lib/chatStore';
 import { parseGeneratedQuiz } from '../lib/questionsIO';
-import { currentMistakes, dailyResult, mistakesBySubject, pickDaily } from '../lib/practice';
+import { currentMistakes, dailyResult, mistakesBySubject, mistakesPrompt, pickDaily, weakUnits } from '../lib/practice';
 import { XP_RULES } from '../lib/xp';
 
 type Phase = 'menu' | 'play' | 'result' | 'bank';
@@ -45,6 +45,7 @@ export default function Quiz() {
 
   const today = toDateKey();
   const mistakes = useMemo(() => currentMistakes(attempts, questions), [attempts, questions]);
+  const weak = useMemo(() => weakUnits(attempts, questions), [attempts, questions]);
   const mistakeStats = useMemo(
     () =>
       [...mistakesBySubject(mistakes)]
@@ -316,9 +317,46 @@ export default function Quiz() {
             <button type="button" className="btn btn-primary w-full" onClick={() => begin(shuffle(mistakes).slice(0, 20))}>
               راجع أخطائي ({Math.min(mistakes.length, 20)})
             </button>
+            {mistakes.length >= 2 && (
+              <button
+                type="button"
+                className="btn btn-ghost w-full"
+                onClick={() => {
+                  const name = (id: number) => subjects.find((s) => s.id === id)?.name ?? 'مادة';
+                  void useChat.getState().send(mistakesPrompt(mistakes, name));
+                  window.location.hash = '#/assistant';
+                }}
+              >
+                <MessageCircleQuestion size={16} /> حلّل أخطائي مع المعلّم
+              </button>
+            )}
           </>
         )}
       </section>
+
+      {weak.length > 0 && (
+        <section className="card space-y-2">
+          <h2 className="flex items-center gap-2 font-bold">
+            <Target size={18} className="text-accent" /> أضعف وحداتك
+          </h2>
+          <p className="text-xs text-muted">وحدات دقتك فيها أقل من 70%. تدرّب عليها مباشرة:</p>
+          <ul className="space-y-2">
+            {weak.map((w) => (
+              <li key={`${w.subjectId}-${w.unit}`} className="flex items-center gap-2 rounded-xl border border-line/70 px-3 py-2 text-sm">
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate">{w.unit}</span>
+                  <span className="text-xs text-muted">
+                    {subjects.find((s) => s.id === w.subjectId)?.name} • دقتك {Math.round(w.accuracy * 100)}% ({w.attempts} محاولات)
+                  </span>
+                </span>
+                <button type="button" className="btn btn-primary shrink-0 !py-1.5 text-xs" onClick={() => begin(shuffle(w.questions).slice(0, 15))}>
+                  تدرّب
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="card space-y-3">
         <h2 className="flex items-center gap-2 font-bold">
