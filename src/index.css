@@ -85,3 +85,113 @@ body {
     animation-duration: 0.01ms !important;
   }
 }
+
+
+/* لمسات بصرية محسّنة لواجهة Study Flow */
+.card {
+  border-color: rgb(var(--line) / 0.82);
+  background-image: linear-gradient(145deg, rgb(var(--card) / 0.96), rgb(var(--card) / 0.78));
+  box-shadow: 0 10px 30px rgb(var(--accent2) / 0.075), inset 0 1px 0 rgb(255 255 255 / 0.12);
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 3px;
+}
+
+aside nav a[aria-current='page'] {
+  position: relative;
+  border: 1px solid rgb(var(--accent) / 0.18);
+  box-shadow: inset 0 0 18px rgb(var(--accent2) / 0.07);
+}
+
+aside nav a[aria-current='page']::before {
+  position: absolute;
+  inset-block: 25%;
+  inset-inline-start: -1rem;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(to bottom, rgb(var(--accent)), rgb(var(--accent2)));
+  content: '';
+}
+
+@media (hover: hover) {
+  .card:hover {
+    border-color: rgb(var(--accent) / 0.42);
+    box-shadow: 0 14px 34px rgb(var(--accent2) / 0.11), inset 0 1px 0 rgb(255 255 255 / 0.14);
+  }
+}
+
+@media (max-width: 640px) {
+  .card {
+    border-radius: 1.15rem;
+    box-shadow: 0 7px 22px rgb(var(--accent2) / 0.065);
+  }
+
+  main {
+    scroll-padding-bottom: 6rem;
+  }
+}
+
+
+.dashboard-hero {
+  background:
+    radial-gradient(ellipse at 8% 10%, rgb(var(--accent2) / 0.16), transparent 48%),
+    radial-gradient(ellipse at 90% 90%, rgb(var(--accent) / 0.14), transparent 42%),
+    linear-gradient(135deg, rgb(var(--card) / 0.98), rgb(var(--card) / 0.78));
+  isolation: isolate;
+}
+
+.dashboard-orb {
+  position: absolute;
+  z-index: 0;
+  width: 13rem;
+  height: 13rem;
+  border: 1px solid rgb(var(--accent) / 0.12);
+  border-radius: 9999px;
+  pointer-events: none;
+}
+
+.dashboard-orb-one {
+  inset-inline-end: -5rem;
+  top: -7rem;
+  box-shadow: 0 0 0 1.5rem rgb(var(--accent) / 0.035), 0 0 0 3rem rgb(var(--accent2) / 0.025);
+}
+
+.dashboard-orb-two {
+  inset-inline-start: -8rem;
+  bottom: -10rem;
+  width: 17rem;
+  height: 17rem;
+  border-color: rgb(var(--accent2) / 0.12);
+}
+
+.dashboard-stat {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.85rem;
+  border: 1px solid rgb(var(--line) / 0.9);
+  border-radius: 1.25rem;
+  background: rgb(var(--card) / 0.78);
+  padding: 1rem;
+  box-shadow: 0 8px 24px rgb(var(--accent2) / 0.06);
+  backdrop-filter: blur(12px);
+}
+
+.dashboard-stat-icon {
+  display: inline-grid;
+  width: 2.65rem;
+  height: 2.65rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgb(var(--accent) / 0.18);
+  border-radius: 0.95rem;
+  background: linear-gradient(145deg, rgb(var(--accent) / 0.13), rgb(var(--accent2) / 0.12));
+  color: rgb(var(--accent));
+}
