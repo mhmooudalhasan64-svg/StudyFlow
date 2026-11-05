@@ -102,6 +102,31 @@ export default function Dashboard() {
         </div>
       </section>
 
+      <section className="card">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="font-bold">مهام اليوم</h2>
+          <a href="#/plan" className="text-sm text-accent">
+            فتح الخطة
+          </a>
+        </div>
+        {todayTasks.length === 0 ? (
+          <Empty>لا مهام لليوم. أضف مهمة من صفحة الخطة.</Empty>
+        ) : (
+          <ul className="space-y-2">
+            {todayTasks.map((t) => (
+              <TaskRow key={t.id} task={t} />
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <details className="card group">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-bold">
+          <span>متابعة التقدم والأدوات الإضافية</span>
+          <span className="text-xs font-medium text-accent group-open:hidden">عرض التفاصيل</span>
+          <span className="hidden text-xs font-medium text-accent group-open:inline">إخفاء التفاصيل</span>
+        </summary>
+        <div className="mt-5 space-y-5">
       <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div className="dashboard-stat">
           <span className="dashboard-stat-icon"><Flame size={19} /></span>
@@ -179,23 +204,7 @@ export default function Dashboard() {
         </section>
       )}
 
-      <section className="card">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-bold">مهام اليوم</h2>
-          <a href="#/plan" className="text-sm text-accent">
-            فتح الخطة
-          </a>
-        </div>
-        {todayTasks.length === 0 ? (
-          <Empty>لا مهام لليوم. أضف مهمة من صفحة الخطة.</Empty>
-        ) : (
-          <ul className="space-y-2">
-            {todayTasks.map((t) => (
-              <TaskRow key={t.id} task={t} />
-            ))}
-          </ul>
-        )}
-      </section>
+
 
       {dueLessons + dueCards > 0 && (
         <a href="#/review" className="card flex items-center gap-3 border-accent/60 transition hover:border-accent">
@@ -245,6 +254,8 @@ export default function Dashboard() {
         </div>
         <p className="mt-3 text-center text-xs leading-relaxed text-muted sm:text-sm">AUREVON × SKOVA — شراكة تجمع الابتكار والتقنية.</p>
       </a>
+        </div>
+      </details>
     </div>
   );
 }
