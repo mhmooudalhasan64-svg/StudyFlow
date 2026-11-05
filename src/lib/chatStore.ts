@@ -24,7 +24,17 @@ function postChat(body: unknown): Promise<Response> {
   });
 }
 
+export type ChatStyle = 'normal' | 'explain' | 'steps' | 'summary' | 'coach';
+
 interface ChatState {
+  /** المادة الحالية (تُرسل ليبقى الشرح ضمنها) */
+  subject: string | null;
+  setSubject: (s: string | null) => void;
+  /** أسلوب الرد */
+  style: ChatStyle;
+  setStyle: (s: ChatStyle) => void;
+  /** يعيد توليد آخر رد */
+  regenerate: () => void;
   messages: ChatMsg[];
   attachment: ChatAttachment | null;
   setAttachment: (a: ChatAttachment | null) => void;
@@ -50,6 +60,22 @@ export const useChat = create<ChatState>((set, get) => ({
 
   setAttachment: (attachment) => set({ attachment }),
 
+  subject: null,
+  setSubject: (subject) => set({ subject }),
+  style: 'normal',
+  setStyle: (style) => set({ style }),
+
+  regenerate: () => {
+    const { messages, loading } = get();
+    if (loading) return;
+    let i = messages.length - 1;
+    while (i >= 0 && messages[i].role !== 'user') i--;
+    if (i < 0) return;
+    const text = messages[i].content;
+    set({ messages: messages.slice(0, i), error: null });
+    void get().send(text);
+  },
+
   send: async (text) => {
     const content = text.trim();
     if (!content || get().loading) return;
@@ -60,6 +86,8 @@ export const useChat = create<ChatState>((set, get) => ({
     try {
       const res = await postChat({
         messages: messages.slice(-12),
+        ...(get().subject ? { subject: get().subject } : {}),
+        ...(get().style !== 'normal' ? { style: get().style } : {}),
         ...(get().useProfile ? { profile: learnerProfile() } : {}),
         ...(get().attachment ? { attachment: { name: get().attachment!.name, text: get().attachment!.text } } : {}),
       });

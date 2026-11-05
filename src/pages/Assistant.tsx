@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
-import { Bot, FileText, Loader2, Mic, Paperclip, Send, Square, Trash2, Volume2, X } from 'lucide-react';
-import { useChat } from '../lib/chatStore';
+import { Bot, Copy, FileText, Loader2, Mic, Paperclip, RefreshCw, Send, Square, Trash2, Volume2, X } from 'lucide-react';
+import { useChat, type ChatStyle } from '../lib/chatStore';
 import { PageTitle } from '../components/ui';
 import Advisor from '../components/Advisor';
 import { useApp } from '../store';
@@ -23,7 +23,8 @@ const FILE_SUGGESTIONS = [
 ];
 
 export default function Assistant() {
-  const { messages, attachment, loading, error, send, setAttachment, clear, useProfile, setUseProfile } = useChat();
+  const { messages, attachment, loading, error, send, setAttachment, clear, useProfile, setUseProfile, subject, setSubject, style, setStyle, regenerate } = useChat();
+  const [copied, setCopied] = useState<number | null>(null);
   const app = useApp();
   const profile = useMemo(() => buildLearnerProfile(contextFrom(app, toDateKey())), [app]);
   const [listening, setListening] = useState(false);
@@ -48,6 +49,16 @@ export default function Assistant() {
     },
     [],
   );
+
+  const copy = async (i: number, content: string) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopied(i);
+      window.setTimeout(() => setCopied((c) => (c === i ? null : c)), 1500);
+    } catch {
+      /* النسخ غير متاح في هذا المتصفح */
+    }
+  };
 
   const toggleMic = () => {
     if (listening) {
@@ -145,6 +156,32 @@ export default function Assistant() {
         </label>
       </details>
 
+      <div className="mb-3 space-y-2">
+        <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1" role="group" aria-label="مادة السؤال">
+          <button type="button" aria-pressed={subject === null} className={`chip shrink-0 ${subject === null ? '!border-accent !text-accent' : ''}`} onClick={() => setSubject(null)}>
+            كل المواد
+          </button>
+          {app.subjects.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              aria-pressed={subject === s.name}
+              className={`chip shrink-0 ${subject === s.name ? '!border-accent !text-accent' : ''}`}
+              onClick={() => setSubject(subject === s.name ? null : s.name)}
+            >
+              {s.name}
+            </button>
+          ))}
+        </div>
+        <select className="input" aria-label="أسلوب الرد" value={style} onChange={(e) => setStyle(e.target.value as ChatStyle)}>
+          <option value="normal">أسلوب الرد: عادي</option>
+          <option value="explain">اشرح ببساطة مع مثال</option>
+          <option value="steps">حل خطوة بخطوة</option>
+          <option value="summary">لخّص في نقاط</option>
+          <option value="coach">درّبني (أسئلة موجِّهة بدل الحل)</option>
+        </select>
+      </div>
+
       <div className="card mb-3 min-h-[40vh] space-y-3" aria-live="polite">
         {messages.length === 0 && (
           <div className="space-y-3 py-4 text-center">
@@ -172,6 +209,18 @@ export default function Assistant() {
               }`}
             >
               {m.content}
+              {m.role === 'assistant' && (
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 border-t border-line/50 pt-2 text-xs text-muted">
+                  <button type="button" className="flex items-center gap-1 hover:text-main" onClick={() => void copy(i, m.content)}>
+                    <Copy size={13} /> {copied === i ? 'تم النسخ' : 'نسخ'}
+                  </button>
+                  {i === messages.length - 1 && !loading && (
+                    <button type="button" className="flex items-center gap-1 hover:text-main" onClick={regenerate}>
+                      <RefreshCw size={13} /> أعد الإجابة
+                    </button>
+                  )}
+                </div>
+              )}
               {m.role === 'assistant' && canSpeak() && (
                 <button
                   type="button"

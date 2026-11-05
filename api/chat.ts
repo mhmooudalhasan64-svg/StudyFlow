@@ -83,7 +83,27 @@ const SYSTEM_PROMPT = `أنت «مساعد StudyFlow»، معلّم خصوصي �
 - إن لم تكن متأكداً من معلومة أو من تفاصيل منهاج بلد الطالب فاذكر ذلك صراحة ولا تخترع.
 - تغطي كل مواد البكالوريا بالتساوي: الرياضيات والفيزياء والكيمياء والأحياء والعربية والإنجليزية والتاريخ والجغرافيا والفلسفة والتربية الدينية وغيرها. التزم بالمادة التي يسأل عنها الطالب ولا تفترض أنها علمية.
 - ابتعد عن المواضيع غير الدراسية بلطف وأعد الحديث إلى الدراسة.
-- اكتب نصاً عادياً بدون جداول أو تنسيقات معقدة.`;
+- اكتب نصاً عادياً بدون جداول أو تنسيقات معقدة.
+- اكتب الرياضيات والفيزياء بنص عادي دون LaTeX ودون رموز $: استخدم ^ للأس و√ و÷ و× والكسور بالشكل (أ/ب)، واذكر الوحدات.
+- حين يناسب، اختم بسؤال تحقق قصير أو اقتراح الخطوة التالية.`;
+
+const STYLES: Record<string, string> = {
+  explain: 'اشرح ببساطة مع مثال من الحياة قبل التفاصيل.',
+  steps: 'قدّم الحل خطوة بخطوة مرقّمة مع تبرير كل خطوة، ونبّه إلى الأخطاء الشائعة.',
+  summary: 'لخّص في نقاط قصيرة جداً (حتى 7 نقاط) ثم جملة واحدة تجمع الفكرة.',
+  coach: 'لا تعطِ الحل مباشرة: اطرح على الطالب سؤالاً موجِّهاً واحداً في كل رد ليصل بنفسه، ثم أكّد إجابته أو صحّحها.',
+};
+
+/** المادة الحالية وأسلوب الشرح المطلوبان من الطالب (اختياريان) */
+function focusLine(body: unknown): string {
+  const b = body as { subject?: unknown; style?: unknown };
+  const subject = typeof b.subject === 'string' ? b.subject.replace(/[\r\n]+/g, ' ').trim().slice(0, 60) : '';
+  const style = typeof b.style === 'string' ? STYLES[b.style] : undefined;
+  const parts: string[] = [];
+  if (subject) parts.push(`مادة الطالب الحالية: «${subject}». أجب ضمنها ما لم يسأل عن غيرها.`);
+  if (style) parts.push(`أسلوب الرد المطلوب: ${style}`);
+  return parts.join('\n');
+}
 
 interface Msg {
   role: 'user' | 'assistant';
@@ -218,8 +238,9 @@ const BOOK_ASK_RULES = `وضع «اسأل كتابك»: أجب عن سؤال ا�
 - كل مقطع يبدأ بعلامة [ص N] فيها رقم صفحته. اذكر في آخر إجابتك أرقام الصفحات المستخدمة بهذا الشكل: (ص12، ص13).
 - إن لم تجد الجواب في المقاطع فقل بوضوح: «لم أجد هذا في الصفحات المقتبسة من الكتاب»، ولا تخمّن.`;
 
-function systemPrompt(att: Attachment | null, profile = '', bookAsk = false): string {
+function systemPrompt(att: Attachment | null, profile = '', bookAsk = false, focus = ''): string {
   let out = bookAsk ? `${SYSTEM_PROMPT}\n\n${BOOK_ASK_RULES}` : SYSTEM_PROMPT;
+  if (focus) out += `\n\n${focus}`;
   if (profile) {
     out += `
 
@@ -268,27 +289,39 @@ export async function POST(request: Request): Promise<Response> {
     return json({ error: `وصلت إلى الحد اليومي (${DAILY_LIMIT} رسالة). جرّب غداً.` }, 429);
   }
 
-  let upstream: Response;
-  try {
-    upstream = await fetch(provider.endpoint, {
+  const payload = JSON.stringify({
+    model: provider.model,
+    messages: [{ role: 'system', content: quiz ? quiz.system : systemPrompt(attachment, profile, !!attachment && (body as { bookAsk?: unknown }).bookAsk === true, focusLine(body)) }, ...messages],
+    max_tokens: quiz ? 2600 : 1200,
+    temperature: quiz ? 0.3 : 0.4,
+    stream: false,
+  });
+  const call = () =>
+    fetch(provider.endpoint, {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
         authorization: `Bearer ${provider.key}`,
         ...provider.headers,
       },
-      body: JSON.stringify({
-        model: provider.model,
-        messages: [{ role: 'system', content: quiz ? quiz.system : systemPrompt(attachment, profile, !!attachment && (body as { bookAsk?: unknown }).bookAsk === true) }, ...messages],
-        max_tokens: quiz ? 2600 : 1200,
-        temperature: quiz ? 0.3 : 0.4,
-        stream: false,
-      }),
-      signal: AbortSignal.timeout(50_000),
+      body: payload,
+      signal: AbortSignal.timeout(40_000),
     });
-  } catch {
-    return json({ error: 'تعذّر الاتصال بخدمة الذكاء الاصطناعي' }, 502);
+
+  // المزوّدون المجانيون يتعثرون أحياناً (429 أو 5xx): نعيد المحاولة مرة واحدة إن فشل الطلب سريعاً
+  const started = Date.now();
+  let upstream: Response | null = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      upstream = await call();
+    } catch {
+      upstream = null;
+    }
+    const transient = upstream === null || upstream.status === 429 || upstream.status >= 500;
+    if (!transient || Date.now() - started > 15_000) break;
+    if (attempt === 0) await new Promise((r) => setTimeout(r, 1500));
   }
+  if (!upstream) return json({ error: 'تعذّر الاتصال بخدمة الذكاء الاصطناعي' }, 502);
 
   if (!upstream.ok) {
     // نذكر المزوّد المستخدم وطول المفتاح (دون كشفه) لتسهيل اكتشاف الإعداد الخاطئ
