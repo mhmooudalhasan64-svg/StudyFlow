@@ -49,15 +49,15 @@ export default function Library() {
     const errors: string[] = [];
     for (const f of files) {
       const isPdf = f.type === 'application/pdf' || /\.pdf$/i.test(f.name);
-      if (!isPdf) errors.push(`«${f.name}» ليس ملف PDF`);
-      else if (f.size > MAX_MB * 1024 * 1024) errors.push(`«${f.name}» أكبر من ${MAX_MB} م.ب`);
+      if (!isPdf) errors.push(`«${f.name}» ليس ملفًا بصيغة PDF`);
+      else if (f.size > MAX_MB * 1024 * 1024) errors.push(`حجم الملف «${f.name}» يتجاوز ${MAX_MB} م.ب`);
       else {
         try {
           // عند رفع عدة ملفات يُستخدم عنوان الملف لكل منها
           await addBook(f, { subjectId, title: files.length === 1 ? title : '', unit, lesson });
           added++;
         } catch {
-          errors.push(`تعذّر حفظ «${f.name}» (قد تكون مساحة التخزين ممتلئة)`);
+          errors.push(`تعذّر حفظ الملف «${f.name}»؛ ربما تكون مساحة التخزين ممتلئة.`);
         }
       }
     }
@@ -93,7 +93,7 @@ export default function Library() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <PageTitle title="مكتبة الكتب المدرسية" subtitle="تُحفظ الكتب على جهازك وتُفتح دون إنترنت" />
+      <PageTitle title="مكتبة الكتب المدرسية" subtitle="تُحفظ الكتب على جهازك ويمكنك فتحها دون اتصال بالإنترنت" />
 
       <form onSubmit={submit} className="card space-y-3">
         <h2 className="font-bold">إضافة كتاب (PDF)</h2>
@@ -149,7 +149,7 @@ export default function Library() {
       </select>
 
       {grouped.length === 0 ? (
-        <Empty>لا كتب بعد. أضف كتبك الرسمية بصيغة PDF لتبقى متاحة دون إنترنت.</Empty>
+        <Empty>لا توجد كتب بعد. أضف كتبك الرسمية بصيغة PDF لتبقى متاحة دون اتصال بالإنترنت.</Empty>
       ) : (
         grouped.map(([sid, units]) => (
           <section key={String(sid)} className="card space-y-3">
