@@ -11,6 +11,7 @@ export const ROUTES = [
   'settings',
   'bac',
   'library',
+  'mindmap',
   'curriculum',
   'review',
   'cards',
