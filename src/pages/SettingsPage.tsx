@@ -58,15 +58,21 @@ export default function SettingsPage() {
   };
 
   const doExport = async () => {
-    const blob = new Blob([await exportBackup()], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `studyflow-backup-${toDateKey()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    void update({ lastBackup: Date.now() });
-    setBackupMsg({ kind: 'ok', text: 'تم تنزيل النسخة الاحتياطية' });
+    try {
+      const blob = new Blob([await exportBackup()], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `studyflow-backup-${toDateKey()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      void update({ lastBackup: Date.now() });
+      setBackupMsg({ kind: 'ok', text: 'تم تجهيز النسخة الاحتياطية للتنزيل' });
+    } catch {
+      setBackupMsg({ kind: 'err', text: 'تعذّر إنشاء النسخة الاحتياطية. حاول مجددًا.' });
+    }
   };
 
   const doImport = async (e: ChangeEvent<HTMLInputElement>) => {

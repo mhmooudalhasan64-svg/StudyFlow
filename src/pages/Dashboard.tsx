@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { CalendarClock, Check, Circle, Flame, Gauge, ListChecks, Play, Repeat, ShieldCheck, Target } from 'lucide-react';
+import { CalendarClock, Check, Circle, Flame, Gauge, ListChecks, Repeat, ShieldCheck, Target } from 'lucide-react';
 import { useApp } from '../store';
 import { TaskRow } from '../components/TaskRow';
 import { Empty, PageTitle, ProgressRing } from '../components/ui';
@@ -178,30 +178,6 @@ export default function Dashboard() {
           </ul>
         </section>
       )}
-
-      <section className="grid grid-cols-3 gap-3">
-        <div className="card text-center">
-          <Flame className="mx-auto mb-1 text-accent" size={22} />
-          <div className="text-xl font-extrabold">{streak}</div>
-          <div className="text-xs text-muted">أيام متتالية</div>
-        </div>
-        <div className="card text-center">
-          <Target className="mx-auto mb-1 text-accent" size={22} />
-          <div className="text-xl font-extrabold">
-            {doneCount}/{todayTasks.length}
-          </div>
-          <div className="text-xs text-muted">مهام اليوم</div>
-        </div>
-        <a href="#/exams" className="card text-center transition hover:border-accent">
-          <CalendarClock className="mx-auto mb-1 text-accent" size={22} />
-          <div className="text-xl font-extrabold">
-            {nextExam ? daysUntil(nextExam.date) : '—'}
-          </div>
-          <div className="truncate text-xs text-muted">
-            {nextExam ? `${nextExam.title} (${daysLabel(daysUntil(nextExam.date))})` : 'لا امتحانات قادمة'}
-          </div>
-        </a>
-      </section>
 
       <section className="card">
         <div className="mb-3 flex items-center justify-between">
