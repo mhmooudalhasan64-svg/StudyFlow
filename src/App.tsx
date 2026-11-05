@@ -63,7 +63,7 @@ const NAV: NavItem[] = [
   { route: 'achievements', label: 'الإنجازات', Icon: Award },
   { route: 'reports', label: 'التقارير', Icon: FileBarChart },
   { route: 'stats', label: 'إحصاءات', Icon: BarChart3 },
-  { route: 'assistant', label: 'المساعد', Icon: Bot },
+  { route: 'assistant', label: 'SKOVA AI', Icon: Bot },
 ];
 
 /** شريط الجوال السفلي: الأهم فقط والباقي في «المزيد» */
