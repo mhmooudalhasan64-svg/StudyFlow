@@ -117,24 +117,6 @@ export default function Dashboard() {
         </a>
       </section>
 
-      <section className="card flex flex-col items-center gap-5 sm:flex-row">
-        <ProgressRing pct={pct} gradientId="ring-home">
-          <div>
-            <div className="text-2xl font-extrabold">{Math.round(Math.min(pct, 9.99) * 100)}%</div>
-            <div className="text-xs text-muted">من هدفك اليومي</div>
-          </div>
-        </ProgressRing>
-        <div className="flex-1 text-center sm:text-start">
-          <p className="text-sm text-muted">مدة دراستك اليوم</p>
-          <p className="text-3xl font-extrabold">{formatMinutes(todayMin)}</p>
-          <p className="mt-1 text-sm text-muted">الهدف: {formatMinutes(goal)}</p>
-          <p className="mt-3 text-sm">{motivationMessage(pct, streak)}</p>
-          <a href="#/timer" className="btn btn-primary mt-4">
-            <Play size={16} /> ابدأ جلسة تركيز
-          </a>
-        </div>
-      </section>
-
       <section className="card space-y-3" aria-label="يومك الذكي">
         <div className="flex items-center justify-between">
           <h2 className="font-bold">يومك الذكي</h2>
