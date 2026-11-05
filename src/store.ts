@@ -19,7 +19,7 @@ import {
 } from './db';
 import { DEFAULT_SETTINGS, SUBJECT_COLORS, seedIfNeeded } from './seed';
 import { applyTheme } from './lib/theme';
-import { beep, primeAudio } from './lib/sound';
+import { playSound, primeAudio } from './lib/sound';
 import { notify, requestNotifyPermission } from './lib/notify';
 import { modeMs, type TimerMode } from './lib/timer';
 import { toDateKey } from './lib/utils';
@@ -595,7 +595,7 @@ export const useApp = create<AppState>((set, get) => {
       });
 
       if (finishedMode === 'focus') await get().addSession(settings.focusMin, timer.subjectId);
-      if (settings.sound) beep();
+      if (settings.sound) playSound(settings.soundKind);
       if (finishedMode === 'focus') notify('انتهت جلسة التركيز', 'أحسنت! خذ استراحة قصيرة.');
       else notify('انتهت الاستراحة', 'هيا نبدأ جلسة تركيز جديدة.');
     },

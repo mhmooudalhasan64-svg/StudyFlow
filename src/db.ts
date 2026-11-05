@@ -67,6 +67,8 @@ export interface Settings {
   shortMin: number;
   longMin: number;
   sound: boolean;
+  /** نوع صوت التنبيه (الافتراضي: كلاسيكي) */
+  soundKind?: 'classic' | 'bell' | 'chime' | 'marimba' | 'digital' | 'zen' | 'harp';
   /** فرع البكالوريا المختار */
   branch: Branch;
   grade: Grade;

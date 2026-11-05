@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
-import { Download, HardDrive, Plus, Trash2, Upload } from 'lucide-react';
+import { Download, HardDrive, Plus, Trash2, Upload, Volume2 } from 'lucide-react';
 import { useApp } from '../store';
 import { NumberField, PageTitle } from '../components/ui';
 import { SUBJECT_COLORS } from '../seed';
 import { exportBackup } from '../lib/backup';
 import { toDateKey } from '../lib/utils';
+import { playSound, primeAudio, SOUNDS, type SoundKind } from '../lib/sound';
 
 export default function SettingsPage() {
   const settings = useApp((s) => s.settings);
@@ -106,6 +107,41 @@ export default function SettingsPage() {
             onChange={(e) => void update({ sound: e.target.checked })}
           />
         </label>
+        {settings.sound && (
+          <div className="flex items-center gap-2 text-sm">
+            <label htmlFor="sound-kind" className="shrink-0">
+              صوت التنبيه
+            </label>
+            <select
+              id="sound-kind"
+              className="input"
+              value={settings.soundKind ?? 'classic'}
+              onChange={(e) => {
+                const kind = e.target.value as SoundKind;
+                void update({ soundKind: kind });
+                primeAudio();
+                playSound(kind);
+              }}
+            >
+              {SOUNDS.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              className="btn btn-ghost shrink-0 !px-3"
+              aria-label="تجربة الصوت"
+              onClick={() => {
+                primeAudio();
+                playSound(settings.soundKind);
+              }}
+            >
+              <Volume2 size={16} />
+            </button>
+          </div>
+        )}
         <div className="flex items-center justify-between gap-3 text-sm">
           <span>المظهر</span>
           <div className="grid grid-cols-2 gap-1 rounded-xl border border-line p-1">
