@@ -77,11 +77,11 @@ export default function Advisor() {
         <div className="space-y-3 border-t border-line pt-3">
           {preview.length === 0 ? (
             <p className="text-sm text-muted">
-              لا مكان لمهام جديدة: أيامك القادمة ممتلئة بحسب هدفك اليومي، أو لا توجد مواد. زد الهدف من الإعدادات أو أضف مواداً.
+              لا توجد مساحة لمهام جديدة؛ فأيامك القادمة ممتلئة وفق هدفك اليومي، أو لم تُضف أي مواد بعد. يمكنك زيادة الهدف من الإعدادات أو إضافة مواد.
             </p>
           ) : (
             <>
-              <p className="text-sm text-muted">هذه خطة مقترحة، يمكنك تعديلها لاحقاً من صفحة الخطة:</p>
+              <p className="text-sm text-muted">هذه خطة مقترحة، ويمكنك تعديلها لاحقًا من صفحة «الخطة».</p>
               <ul className="space-y-2">
                 {dates.map((d) => (
                   <li key={d} className="rounded-xl border border-line/70 bg-base/40 p-3">
