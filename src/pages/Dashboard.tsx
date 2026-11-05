@@ -65,14 +65,56 @@ export default function Dashboard() {
   );
 
   return (
-    <div className="mx-auto max-w-3xl space-y-4">
-      <PageTitle title="مرحبًا بك 👋" subtitle="خطوة صغيرة كل يوم تصنع فرقاً كبيراً في البكالوريا" />
+    <div className="mx-auto max-w-4xl space-y-5">
+      <div className="flex items-center justify-between gap-3">
+        <PageTitle title="أهلًا بعودتك 👋" subtitle="كل جلسة تركيز تقرّبك من هدفك." />
+        <span className="hidden items-center gap-1.5 rounded-full border border-accent/25 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent sm:inline-flex">
+          ✦ مساحة إنجازك
+        </span>
+      </div>
 
-      <section className="card text-center" aria-label="شعار التطبيق">
-        <p className="bg-gradient-to-l from-accent to-accent2 bg-clip-text text-xl font-extrabold text-transparent">
-          {dailyPhrase(today)}
-        </p>
-        <p className="mt-1 text-xs leading-relaxed text-muted">{SLOGAN}</p>
+      <section className="dashboard-hero relative overflow-hidden rounded-3xl border border-accent/25 p-5 shadow-xl shadow-accent2/10 sm:p-7" aria-label="ملخص تقدمك اليوم">
+        <div className="dashboard-orb dashboard-orb-one" aria-hidden="true" />
+        <div className="dashboard-orb dashboard-orb-two" aria-hidden="true" />
+        <div className="relative z-10">
+          <p className="mb-5 text-xs font-semibold text-accent">✦ مساحة إنجازك اليومية</p>
+          <div className="flex flex-col items-center gap-5 sm:flex-row sm:justify-between">
+            <div className="order-2 flex-1 text-center sm:order-1 sm:text-start">
+              <p className="text-sm text-muted">مدة دراستك اليوم</p>
+              <p className="mt-1 text-4xl font-black tracking-tight sm:text-5xl">{formatMinutes(todayMin)}</p>
+              <p className="mt-2 text-sm text-muted">هدفك اليومي: {formatMinutes(goal)}</p>
+              <p className="mx-auto mt-3 max-w-md text-sm leading-6 sm:mx-0">{motivationMessage(pct, streak)}</p>
+              <a href="#/timer" className="btn btn-primary mt-5">▶ ابدأ جلسة تركيز</a>
+            </div>
+            <div className="order-1 rounded-full bg-base/40 p-2 shadow-inner sm:order-2">
+              <ProgressRing pct={pct} size={142} stroke={11} gradientId="ring-home">
+                <div>
+                  <div className="text-3xl font-black tabular-nums">{Math.round(Math.min(pct, 9.99) * 100)}%</div>
+                  <div className="mt-0.5 text-[11px] text-muted">من هدفك</div>
+                </div>
+              </ProgressRing>
+            </div>
+          </div>
+          <div className="mt-6 border-t border-line/60 pt-4">
+            <p className="text-sm font-bold leading-relaxed">{dailyPhrase(today)}</p>
+            <p className="mt-1 text-xs text-muted">{SLOGAN}</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="dashboard-stat">
+          <span className="dashboard-stat-icon"><Flame size={19} /></span>
+          <div><p className="text-2xl font-extrabold tabular-nums">{streak}</p><p className="text-xs text-muted">أيام إنجاز متتالية</p></div>
+        </div>
+        <div className="dashboard-stat">
+          <span className="dashboard-stat-icon"><Target size={19} /></span>
+          <div><p className="text-2xl font-extrabold tabular-nums">{doneCount}<span className="text-sm text-muted"> / {todayTasks.length}</span></p><p className="text-xs text-muted">مهام أنجزتها اليوم</p></div>
+        </div>
+        <a href="#/exams" className="dashboard-stat transition hover:-translate-y-0.5 hover:border-accent/50">
+          <span className="dashboard-stat-icon"><CalendarClock size={19} /></span>
+          <div className="min-w-0"><p className="truncate text-lg font-extrabold">{nextExam ? daysUntil(nextExam.date) + ' يوم' : '—'}</p><p className="truncate text-xs text-muted">{nextExam ? nextExam.title : 'لا توجد امتحانات قادمة'}</p></div>
+        </a>
       </section>
 
       <section className="card flex flex-col items-center gap-5 sm:flex-row">
