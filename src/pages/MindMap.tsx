@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { BookOpen, CheckCircle2, ChevronDown, ChevronLeft, Circle, Layers3 } from 'lucide-react';
+import { BookOpen, CheckCircle2, ChevronDown, ChevronLeft, Circle, Download, Layers3 } from 'lucide-react';
 import { useApp } from '../store';
 import { Empty, PageTitle } from '../components/ui';
 
@@ -9,6 +9,7 @@ export default function MindMap() {
   const toggleLesson = useApp((s) => s.toggleLesson);
   const [subjectId, setSubjectId] = useState<number | null>(null);
   const [collapsed, setCollapsed] = useState<string[]>([]);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   const selectedId = subjectId ?? subjects[0]?.id ?? null;
   const subject = subjects.find((item) => item.id === selectedId);
@@ -27,6 +28,86 @@ export default function MindMap() {
   const completed = subjectLessons.filter((lesson) => lesson.done).length;
   const percent = subjectLessons.length ? Math.round((completed / subjectLessons.length) * 100) : 0;
 
+  const exportPdf = () => {
+    if (!subject || subjectLessons.length === 0) return;
+    setExportError(null);
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      setExportError('تعذّر فتح نافذة الطباعة. اسمح بالنوافذ المنبثقة ثم حاول مجدداً.');
+      return;
+    }
+
+    const safe = (value: string) =>
+      value.replace(/[&<>"']/g, (character) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+      })[character] ?? character);
+    const unitMarkup = groups.map(([unit, items], index) => `
+      <section class="unit">
+        <h2><span class="number">${index + 1}</span>${safe(unit)}</h2>
+        <p class="unit-meta">${items.filter((lesson) => lesson.done).length} من ${items.length} درس مكتمل</p>
+        <ul>
+          ${items.map((lesson) => `
+            <li><span class="status">${lesson.done ? '✓' : '○'}</span><span>${safe(lesson.title)}</span><span class="state">${lesson.done ? 'مكتمل' : 'قيد الدراسة'}</span></li>
+          `).join('')}
+        </ul>
+      </section>
+    `).join('');
+    const generatedAt = new Intl.DateTimeFormat('ar', { dateStyle: 'long' }).format(new Date());
+
+    printWindow.document.open();
+    printWindow.document.write(`<!doctype html>
+      <html lang="ar" dir="rtl">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>الخريطة الذهنية - ${safe(subject.name)}</title>
+        <style>
+          * { box-sizing: border-box; }
+          body { margin: 0; padding: 32px; color: #17171c; background: #fff; font-family: Tahoma, Arial, sans-serif; direction: rtl; }
+          .sheet { max-width: 900px; margin: 0 auto; }
+          header { text-align: center; padding: 24px; border: 2px solid #25232b; border-radius: 18px; }
+          .brand { font-size: 11px; letter-spacing: 2px; color: #666; font-weight: bold; }
+          h1 { margin: 12px 0 6px; font-size: 28px; }
+          .subtitle { margin: 0; color: #666; font-size: 13px; }
+          .summary { display: flex; justify-content: space-around; gap: 12px; margin: 18px 0 26px; padding: 14px; border-radius: 12px; background: #f3f1f8; text-align: center; }
+          .summary strong { display: block; font-size: 20px; }
+          .summary span { font-size: 11px; color: #555; }
+          .unit { margin: 0 0 18px; padding: 14px 16px; border: 1px solid #d9d5e2; border-radius: 14px; break-inside: avoid; }
+          h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 17px; }
+          .number { display: inline-grid; width: 28px; height: 28px; place-items: center; border-radius: 8px; background: #eee7fb; color: #6235a5; font-size: 13px; }
+          .unit-meta { margin: 6px 0 10px 38px; color: #666; font-size: 11px; }
+          ul { list-style: none; padding: 0; margin: 0; }
+          li { display: flex; align-items: center; gap: 9px; padding: 8px 4px; border-top: 1px solid #eee; font-size: 13px; }
+          .status { color: #16845b; font-weight: bold; font-size: 16px; }
+          .state { margin-right: auto; color: #777; font-size: 10px; white-space: nowrap; }
+          footer { margin-top: 28px; padding-top: 12px; border-top: 1px solid #ddd; color: #777; text-align: center; font-size: 10px; }
+          @page { size: A4; margin: 14mm; }
+          @media print { body { padding: 0; } .unit { break-inside: avoid; } }
+        </style>
+      </head>
+      <body>
+        <main class="sheet">
+          <header>
+            <div class="brand">STUDY FLOW</div>
+            <h1>${safe(subject.name)}</h1>
+            <p class="subtitle">الخريطة الذهنية للمادة</p>
+          </header>
+          <div class="summary">
+            <div><strong>${groups.length}</strong><span>وحدة</span></div>
+            <div><strong>${subjectLessons.length}</strong><span>درس</span></div>
+            <div><strong>${completed}</strong><span>درس مكتمل</span></div>
+            <div><strong>${percent}%</strong><span>نسبة الإنجاز</span></div>
+          </div>
+          ${unitMarkup}
+          <footer>تم إنشاء هذه الخريطة من Study Flow · ${generatedAt}</footer>
+        </main>
+        <script>window.addEventListener('load', () => setTimeout(() => window.print(), 300));</script>
+      </body>
+      </html>`);
+    printWindow.document.close();
+    printWindow.focus();
+  };
+
   const toggleGroup = (name: string) => {
     setCollapsed((current) =>
       current.includes(name) ? current.filter((item) => item !== name) : [...current, name],
@@ -39,6 +120,14 @@ export default function MindMap() {
         title="الخرائط الذهنية التفاعلية"
         subtitle="حوّل دروسك المسجلة إلى خريطة واضحة تربط المادة بوحداتها ودروسها."
       />
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-xs text-muted">احفظ خريطتك كملف PDF للطباعة أو المراجعة دون إنترنت.</p>
+        <button type="button" className="btn btn-primary" onClick={exportPdf} disabled={!subject || subjectLessons.length === 0}>
+          <Download size={17} /> تصدير PDF
+        </button>
+      </div>
+      {exportError && <p role="alert" className="rounded-xl border border-bad/40 bg-bad/10 px-3 py-2 text-sm text-bad">{exportError}</p>}
 
       <section className="card space-y-3">
         <label htmlFor="mindmap-subject" className="label">اختر المادة</label>
