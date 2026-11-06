@@ -198,12 +198,52 @@ aside nav a[aria-current='page']::before {
 }
 
 
-/* أسلوب الأيقونات: أسود مائي بلمعة رمادية خفيفة، مع الحفاظ على وضوح الوضع الداكن */
+/* VAYORA icon system — consistent premium line icons across the entire app */
 .lucide {
-  filter: grayscale(1) contrast(1.12)
-    drop-shadow(0 1px 1px rgb(0 0 0 / 0.2))
-    drop-shadow(0 -0.5px 0 rgb(255 255 255 / 0.14));
+  flex: 0 0 auto;
+  stroke-width: 1.85;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 1px 1px rgb(15 23 42 / 0.12));
+  transition: color 180ms ease, filter 180ms ease, transform 180ms ease;
 }
+
+/* Keep icon contrast crisp in both themes; semantic colors come from their context. */
+.dark .lucide {
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.28));
+}
+
+/* Navigation icons */
+.app-sidebar nav a svg,
+.app-mobile-nav a svg {
+  opacity: 0.82;
+  transition: color 180ms ease, opacity 180ms ease, transform 180ms ease;
+}
+.app-sidebar nav a:hover svg,
+.app-mobile-nav a:hover svg {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+.app-sidebar nav a[aria-current='page'] svg,
+.app-mobile-nav a[aria-current='page'] svg {
+  color: rgb(var(--accent3));
+  opacity: 1;
+  filter: drop-shadow(0 2px 5px rgb(var(--accent3) / 0.24));
+}
+
+/* Icon buttons and feature tiles */
+button:has(> svg):hover > svg,
+a:has(> svg):hover > svg {
+  filter: drop-shadow(0 2px 5px rgb(var(--accent2) / 0.22));
+}
+.dashboard-stat-icon svg {
+  color: rgb(var(--accent3));
+  stroke-width: 1.9;
+}
+.dark .dashboard-stat-icon svg {
+  color: rgb(var(--accent3));
+}
+
 
 
 /* ── Refined Study Flow interface ───────────────────────────── */
