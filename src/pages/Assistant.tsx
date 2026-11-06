@@ -3,6 +3,7 @@ import { Bot, Copy, FileText, Loader2, Mic, Paperclip, RefreshCw, Send, Square, 
 import { useChat, type ChatStyle } from '../lib/chatStore';
 import { PageTitle } from '../components/ui';
 import Advisor from '../components/Advisor';
+import VoiceTeacher from '../components/VoiceTeacher';
 import { useApp } from '../store';
 import { buildLearnerProfile, contextFrom } from '../lib/advisor';
 import { canListen, canSpeak, listen, speak, stopSpeaking } from '../lib/voice';
@@ -151,6 +152,7 @@ export default function Assistant() {
       {sourcePage && <div className="mb-3 rounded-xl border border-accent/25 bg-accent/5 px-3 py-2 text-xs text-muted">سياق المساعدة: فتحت SKOVA AI من صفحة <strong className="text-main">{sourcePage}</strong>، لذلك ستكون الإجابات مرتبطة بها.</div>}
 
       <Advisor />
+      <VoiceTeacher />
 
       <h2 className="mb-1 font-bold">اسأل عن دروسك</h2>
       <p className="mb-3 text-xs text-muted">
