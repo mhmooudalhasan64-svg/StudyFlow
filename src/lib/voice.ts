@@ -1,4 +1,4 @@
-/** Native Android voice I/O through Capacitor, with Web Speech fallback for browsers. */
+/** Arabic speech I/O: paced sentence playback on Android and browser Web Speech. */
 import { Capacitor } from '@capacitor/core';
 import { SpeechRecognition } from '@capacitor-community/speech-recognition';
 import { TextToSpeech } from '@capacitor-community/text-to-speech';
@@ -13,6 +13,7 @@ export type VoiceStyle = 'soft' | 'strong' | 'energetic';
 export interface VoiceOptions { gender?: VoiceGender; style?: VoiceStyle }
 
 const isNative = (): boolean => Capacitor.isNativePlatform();
+let playbackId = 0;
 function recognitionCtor(): (new () => Recognition) | null {
   if (typeof window === 'undefined') return null;
   const w = window as unknown as { SpeechRecognition?: new () => Recognition; webkitSpeechRecognition?: new () => Recognition };
@@ -41,43 +42,103 @@ export function availableArabicVoices(): SpeechSynthesisVoice[] {
   return window.speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().startsWith('ar'));
 }
 export function cleanForSpeech(text: string): string {
-  return text.replace(/\bskova\b/gi, 'سكوفا').replace(/[*#_`>~|]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 1500);
+  return text
+    .replace(/\bskova\b/gi, 'سكوفا')
+    .replace(/\bVAYORA\b/gi, 'فايورا')
+    .replace(/[*#_`>~|]/g, ' ')
+    .replace(/https?:\/\/\S+/gi, 'رابط')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 6000);
 }
 function chooseVoice(gender: VoiceGender = 'any'): SpeechSynthesisVoice | undefined {
   const voices = availableArabicVoices();
   if (!voices.length) return undefined;
-  if (gender === 'any') return voices[0];
-  const hints = gender === 'female' ? /female|woman|zira|laila|hoda|ar.?female|أنثى|ليلى|هند/i : /male|man|david|hamdan|ar.?male|ذكر|عمر/i;
-  return voices.find(v => hints.test(v.name)) ?? voices[0];
+  const genderHint = gender === 'female' ? /female|woman|zira|laila|hoda|ar.?female|أنثى|ليلى|هند/i
+    : gender === 'male' ? /male|man|david|hamdan|ar.?male|ذكر|عمر/i : null;
+  const candidates = genderHint ? voices.filter(v => genderHint.test(v.name)) : voices;
+  const pool = candidates.length ? candidates : voices;
+  // Prefer installed neural/premium voices where the platform exposes that metadata.
+  return [...pool].sort((a, b) => {
+    const score = (v: SpeechSynthesisVoice) =>
+      (/natural|neural|premium|enhanced|google|microsoft/i.test(v.name) ? 4 : 0) +
+      (!v.localService ? 1 : 0) +
+      (/ar-SA|ar-AE|ar-EG/i.test(v.lang) ? 1 : 0);
+    return score(b) - score(a);
+  })[0];
 }
+function sentenceChunks(text: string): string[] {
+  const normalized = text.replace(/([.!?؟؛])\s*/g, '$1|').split('|').map(s => s.trim()).filter(Boolean);
+  const chunks: string[] = [];
+  for (const sentence of normalized) {
+    if (sentence.length <= 220) { chunks.push(sentence); continue; }
+    const words = sentence.split(/\s+/);
+    let part = '';
+    for (const word of words) {
+      if (part && (part + ' ' + word).length > 190) { chunks.push(part); part = word; }
+      else part = part ? part + ' ' + word : word;
+    }
+    if (part) chunks.push(part);
+  }
+  return chunks;
+}
+const pauseAfter = (chunk: string) => /[؟?]$/.test(chunk) ? 360 : /[.!؛]$/.test(chunk) ? 290 : 170;
+
 export function speak(text: string, cb: { onEnd?: () => void; onError?: (msg: string) => void } = {}, options: VoiceOptions = {}): void {
   const cleanText = cleanForSpeech(text);
+  if (!cleanText) { cb.onEnd?.(); return; }
+  const chunks = sentenceChunks(cleanText);
   const style = options.style ?? 'soft';
+  const id = ++playbackId;
+  const rate = style === 'energetic' ? 1.02 : style === 'strong' ? 0.96 : 0.92;
+  const pitch = style === 'energetic' ? 1.04 : style === 'strong' ? 0.98 : 1.02;
+
   if (isNative()) {
-    void TextToSpeech.speak({
-      text: cleanText,
-      lang: 'ar-SA',
-      rate: style === 'energetic' ? 1.12 : style === 'strong' ? 0.94 : 0.88,
-      pitch: style === 'energetic' ? 1.12 : style === 'strong' ? 0.86 : 1,
-      volume: style === 'soft' ? 0.72 : 1,
-    }).then(() => cb.onEnd?.()).catch(() => cb.onError?.('تعذّرت القراءة الصوتية. تحقق من تثبيت محرّك تحويل النص إلى كلام واللغة العربية على جهازك.'));
+    void (async () => {
+      try {
+        for (let i = 0; i < chunks.length; i++) {
+          if (id !== playbackId) return;
+          await TextToSpeech.speak({
+            text: chunks[i], lang: 'ar-SA', rate, pitch,
+            volume: style === 'soft' ? 0.9 : 1,
+          });
+          if (id !== playbackId) return;
+          if (i < chunks.length - 1) await new Promise(resolve => setTimeout(resolve, pauseAfter(chunks[i])));
+        }
+        if (id === playbackId) cb.onEnd?.();
+      } catch {
+        if (id === playbackId) cb.onError?.('تعذّرت القراءة الصوتية. تحقق من تثبيت محرّك تحويل النص إلى كلام وصوت عربي طبيعي على جهازك.');
+      }
+    })();
     return;
   }
   if (!canSpeak()) { cb.onError?.('القراءة الصوتية غير مدعومة في هذا المتصفح.'); return; }
   const synth = window.speechSynthesis;
   synth.cancel();
-  const u = new SpeechSynthesisUtterance(cleanText);
-  u.lang = 'ar-SA';
   const voice = chooseVoice(options.gender);
-  if (voice) { u.voice = voice; u.lang = voice.lang; }
-  u.rate = style === 'energetic' ? 1.12 : style === 'strong' ? 0.94 : 0.88;
-  u.pitch = style === 'energetic' ? 1.12 : style === 'strong' ? 0.86 : 1;
-  u.volume = style === 'soft' ? 0.72 : 1;
-  u.onend = () => cb.onEnd?.();
-  u.onerror = () => cb.onError?.('تعذّرت القراءة الصوتية. تحقق من توفر صوت عربي على جهازك.');
-  synth.speak(u);
+  let index = 0;
+  const next = () => {
+    if (id !== playbackId) return;
+    if (index >= chunks.length) { cb.onEnd?.(); return; }
+    const chunk = chunks[index++];
+    const utterance = new SpeechSynthesisUtterance(chunk);
+    utterance.lang = voice?.lang ?? 'ar-SA';
+    if (voice) utterance.voice = voice;
+    utterance.rate = rate;
+    utterance.pitch = pitch;
+    utterance.volume = style === 'soft' ? 0.9 : 1;
+    utterance.onend = () => {
+      if (id !== playbackId) return;
+      if (index < chunks.length) window.setTimeout(next, pauseAfter(chunk));
+      else cb.onEnd?.();
+    };
+    utterance.onerror = () => { if (id === playbackId) cb.onError?.('تعذّرت القراءة الصوتية. تحقق من توفر صوت عربي على جهازك.'); };
+    synth.speak(utterance);
+  };
+  next();
 }
 export function stopSpeaking(): void {
+  playbackId++;
   if (isNative()) { void TextToSpeech.stop().catch(() => undefined); return; }
   if (canSpeak()) window.speechSynthesis.cancel();
 }
