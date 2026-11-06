@@ -15,6 +15,7 @@ import {
   X,
   HelpCircle,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useApp } from './store';
 import { useHashRoute, type Route } from './lib/route';
 import Dashboard from './pages/Dashboard';
@@ -44,7 +45,7 @@ const MindMap = lazy(() => import('./pages/MindMap'));
 const Help = lazy(() => import('./pages/Help'));
 const Today = lazy(() => import('./pages/Today'));
 
-type NavItem = { route: Route; label: string; Icon: ComponentType<{ size?: number }> };
+type NavItem = { route: Route; label: string; Icon: LucideIcon };
 
 const PAGE_HINTS: Partial<Record<Route, string>> = {
   home: 'هذه الصفحة تجمع ملخص يومك. ابدأ من زر جلسة التركيز أو افتح لوحة يومي الدراسي.',
