@@ -5,7 +5,7 @@ import { NumberField, PageTitle } from '../components/ui';
 import { SUBJECT_COLORS } from '../seed';
 import { exportBackup } from '../lib/backup';
 import { toDateKey } from '../lib/utils';
-import { speak, stopSpeaking, type VoiceGender, type VoiceStyle } from '../lib/voice';
+import { speak, type VoiceGender, type VoiceStyle } from '../lib/voice';
 
 export default function SettingsPage() {
   const settings = useApp((s) => s.settings);
