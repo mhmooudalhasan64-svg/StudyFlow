@@ -20,6 +20,7 @@ import { useHashRoute, type Route } from './lib/route';
 import Dashboard from './pages/Dashboard';
 import About, { Intro } from './pages/About';
 import { AlarmRinger } from './components/Alarms';
+import VoiceTeacher from './components/VoiceTeacher';
 import { primeAudio } from './lib/sound';
 import Planner from './pages/Planner';
 import TimerPage from './pages/TimerPage';
@@ -152,6 +153,7 @@ export default function App() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [hintVisible, setHintVisible] = useState(false);
+  const [skovaCallOpen, setSkovaCallOpen] = useState(false);
   const [assistantPosition, setAssistantPosition] = useState<{ left: number; top: number } | null>(() => {
     try {
       const saved = localStorage.getItem('studyflow-assistant-position');
@@ -249,10 +251,11 @@ export default function App() {
         </div>
       )}
       {route !== 'assistant' && (
-        <a
-          href={`#/assistant?from=${route}`}
-          aria-label="افتح المساعد الدراسي SKOVA AI مع سياق الصفحة الحالية، واسحب الزر لتغيير مكانه"
-          title="اسحب لتحريك زر SKOVA AI"
+        <button
+          type="button"
+          onClick={() => setSkovaCallOpen(true)}
+          aria-label="ابدأ مكالمة صوتية مع SKOVA AI، واسحب الزر لتغيير مكانه"
+          title="اضغط لبدء مكالمة مع SKOVA AI أو اسحب الزر لتحريكه"
           style={assistantPosition ? { left: assistantPosition.left, top: assistantPosition.top } : undefined}
           onPointerDown={(event) => {
             if (event.button !== 0) return;
@@ -300,11 +303,8 @@ export default function App() {
             assistantDrag.current = null;
           }}
           onPointerCancel={() => { assistantDrag.current = null; }}
-          onClick={(event) => {
-            if (ignoreAssistantClick.current) {
-              event.preventDefault();
-              ignoreAssistantClick.current = false;
-            }
+          onClick={() => {
+            if (ignoreAssistantClick.current) ignoreAssistantClick.current = false;
           }}
           className={`fixed z-30 inline-flex touch-none select-none items-center gap-2 rounded-full border border-white/15 bg-gradient-to-l from-[#17131f] via-[#342052] to-[#18334c] px-3 py-2 text-white shadow-xl shadow-purple-950/30 transition hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-400 cursor-grab active:cursor-grabbing ${assistantPosition ? '' : 'bottom-24 left-4 md:bottom-6 md:left-6'}`}
         >
@@ -316,8 +316,9 @@ export default function App() {
             <span className="text-xs font-extrabold tracking-wide">SKOVA AI</span>
             <span className="text-[9px] text-white/75">مساعدك الدراسي</span>
           </span>
-        </a>
+        </button>
       )}
+      <VoiceTeacher open={skovaCallOpen} onClose={() => setSkovaCallOpen(false)} />
       {/* الشريط الجانبي (شاشات كبيرة) */}
       <aside className="app-sidebar sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
         <Brand />

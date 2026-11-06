@@ -6,8 +6,9 @@ import { canListen, canSpeak, listen, speak, stopSpeaking } from '../lib/voice';
 
 type Phase = 'idle' | 'listening' | 'thinking' | 'speaking';
 
-export default function VoiceTeacher() {
+export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose: () => void }) {
   const settings = useApp((s) => s.settings);
+  const { messages } = useChat();
   const [active, setActive] = useState(false);
   const [phase, setPhase] = useState<Phase>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -79,6 +80,11 @@ export default function VoiceTeacher() {
   };
   startListeningRef.current = startListening;
 
+  const closeCall = () => {
+    stopTeacher();
+    onClose();
+  };
+
   const toggle = () => {
     if (activeRef.current) {
       stopTeacher();
@@ -105,37 +111,69 @@ export default function VoiceTeacher() {
 
   const status = phase === 'listening' ? 'يستمع إليك الآن' : phase === 'thinking' ? 'يحضّر إجابة لك' : phase === 'speaking' ? 'يتحدث معك الآن' : 'محادثة صوتية مباشرة مع SKOVA';
 
-  return (
-    <section className="mb-4" aria-label="اتصال بالمدرّس الذكي">
-      <div className="flex items-center gap-2">
-        <div className="min-w-0 flex-1">
-          <h2 className="text-sm font-bold">المدرّس الذكي</h2>
-          <p className="text-[11px] text-muted">اتصال صوتي تفاعلي</p>
-        </div>
-        <button
-          type="button"
-          onClick={toggle}
-          aria-pressed={active}
-          aria-label={active ? 'إنهاء الاتصال بالمدرّس' : 'اتصال بالمدرّس الذكي'}
-          className={`inline-flex min-h-11 items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-white shadow-lg transition active:scale-95 ${active ? 'bg-red-600 shadow-red-600/20' : 'bg-emerald-600 shadow-emerald-600/20 hover:bg-emerald-700'}`}
-        >
-          {active ? <PhoneOff size={17} /> : <Phone size={17} />}
-          {active ? 'إنهاء المكالمة' : 'اتصال'}
-        </button>
-      </div>
+  if (!open) return null;
 
-      <div className={`mt-2 flex items-center gap-3 rounded-2xl border px-3 py-3 transition ${active ? 'border-emerald-500/40 bg-emerald-500/5' : 'border-line bg-card/60'}`}>
-        <div className={`grid h-10 w-10 shrink-0 place-items-center rounded-full ${active ? 'bg-emerald-500/15 text-emerald-600' : 'bg-accent/10 text-accent'}`}>
-          {active ? <AudioLines size={21} className={phase === 'listening' || phase === 'speaking' ? 'animate-pulse' : ''} /> : <Phone size={19} />}
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold">{active ? 'SKOVA AI' : 'جاهز للاتصال'}</p>
-          <p className={`text-xs ${active ? 'text-emerald-600' : 'text-muted'}`} role="status">{status}</p>
-        </div>
-        {active && <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-emerald-500" aria-label="المكالمة نشطة" />}
+  const latestMessages = messages.slice(-4);
+
+  return (
+    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-[#070910]/95 px-4 py-6 text-white backdrop-blur-xl" role="dialog" aria-modal="true" aria-label="مكالمة صوتية مع SKOVA AI">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className={`absolute left-1/2 top-[28%] h-72 w-72 -translate-x-1/2 rounded-full blur-3xl transition-opacity duration-700 ${active ? 'bg-emerald-500/15 opacity-100' : 'bg-violet-500/15 opacity-70'}`} />
       </div>
-      {error && <p role="alert" className="mt-2 rounded-xl border border-bad/30 bg-bad/10 px-3 py-2 text-xs text-bad">{error}</p>}
-      <p className="mt-2 flex items-center gap-1.5 text-[10px] text-muted"><Mic size={12} /> يحتاج إذن الميكروفون وصوتاً عربياً متاحاً في جهازك واتصالاً بالإنترنت.</p>
-    </section>
+      <section className="relative flex max-h-full w-full max-w-md flex-col items-center">
+        <header className="flex w-full items-center justify-between">
+          <button type="button" onClick={closeCall} aria-label="إغلاق شاشة المكالمة" className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-white/75 transition hover:bg-white/10">×</button>
+          <div className="text-center">
+            <p className="text-sm font-bold tracking-wide">SKOVA AI</p>
+            <p className="mt-0.5 text-[11px] text-white/45">مساعدك الدراسي الشخصي</p>
+          </div>
+          <span className="h-10 w-10" />
+        </header>
+
+        <div className="flex flex-1 flex-col items-center justify-center py-8">
+          <div className="relative mb-8 grid h-44 w-44 place-items-center">
+            {active && <span className={`absolute inset-0 rounded-full border border-emerald-400/30 ${phase === 'listening' ? 'animate-ping' : 'animate-pulse'}`} />}
+            <span className={`absolute inset-3 rounded-full border border-white/10 ${active ? 'bg-emerald-400/10 shadow-[0_0_70px_rgba(16,185,129,0.16)]' : 'bg-violet-400/10 shadow-[0_0_70px_rgba(139,92,246,0.16)]'}`} />
+            <span className={`relative grid h-28 w-28 place-items-center rounded-full border border-white/15 bg-gradient-to-br from-[#342052] to-[#142f43] shadow-2xl ${active && (phase === 'listening' || phase === 'speaking') ? 'scale-105' : ''} transition-transform duration-500`}>
+              <AudioLines size={44} className={active ? 'text-emerald-300' : 'text-violet-200'} />
+            </span>
+          </div>
+
+          <h2 className="text-2xl font-bold">SKOVA AI</h2>
+          <p className={`mt-3 rounded-full border px-4 py-2 text-sm ${active ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200' : 'border-white/10 bg-white/5 text-white/60'}`} role="status">
+            {active ? status : 'جاهز لبدء المكالمة'}
+          </p>
+
+          {latestMessages.length > 0 && (
+            <div className="mt-7 max-h-36 w-full space-y-2 overflow-y-auto px-1">
+              {latestMessages.map((message, index) => (
+                <p key={index} className={`rounded-2xl px-3 py-2 text-xs leading-relaxed ${message.role === 'user' ? 'bg-white/10 text-white/80' : 'bg-emerald-400/10 text-emerald-100'}`}>
+                  <span className="mb-1 block text-[10px] opacity-55">{message.role === 'user' ? 'أنت' : 'SKOVA'}</span>
+                  {message.content}
+                </p>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="w-full pb-5">
+          {error && <p role="alert" className="mb-4 rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-center text-xs text-red-200">{error}</p>}
+          <div className="flex items-center justify-center gap-8">
+            <div className="flex flex-col items-center gap-2">
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-white/10 text-white/70"><Mic size={19} /></span>
+              <span className="text-[10px] text-white/45">الميكروفون</span>
+            </div>
+            <button type="button" onClick={active ? stopTeacher : toggle} className={`grid h-[76px] w-[76px] place-items-center rounded-full text-white shadow-xl transition active:scale-95 ${active ? 'bg-red-500 shadow-red-500/25 hover:bg-red-600' : 'bg-emerald-500 shadow-emerald-500/25 hover:bg-emerald-600'}`} aria-label={active ? 'إنهاء المكالمة' : 'بدء المكالمة'}>
+              {active ? <PhoneOff size={29} /> : <Phone size={29} />}
+            </button>
+            <div className="flex flex-col items-center gap-2">
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-white/10 text-white/70"><Volume2 size={19} /></span>
+              <span className="text-[10px] text-white/45">الصوت</span>
+            </div>
+          </div>
+          <p className="mt-5 text-center text-[10px] leading-5 text-white/35">تحتاج المكالمة إلى إذن الميكروفون، ودعم الصوت العربي في جهازك، واتصال بالإنترنت.</p>
+        </div>
+      </section>
+    </div>
   );
 }
