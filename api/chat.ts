@@ -472,15 +472,15 @@ async function handlePost(request: Request): Promise<Response> {
   type ChatCompletion = { choices?: { message?: { content?: string } }[] };
   let data = (await upstream.json().catch(() => null)) as ChatCompletion | null;
   let reply = data?.choices?.[0]?.message?.content?.trim() || '';
-  const arabicRequest = /[\\u0600-\\u06FF]/.test(messages[messages.length - 1].content);
+  const arabicRequest = /[\u0600-\u06FF]/.test(messages[messages.length - 1].content);
 
   // لا نعرض للمستخدم إجابة عربية مشوّهة أو مليئة بالرموز على أنها رد سليم.
   const looksLikeSymbolNoise = (value: string): boolean => {
-    const visible = value.replace(/\\s/g, '');
+    const visible = value.replace(/\s/g, '');
     if (!visible) return true;
-    const letters = value.match(/\\p{L}/gu) ?? [];
-    const arabicLetters = value.match(/[\\u0600-\\u06FF]/g) ?? [];
-    const symbols = value.match(/[\\p{S}\\p{C}]/gu) ?? [];
+    const letters = value.match(/\p{L}/gu) ?? [];
+    const arabicLetters = value.match(/[\u0600-\u06FF]/g) ?? [];
+    const symbols = value.match(/[\p{S}\p{C}]/gu) ?? [];
     return letters.length < 5 ||
       arabicLetters.length / Math.max(letters.length, 1) < 0.35 ||
       symbols.length / Math.max(visible.length, 1) > 0.18;
@@ -495,7 +495,7 @@ async function handlePost(request: Request): Promise<Response> {
         temperature: number;
       };
       retryBody.messages[0].content +=
-        '\\n\\nتعليمات تصحيح إلزامية: أعد صياغة الإجابة بالعربية الواضحة فقط. استخدم كلمات وجملاً مفهومة، ولا تكتب رموزاً زخرفية أو محارف متكررة أو شيفرة أو تنسيقاً رياضياً معقداً. احتفظ بالمعلومة الصحيحة وأجب عن سؤال الطالب مباشرة.';
+        '\n\nتعليمات تصحيح إلزامية: أعد صياغة الإجابة بالعربية الواضحة فقط. استخدم كلمات وجملاً مفهومة، ولا تكتب رموزاً زخرفية أو محارف متكررة أو شيفرة أو تنسيقاً رياضياً معقداً. احتفظ بالمعلومة الصحيحة وأجب عن سؤال الطالب مباشرة.';
       retryBody.temperature = 0.2;
       const retry = await call(JSON.stringify(retryBody));
       if (retry.ok) {
