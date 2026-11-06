@@ -41,7 +41,7 @@ export function availableArabicVoices(): SpeechSynthesisVoice[] {
   return window.speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().startsWith('ar'));
 }
 export function cleanForSpeech(text: string): string {
-  return text.replace(/\\bskova\\b/gi, 'سكوفا').replace(/[*#_`>~|]/g, ' ').replace(/\\s+/g, ' ').trim().slice(0, 1500);
+  return text.replace(/\bskova\b/gi, 'سكوفا').replace(/[*#_`>~|]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 1500);
 }
 function chooseVoice(gender: VoiceGender = 'any'): SpeechSynthesisVoice | undefined {
   const voices = availableArabicVoices();
