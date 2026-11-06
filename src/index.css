@@ -358,3 +358,40 @@ input, select, textarea {
 @media (prefers-reduced-motion: reduce) {
   .app-main { animation: none; }
 }
+
+/* VAYORA feature icon identities — color-coded, consistent and theme-aware */
+.feature-icon {
+  display: inline-grid;
+  width: 2.9rem;
+  height: 2.9rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-color: rgb(var(--feature-rgb) / 0.22);
+  border-radius: 1rem;
+  color: rgb(var(--feature-rgb));
+  background: linear-gradient(145deg, rgb(var(--feature-rgb) / 0.16), rgb(var(--feature-rgb) / 0.055));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 5px 14px rgb(var(--feature-rgb) / 0.08);
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+.group:hover .feature-icon {
+  transform: translateY(-2px) scale(1.035);
+  background: linear-gradient(145deg, rgb(var(--feature-rgb) / 0.22), rgb(var(--feature-rgb) / 0.08));
+  box-shadow: 0 8px 18px rgb(var(--feature-rgb) / 0.14);
+}
+.feature-icon-cyan { --feature-rgb: 6 182 212; }
+.feature-icon-blue { --feature-rgb: 59 130 246; }
+.feature-icon-violet { --feature-rgb: 139 92 246; }
+.feature-icon-teal { --feature-rgb: 20 184 166; }
+.feature-icon-indigo { --feature-rgb: 99 102 241; }
+.feature-icon-amber { --feature-rgb: 217 119 6; }
+.feature-icon-emerald { --feature-rgb: 16 185 129; }
+.feature-icon-orange { --feature-rgb: 234 88 12; }
+.feature-icon-sky { --feature-rgb: 14 165 233; }
+.feature-icon-yellow { --feature-rgb: 202 138 4; }
+.feature-icon-purple { --feature-rgb: 168 85 247; }
+.feature-icon-rose { --feature-rgb: 225 29 72; }
+.feature-icon-slate { --feature-rgb: 100 116 139; }
+@media (prefers-reduced-motion: reduce) {
+  .feature-icon, .group:hover .feature-icon { transition: none; transform: none; }
+}
