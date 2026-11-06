@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Phone, PhoneOff, AudioLines, Mic, Volume2 } from 'lucide-react';
 import { useChat } from '../lib/chatStore';
 import { useApp } from '../store';
-import { canListen, canSpeak, listen, speak, stopSpeaking } from '../lib/voice';
+import { canListen, canSpeak, listen, prepareVoice, speak, stopSpeaking } from '../lib/voice';
 
 type Phase = 'idle' | 'listening' | 'thinking' | 'speaking';
 
@@ -46,14 +46,8 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
     }
     setPhase('speaking');
     speak(last.content, {
-      onEnd: () => {
-        if (activeRef.current) startListeningRef.current();
-        else setPhase('idle');
-      },
-      onError: (message) => {
-        setError(message);
-        stopTeacher();
-      },
+      onEnd: () => { if (activeRef.current) startListeningRef.current(); else setPhase('idle'); },
+      onError: (message) => { setError(message); stopTeacher(); },
     }, { gender: settings.voiceGender ?? 'any', style: settings.voiceStyle ?? 'soft' });
   };
 
@@ -63,7 +57,7 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
     setError(null);
     setPhase('listening');
     stopListenRef.current = listen({
-      onText: (text) => { transcriptRef.current = text; },
+      onText: text => { transcriptRef.current = text; },
       onEnd: () => {
         stopListenRef.current = null;
         if (!activeRef.current) return;
@@ -75,40 +69,34 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
         }
         void handleTranscript(heard);
       },
-      onError: (message) => setError(message),
+      onError: message => setError(message),
     });
   };
   startListeningRef.current = startListening;
 
-  const closeCall = () => {
-    stopTeacher();
-    onClose();
-  };
+  const closeCall = () => { stopTeacher(); onClose(); };
 
-  const toggle = () => {
-    if (activeRef.current) {
-      stopTeacher();
-      return;
-    }
+  const toggle = async () => {
+    if (activeRef.current) { stopTeacher(); return; }
     if (!canListen() || !canSpeak()) {
-      setError('المدرّس الصوتي يحتاج متصفحاً يدعم الميكروفون والقراءة الصوتية.');
+      setError('الصوت غير مدعوم في هذه البيئة. حدّث التطبيق أو افتح المنصة بمتصفح Chrome حديث.');
       return;
     }
-    previousStyleRef.current = useChat.getState().style;
-    useChat.getState().setStyle('voice_teacher');
-    activeRef.current = true;
-    setActive(true);
-    setError(null);
-    setPhase('speaking');
-    speak('أنا المعلم الذكي SKOVA', {
-      onEnd: () => {
-        if (activeRef.current) startListeningRef.current();
-      },
-      onError: (message) => {
-        setError(message);
-        stopTeacher();
-      },
-    }, { gender: settings.voiceGender ?? 'any', style: settings.voiceStyle ?? 'soft' });
+    try {
+      setError(null);
+      await prepareVoice();
+      previousStyleRef.current = useChat.getState().style;
+      useChat.getState().setStyle('voice_teacher');
+      activeRef.current = true;
+      setActive(true);
+      setPhase('speaking');
+      speak('أنا المعلم الذكي SKOVA', {
+        onEnd: () => { if (activeRef.current) startListeningRef.current(); },
+        onError: message => { setError(message); stopTeacher(); },
+      }, { gender: settings.voiceGender ?? 'any', style: settings.voiceStyle ?? 'soft' });
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'تعذّر تهيئة الميكروفون والصوت. تحقق من أذونات التطبيق.');
+    }
   };
 
   useEffect(() => () => {
@@ -119,9 +107,7 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
   }, []);
 
   const status = phase === 'listening' ? 'يستمع إليك الآن' : phase === 'thinking' ? 'يحضّر إجابة لك' : phase === 'speaking' ? 'يتحدث معك الآن' : 'محادثة صوتية مباشرة مع SKOVA';
-
   if (!open) return null;
-
   const latestMessages = messages.slice(-4);
 
   return (
@@ -138,7 +124,6 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
           </div>
           <span className="h-10 w-10" />
         </header>
-
         <div className="flex flex-1 flex-col items-center justify-center py-8">
           <div className="relative mb-8 grid h-44 w-44 place-items-center">
             {active && <span className={`absolute inset-0 rounded-full border border-emerald-400/30 ${phase === 'listening' ? 'animate-ping' : 'animate-pulse'}`} />}
@@ -147,12 +132,10 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
               <AudioLines size={44} className={active ? 'text-emerald-300' : 'text-violet-200'} />
             </span>
           </div>
-
           <h2 className="text-2xl font-bold">SKOVA AI</h2>
           <p className={`mt-3 rounded-full border px-4 py-2 text-sm ${active ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200' : 'border-white/10 bg-white/5 text-white/60'}`} role="status">
             {active ? status : 'جاهز لبدء المكالمة'}
           </p>
-
           {latestMessages.length > 0 && (
             <div className="mt-7 max-h-36 w-full space-y-2 overflow-y-auto px-1">
               {latestMessages.map((message, index) => (
@@ -164,7 +147,6 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
             </div>
           )}
         </div>
-
         <div className="w-full pb-5">
           {error && <p role="alert" className="mb-4 rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-center text-xs text-red-200">{error}</p>}
           <div className="flex items-center justify-center gap-8">
@@ -172,7 +154,7 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
               <span className="grid h-12 w-12 place-items-center rounded-full bg-white/10 text-white/70"><Mic size={19} /></span>
               <span className="text-[10px] text-white/45">الميكروفون</span>
             </div>
-            <button type="button" onClick={active ? stopTeacher : toggle} className={`grid h-[76px] w-[76px] place-items-center rounded-full text-white shadow-xl transition active:scale-95 ${active ? 'bg-red-500 shadow-red-500/25 hover:bg-red-600' : 'bg-emerald-500 shadow-emerald-500/25 hover:bg-emerald-600'}`} aria-label={active ? 'إنهاء المكالمة' : 'بدء المكالمة'}>
+            <button type="button" onClick={active ? stopTeacher : () => void toggle()} className={`grid h-[76px] w-[76px] place-items-center rounded-full text-white shadow-xl transition active:scale-95 ${active ? 'bg-red-500 shadow-red-500/25 hover:bg-red-600' : 'bg-emerald-500 shadow-emerald-500/25 hover:bg-emerald-600'}`} aria-label={active ? 'إنهاء المكالمة' : 'بدء المكالمة'}>
               {active ? <PhoneOff size={29} /> : <Phone size={29} />}
             </button>
             <div className="flex flex-col items-center gap-2">
@@ -180,7 +162,7 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
               <span className="text-[10px] text-white/45">الصوت</span>
             </div>
           </div>
-          <p className="mt-5 text-center text-[10px] leading-5 text-white/35">تحتاج المكالمة إلى إذن الميكروفون، ودعم الصوت العربي في جهازك، واتصال بالإنترنت.</p>
+          <p className="mt-5 text-center text-[10px] leading-5 text-white/35">تحتاج المكالمة إلى إذن الميكروفون واتصال بالإنترنت. في Android يستخدم التطبيق خدمات الصوت الأصلية في الجهاز.</p>
         </div>
       </section>
     </div>
