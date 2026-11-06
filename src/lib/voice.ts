@@ -84,8 +84,6 @@ function sentenceChunks(text: string): string[] {
 }
 const pauseAfter = (chunk: string) => /[؟?]$/.test(chunk) ? 360 : /[.!؛]$/.test(chunk) ? 290 : 170;
 
-let activeNeuralAudio: HTMLAudioElement | null = null;
-
 export function speak(text: string, cb: { onEnd?: () => void; onError?: (msg: string) => void } = {}, options: VoiceOptions = {}): void {
   const cleanText = cleanForSpeech(text);
   if (!cleanText) { cb.onEnd?.(); return; }
@@ -139,40 +137,11 @@ export function speak(text: string, cb: { onEnd?: () => void; onError?: (msg: st
     next();
   };
 
-  // Neural Arabic speech is preferred; the device voice remains a graceful offline fallback.
-  void (async () => {
-    try {
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ text: cleanText }),
-      });
-      if (!response.ok) { speakWithDeviceVoice(); return; }
-      const blob = await response.blob();
-      if (id !== playbackId) return;
-      const audioUrl = URL.createObjectURL(blob);
-      const audio = new Audio(audioUrl);
-      activeNeuralAudio = audio;
-      const cleanup = () => {
-        URL.revokeObjectURL(audioUrl);
-        if (activeNeuralAudio === audio) activeNeuralAudio = null;
-      };
-      audio.onended = () => { cleanup(); if (id === playbackId) cb.onEnd?.(); };
-      audio.onerror = () => { cleanup(); if (id === playbackId) speakWithDeviceVoice(); };
-      try { await audio.play(); }
-      catch { cleanup(); if (id === playbackId) speakWithDeviceVoice(); }
-    } catch {
-      speakWithDeviceVoice();
-    }
-  })();
+  // Free on-device speech: no paid API, network request, or external TTS quota.
+  speakWithDeviceVoice();
 }
 export function stopSpeaking(): void {
   playbackId++;
-  if (activeNeuralAudio) {
-    activeNeuralAudio.pause();
-    activeNeuralAudio.src = '';
-    activeNeuralAudio = null;
-  }
   if (isNative()) { void TextToSpeech.stop().catch(() => undefined); return; }
   if (canSpeak()) window.speechSynthesis.cancel();
 }
