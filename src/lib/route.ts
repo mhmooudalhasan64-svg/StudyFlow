@@ -22,11 +22,12 @@ export const ROUTES = [
   'more',
   'about',
   'help',
+  'today',
 ] as const;
 export type Route = (typeof ROUTES)[number];
 
 function read(): Route {
-  const h = window.location.hash.replace(/^#\/?/, '');
+  const h = window.location.hash.replace(/^#\/?/, '').split('?')[0];
   return (ROUTES as readonly string[]).includes(h) ? (h as Route) : 'home';
 }
 
