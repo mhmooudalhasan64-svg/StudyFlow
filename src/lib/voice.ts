@@ -41,10 +41,19 @@ export function availableArabicVoices(): SpeechSynthesisVoice[] {
   if (!canSpeak() || isNative()) return [];
   return window.speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().startsWith('ar'));
 }
+
+/**
+ * Remove emoji code points before handing text to either Android TTS or Web Speech.
+ * Use explicit Unicode ranges as well as Unicode emoji properties: some Android WebViews
+ * expose incomplete emoji-property tables, and symbols such as keycaps/flags are sequences.
+ */
+const EMOJI_CODEPOINTS = /(?:[#*0-9]\uFE0F?\u20E3)|[\p{Extended_Pictographic}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Regional_Indicator}\u{2300}-\u{23FF}\u{2600}-\u{27FF}\u{2B00}-\u{2BFF}\u{1F000}-\u{1FAFF}\u{1FC00}-\u{1FFFD}\uFE0E\uFE0F\u200D\u{E0020}-\u{E007F}\u00A9\u00AE\u203C\u2049\u2122\u2139\u3030\u303D\u3297\u3299]/gu;
+
 export function cleanForSpeech(text: string): string {
   return text
-    // Strip emoji graphemes (flags, skin tones, keycaps and joined sequences) from spoken output.
-    .replace(/(?:[#*0-9]\uFE0F?\u20E3)|[\p{Extended_Pictographic}\p{Emoji_Modifier}\p{Regional_Indicator}\uFE0E\uFE0F\u200D\u{E0020}-\u{E007F}]/gu, ' ')
+    .replace(EMOJI_CODEPOINTS, ' ')
+    // Remove textual emoji shortcodes if a model emits them instead of Unicode glyphs.
+    .replace(/:[a-z0-9_+-]{2,}:/gi, ' ')
     .replace(/\bskova\b/gi, 'سكوفا')
     .replace(/\bVAYORA\b/gi, 'فايورا')
     .replace(/[*#_`>~|]/g, ' ')
@@ -87,9 +96,11 @@ function sentenceChunks(text: string): string[] {
 const pauseAfter = (chunk: string) => /[؟?]$/.test(chunk) ? 360 : /[.!؛]$/.test(chunk) ? 290 : 170;
 
 export function speak(text: string, cb: { onEnd?: () => void; onError?: (msg: string) => void } = {}, options: VoiceOptions = {}): void {
+  // Sanitize once at entry and again per chunk immediately before TTS as a final guard.
   const cleanText = cleanForSpeech(text);
   if (!cleanText) { cb.onEnd?.(); return; }
-  const chunks = sentenceChunks(cleanText);
+  const chunks = sentenceChunks(cleanText).map(cleanForSpeech).filter(Boolean);
+  if (!chunks.length) { cb.onEnd?.(); return; }
   const style = options.style ?? 'soft';
   const id = ++playbackId;
   const rate = style === 'energetic' ? 1.02 : style === 'strong' ? 0.96 : 0.92;
@@ -102,7 +113,7 @@ export function speak(text: string, cb: { onEnd?: () => void; onError?: (msg: st
         try {
           for (let i = 0; i < chunks.length; i++) {
             if (id !== playbackId) return;
-            await TextToSpeech.speak({ text: chunks[i], lang: 'ar-SA', rate, pitch, volume: style === 'soft' ? 0.9 : 1 });
+            await TextToSpeech.speak({ text: cleanForSpeech(chunks[i]), lang: 'ar-SA', rate, pitch, volume: style === 'soft' ? 0.9 : 1 });
             if (id !== playbackId) return;
             if (i < chunks.length - 1) await new Promise(resolve => setTimeout(resolve, pauseAfter(chunks[i])));
           }
@@ -121,7 +132,8 @@ export function speak(text: string, cb: { onEnd?: () => void; onError?: (msg: st
     const next = () => {
       if (id !== playbackId) return;
       if (index >= chunks.length) { cb.onEnd?.(); return; }
-      const chunk = chunks[index++];
+      const chunk = cleanForSpeech(chunks[index++]);
+      if (!chunk) { next(); return; }
       const utterance = new SpeechSynthesisUtterance(chunk);
       utterance.lang = voice?.lang ?? 'ar-SA';
       if (voice) utterance.voice = voice;
