@@ -217,8 +217,8 @@ export default function App() {
           }}
           className={`fixed z-30 inline-flex touch-none select-none items-center gap-2.5 rounded-full border border-white/15 bg-gradient-to-l from-[#17131f] via-[#342052] to-[#18334c] px-4 py-3 text-white shadow-xl shadow-purple-950/30 transition hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-400 cursor-grab active:cursor-grabbing ${assistantPosition ? '' : 'bottom-24 left-4 md:bottom-6 md:left-6'}`}
         >
-          <span className="relative grid h-9 w-9 place-items-center rounded-full border border-white/20 bg-white/10">
-            <Bot size={20} />
+          <span className="relative grid h-8 w-8 place-items-center rounded-full border border-white/20 bg-white/10">
+            <Bot size={18} />
             <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#211a30] bg-emerald-400" />
           </span>
           <span className="flex flex-col text-right leading-tight">
