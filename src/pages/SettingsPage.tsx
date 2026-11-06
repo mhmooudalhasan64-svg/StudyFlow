@@ -36,10 +36,6 @@ export default function SettingsPage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    document.documentElement.classList.toggle('watercolor-buttons', settings.buttonPalette === 'watercolor');
-  }, [settings.buttonPalette]);
-
-  useEffect(() => {
     void (async () => {
       try {
         const est = await navigator.storage?.estimate?.();
