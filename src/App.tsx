@@ -419,7 +419,7 @@ function HeaderButtons({ theme, onToggle, simpleMode, onToggleMode, onSearch }: 
       <button type="button" onClick={onToggleMode} aria-label={simpleMode ? 'التبديل إلى الوضع المتقدم' : 'التبديل إلى الوضع البسيط'} title={simpleMode ? 'الوضع البسيط — اضغط لإظهار كل الأزرار' : 'الوضع المتقدم — اضغط لتبسيط الأزرار'} className={`rounded-xl border border-line bg-card/60 p-2.5 transition hover:border-accent hover:text-main ${simpleMode ? 'text-accent' : 'text-muted'}`}><SlidersHorizontal size={18} /></button>
       <button
         type="button"
-        onClick={onToggle
+        onClick={onToggle}
         aria-label={theme === 'dark' ? 'الوضع الفاتح' : 'الوضع الداكن'}
         className="rounded-xl border border-line bg-card/60 p-2.5 text-muted transition hover:border-accent hover:text-main"
       >
