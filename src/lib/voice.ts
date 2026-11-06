@@ -168,6 +168,11 @@ export function speak(text: string, cb: { onEnd?: () => void; onError?: (msg: st
 }
 export function stopSpeaking(): void {
   playbackId++;
+  if (activeNeuralAudio) {
+    activeNeuralAudio.pause();
+    activeNeuralAudio.src = '';
+    activeNeuralAudio = null;
+  }
   if (isNative()) { void TextToSpeech.stop().catch(() => undefined); return; }
   if (canSpeak()) window.speechSynthesis.cancel();
 }
