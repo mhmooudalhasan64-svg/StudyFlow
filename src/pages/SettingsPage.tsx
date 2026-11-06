@@ -133,7 +133,7 @@ export default function SettingsPage() {
                 </select>
               </label>
             </div>
-            <button type="button" className="btn btn-ghost w-full" onClick={() => speak('مرحباً! هذا اختبار للصوت البشري في تطبيق Study Flow.', {}, { gender: settings.voiceGender ?? 'any', style: settings.voiceStyle ?? 'soft' })}>
+            <button type="button" className="btn btn-ghost w-full" onClick={() => speak('مرحباً! هذا اختبار للصوت البشري في منصة فايورا.', {}, { gender: settings.voiceGender ?? 'any', style: settings.voiceStyle ?? 'soft' })}>
               <Volume2 size={16} /> تجربة الصوت المختار
             </button>
             <p className="text-[11px] leading-relaxed text-muted">تختلف الأصوات المتاحة حسب الجهاز والمتصفح. قد لا يتوفر صوت عربي ذكر أو أنثى على كل جهاز؛ عندها يُستخدم أقرب صوت عربي متاح.</p>
