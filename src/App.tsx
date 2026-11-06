@@ -1,4 +1,4 @@
-import { useEffect, useState, type ComponentType } from 'react';
+import { useEffect, useRef, useState, type ComponentType } from 'react';
 import {
   Bot,
   CalendarCheck,
@@ -101,6 +101,20 @@ export default function App() {
   const theme = useApp((s) => s.settings.theme);
   const updateSettings = useApp((s) => s.updateSettings);
   const [introDone, setIntroDone] = useState(false);
+  const [assistantPosition, setAssistantPosition] = useState<{ left: number; top: number } | null>(() => {
+    try {
+      const saved = localStorage.getItem('studyflow-assistant-position');
+      if (!saved) return null;
+      const parsed = JSON.parse(saved);
+      return Number.isFinite(parsed.left) && Number.isFinite(parsed.top)
+        ? { left: parsed.left, top: parsed.top }
+        : null;
+    } catch {
+      return null;
+    }
+  });
+  const assistantDrag = useRef<{ pointerId: number; x: number; y: number; left: number; top: number; moved: boolean } | null>(null);
+  const ignoreAssistantClick = useRef(false);
   const route = useHashRoute();
   const online = useOnline();
 
@@ -146,9 +160,62 @@ export default function App() {
       {route !== 'assistant' && (
         <a
           href="#/assistant"
-          aria-label="افتح المساعد الدراسي SKOVA AI"
-          title="اسأل SKOVA AI"
-          className="fixed bottom-24 left-4 z-30 inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-gradient-to-l from-[#17131f] via-[#342052] to-[#18334c] px-4 py-3 text-white shadow-xl shadow-purple-950/30 transition hover:-translate-y-1 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-400 md:bottom-6 md:left-6"
+          aria-label="افتح المساعد الدراسي SKOVA AI، واسحب الزر لتغيير مكانه"
+          title="اسحب لتحريك زر SKOVA AI"
+          style={assistantPosition ? { left: assistantPosition.left, top: assistantPosition.top } : undefined}
+          onPointerDown={(event) => {
+            if (event.button !== 0) return;
+            const rect = event.currentTarget.getBoundingClientRect();
+            assistantDrag.current = {
+              pointerId: event.pointerId,
+              x: event.clientX,
+              y: event.clientY,
+              left: rect.left,
+              top: rect.top,
+              moved: false,
+            };
+            event.currentTarget.setPointerCapture(event.pointerId);
+          }}
+          onPointerMove={(event) => {
+            const drag = assistantDrag.current;
+            if (!drag || drag.pointerId !== event.pointerId) return;
+            const dx = event.clientX - drag.x;
+            const dy = event.clientY - drag.y;
+            if (!drag.moved && Math.hypot(dx, dy) < 6) return;
+            drag.moved = true;
+            const rect = event.currentTarget.getBoundingClientRect();
+            setAssistantPosition({
+              left: Math.max(8, Math.min(window.innerWidth - rect.width - 8, drag.left + dx)),
+              top: Math.max(8, Math.min(window.innerHeight - rect.height - 8, drag.top + dy)),
+            });
+          }}
+          onPointerUp={(event) => {
+            const drag = assistantDrag.current;
+            if (!drag || drag.pointerId !== event.pointerId) return;
+            if (drag.moved) {
+              const rect = event.currentTarget.getBoundingClientRect();
+              const position = {
+                left: Math.max(8, Math.min(window.innerWidth - rect.width - 8, drag.left + event.clientX - drag.x)),
+                top: Math.max(8, Math.min(window.innerHeight - rect.height - 8, drag.top + event.clientY - drag.y)),
+              };
+              setAssistantPosition(position);
+              try {
+                localStorage.setItem('studyflow-assistant-position', JSON.stringify(position));
+              } catch {
+                // يبقى تحريك الزر متاحاً حتى إن تعذر حفظ الموقع
+              }
+              ignoreAssistantClick.current = true;
+            }
+            assistantDrag.current = null;
+          }}
+          onPointerCancel={() => { assistantDrag.current = null; }}
+          onClick={(event) => {
+            if (ignoreAssistantClick.current) {
+              event.preventDefault();
+              ignoreAssistantClick.current = false;
+            }
+          }}
+          className={`fixed z-30 inline-flex touch-none select-none items-center gap-2.5 rounded-full border border-white/15 bg-gradient-to-l from-[#17131f] via-[#342052] to-[#18334c] px-4 py-3 text-white shadow-xl shadow-purple-950/30 transition hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-400 cursor-grab active:cursor-grabbing ${assistantPosition ? '' : 'bottom-24 left-4 md:bottom-6 md:left-6'}`}
         >
           <span className="relative grid h-9 w-9 place-items-center rounded-full border border-white/20 bg-white/10">
             <Bot size={20} />
