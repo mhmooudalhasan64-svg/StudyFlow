@@ -62,6 +62,8 @@ export interface Attempt {
 export interface Settings {
   key: 'app';
   theme: 'dark' | 'light';
+  /** لوحة ألوان الأزرار */
+  buttonPalette?: 'classic' | 'watercolor';
   dailyGoalMin: number;
   focusMin: number;
   shortMin: number;
