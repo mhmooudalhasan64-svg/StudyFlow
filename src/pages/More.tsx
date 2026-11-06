@@ -2,7 +2,7 @@ import type { ComponentType } from 'react';
 import {
   Award, BarChart3, BookOpen, Bot, Calculator, CalendarClock, CalendarCheck,
   FileBarChart, GitBranch, Layers, ListChecks, Repeat, Info,
-  Settings as SettingsIcon, Timer as TimerIcon,
+  Settings as SettingsIcon, Timer as TimerIcon, CircleHelp,
 } from 'lucide-react';
 import { PageTitle } from '../components/ui';
 
@@ -45,6 +45,7 @@ const GROUPS: { title: string; description: string; items: Item[] }[] = [
     items: [
       { href: '#/assistant', label: 'SKOVA AI', Icon: Bot },
       { href: '#/settings', label: 'الإعدادات', Icon: SettingsIcon },
+      { href: '#/help', label: 'شرح أزرار التطبيق', Icon: CircleHelp },
       { href: '#/about', label: 'عن التطبيق (متجر سكوڤا)', Icon: Info },
     ],
   },

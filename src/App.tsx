@@ -35,6 +35,7 @@ import Achievements from './pages/Achievements';
 import Reports from './pages/Reports';
 import More from './pages/More';
 import MindMap from './pages/MindMap';
+import Help from './pages/Help';
 
 type NavItem = { route: Route; label: string; Icon: ComponentType<{ size?: number }> };
 
@@ -77,6 +78,7 @@ const PAGES: Record<Route, ComponentType> = {
   reports: Reports,
   more: More,
   about: About,
+  help: Help,
 };
 
 function useOnline(): boolean {
