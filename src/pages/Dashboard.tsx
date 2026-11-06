@@ -244,20 +244,29 @@ export default function Dashboard() {
           </p>
         </div>
       </a>
-      <a href="#/about" className="group block overflow-hidden rounded-3xl border border-accent/25 bg-gradient-to-l from-accent/10 via-card/90 to-accent2/10 p-4 shadow-lg shadow-accent2/10 transition hover:-translate-y-0.5 hover:border-accent/50 sm:p-5" aria-label="التعرّف على شراكة AUREVON ومتجر سكوڤا">
-        <div className="mb-3 text-[10px] font-bold tracking-wider text-accent sm:text-xs">شراكة وتعاون</div>
-        <div className="flex items-center justify-between gap-2 sm:gap-4">
-          <div className="flex min-w-0 flex-1 items-center justify-center gap-2 rounded-2xl border border-line/70 bg-black px-2 py-3 text-white sm:gap-3 sm:px-3">
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-white/70 text-lg font-black">A</span>
-            <span className="min-w-0 text-center text-sm font-black tracking-[0.12em] sm:text-base">AUREVON</span>
+      <a href="#/about" className="group block overflow-hidden rounded-3xl border border-accent/25 bg-gradient-to-br from-accent/10 via-card/90 to-accent2/10 p-4 shadow-lg shadow-accent2/10 transition hover:-translate-y-0.5 hover:border-accent/50 sm:p-5" aria-label="التعرّف على منظومة AUREVON وVAYORA وSKOVA">
+        <div className="mb-3 text-center">
+          <div className="text-[10px] font-bold tracking-wider text-accent sm:text-xs">منظومة العلامات المتكاملة</div>
+          <h2 className="mt-1 text-base font-black sm:text-lg">ثلاث هويات، هدف تعليمي واحد</h2>
+        </div>
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
+          <div className="min-w-0 rounded-2xl border border-slate-400/25 bg-gradient-to-br from-[#111827] to-[#263449] px-1.5 py-3 text-center text-white sm:px-3">
+            <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-white/30 bg-white/10 text-sm font-black">A</span>
+            <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">AUREVON</p>
+            <p className="mt-1 text-[9px] text-slate-300 sm:text-[10px]">الشركة الأم</p>
           </div>
-          <span className="shrink-0 text-xl font-black text-accent">×</span>
-          <div className="flex min-w-0 flex-1 items-center justify-center gap-2 rounded-2xl border border-line/70 bg-card px-2 py-3 sm:gap-3 sm:px-3">
-            <img src="/logo.png" alt="شعار متجر سكوڤا" width={40} height={40} className="h-9 w-9 shrink-0 rounded-xl object-cover" />
-            <span className="text-sm font-black tracking-widest sm:text-base" dir="ltr">SKOVA</span>
+          <div className="min-w-0 rounded-2xl border border-sky-400/30 bg-gradient-to-br from-[#10233D] to-[#245078] px-1.5 py-3 text-center text-white sm:px-3">
+            <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-white/30 bg-white/10"><img src="/icon.svg" alt="" className="h-6 w-6" /></span>
+            <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">VAYORA</p>
+            <p className="mt-1 text-[9px] text-sky-100 sm:text-[10px]">المنصة التعليمية</p>
+          </div>
+          <div className="min-w-0 rounded-2xl border border-violet-400/25 bg-gradient-to-br from-[#21183E] to-[#49336D] px-1.5 py-3 text-center text-white sm:px-3">
+            <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-white/30 bg-white/10"><img src="/logo.png" alt="" className="h-7 w-7 rounded-lg object-cover" /></span>
+            <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">SKOVA</p>
+            <p className="mt-1 text-[9px] text-violet-100 sm:text-[10px]">المعلم والمتجر</p>
           </div>
         </div>
-        <p className="mt-3 text-center text-xs leading-relaxed text-muted sm:text-sm">AUREVON × SKOVA — شراكة تجمع الابتكار والتقنية.</p>
+        <p className="mt-3 text-center text-xs leading-relaxed text-muted sm:text-sm">AUREVON تقود · VAYORA تجمع · SKOVA تساعد</p>
       </a>
         </div>
       </details>
