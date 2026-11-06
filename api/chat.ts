@@ -1,3 +1,5 @@
+import { createClient } from 'redis';
+
 /**
  * دالة خادم على Vercel تتوسط بين التطبيق وخدمة ذكاء اصطناعي متوافقة مع واجهة OpenAI.
  * المفتاح يُقرأ من متغيّرات البيئة على الخادم فقط ولا يصل إلى المتصفح أبداً.
@@ -142,6 +144,8 @@ interface Attachment {
 }
 
 const usage = new Map<string, { day: string; count: number }>();
+
+let redisClient: ReturnType<typeof createClient> | null = null;
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -315,12 +319,34 @@ async function overLimit(ip: string): Promise<boolean | null> {
     }
   }
 
-  // Partial configuration is a setup error: do not silently use a non-shared limit.
+  // Railway Redis: shared atomic daily limits across all backend replicas.
+  const railwayRedisUrl = clean(env.REDIS_URL);
+  if (railwayRedisUrl) {
+    try {
+      if (!redisClient) {
+        redisClient = createClient({ url: railwayRedisUrl });
+        redisClient.on('error', () => undefined);
+      }
+      if (!redisClient.isOpen) await redisClient.connect();
+      const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(ip));
+      const ipHash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+      const day = new Date().toISOString().slice(0, 10);
+      const key = `vayora:chat:daily:${day}:${ipHash}`;
+      const script = "local n = redis.call('INCR', KEYS[1]); if n == 1 then redis.call('EXPIRE', KEYS[1], ARGV[1]); end; return n";
+      const count = Number(await redisClient.eval(script, { keys: [key], arguments: ['172800'] }));
+      if (!Number.isFinite(count) || count < 1) return null;
+      return count > DAILY_LIMIT;
+    } catch {
+      return null;
+    }
+  }
+
+  // Partial Upstash configuration is a setup error: do not silently use a local counter.
   if (hasRedisConfig) return null;
 
   // Production must fail closed: Vercel instances do not share in-memory counters.
   // Configure both Upstash REST variables before enabling chat in production.
-  if (env.VERCEL === '1') return null;
+  if (env.VERCEL === '1' || env.NODE_ENV === 'production') return null;
 
   // Local-development fallback only.
   const day = new Date().toISOString().slice(0, 10);
@@ -462,11 +488,18 @@ const MOBILE_APP_ORIGINS = new Set([
   'https://localhost',
 ]);
 
+const CONFIGURED_WEB_ORIGINS = new Set(
+  (environment().VAYORA_ALLOWED_ORIGINS ?? '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+);
+
 function withCors(response: Response, request: Request): Response {
   const origin = request.headers.get('origin');
   const headers = new Headers(response.headers);
   headers.set('Vary', 'Origin');
-  if (origin && MOBILE_APP_ORIGINS.has(origin)) {
+  if (origin && (MOBILE_APP_ORIGINS.has(origin) || CONFIGURED_WEB_ORIGINS.has(origin))) {
     headers.set('Access-Control-Allow-Origin', origin);
     headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
     headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
