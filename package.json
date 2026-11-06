@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "icons": "pwa-assets-generator"
+    "icons": "pwa-assets-generator",
+    "start:railway": "tsx server.ts"
   },
   "dependencies": {
     "dexie": "^4.0.8",
@@ -20,7 +21,9 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "read-excel-file": "^5.8.5",
-    "zustand": "^5.0.0"
+    "zustand": "^5.0.0",
+    "redis": "^5.8.3",
+    "tsx": "^4.20.6"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
