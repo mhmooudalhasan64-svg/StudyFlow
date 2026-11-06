@@ -407,8 +407,8 @@ function Brand() {
     <a href="#/home" className="flex items-center gap-2.5">
       <img src="/logo.png" alt="" width={36} height={36} className="h-9 w-9 rounded-xl object-cover" />
       <span className="flex flex-col leading-tight">
-        <span className="text-lg font-extrabold tracking-wide">StudyFlow</span>
-        <span className="text-[10px] text-muted">مستقبلك يبدأ</span>
+        <span className="text-lg font-extrabold tracking-[0.08em]" dir="ltr">VAYORA</span>
+        <span className="text-[10px] text-muted">فايورا · منصة تعليمية ذكية</span>
       </span>
     </a>
   );
