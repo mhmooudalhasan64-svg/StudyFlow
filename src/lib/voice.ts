@@ -19,7 +19,13 @@ export function availableArabicVoices(): SpeechSynthesisVoice[] {
   return window.speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().startsWith('ar'));
 }
 export function cleanForSpeech(text: string): string {
-  return text.replace(/[*#_`>~|]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 1500);
+  return text
+    // اسم العلامة يُنطق بالعربية ككلمة واحدة، مع إبقاء كتابته الأصلية في واجهة التطبيق.
+    .replace(/\bskova\b/gi, 'سكوفا')
+    .replace(/[*#_`>~|]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 1500);
 }
 function chooseVoice(gender: VoiceGender = 'any'): SpeechSynthesisVoice | undefined {
   const voices = availableArabicVoices();
