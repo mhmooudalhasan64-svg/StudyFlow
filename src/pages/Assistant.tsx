@@ -36,6 +36,21 @@ export default function Assistant() {
   const [fileError, setFileError] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const sourceRoute = new URLSearchParams(window.location.hash.split('?')[1] ?? '').get('from');
+  const pageNames: Record<string, string> = {
+    home: 'الرئيسية', today: 'يومي الدراسي', plan: 'الخطة', timer: 'مؤقت التركيز',
+    bac: 'البكالوريا', more: 'كل الميزات', library: 'مكتبة الكتب', mindmap: 'الخرائط الذهنية',
+    review: 'المراجعة الذكية', cards: 'البطاقات التعليمية', exams: 'الامتحانات',
+    quiz: 'بنك الأسئلة', simulator: 'محاكي الامتحان', calc: 'حاسبة العلامات',
+    stats: 'الإحصاءات', reports: 'التقارير', achievements: 'الإنجازات',
+    settings: 'الإعدادات', curriculum: 'خطة إنهاء المنهاج',
+  };
+  const sourcePage = sourceRoute ? pageNames[sourceRoute] : undefined;
+  const contextualSend = (message: string) => send(sourcePage
+    ? `سياق الصفحة الحالية: أنا أستخدم صفحة «${sourcePage}» في تطبيق Study Flow. اجعل مساعدتك مرتبطة بهذه الصفحة وأزرارها ووظيفتها، ولا تفترض بيانات غير ظاهرة.
+
+سؤالي: ${message}`
+    : message);
 
   useEffect(() => {
     void useChat.getState().load();
@@ -116,7 +131,7 @@ export default function Assistant() {
     const t = text.trim();
     if (!t || loading) return;
     setText('');
-    void send(t);
+    void contextualSend(t);
   };
 
   return (
@@ -132,6 +147,8 @@ export default function Assistant() {
           ) : undefined
         }
       />
+
+      {sourcePage && <div className="mb-3 rounded-xl border border-accent/25 bg-accent/5 px-3 py-2 text-xs text-muted">سياق المساعدة: فتحت SKOVA AI من صفحة <strong className="text-main">{sourcePage}</strong>، لذلك ستكون الإجابات مرتبطة بها.</div>}
 
       <Advisor />
 
@@ -191,7 +208,7 @@ export default function Assistant() {
             </p>
             <div className="flex flex-col gap-2">
               {(attachment ? FILE_SUGGESTIONS : SUGGESTIONS).map((s) => (
-                <button key={s} type="button" className="btn btn-ghost !justify-start text-start" onClick={() => void send(s)}>
+                <button key={s} type="button" className="btn btn-ghost !justify-start text-start" onClick={() => void contextualSend(s)}>
                   {s}
                 </button>
               ))}
