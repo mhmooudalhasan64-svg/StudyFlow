@@ -13,7 +13,6 @@ import {
   WifiOff,
   Search,
   X,
-  SlidersHorizontal,
   HelpCircle,
 } from 'lucide-react';
 import { useApp } from './store';
@@ -149,9 +148,6 @@ export default function App() {
   const theme = useApp((s) => s.settings.theme);
   const updateSettings = useApp((s) => s.updateSettings);
   const [introDone, setIntroDone] = useState(false);
-  const [simpleMode, setSimpleMode] = useState(() => {
-    try { return localStorage.getItem('studyflow-ui-mode') !== 'advanced'; } catch { return true; }
-  });
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [hintVisible, setHintVisible] = useState(false);
@@ -161,8 +157,8 @@ export default function App() {
   const ignoreAssistantClick = useRef(false);
   const route = useHashRoute();
   const online = useOnline();
-  const visibleNav = simpleMode ? NAV.filter((item) => ['home', 'plan', 'timer', 'more'].includes(item.route)) : NAV;
-  const visibleMobileNav = simpleMode ? MOBILE_NAV.filter((item) => ['home', 'plan', 'timer', 'more'].includes(item.route)) : MOBILE_NAV;
+  const visibleNav = NAV;
+  const visibleMobileNav = MOBILE_NAV;
   const searchResults = SEARCH_PAGES.filter((item) => (item.label + ' ' + item.keywords).toLowerCase().includes(searchText.trim().toLowerCase()));
 
   useEffect(() => {
@@ -181,15 +177,6 @@ export default function App() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
-
-  const toggleMode = () => {
-    setSimpleMode((current) => {
-      const next = !current;
-      try { localStorage.setItem('studyflow-ui-mode', next ? 'simple' : 'advanced'); } catch { /* التبديل يعمل لهذه الجلسة */ }
-      window.dispatchEvent(new Event('studyflow:mode-change'));
-      return next;
-    });
-  };
 
   useEffect(() => {
     void init();
@@ -343,7 +330,7 @@ export default function App() {
         </nav>
         <div className="mt-auto flex items-center gap-2 pt-3">
           {!online && <OfflineChip />}
-          <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} simpleMode={simpleMode} onToggleMode={toggleMode} onSearch={() => setSearchOpen(true)} />
+          <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} onSearch={() => setSearchOpen(true)} />
         </div>
       </aside>
 
@@ -353,7 +340,7 @@ export default function App() {
           <Brand />
           <div className="flex items-center gap-1">
             {!online && <OfflineChip />}
-            <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} simpleMode={simpleMode} onToggleMode={toggleMode} onSearch={() => setSearchOpen(true)} />
+            <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} onSearch={() => setSearchOpen(true)} />
           </div>
         </header>
 
@@ -370,7 +357,7 @@ export default function App() {
 
         {/* شريط التنقل السفلي (جوال) */}
         <nav
-          className={`app-mobile-nav fixed inset-x-0 bottom-0 z-20 grid ${simpleMode ? "grid-cols-4" : "grid-cols-5"} border-t border-line/70 bg-base/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden`}
+          className="app-mobile-nav fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-line/70 bg-base/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
           aria-label="التنقل الرئيسي"
         >
           {visibleMobileNav.map(({ route: r, label, Icon }) => {
@@ -416,11 +403,10 @@ function Brand() {
   );
 }
 
-function HeaderButtons({ theme, onToggle, simpleMode, onToggleMode, onSearch }: { theme: 'dark' | 'light'; onToggle: () => void; simpleMode: boolean; onToggleMode: () => void; onSearch: () => void }) {
+function HeaderButtons({ theme, onToggle, onSearch }: { theme: 'dark' | 'light'; onToggle: () => void; onSearch: () => void }) {
   return (
     <>
       <button type="button" onClick={onSearch} aria-label="البحث عن ميزة" title="البحث عن ميزة (Ctrl + K)" className="rounded-xl border border-line bg-card/60 p-2.5 text-muted transition hover:border-accent hover:text-main"><Search size={18} /></button>
-      <button type="button" onClick={onToggleMode} aria-label={simpleMode ? 'التبديل إلى الوضع المتقدم' : 'التبديل إلى الوضع البسيط'} title={simpleMode ? 'الوضع البسيط — اضغط لإظهار كل الأزرار' : 'الوضع المتقدم — اضغط لتبسيط الأزرار'} className={`rounded-xl border border-line bg-card/60 p-2.5 transition hover:border-accent hover:text-main ${simpleMode ? 'text-accent' : 'text-muted'}`}><SlidersHorizontal size={18} /></button>
       <button
         type="button"
         onClick={onToggle}
