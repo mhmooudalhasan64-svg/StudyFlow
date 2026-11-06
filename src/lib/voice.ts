@@ -43,6 +43,8 @@ export function availableArabicVoices(): SpeechSynthesisVoice[] {
 }
 export function cleanForSpeech(text: string): string {
   return text
+    // Strip emoji graphemes (flags, skin tones, keycaps and joined sequences) from spoken output.
+    .replace(/(?:[#*0-9]\uFE0F?\u20E3)|[\p{Extended_Pictographic}\p{Emoji_Modifier}\p{Regional_Indicator}\uFE0E\uFE0F\u200D\u{E0020}-\u{E007F}]/gu, ' ')
     .replace(/\bskova\b/gi, 'سكوفا')
     .replace(/\bVAYORA\b/gi, 'فايورا')
     .replace(/[*#_`>~|]/g, ' ')
