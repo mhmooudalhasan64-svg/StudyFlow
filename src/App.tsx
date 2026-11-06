@@ -155,7 +155,7 @@ export default function App() {
   }
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-6xl flex-col md:flex-row">
+    <div className="app-shell mx-auto flex min-h-screen max-w-6xl flex-col md:flex-row">
       <AlarmRinger />
       {route !== 'assistant' && (
         <a
@@ -228,7 +228,7 @@ export default function App() {
         </a>
       )}
       {/* الشريط الجانبي (شاشات كبيرة) */}
-      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
+      <aside className="app-sidebar sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
         <Brand />
         <nav className="mt-4 flex flex-col gap-1" aria-label="التنقل الرئيسي">
           {NAV.map(({ route: r, label, Icon }) => (
@@ -255,7 +255,7 @@ export default function App() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         {/* ترويسة الجوال */}
-        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-line/70 bg-base/80 px-4 py-3 backdrop-blur-md md:hidden">
+        <header className="app-mobile-header sticky top-0 z-10 flex items-center justify-between border-b border-line/70 bg-base/80 px-4 py-3 backdrop-blur-md md:hidden">
           <Brand />
           <div className="flex items-center gap-1">
             {!online && <OfflineChip />}
@@ -263,13 +263,13 @@ export default function App() {
           </div>
         </header>
 
-        <main className="flex-1 px-4 pb-28 pt-5 md:px-6 md:pb-10" key={route}>
+        <main className="app-main flex-1 px-4 pb-28 pt-5 md:px-6 md:pb-10" key={route}>
           <Page />
         </main>
 
         {/* شريط التنقل السفلي (جوال) */}
         <nav
-          className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-line/70 bg-base/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
+          className="app-mobile-nav fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-line/70 bg-base/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
           aria-label="التنقل الرئيسي"
         >
           {MOBILE_NAV.map(({ route: r, label, Icon }) => {
