@@ -10,7 +10,7 @@ export default defineConfig({
       includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png', 'icon.svg'],
       manifest: {
         name: 'VAYORA — فايورا',
-        short_name: 'VAYORA',
+        short_name: 'فايورا',
         description: 'منصة تعليمية ذكية متكاملة تجمع أدوات التعلم والمساعد الذكي وتنظيم الدراسة.',
         lang: 'ar',
         dir: 'rtl',
