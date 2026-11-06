@@ -28,6 +28,13 @@ function clean(value: string | undefined): string | undefined {
   return v ? v : undefined;
 }
 
+function environment(): Record<string, string | undefined> {
+  const runtime = globalThis as typeof globalThis & {
+    process?: { env?: Record<string, string | undefined> };
+  };
+  return runtime.process?.env ?? {};
+}
+
 function pickProvider(raw: Record<string, string | undefined>): Provider | null {
   const env = {
     GROQ_API_KEY: clean(raw.GROQ_API_KEY),
@@ -68,7 +75,7 @@ function pickProvider(raw: Record<string, string | undefined>): Provider | null 
   return null;
 }
 
-const DAILY_LIMIT = Number(process.env.CHAT_DAILY_LIMIT) > 0 ? Number(process.env.CHAT_DAILY_LIMIT) : 30;
+const DAILY_LIMIT = Number(environment().CHAT_DAILY_LIMIT) > 0 ? Number(environment().CHAT_DAILY_LIMIT) : 30;
 
 const MAX_MESSAGES = 12;
 const MAX_CHARS = 2000;
@@ -269,7 +276,7 @@ function overLimit(ip: string): boolean {
 }
 
 export async function POST(request: Request): Promise<Response> {
-  const provider = pickProvider(process.env);
+  const provider = pickProvider(environment());
   if (!provider) return json({ error: 'المساعد غير مفعّل بعد: لم يُضبط مفتاح الخدمة على الخادم.' }, 503);
 
   let body: unknown;
