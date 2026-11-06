@@ -198,6 +198,7 @@ export default function Assistant() {
           <option value="steps">حل خطوة بخطوة</option>
           <option value="summary">لخّص في نقاط</option>
           <option value="coach">درّبني (أسئلة موجِّهة بدل الحل)</option>
+          <option value="voice_teacher">المدرّس الصوتي</option>
         </select>
       </div>
 
