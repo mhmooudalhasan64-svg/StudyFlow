@@ -80,14 +80,14 @@ function chooseVoice(gender: VoiceGender = 'any'): SpeechSynthesisVoice | undefi
 function sentenceChunks(text: string): string[] {
   // Preserve the complete answer while splitting at natural Arabic phrase boundaries.
   const sentences = text
-    .replace(/([.!?؟؛])\\s*/g, '$1|')
+    .replace(/([.!?؟؛])\s*/g, '$1|')
     .split('|')
     .map(sentence => sentence.trim())
     .filter(Boolean);
   const chunks: string[] = [];
   for (const sentence of sentences) {
     if (sentence.length <= 220) { chunks.push(sentence); continue; }
-    const words = sentence.split(/\\s+/);
+    const words = sentence.split(/\s+/);
     let part = '';
     for (const word of words) {
       const candidate = part ? part + ' ' + word : word;
