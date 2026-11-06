@@ -276,7 +276,7 @@ function overLimit(ip: string): boolean {
   return cur.count > DAILY_LIMIT;
 }
 
-export async function POST(request: Request): Promise<Response> {
+async function handlePost(request: Request): Promise<Response> {
   const provider = pickProvider(environment());
   if (!provider) return json({ error: 'المساعد غير مفعّل بعد: لم يُضبط مفتاح الخدمة على الخادم.' }, 503);
 
@@ -350,4 +350,41 @@ export async function POST(request: Request): Promise<Response> {
   if (!reply) return json({ error: 'لم يصل ردّ من المساعد، حاول مرة أخرى' }, 502);
 
   return json({ reply });
+}
+
+
+/**
+ * تسمح لتطبيق Capacitor Android بالوصول إلى واجهة المحادثة.
+ * طلبات المتصفح من تطبيق Android تأتي من capacitor://localhost
+ * (وفي بعض إصدارات WebView من http(s)://localhost)، وهي مختلفة عن أصل موقع الويب.
+ */
+const MOBILE_APP_ORIGINS = new Set([
+  'capacitor://localhost',
+  'http://localhost',
+  'https://localhost',
+]);
+
+function withCors(response: Response, request: Request): Response {
+  const origin = request.headers.get('origin');
+  const headers = new Headers(response.headers);
+  headers.set('Vary', 'Origin');
+  if (origin && MOBILE_APP_ORIGINS.has(origin)) {
+    headers.set('Access-Control-Allow-Origin', origin);
+    headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    headers.set('Access-Control-Max-Age', '86400');
+  }
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
+export async function OPTIONS(request: Request): Promise<Response> {
+  return withCors(new Response(null, { status: 204 }), request);
+}
+
+export async function POST(request: Request): Promise<Response> {
+  return withCors(await handlePost(request), request);
 }
