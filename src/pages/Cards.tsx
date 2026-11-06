@@ -31,6 +31,8 @@ export default function Cards() {
   const [queue, setQueue] = useState<number[] | null>(null);
   const [flipped, setFlipped] = useState(false);
   const [known, setKnown] = useState(0);
+  const [retried, setRetried] = useState<number[]>([]);
+  const [missed, setMissed] = useState<number[]>([]);
 
   const list = useMemo(
     () => (filter === 'all' ? cards : cards.filter((c) => c.subjectId === filter)),
@@ -51,6 +53,8 @@ export default function Cards() {
     setQueue(dueList.map((c) => c.id));
     setFlipped(false);
     setKnown(0);
+    setRetried([]);
+    setMissed([]);
   };
 
   // ---------- وضع الدراسة ----------
@@ -63,6 +67,11 @@ export default function Cards() {
           <div className="card text-center">
             <p className="text-4xl font-extrabold">{known}</p>
             <p className="mt-1 text-muted">بطاقة عرفتها في هذه الجلسة</p>
+            <div className="mt-3 rounded-xl bg-base/60 p-3 text-sm">
+              <p>بطاقات تحتاج إلى مراجعة إضافية: <strong>{missed.length}</strong></p>
+              {missed.length > 0 && <p className="mt-1 text-muted">لم تُتقن بعض البطاقات بعد. ستبقى مستحقة ويمكنك العودة إليها لاحقاً.</p>}
+              {missed.length === 0 && <p className="mt-1 text-muted">ممتاز! أتقنت جميع البطاقات في هذه الجولة.</p>}
+            </div>
             <button type="button" className="btn btn-primary mt-4" onClick={() => setQueue(null)}>
               رجوع للبطاقات
             </button>
@@ -75,10 +84,17 @@ export default function Cards() {
       void reviewCard(current.id, ok);
       if (ok) {
         setKnown((k) => k + 1);
+        setMissed((items) => items.filter((id) => id !== current.id));
         setQueue((q) => (q ? q.slice(1) : q));
       } else {
-        // غير المعروفة تعود لآخر الطابور
-        setQueue((q) => (q ? [...q.slice(1), q[0]] : q));
+        setMissed((items) => items.includes(current.id) ? items : [...items, current.id]);
+        // تعود البطاقة غير المعروفة مرة واحدة فقط؛ لمنع بقاء الجلسة في حلقة لا تنتهي
+        if (!retried.includes(current.id)) {
+          setRetried((items) => [...items, current.id]);
+          setQueue((q) => (q ? [...q.slice(1), current.id] : q));
+        } else {
+          setQueue((q) => (q ? q.slice(1) : q));
+        }
       }
       setFlipped(false);
     };
