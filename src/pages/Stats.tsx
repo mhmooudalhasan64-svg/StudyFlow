@@ -17,6 +17,7 @@ export default function Stats() {
   const attempts = useApp((s) => s.attempts);
   const subjects = useApp((s) => s.subjects);
   const goal = useApp((s) => s.settings.dailyGoalMin);
+  const questions = useApp((s) => s.questions);
 
   const data = useMemo(() => {
     const byDay = minutesByDay(sessions);
@@ -27,6 +28,39 @@ export default function Stats() {
     const correct = attempts.filter((a) => a.correct).length;
     const subjectMin = [...minutesBySubject(sessions).entries()].sort((a, b) => b[1] - a[1]);
     const acc = [...accuracyBySubject(attempts).entries()];
+    const questionById = new Map(questions.map((q) => [q.id, q]));
+    const subjectStats = new Map<number, { total: number; wrong: number }>();
+    const unitStats = new Map<string, { subjectId: number; unit: string; total: number; wrong: number }>();
+    for (const attempt of attempts) {
+      const subject = subjectStats.get(attempt.subjectId) ?? { total: 0, wrong: 0 };
+      subject.total += 1;
+      if (!attempt.correct) subject.wrong += 1;
+      subjectStats.set(attempt.subjectId, subject);
+      const unit = questionById.get(attempt.questionId)?.unit?.trim();
+      if (unit) {
+        const key = String(attempt.subjectId) + ':' + unit;
+        const stats = unitStats.get(key) ?? { subjectId: attempt.subjectId, unit, total: 0, wrong: 0 };
+        stats.total += 1;
+        if (!attempt.correct) stats.wrong += 1;
+        unitStats.set(key, stats);
+      }
+    }
+    const weakSubjects = [...subjectStats.entries()]
+      .filter(([, s]) => s.total >= 3 && s.wrong / s.total >= 0.35)
+      .map(([id, s]) => ({ id, total: s.total, wrong: s.wrong, accuracy: Math.round(((s.total - s.wrong) / s.total) * 100) }))
+      .sort((a, b) => a.accuracy - b.accuracy);
+    const weakUnits = [...unitStats.entries()]
+      .filter(([, s]) => s.total >= 3 && s.wrong / s.total >= 0.35)
+      .map(([key, s]) => ({ key, ...s, accuracy: Math.round(((s.total - s.wrong) / s.total) * 100) }))
+      .sort((a, b) => a.accuracy - b.accuracy)
+      .slice(0, 5);
+    const weakest = weakUnits[0];
+    const weakestSubject = weakSubjects[0];
+    const recommendation = weakest
+      ? 'ابدأ بمراجعة «' + weakest.unit + '» في مادة ' + (subjects.find((s) => s.id === weakest.subjectId)?.name ?? 'المادة') + '، ثم أعد حل أسئلة مشابهة.'
+      : weakestSubject
+        ? 'خصّص جلسة إضافية لمادة ' + (subjects.find((s) => s.id === weakestSubject.id)?.name ?? 'المادة') + '، وراجع الإجابات التي أخطأت فيها.'
+        : 'واصل حل الأسئلة في مختلف المواد؛ ستظهر توصية محددة عندما تتوفر بيانات كافية عن كل مادة أو وحدة.';
     return {
       days,
       values,
@@ -36,11 +70,12 @@ export default function Stats() {
       streak,
       subjectMin,
       acc,
+      weakness: { total: attempts.length, wrong: attempts.filter((a) => !a.correct).length, weakSubjects, weakUnits, recommendation },
       answered: attempts.length,
       correct,
       badges: computeBadges({ totalMin, streak, answered: attempts.length, correct }),
     };
-  }, [sessions, attempts]);
+  }, [sessions, attempts, questions, subjects]);
 
   const nameOf = (id: number | null) => subjects.find((s) => s.id === id)?.name ?? 'بدون مادة';
   const colorOf = (id: number | null) => subjects.find((s) => s.id === id)?.color ?? 'rgb(var(--muted))';
@@ -102,6 +137,52 @@ export default function Stats() {
             ))}
           </ul>
         )}
+      </section>
+
+
+      <section className="card space-y-3">
+        <div>
+          <h2 className="font-bold">تحليل نقاط الضعف</h2>
+          <p className="mt-1 text-xs text-muted">تحليل تلقائي لإجاباتك المسجلة، مع اقتراح ما يستحق المراجعة أولاً.</p>
+        </div>
+        {data.weakness.total < 3 ? (
+          <div className="rounded-xl border border-line bg-base/50 p-3 text-sm text-muted">
+            نحتاج إلى 3 إجابات مسجلة على الأقل حتى نبدأ بتحليل موثوق. حلّ بعض الأسئلة وسيظهر هنا ما يحتاج إلى تقوية.
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-xl bg-base/60 p-3"><p className="text-xs text-muted">الإجابات المحللة</p><p className="mt-1 text-xl font-extrabold">{data.weakness.total}</p></div>
+              <div className="rounded-xl bg-base/60 p-3"><p className="text-xs text-muted">نسبة الإجابات الخاطئة</p><p className="mt-1 text-xl font-extrabold">{Math.round((data.weakness.wrong / data.weakness.total) * 100)}%</p></div>
+            </div>
+            {data.weakness.weakSubjects.length === 0 && data.weakness.weakUnits.length === 0 ? (
+              <p className="rounded-xl border border-ok/30 bg-ok/5 p-3 text-sm">أداء جيد! لا تظهر حالياً نقاط ضعف واضحة في البيانات المتاحة. استمر بحل الأسئلة للمحافظة على هذا المستوى.</p>
+            ) : (
+              <div className="space-y-3">
+                {data.weakness.weakSubjects.length > 0 && <div>
+                  <h3 className="mb-2 text-sm font-bold">مواد تحتاج إلى تركيز</h3>
+                  <ul className="space-y-2">{data.weakness.weakSubjects.map((item) => <li key={item.id} className="rounded-xl border border-line p-3">
+                    <div className="flex items-center justify-between gap-2 text-sm"><span className="font-semibold">{nameOf(item.id)}</span><span className="font-bold text-bad">{item.accuracy}% دقة</span></div>
+                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-line/60"><div className="h-full rounded-full bg-bad" style={{ width: item.accuracy + '%' }} /></div>
+                    <p className="mt-1 text-xs text-muted">{item.wrong} إجابة خاطئة من أصل {item.total}</p>
+                  </li>)}</ul>
+                </div>}
+                {data.weakness.weakUnits.length > 0 && <div>
+                  <h3 className="mb-2 text-sm font-bold">وحدات أو دروس تحتاج إلى مراجعة</h3>
+                  <ul className="space-y-2">{data.weakness.weakUnits.map((item) => <li key={item.key} className="rounded-xl border border-line p-3">
+                    <div className="flex items-center justify-between gap-2 text-sm"><span className="min-w-0 font-semibold">{item.unit}</span><span className="shrink-0 font-bold text-bad">{item.accuracy}% دقة</span></div>
+                    <p className="mt-1 text-xs text-muted">{nameOf(item.subjectId)} · {item.wrong} أخطاء من {item.total} إجابات</p>
+                  </li>)}</ul>
+                </div>}
+                <div className="rounded-xl border border-accent/20 bg-accent/5 p-3 text-sm">
+                  <p className="font-bold">خطوتك التالية</p><p className="mt-1 text-muted">{data.weakness.recommendation}</p>
+                  <a href="#/review" className="mt-2 inline-flex text-sm font-bold text-accent underline underline-offset-4">افتح المراجعة الذكية</a>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+        <p className="text-[11px] text-muted">يُبنى التحليل على الأسئلة التي أجبت عنها داخل التطبيق فقط. لا يستنتج مستوى الدروس التي لم تختبرها بعد.</p>
       </section>
 
       <section className="card">
