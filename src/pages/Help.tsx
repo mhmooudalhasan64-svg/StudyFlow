@@ -15,6 +15,7 @@ const groups: GuideGroup[] = [
     title: 'ابدأ من هنا',
     intro: 'الأزرار الأساسية التي ستستخدمها كل يوم.',
     items: [
+      { title: 'يومي الدراسي', href: '#/today', icon: CalendarCheck, what: 'لوحة واحدة تجمع مهام اليوم والمراجعات ووقت التركيز.', how: 'ابدأ منها لمعرفة ما عليك إنجازه اليوم دون التنقل بين صفحات كثيرة.' },
       { title: 'الرئيسية', href: '#/home', icon: BookOpen, what: 'ملخص سريع لنشاطك وأهم ما تحتاج الوصول إليه.', how: 'افتحها لمتابعة تقدمك والانتقال إلى أدوات الدراسة.' },
       { title: 'الخطة', href: '#/plan', icon: CalendarCheck, what: 'تنظيم مهام الدراسة على أيام الأسبوع.', how: 'اختر اليوم، أضف مهمة وحدد المادة والمدة. ويمكنك طلب خطة أسبوعية ذكية.' },
       { title: 'المؤقت', href: '#/timer', icon: Timer, what: 'جلسات تركيز واستراحات بطريقة بومودورو.', how: 'اختر تركيز أو استراحة، ثم اضغط ابدأ. استخدم الإيقاف المؤقت أو إعادة الضبط عند الحاجة.' },
@@ -94,7 +95,7 @@ export default function Help() {
       <section className="card space-y-3 border-accent/30 bg-gradient-to-l from-accent/10 via-card to-card">
         <div className="flex items-center gap-2">
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent/15 text-accent"><HelpCircle size={21} /></span>
-          <div><h2 className="font-extrabold">لا تحتاج إلى استخدام كل شيء دفعة واحدة</h2><p className="text-xs text-muted">ابدأ بالرئيسية والخطة والمؤقت، والباقي استخدمه عندما تحتاجه.</p></div>
+          <div><h2 className="font-extrabold">لا تحتاج إلى استخدام كل شيء دفعة واحدة</h2><p className="text-xs text-muted">استخدم الوضع البسيط لتقليل الأزرار، والبحث للوصول لأي ميزة عند الحاجة.</p></div>
         </div>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
           <a href="#/home" className="btn btn-ghost">١. الرئيسية</a>
@@ -116,6 +117,11 @@ export default function Help() {
         </section>
       ))}
 
+      <section className="card space-y-2">
+        <h2 className="flex items-center gap-2 font-bold"><Search size={18} className="text-accent" /> أدوات تسهّل التنقل</h2>
+        <p className="text-sm leading-7 text-muted">زر البحث في الشريط العلوي يوصلك لأي صفحة، ويمكن فتحه باختصار Ctrl + K. زر الوضع البسيط والمتقدم يبدّل بين عرض الأدوات الأساسية وعرض كل الأدوات. عند أول زيارة لصفحة قد تظهر تلميحة صغيرة تشرحها.</p>
+        <p className="text-sm leading-7 text-muted">من زر SKOVA AI العائم، إذا فتحته من داخل صفحة أخرى، ينتقل اسم الصفحة إلى المساعد حتى يربط إجابته بها.</p>
+      </section>
       <section className="card space-y-2">
         <h2 className="flex items-center gap-2 font-bold"><SunMoon size={18} className="text-accent" /> أزرار عامة مهمة</h2>
         <p className="text-sm leading-7 text-muted">زر الشمس أو القمر يبدّل بين المظهر الفاتح والداكن. زر الترس يفتح الإعدادات. زر SKOVA AI العائم يفتح المساعد، ويمكن سحبه إلى مكان يناسبك.</p>
