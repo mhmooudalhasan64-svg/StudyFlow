@@ -113,8 +113,7 @@ export default function SettingsPage() {
             onChange={(e) => void update({ sound: e.target.checked })}
           />
         </label>
-        {settings.sound && (
-          <div className="space-y-3 rounded-xl border border-line/70 bg-base/40 p-3">
+        <div className="space-y-3 rounded-xl border border-line/70 bg-base/40 p-3">
             <p className="text-sm font-semibold">الصوت البشري للتنبيهات وقراءة المساعد</p>
             <div className="grid grid-cols-2 gap-2">
               <label className="space-y-1 text-xs text-muted">
@@ -138,8 +137,7 @@ export default function SettingsPage() {
               <Volume2 size={16} /> تجربة الصوت المختار
             </button>
             <p className="text-[11px] leading-relaxed text-muted">تختلف الأصوات المتاحة حسب الجهاز والمتصفح. قد لا يتوفر صوت عربي ذكر أو أنثى على كل جهاز؛ عندها يُستخدم أقرب صوت عربي متاح.</p>
-          </div>
-        )}
+        </div>
         <div className="flex items-center justify-between gap-3 text-sm">
           <span>المظهر</span>
           <div className="grid grid-cols-2 gap-1 rounded-xl border border-line p-1">
