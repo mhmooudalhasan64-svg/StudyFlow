@@ -99,7 +99,16 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
     activeRef.current = true;
     setActive(true);
     setError(null);
-    startListeningRef.current();
+    setPhase('speaking');
+    speak('أنا المعلم الذكي SKOVA', {
+      onEnd: () => {
+        if (activeRef.current) startListeningRef.current();
+      },
+      onError: (message) => {
+        setError(message);
+        stopTeacher();
+      },
+    }, { gender: settings.voiceGender ?? 'any', style: settings.voiceStyle ?? 'soft' });
   };
 
   useEffect(() => () => {
@@ -125,7 +134,7 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
           <button type="button" onClick={closeCall} aria-label="إغلاق شاشة المكالمة" className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-white/75 transition hover:bg-white/10">×</button>
           <div className="text-center">
             <p className="text-sm font-bold tracking-wide">SKOVA AI</p>
-            <p className="mt-0.5 text-[11px] text-white/45">مساعدك الدراسي الشخصي</p>
+            <p className="mt-0.5 text-[11px] text-white/45">أنا المعلم الذكي SKOVA</p>
           </div>
           <span className="h-10 w-10" />
         </header>
