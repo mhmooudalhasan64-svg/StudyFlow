@@ -318,3 +318,30 @@ input, select, textarea {
 @media (prefers-reduced-motion: reduce) {
   .app-main { animation: none; }
 }
+
+
+/* لوحة الألوان المائية للأزرار: تأثير زجاجي ناعم مع تدرجات مائية */
+.watercolor-buttons .btn-primary {
+  color: rgb(255 255 255);
+  border: 1px solid rgb(125 211 252 / 0.38);
+  background:
+    radial-gradient(ellipse at 18% 8%, rgb(255 255 255 / 0.38), transparent 48%),
+    linear-gradient(115deg, rgb(14 165 233 / 0.92), rgb(99 102 241 / 0.88) 52%, rgb(168 85 247 / 0.9));
+  box-shadow: 0 8px 22px rgb(56 189 248 / 0.2), inset 0 1px 0 rgb(255 255 255 / 0.32);
+}
+.watercolor-buttons .btn-ghost {
+  border-color: rgb(56 189 248 / 0.28);
+  background:
+    linear-gradient(135deg, rgb(56 189 248 / 0.10), rgb(129 140 248 / 0.09) 55%, rgb(192 132 252 / 0.10)),
+    rgb(var(--card) / 0.62);
+}
+.watercolor-buttons .btn-danger {
+  background: linear-gradient(120deg, rgb(251 113 133 / 0.08), rgb(244 114 182 / 0.08));
+}
+.watercolor-buttons .app-sidebar nav a,
+.watercolor-buttons .app-mobile-nav a {
+  background-image: linear-gradient(120deg, rgb(56 189 248 / 0.045), rgb(129 140 248 / 0.055), rgb(192 132 252 / 0.045));
+}
+.watercolor-buttons .btn-primary:hover {
+  filter: saturate(1.12) brightness(1.06);
+}
