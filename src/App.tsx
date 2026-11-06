@@ -155,18 +155,7 @@ export default function App() {
   const [searchText, setSearchText] = useState('');
   const [hintVisible, setHintVisible] = useState(false);
   const [skovaCallOpen, setSkovaCallOpen] = useState(false);
-  const [assistantPosition, setAssistantPosition] = useState<{ left: number; top: number } | null>(() => {
-    try {
-      const saved = localStorage.getItem('studyflow-assistant-position');
-      if (!saved) return null;
-      const parsed = JSON.parse(saved);
-      return Number.isFinite(parsed.left) && Number.isFinite(parsed.top)
-        ? { left: parsed.left, top: parsed.top }
-        : null;
-    } catch {
-      return null;
-    }
-  });
+  const [assistantPosition, setAssistantPosition] = useState<{ left: number; top: number } | null>(null);
   const assistantDrag = useRef<{ pointerId: number; x: number; y: number; left: number; top: number; moved: boolean } | null>(null);
   const ignoreAssistantClick = useRef(false);
   const route = useHashRoute();
@@ -292,11 +281,7 @@ export default function App() {
                 top: Math.max(8, Math.min(window.innerHeight - rect.height - 8, drag.top + event.clientY - drag.y)),
               };
               setAssistantPosition(position);
-              try {
-                localStorage.setItem('studyflow-assistant-position', JSON.stringify(position));
-              } catch {
-                // يبقى تحريك الزر متاحاً حتى إن تعذر حفظ الموقع
-              }
+              // يحفظ الموقع أثناء الجلسة؛ يعود بجانب زر المساعد عند إعادة فتح التطبيق
               ignoreAssistantClick.current = true;
             }
             assistantDrag.current = null;
@@ -309,7 +294,7 @@ export default function App() {
             }
             setSkovaCallOpen(true);
           }}
-          className={`fixed z-30 inline-flex touch-none select-none items-center gap-2 rounded-full border border-emerald-300/20 bg-gradient-to-l from-[#102d2a] via-[#145447] to-[#123d4c] px-3 py-2 text-white shadow-xl shadow-emerald-950/30 transition hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-400 cursor-grab active:cursor-grabbing ${assistantPosition ? '' : 'bottom-24 left-4 md:bottom-6 md:left-6'}`}
+          className={`fixed z-30 inline-flex touch-none select-none items-center gap-2 rounded-full border border-emerald-300/20 bg-gradient-to-l from-[#102d2a] via-[#145447] to-[#123d4c] px-3 py-2 text-white shadow-xl shadow-emerald-950/30 transition hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-400 cursor-grab active:cursor-grabbing ${assistantPosition ? '' : 'bottom-24 right-36 md:bottom-6 md:right-36'}`}
         >
           <span className="relative grid h-7 w-7 place-items-center rounded-full border border-white/20 bg-white/10">
             <Phone size={16} />
