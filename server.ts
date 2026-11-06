@@ -3,6 +3,7 @@ import { Readable } from 'node:stream';
 import { readFile } from 'node:fs/promises';
 import { extname, isAbsolute, relative, resolve, sep } from 'node:path';
 import { OPTIONS, POST } from './api/chat.ts';
+import { POST as TTS_POST } from './api/tts.ts';
 
 const port = Number(process.env.PORT || 3000);
 const distDir = resolve(process.cwd(), 'dist');
@@ -96,6 +97,24 @@ const server = createServer(async (incoming, outgoing) => {
         'cache-control': 'no-store',
       });
       outgoing.end(JSON.stringify({ ok: true, service: 'vayora-skova-api' }));
+      return;
+    }
+
+    if (url.pathname === '/api/tts' && method === 'POST') {
+      const headers = new Headers();
+      for (const [key, value] of Object.entries(incoming.headers)) {
+        if (value !== undefined) headers.set(key, Array.isArray(value) ? value.join(', ') : value);
+      }
+      const request = new Request(url, {
+        method,
+        headers,
+        body: Readable.toWeb(incoming) as ReadableStream<Uint8Array>,
+        duplex: 'half',
+      } as RequestInit);
+      const response = await TTS_POST(request);
+      outgoing.statusCode = response.status;
+      response.headers.forEach((value, key) => outgoing.setHeader(key, value));
+      outgoing.end(Buffer.from(await response.arrayBuffer()));
       return;
     }
 
