@@ -277,6 +277,12 @@ function overLimit(ip: string): boolean {
 }
 
 async function handlePost(request: Request): Promise<Response> {
+  // رفض الأجسام الكبيرة قبل تحليل JSON لتقليل استهلاك الذاكرة وموارد الدالة.
+  const contentLength = Number(request.headers.get('content-length') || 0);
+  if (Number.isFinite(contentLength) && contentLength > 64 * 1024) {
+    return json({ error: 'حجم الطلب أكبر من الحد المسموح.' }, 413);
+  }
+
   const provider = pickProvider(environment());
   if (!provider) return json({ error: 'المساعد غير مفعّل بعد: لم يُضبط مفتاح الخدمة على الخادم.' }, 503);
 
@@ -332,14 +338,13 @@ async function handlePost(request: Request): Promise<Response> {
   if (!upstream) return json({ error: 'تعذّر الاتصال بخدمة الذكاء الاصطناعي' }, 502);
 
   if (!upstream.ok) {
-    // نذكر المزوّد المستخدم وطول المفتاح (دون كشفه) لتسهيل اكتشاف الإعداد الخاطئ
-    const hint = ` [المزوّد: ${provider.name}، رمز ${upstream.status}، طول المفتاح: ${provider.key.length}]`;
+    // لا نكشف تفاصيل المزوّد أو إعدادات الخادم في رسائل الخطأ العامة.
     const msg =
       upstream.status === 401 || upstream.status === 403
-        ? `مفتاح الخدمة غير صالح أو غير مصرّح له${hint}`
+        ? 'تعذّر التحقق من إعدادات خدمة الذكاء الاصطناعي.'
         : upstream.status === 429
-          ? `الخدمة مشغولة أو انتهت الحصة المجانية، جرّب بعد قليل${hint}`
-          : `حدث خطأ من خدمة الذكاء الاصطناعي${hint}`;
+          ? 'الخدمة مشغولة أو انتهت الحصة المتاحة، جرّب بعد قليل.'
+          : 'حدث خطأ من خدمة الذكاء الاصطناعي.';
     return json({ error: msg }, 502);
   }
 
