@@ -1,3 +1,5 @@
+import { speak } from './voice';
+
 let ctx: AudioContext | null = null;
 
 function getCtx(): AudioContext | null {
@@ -19,27 +21,9 @@ export function primeAudio(): void {
   if (c && c.state === 'suspended') void c.resume();
 }
 
-/** ثلاث نغمات قصيرة */
+/** تنبيه منطوق بدلاً من النغمات الإلكترونية. */
 export function beep(): void {
-  const c = getCtx();
-  if (!c) return;
-  try {
-    for (let i = 0; i < 3; i++) {
-      const t0 = c.currentTime + i * 0.35;
-      const osc = c.createOscillator();
-      const gain = c.createGain();
-      osc.type = 'sine';
-      osc.frequency.value = 880;
-      gain.gain.setValueAtTime(0.0001, t0);
-      gain.gain.exponentialRampToValueAtTime(0.25, t0 + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.28);
-      osc.connect(gain).connect(c.destination);
-      osc.start(t0);
-      osc.stop(t0 + 0.3);
-    }
-  } catch {
-    /* الصوت اختياري */
-  }
+  speak('تنبيه.');
 }
 
 export type SoundKind = 'classic' | 'bell' | 'chime' | 'marimba' | 'digital' | 'zen' | 'harp';
@@ -89,26 +73,7 @@ export function soundLabel(kind: SoundKind | undefined): string {
   return SOUNDS.find((s) => s.id === kind)?.label ?? SOUNDS[0].label;
 }
 
-/** يشغّل الصوت المختار (يرجع للكلاسيكي إن كان الاسم غير معروف) */
-export function playSound(kind: SoundKind | undefined): void {
-  const c = getCtx();
-  if (!c) return;
-  const def = SOUNDS.find((s) => s.id === kind) ?? SOUNDS[0];
-  try {
-    for (const n of def.notes) {
-      const t0 = c.currentTime + n.at;
-      const osc = c.createOscillator();
-      const gain = c.createGain();
-      osc.type = n.type;
-      osc.frequency.value = n.f;
-      gain.gain.setValueAtTime(0.0001, t0);
-      gain.gain.exponentialRampToValueAtTime(n.gain, t0 + 0.015);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + n.dur);
-      osc.connect(gain).connect(c.destination);
-      osc.start(t0);
-      osc.stop(t0 + n.dur + 0.05);
-    }
-  } catch {
-    /* الصوت اختياري */
-  }
+/** يعلن التنبيه بصوت بشري بدلاً من النغمة الاصطناعية القديمة. */
+export function playSound(_kind: SoundKind | undefined): void {
+  speak('حان وقت الدراسة.');
 }
