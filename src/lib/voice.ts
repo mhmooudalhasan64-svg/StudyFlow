@@ -84,6 +84,8 @@ function sentenceChunks(text: string): string[] {
 }
 const pauseAfter = (chunk: string) => /[؟?]$/.test(chunk) ? 360 : /[.!؛]$/.test(chunk) ? 290 : 170;
 
+let activeNeuralAudio: HTMLAudioElement | null = null;
+
 export function speak(text: string, cb: { onEnd?: () => void; onError?: (msg: string) => void } = {}, options: VoiceOptions = {}): void {
   const cleanText = cleanForSpeech(text);
   if (!cleanText) { cb.onEnd?.(); return; }
@@ -93,49 +95,76 @@ export function speak(text: string, cb: { onEnd?: () => void; onError?: (msg: st
   const rate = style === 'energetic' ? 1.02 : style === 'strong' ? 0.96 : 0.92;
   const pitch = style === 'energetic' ? 1.04 : style === 'strong' ? 0.98 : 1.02;
 
-  if (isNative()) {
-    void (async () => {
-      try {
-        for (let i = 0; i < chunks.length; i++) {
-          if (id !== playbackId) return;
-          await TextToSpeech.speak({
-            text: chunks[i], lang: 'ar-SA', rate, pitch,
-            volume: style === 'soft' ? 0.9 : 1,
-          });
-          if (id !== playbackId) return;
-          if (i < chunks.length - 1) await new Promise(resolve => setTimeout(resolve, pauseAfter(chunks[i])));
-        }
-        if (id === playbackId) cb.onEnd?.();
-      } catch {
-        if (id === playbackId) cb.onError?.('تعذّرت القراءة الصوتية. تحقق من تثبيت محرّك تحويل النص إلى كلام وصوت عربي طبيعي على جهازك.');
-      }
-    })();
-    return;
-  }
-  if (!canSpeak()) { cb.onError?.('القراءة الصوتية غير مدعومة في هذا المتصفح.'); return; }
-  const synth = window.speechSynthesis;
-  synth.cancel();
-  const voice = chooseVoice(options.gender);
-  let index = 0;
-  const next = () => {
+  const speakWithDeviceVoice = () => {
     if (id !== playbackId) return;
-    if (index >= chunks.length) { cb.onEnd?.(); return; }
-    const chunk = chunks[index++];
-    const utterance = new SpeechSynthesisUtterance(chunk);
-    utterance.lang = voice?.lang ?? 'ar-SA';
-    if (voice) utterance.voice = voice;
-    utterance.rate = rate;
-    utterance.pitch = pitch;
-    utterance.volume = style === 'soft' ? 0.9 : 1;
-    utterance.onend = () => {
+    if (isNative()) {
+      void (async () => {
+        try {
+          for (let i = 0; i < chunks.length; i++) {
+            if (id !== playbackId) return;
+            await TextToSpeech.speak({ text: chunks[i], lang: 'ar-SA', rate, pitch, volume: style === 'soft' ? 0.9 : 1 });
+            if (id !== playbackId) return;
+            if (i < chunks.length - 1) await new Promise(resolve => setTimeout(resolve, pauseAfter(chunks[i])));
+          }
+          if (id === playbackId) cb.onEnd?.();
+        } catch {
+          if (id === playbackId) cb.onError?.('تعذّرت القراءة الصوتية. تحقق من تثبيت محرّك تحويل النص إلى كلام وصوت عربي على جهازك.');
+        }
+      })();
+      return;
+    }
+    if (!canSpeak()) { cb.onError?.('القراءة الصوتية غير مدعومة في هذا المتصفح.'); return; }
+    const synth = window.speechSynthesis;
+    synth.cancel();
+    const voice = chooseVoice(options.gender);
+    let index = 0;
+    const next = () => {
       if (id !== playbackId) return;
-      if (index < chunks.length) window.setTimeout(next, pauseAfter(chunk));
-      else cb.onEnd?.();
+      if (index >= chunks.length) { cb.onEnd?.(); return; }
+      const chunk = chunks[index++];
+      const utterance = new SpeechSynthesisUtterance(chunk);
+      utterance.lang = voice?.lang ?? 'ar-SA';
+      if (voice) utterance.voice = voice;
+      utterance.rate = rate;
+      utterance.pitch = pitch;
+      utterance.volume = style === 'soft' ? 0.9 : 1;
+      utterance.onend = () => {
+        if (id !== playbackId) return;
+        if (index < chunks.length) window.setTimeout(next, pauseAfter(chunk));
+        else cb.onEnd?.();
+      };
+      utterance.onerror = () => { if (id === playbackId) cb.onError?.('تعذّرت القراءة الصوتية. تحقق من توفر صوت عربي على جهازك.'); };
+      synth.speak(utterance);
     };
-    utterance.onerror = () => { if (id === playbackId) cb.onError?.('تعذّرت القراءة الصوتية. تحقق من توفر صوت عربي على جهازك.'); };
-    synth.speak(utterance);
+    next();
   };
-  next();
+
+  // Neural Arabic speech is preferred; the device voice remains a graceful offline fallback.
+  void (async () => {
+    try {
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ text: cleanText }),
+      });
+      if (!response.ok) { speakWithDeviceVoice(); return; }
+      const blob = await response.blob();
+      if (id !== playbackId) return;
+      const audioUrl = URL.createObjectURL(blob);
+      const audio = new Audio(audioUrl);
+      activeNeuralAudio = audio;
+      const cleanup = () => {
+        URL.revokeObjectURL(audioUrl);
+        if (activeNeuralAudio === audio) activeNeuralAudio = null;
+      };
+      audio.onended = () => { cleanup(); if (id === playbackId) cb.onEnd?.(); };
+      audio.onerror = () => { cleanup(); if (id === playbackId) speakWithDeviceVoice(); };
+      try { await audio.play(); }
+      catch { cleanup(); if (id === playbackId) speakWithDeviceVoice(); }
+    } catch {
+      speakWithDeviceVoice();
+    }
+  })();
 }
 export function stopSpeaking(): void {
   playbackId++;
