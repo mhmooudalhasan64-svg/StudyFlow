@@ -250,8 +250,7 @@ export default function App() {
           </section>
         </div>
       )}
-      {route !== 'assistant' && (
-        <button
+      <button
           type="button"
           aria-label="ابدأ مكالمة صوتية مع SKOVA AI، واسحب الزر لتغيير مكانه"
           title="اضغط لبدء مكالمة مع SKOVA AI أو اسحب الزر لتحريكه"
@@ -319,8 +318,7 @@ export default function App() {
             <span className="text-xs font-extrabold tracking-wide">SKOVA AI</span>
             <span className="text-[9px] text-white/75">مساعدك الدراسي</span>
           </span>
-        </button>
-      )}
+      </button>
       <VoiceTeacher open={skovaCallOpen} onClose={() => setSkovaCallOpen(false)} />
       {/* الشريط الجانبي (شاشات كبيرة) */}
       <aside className="app-sidebar sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
