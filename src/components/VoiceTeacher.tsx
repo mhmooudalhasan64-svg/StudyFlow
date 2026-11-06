@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Headphones, Mic, Square, Volume2 } from 'lucide-react';
+import { Phone, PhoneOff, AudioLines, Mic, Volume2 } from 'lucide-react';
 import { useChat } from '../lib/chatStore';
 import { useApp } from '../store';
 import { canListen, canSpeak, listen, speak, stopSpeaking } from '../lib/voice';
@@ -68,7 +68,7 @@ export default function VoiceTeacher() {
         if (!activeRef.current) return;
         const heard = transcriptRef.current.trim();
         if (!heard) {
-          setError('لم ألتقط كلامك. اضغط بدء الدرس الصوتي للمحاولة من جديد.');
+          setError('لم ألتقط كلامك. اضغط اتصال بالمدرّس للمحاولة من جديد.');
           stopTeacher();
           return;
         }
@@ -103,25 +103,39 @@ export default function VoiceTeacher() {
     if (previousStyleRef.current !== null) useChat.getState().setStyle(previousStyleRef.current);
   }, []);
 
-  const status = phase === 'listening' ? 'أستمع إليك…' : phase === 'thinking' ? 'أحضّر الشرح…' : phase === 'speaking' ? 'المعلّم يتحدث…' : 'جاهز لبدء درس تفاعلي';
+  const status = phase === 'listening' ? 'يستمع إليك الآن' : phase === 'thinking' ? 'يحضّر إجابة لك' : phase === 'speaking' ? 'يتحدث معك الآن' : 'محادثة صوتية مباشرة مع SKOVA';
 
   return (
-    <section className="card mb-4 overflow-hidden border border-accent/30 bg-gradient-to-br from-accent/10 via-card to-base">
-      <div className="flex items-start gap-3">
-        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-accent/15 text-accent">
-          <Headphones size={22} />
-        </div>
+    <section className="mb-4" aria-label="اتصال بالمدرّس الذكي">
+      <div className="flex items-center gap-2">
         <div className="min-w-0 flex-1">
-          <h2 className="font-bold">المدرّس الصوتي</h2>
-          <p className="mt-1 text-xs leading-relaxed text-muted">تحدّث مع SKOVA AI؛ يستمع لسؤالك، يشرح بصوت مسموع، ثم يعود للاستماع لإجابتك.</p>
-          <p className="mt-2 text-xs font-medium text-accent" role="status">{status}</p>
+          <h2 className="text-sm font-bold">المدرّس الذكي</h2>
+          <p className="text-[11px] text-muted">اتصال صوتي تفاعلي</p>
         </div>
-        <button type="button" onClick={toggle} className={`btn shrink-0 !px-3 !py-2 ${active ? 'btn-ghost' : 'btn-primary'}`} aria-pressed={active}>
-          {active ? <><Square size={15} /> إيقاف</> : <><Mic size={15} /> ابدأ</>}
+        <button
+          type="button"
+          onClick={toggle}
+          aria-pressed={active}
+          aria-label={active ? 'إنهاء الاتصال بالمدرّس' : 'اتصال بالمدرّس الذكي'}
+          className={`inline-flex min-h-11 items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-white shadow-lg transition active:scale-95 ${active ? 'bg-red-600 shadow-red-600/20' : 'bg-emerald-600 shadow-emerald-600/20 hover:bg-emerald-700'}`}
+        >
+          {active ? <PhoneOff size={17} /> : <Phone size={17} />}
+          {active ? 'إنهاء المكالمة' : 'اتصال'}
         </button>
       </div>
-      {error && <p role="alert" className="mt-3 rounded-xl border border-bad/30 bg-bad/10 px-3 py-2 text-xs text-bad">{error}</p>}
-      <p className="mt-3 flex items-center gap-1.5 text-[11px] text-muted"><Volume2 size={13} /> يستخدم صوت العربية المتاح في جهازك، ويتطلب اتصالاً بالإنترنت وخدمة SKOVA AI مفعّلة.</p>
+
+      <div className={`mt-2 flex items-center gap-3 rounded-2xl border px-3 py-3 transition ${active ? 'border-emerald-500/40 bg-emerald-500/5' : 'border-line bg-card/60'}`}>
+        <div className={`grid h-10 w-10 shrink-0 place-items-center rounded-full ${active ? 'bg-emerald-500/15 text-emerald-600' : 'bg-accent/10 text-accent'}`}>
+          {active ? <AudioLines size={21} className={phase === 'listening' || phase === 'speaking' ? 'animate-pulse' : ''} /> : <Phone size={19} />}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold">{active ? 'SKOVA AI' : 'جاهز للاتصال'}</p>
+          <p className={`text-xs ${active ? 'text-emerald-600' : 'text-muted'}`} role="status">{status}</p>
+        </div>
+        {active && <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-emerald-500" aria-label="المكالمة نشطة" />}
+      </div>
+      {error && <p role="alert" className="mt-2 rounded-xl border border-bad/30 bg-bad/10 px-3 py-2 text-xs text-bad">{error}</p>}
+      <p className="mt-2 flex items-center gap-1.5 text-[10px] text-muted"><Mic size={12} /> يحتاج إذن الميكروفون وصوتاً عربياً متاحاً في جهازك واتصالاً بالإنترنت.</p>
     </section>
   );
 }
