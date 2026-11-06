@@ -14,6 +14,7 @@ export const SUBJECT_COLORS = [
 export const DEFAULT_SETTINGS: Settings = {
   key: 'app',
   theme: 'dark',
+  buttonPalette: 'classic',
   dailyGoalMin: 120,
   focusMin: 25,
   shortMin: 5,
