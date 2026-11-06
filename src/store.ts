@@ -19,7 +19,8 @@ import {
 } from './db';
 import { DEFAULT_SETTINGS, SUBJECT_COLORS, seedIfNeeded } from './seed';
 import { applyTheme } from './lib/theme';
-import { playSound, primeAudio } from './lib/sound';
+import { primeAudio } from './lib/sound';
+import { speak } from './lib/voice';
 import { notify, requestNotifyPermission } from './lib/notify';
 import { modeMs, type TimerMode } from './lib/timer';
 import { toDateKey } from './lib/utils';
