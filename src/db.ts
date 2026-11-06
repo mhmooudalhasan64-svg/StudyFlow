@@ -71,6 +71,9 @@ export interface Settings {
   /** منبهات الدراسة اليومية */
   alarms?: import('./lib/alarm').Alarm[];
   soundKind?: 'classic' | 'bell' | 'chime' | 'marimba' | 'digital' | 'zen' | 'harp';
+  /** تفضيلات الصوت البشري */
+  voiceGender?: 'any' | 'female' | 'male';
+  voiceStyle?: 'soft' | 'strong' | 'energetic';
   /** فرع البكالوريا المختار */
   branch: Branch;
   grade: Grade;
