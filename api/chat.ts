@@ -300,7 +300,11 @@ async function overLimit(ip: string): Promise<boolean | null> {
   // Partial configuration is a setup error: do not silently use a non-shared limit.
   if (hasRedisConfig) return null;
 
-  // Fallback for development only; Vercel instances do not share this memory.
+  // Production must fail closed: Vercel instances do not share in-memory counters.
+  // Configure both Upstash REST variables before enabling chat in production.
+  if (env.VERCEL === '1') return null;
+
+  // Local-development fallback only.
   const day = new Date().toISOString().slice(0, 10);
   if (usage.size > 5000) {
     for (const [k, v] of usage) if (v.day !== day) usage.delete(k);
