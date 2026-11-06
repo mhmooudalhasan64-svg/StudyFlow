@@ -146,6 +146,7 @@ export default function App() {
   const ready = useApp((s) => s.ready);
   const tick = useApp((s) => s.tick);
   const theme = useApp((s) => s.settings.theme);
+  const buttonPalette = useApp((s) => s.settings.buttonPalette ?? 'classic');
   const updateSettings = useApp((s) => s.updateSettings);
   const [introDone, setIntroDone] = useState(false);
   const [simpleMode, setSimpleMode] = useState(() => {
@@ -189,6 +190,10 @@ export default function App() {
       return next;
     });
   };
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('watercolor-buttons', buttonPalette === 'watercolor');
+  }, [buttonPalette]);
 
   useEffect(() => {
     void init();
