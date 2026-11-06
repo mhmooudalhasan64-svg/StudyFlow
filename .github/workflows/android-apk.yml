@@ -1,0 +1,66 @@
+name: Build Study Flow Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+    paths:
+      - "src/**"
+      - "public/**"
+      - "api/**"
+      - "index.html"
+      - "package.json"
+      - "vite.config.ts"
+      - "capacitor.config.json"
+      - ".github/workflows/android-apk.yml"
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install web dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Install Capacitor Android tooling
+        run: npm install --no-save --package-lock=false @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
+
+      - name: Build web app for Android
+        env:
+          VITE_API_BASE_URL: https://study-flow-mhm23.vercel.app
+        run: npm run build
+
+      - name: Create Android project and sync web assets
+        run: |
+          npx cap add android
+          npx cap sync android
+
+      - name: Build installable debug APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Study-Flow-Android-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
