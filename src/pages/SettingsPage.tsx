@@ -36,6 +36,10 @@ export default function SettingsPage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    document.documentElement.classList.toggle('watercolor-buttons', settings.buttonPalette === 'watercolor');
+  }, [settings.buttonPalette]);
+
+  useEffect(() => {
     void (async () => {
       try {
         const est = await navigator.storage?.estimate?.();
@@ -137,6 +141,26 @@ export default function SettingsPage() {
               <Volume2 size={16} /> تجربة الصوت المختار
             </button>
             <p className="text-[11px] leading-relaxed text-muted">تختلف الأصوات المتاحة حسب الجهاز والمتصفح. قد لا يتوفر صوت عربي ذكر أو أنثى على كل جهاز؛ عندها يُستخدم أقرب صوت عربي متاح.</p>
+        </div>
+        <div className="flex items-center justify-between gap-3 text-sm">
+          <span>ألوان الأزرار</span>
+          <div className="grid grid-cols-2 gap-1 rounded-xl border border-line p-1">
+            {(['classic', 'watercolor'] as const).map((palette) => (
+              <button
+                key={palette}
+                type="button"
+                aria-pressed={(settings.buttonPalette ?? 'classic') === palette}
+                onClick={() => void update({ buttonPalette: palette })}
+                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                  (settings.buttonPalette ?? 'classic') === palette
+                    ? 'bg-gradient-to-l from-accent to-accent2 text-onaccent'
+                    : 'text-muted'
+                }`}
+              >
+                {palette === 'classic' ? 'كلاسيكي' : 'مائي'}
+              </button>
+            ))}
+          </div>
         </div>
         <div className="flex items-center justify-between gap-3 text-sm">
           <span>المظهر</span>
