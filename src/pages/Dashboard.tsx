@@ -275,7 +275,7 @@ export default function Dashboard() {
           </div>
           <p className="mt-2 text-center text-[10px] font-bold text-sky-200 transition group-hover:text-white">اكتشف كيف تعمل المنظومة معاً ←</p>
         </div>
-      </a>>
+      </a>
         </div>
       </details>
     </div>
