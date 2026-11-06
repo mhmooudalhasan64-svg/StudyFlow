@@ -138,12 +138,14 @@ export function AlarmRinger() {
   // يتكرر صوت المنبّه حتى إيقافه، ويتوقف تلقائيًا بعد دقيقة
   useEffect(() => {
     if (!ringing) return;
-    playSound(soundKind);
-    const every = window.setInterval(() => playSound(soundKind), 3500);
+    const announce = () => { if (soundEnabled) speak(`حان وقت الدراسة. ${ringing.label}.`, {}, { gender: voiceGender, style: voiceStyle }); };
+    announce();
+    const every = window.setInterval(announce, 6500);
     const stop = window.setTimeout(() => setRinging(null), 60_000);
     return () => {
       window.clearInterval(every);
       window.clearTimeout(stop);
+      stopSpeaking();
     };
   }, [ringing, voiceGender, voiceStyle, soundEnabled]);
 
