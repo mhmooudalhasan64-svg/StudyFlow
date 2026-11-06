@@ -19,6 +19,8 @@ export const DEFAULT_SETTINGS: Settings = {
   shortMin: 5,
   longMin: 15,
   sound: true,
+  voiceGender: 'any',
+  voiceStyle: 'soft',
   branch: 'scientific',
   grade: 12,
   reviewIntervals: [1, 3, 7, 14, 30],
