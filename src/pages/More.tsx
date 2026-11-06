@@ -6,47 +6,47 @@ import {
 } from 'lucide-react';
 import { PageTitle } from '../components/ui';
 
-type Item = { href: string; label: string; Icon: ComponentType<{ size?: number; className?: string }> };
+type Item = { href: string; label: string; Icon: ComponentType<{ size?: number; className?: string }>; tone: string };
 
 const GROUPS: { title: string; description: string; items: Item[] }[] = [
   {
     title: 'التعلم وتنظيم الدراسة',
     description: 'خطط دراستك، تابع المنهاج، وراجع دروسك.',
     items: [
-      { href: '#/curriculum', label: 'خطة إنهاء المنهاج', Icon: CalendarCheck },
-      { href: '#/library', label: 'مكتبة الكتب', Icon: BookOpen },
-      { href: '#/mindmap', label: 'الخرائط الذهنية التفاعلية', Icon: GitBranch },
-      { href: '#/review', label: 'المراجعة الذكية', Icon: Repeat },
-      { href: '#/cards', label: 'البطاقات التعليمية', Icon: Layers },
+      { href: '#/curriculum', label: 'خطة إنهاء المنهاج', Icon: CalendarCheck, tone: 'cyan' },
+      { href: '#/library', label: 'مكتبة الكتب', Icon: BookOpen, tone: 'blue' },
+      { href: '#/mindmap', label: 'الخرائط الذهنية التفاعلية', Icon: GitBranch, tone: 'violet' },
+      { href: '#/review', label: 'المراجعة الذكية', Icon: Repeat, tone: 'teal' },
+      { href: '#/cards', label: 'البطاقات التعليمية', Icon: Layers, tone: 'indigo' },
     ],
   },
   {
     title: 'الاختبارات والامتحانات',
     description: 'تدرّب، اختبر مستواك، واستعد للامتحان.',
     items: [
-      { href: '#/exams', label: 'الامتحانات', Icon: CalendarClock },
-      { href: '#/quiz', label: 'بنك الأسئلة والاختبارات', Icon: ListChecks },
-      { href: '#/simulator', label: 'محاكي الامتحان', Icon: TimerIcon },
-      { href: '#/calc', label: 'حاسبة العلامات', Icon: Calculator },
+      { href: '#/exams', label: 'الامتحانات', Icon: CalendarClock, tone: 'amber' },
+      { href: '#/quiz', label: 'بنك الأسئلة والاختبارات', Icon: ListChecks, tone: 'emerald' },
+      { href: '#/simulator', label: 'محاكي الامتحان', Icon: TimerIcon, tone: 'orange' },
+      { href: '#/calc', label: 'حاسبة العلامات', Icon: Calculator, tone: 'sky' },
     ],
   },
   {
     title: 'متابعة التقدم',
     description: 'راجع إنجازاتك واطّلع على تقاريرك.',
     items: [
-      { href: '#/achievements', label: 'الإنجازات', Icon: Award },
-      { href: '#/reports', label: 'تقارير الدراسة', Icon: FileBarChart },
-      { href: '#/stats', label: 'الإحصاءات', Icon: BarChart3 },
+      { href: '#/achievements', label: 'الإنجازات', Icon: Award, tone: 'yellow' },
+      { href: '#/reports', label: 'تقارير الدراسة', Icon: FileBarChart, tone: 'purple' },
+      { href: '#/stats', label: 'الإحصاءات', Icon: BarChart3, tone: 'rose' },
     ],
   },
   {
     title: 'المساعدة والتطبيق',
     description: 'المساعد الذكي والإعدادات ومعلومات التطبيق.',
     items: [
-      { href: '#/assistant', label: 'SKOVA AI', Icon: Bot },
-      { href: '#/settings', label: 'الإعدادات', Icon: SettingsIcon },
-      { href: '#/help', label: 'شرح أزرار التطبيق', Icon: CircleHelp },
-      { href: '#/about', label: 'عن التطبيق (متجر سكوڤا)', Icon: Info },
+      { href: '#/assistant', label: 'SKOVA AI', Icon: Bot, tone: 'violet' },
+      { href: '#/settings', label: 'الإعدادات', Icon: SettingsIcon, tone: 'slate' },
+      { href: '#/help', label: 'شرح أزرار التطبيق', Icon: CircleHelp, tone: 'cyan' },
+      { href: '#/about', label: 'عن التطبيق (متجر سكوڤا)', Icon: Info, tone: 'blue' },
     ],
   },
 ];
@@ -73,7 +73,7 @@ export default function More() {
             <p className="mt-1 text-xs text-muted">{group.description}</p>
           </div>
           <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {group.items.map(({ href, label, Icon }) => (
+            {group.items.map(({ href, label, Icon, tone }) => (
               <li key={href}>
                 <a href={href} className="card flex min-h-14 items-center gap-3 !p-3.5 transition hover:border-accent">
                   <Icon size={20} className="shrink-0 text-accent" />
