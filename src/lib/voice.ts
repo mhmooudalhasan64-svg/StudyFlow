@@ -59,8 +59,7 @@ export function cleanForSpeech(text: string): string {
     .replace(/[*#_`>~|]/g, ' ')
     .replace(/https?:\/\/\S+/gi, 'رابط')
     .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, 6000);
+    .trim();
 }
 function chooseVoice(gender: VoiceGender = 'any'): SpeechSynthesisVoice | undefined {
   const voices = availableArabicVoices();
@@ -79,21 +78,38 @@ function chooseVoice(gender: VoiceGender = 'any'): SpeechSynthesisVoice | undefi
   })[0];
 }
 function sentenceChunks(text: string): string[] {
-  const normalized = text.replace(/([.!?؟؛])\s*/g, '$1|').split('|').map(s => s.trim()).filter(Boolean);
+  // Preserve the complete answer while splitting at natural Arabic phrase boundaries.
+  const sentences = text
+    .replace(/([.!?؟؛])\\s*/g, '$1|')
+    .split('|')
+    .map(sentence => sentence.trim())
+    .filter(Boolean);
   const chunks: string[] = [];
-  for (const sentence of normalized) {
+  for (const sentence of sentences) {
     if (sentence.length <= 220) { chunks.push(sentence); continue; }
-    const words = sentence.split(/\s+/);
+    const words = sentence.split(/\\s+/);
     let part = '';
     for (const word of words) {
-      if (part && (part + ' ' + word).length > 190) { chunks.push(part); part = word; }
-      else part = part ? part + ' ' + word : word;
+      const candidate = part ? part + ' ' + word : word;
+      if (part && candidate.length > 190) {
+        chunks.push(part);
+        part = word;
+      } else {
+        part = candidate;
+      }
+      if (/[،,:؛]$/.test(part) && part.length >= 90) {
+        chunks.push(part);
+        part = '';
+      }
     }
     if (part) chunks.push(part);
   }
   return chunks;
 }
-const pauseAfter = (chunk: string) => /[؟?]$/.test(chunk) ? 360 : /[.!؛]$/.test(chunk) ? 290 : 170;
+const pauseAfter = (chunk: string) =>
+  /[؟?]$/.test(chunk) ? 380 :
+  /[.!؛]$/.test(chunk) ? 300 :
+  /[،,:]$/.test(chunk) ? 210 : 160;
 
 export function speak(text: string, cb: { onEnd?: () => void; onError?: (msg: string) => void } = {}, options: VoiceOptions = {}): void {
   // Sanitize once at entry and again per chunk immediately before TTS as a final guard.
