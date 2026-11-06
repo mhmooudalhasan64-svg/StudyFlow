@@ -195,7 +195,9 @@ export default function Assistant() {
           <option value="explain">اشرح ببساطة مع مثال</option>
           <option value="steps">حل خطوة بخطوة</option>
           <option value="summary">لخّص في نقاط</option>
-          <option value="coach">درّبني (أسئلة موجِّهة بدل الحل)</option>
+          <option value="coach">درّبني بأسئلة موجِّهة</option>
+          <option value="diagnose">شخّص نقطة ضعفي أولاً</option>
+          <option value="exam_coach">مدرّب الامتحان</option>
           <option value="voice_teacher">المدرّس الصوتي</option>
         </select>
       </div>
