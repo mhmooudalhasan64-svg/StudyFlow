@@ -10,6 +10,10 @@ import {
   Sun,
   Timer as TimerIcon,
   WifiOff,
+  Search,
+  X,
+  SlidersHorizontal,
+  HelpCircle,
 } from 'lucide-react';
 import { useApp } from './store';
 import { useHashRoute, type Route } from './lib/route';
@@ -36,8 +40,46 @@ import Reports from './pages/Reports';
 import More from './pages/More';
 import MindMap from './pages/MindMap';
 import Help from './pages/Help';
+import Today from './pages/Today';
 
 type NavItem = { route: Route; label: string; Icon: ComponentType<{ size?: number }> };
+
+const PAGE_HINTS: Partial<Record<Route, string>> = {
+  home: 'هذه الصفحة تجمع ملخص يومك. ابدأ من زر جلسة التركيز أو افتح لوحة يومي الدراسي.',
+  plan: 'أضف مهامك وحدد المادة والمدة، ثم تابع إنجازها من هنا.',
+  timer: 'اختر التركيز أو الاستراحة، وحدد المادة قبل بدء الجلسة.',
+  bac: 'ستجد هنا أدوات وموارد مرتبطة بمرحلة البكالوريا.',
+  more: 'كل الأدوات موجودة هنا. استخدم البحث للوصول لأي صفحة بسرعة.',
+  library: 'أضف ملفاتك وكتبك، ثم افتحها عند الحاجة.',
+  review: 'ابدأ بالعناصر المستحقة وسجّل ما تذكرته لتتحدد المراجعة التالية.',
+  cards: 'افتح البطاقة وحاول تذكر الإجابة قبل إظهار الوجه الآخر.',
+  stats: 'تعرض الإحصاءات ما سجلته فعلياً من جلسات وإجابات.',
+  assistant: 'اكتب سؤالك أو أرفق ملفاً. إذا فتحت المساعد من صفحة أخرى فسيعرف سياقها.',
+  today: 'هذه لوحة مختصرة تجمع مهامك ومراجعاتك ووقت تركيزك لهذا اليوم.',
+};
+
+const SEARCH_PAGES: { route: Route; label: string; keywords: string }[] = [
+  { route: 'home', label: 'الرئيسية', keywords: 'ملخص تقدم اليوم' },
+  { route: 'today', label: 'يومي الدراسي', keywords: 'مهام اليوم مراجعات مستحقة وقت التركيز' },
+  { route: 'plan', label: 'الخطة', keywords: 'جدول مهام تنظيم أسبوع' },
+  { route: 'timer', label: 'المؤقت', keywords: 'تركيز بومودورو استراحة' },
+  { route: 'bac', label: 'البكالوريا', keywords: 'فرع مواد بكالوريا' },
+  { route: 'curriculum', label: 'خطة إنهاء المنهاج', keywords: 'دروس وحدات إنجاز' },
+  { route: 'library', label: 'مكتبة الكتب', keywords: 'PDF ملفات كتب' },
+  { route: 'mindmap', label: 'الخرائط الذهنية', keywords: 'أفكار مخطط' },
+  { route: 'review', label: 'المراجعة الذكية', keywords: 'تكرار متباعد مستحق' },
+  { route: 'cards', label: 'البطاقات التعليمية', keywords: 'حفظ سؤال جواب' },
+  { route: 'exams', label: 'الامتحانات', keywords: 'مواعيد امتحان' },
+  { route: 'quiz', label: 'بنك الأسئلة والاختبارات', keywords: 'أسئلة تدريب اختبار' },
+  { route: 'simulator', label: 'محاكي الامتحان', keywords: 'امتحان تجريبي وقت' },
+  { route: 'calc', label: 'حاسبة العلامات', keywords: 'معدل درجات' },
+  { route: 'stats', label: 'الإحصاءات', keywords: 'نقاط ضعف دقة تقدم' },
+  { route: 'reports', label: 'التقارير', keywords: 'ملخص دراسة' },
+  { route: 'achievements', label: 'الإنجازات', keywords: 'أوسمة تحفيز' },
+  { route: 'assistant', label: 'SKOVA AI', keywords: 'مساعد ذكي شرح سؤال' },
+  { route: 'settings', label: 'الإعدادات', keywords: 'صوت مظهر نسخ احتياطي مواد' },
+  { route: 'help', label: 'شرح أزرار التطبيق', keywords: 'دليل مساعدة تعليمات' },
+];
 
 /** التنقل المختصر؛ جميع الصفحات متاحة من «كل الميزات» */
 const NAV: NavItem[] = [
@@ -79,6 +121,7 @@ const PAGES: Record<Route, ComponentType> = {
   more: More,
   about: About,
   help: Help,
+  today: Today,
 };
 
 function useOnline(): boolean {
@@ -103,6 +146,12 @@ export default function App() {
   const theme = useApp((s) => s.settings.theme);
   const updateSettings = useApp((s) => s.updateSettings);
   const [introDone, setIntroDone] = useState(false);
+  const [simpleMode, setSimpleMode] = useState(() => {
+    try { return localStorage.getItem('studyflow-ui-mode') !== 'advanced'; } catch { return true; }
+  });
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [hintVisible, setHintVisible] = useState(false);
   const [assistantPosition, setAssistantPosition] = useState<{ left: number; top: number } | null>(() => {
     try {
       const saved = localStorage.getItem('studyflow-assistant-position');
@@ -119,6 +168,35 @@ export default function App() {
   const ignoreAssistantClick = useRef(false);
   const route = useHashRoute();
   const online = useOnline();
+  const visibleNav = simpleMode ? NAV.filter((item) => ['home', 'plan', 'timer', 'more'].includes(item.route)) : NAV;
+  const visibleMobileNav = simpleMode ? MOBILE_NAV.filter((item) => ['home', 'plan', 'timer', 'more'].includes(item.route)) : MOBILE_NAV;
+  const searchResults = SEARCH_PAGES.filter((item) => (item.label + ' ' + item.keywords).toLowerCase().includes(searchText.trim().toLowerCase()));
+
+  useEffect(() => {
+    try { setHintVisible(Boolean(PAGE_HINTS[route]) && localStorage.getItem('studyflow-hint-' + route) !== '1'); }
+    catch { setHintVisible(Boolean(PAGE_HINTS[route])); }
+  }, [route]);
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setSearchOpen(true);
+      }
+      if (event.key === 'Escape') setSearchOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  const toggleMode = () => {
+    setSimpleMode((current) => {
+      const next = !current;
+      try { localStorage.setItem('studyflow-ui-mode', next ? 'simple' : 'advanced'); } catch { /* التبديل يعمل لهذه الجلسة */ }
+      window.dispatchEvent(new Event('studyflow:mode-change'));
+      return next;
+    });
+  };
 
   useEffect(() => {
     void init();
@@ -159,10 +237,21 @@ export default function App() {
   return (
     <div className="app-shell mx-auto flex min-h-screen max-w-6xl flex-col md:flex-row">
       <AlarmRinger />
+      {searchOpen && (
+        <div className="fixed inset-0 z-[70] flex items-start justify-center bg-black/60 p-3 pt-[12vh]" onMouseDown={(event) => { if (event.target === event.currentTarget) setSearchOpen(false); }}>
+          <section role="dialog" aria-modal="true" aria-label="البحث عن ميزة" className="w-full max-w-lg overflow-hidden rounded-2xl border border-line bg-card shadow-2xl">
+            <div className="flex items-center gap-2 border-b border-line p-3"><Search size={19} className="text-accent" /><input autoFocus className="min-w-0 flex-1 bg-transparent text-sm outline-none" placeholder="ابحث عن أي صفحة أو ميزة..." value={searchText} onChange={(event) => setSearchText(event.target.value)} /><kbd className="hidden rounded border border-line px-1.5 py-0.5 text-[10px] text-muted sm:inline">ESC</kbd><button type="button" aria-label="إغلاق البحث" onClick={() => setSearchOpen(false)} className="rounded-lg p-1.5 text-muted hover:bg-base"><X size={18} /></button></div>
+            <div className="max-h-[55vh] overflow-y-auto p-2">
+              {searchResults.length ? searchResults.map((item) => <a key={item.route} href={`#/${item.route}`} onClick={() => { setSearchOpen(false); setSearchText(''); }} className="flex items-center justify-between rounded-xl px-3 py-3 text-sm hover:bg-base"><span>{item.label}</span><span className="text-xs text-muted">فتح الصفحة ←</span></a>) : <p className="p-5 text-center text-sm text-muted">لا توجد نتيجة. جرّب كلمة أخرى.</p>}
+            </div>
+            <p className="border-t border-line px-3 py-2 text-[11px] text-muted">اختصار البحث: Ctrl + K أو ⌘ + K</p>
+          </section>
+        </div>
+      )}
       {route !== 'assistant' && (
         <a
-          href="#/assistant"
-          aria-label="افتح المساعد الدراسي SKOVA AI، واسحب الزر لتغيير مكانه"
+          href={`#/assistant?from=${route}`}
+          aria-label="افتح المساعد الدراسي SKOVA AI مع سياق الصفحة الحالية، واسحب الزر لتغيير مكانه"
           title="اسحب لتحريك زر SKOVA AI"
           style={assistantPosition ? { left: assistantPosition.left, top: assistantPosition.top } : undefined}
           onPointerDown={(event) => {
@@ -233,11 +322,11 @@ export default function App() {
       <aside className="app-sidebar sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
         <Brand />
         <nav className="mt-4 flex flex-col gap-1" aria-label="التنقل الرئيسي">
-          {NAV.map(({ route: r, label, Icon }) => (
+          {visibleNav.map(({ route: r, label, Icon }) => (
             <a
               key={r}
               href={`#/${r}`}
-              aria-current={(route === r || (r === 'more' && !NAV.some((n) => n.route === route))) ? 'page' : undefined}
+              aria-current={(route === r || (r === 'more' && !visibleNav.some((n) => n.route === route))) ? 'page' : undefined}
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
                 route === r || (r === 'more' && !NAV.some((n) => n.route === route))
                   ? 'bg-gradient-to-l from-accent/20 to-accent2/20 text-accent'
@@ -251,7 +340,7 @@ export default function App() {
         </nav>
         <div className="mt-auto flex items-center gap-2 pt-3">
           {!online && <OfflineChip />}
-          <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} />
+          <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} simpleMode={simpleMode} onToggleMode={toggleMode} onSearch={() => setSearchOpen(true)} />
         </div>
       </aside>
 
@@ -266,6 +355,13 @@ export default function App() {
         </header>
 
         <main className="app-main flex-1 px-4 pb-28 pt-5 md:px-6 md:pb-10" key={route}>
+          {hintVisible && PAGE_HINTS[route] && (
+            <div className="mx-auto mb-4 flex max-w-4xl items-start gap-3 rounded-2xl border border-accent/25 bg-accent/5 p-3 text-sm" role="status">
+              <HelpCircle size={18} className="mt-0.5 shrink-0 text-accent" />
+              <div className="min-w-0 flex-1"><p className="font-bold">تلميحة سريعة</p><p className="mt-1 leading-6 text-muted">{PAGE_HINTS[route]}</p></div>
+              <button type="button" className="btn btn-ghost !px-2 !py-1 text-xs" onClick={() => { setHintVisible(false); try { localStorage.setItem('studyflow-hint-' + route, '1'); } catch { /* لا يؤثر على الاستخدام */ } }}>فهمت</button>
+            </div>
+          )}
           <Page />
         </main>
 
@@ -274,8 +370,8 @@ export default function App() {
           className="app-mobile-nav fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-line/70 bg-base/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
           aria-label="التنقل الرئيسي"
         >
-          {MOBILE_NAV.map(({ route: r, label, Icon }) => {
-            const active = route === r || (r === 'more' && !MOBILE_NAV.some((n) => n.route === route));
+          {visibleMobileNav.map(({ route: r, label, Icon }) => {
+            const active = route === r || (r === 'more' && !visibleMobileNav.some((n) => n.route === route));
             return (
             <a
               key={r}
@@ -316,12 +412,14 @@ function Brand() {
   );
 }
 
-function HeaderButtons({ theme, onToggle }: { theme: 'dark' | 'light'; onToggle: () => void }) {
+function HeaderButtons({ theme, onToggle, simpleMode, onToggleMode, onSearch }: { theme: 'dark' | 'light'; onToggle: () => void; simpleMode: boolean; onToggleMode: () => void; onSearch: () => void }) {
   return (
     <>
+      <button type="button" onClick={onSearch} aria-label="البحث عن ميزة" title="البحث عن ميزة (Ctrl + K)" className="rounded-xl border border-line bg-card/60 p-2.5 text-muted transition hover:border-accent hover:text-main"><Search size={18} /></button>
+      <button type="button" onClick={onToggleMode} aria-label={simpleMode ? 'التبديل إلى الوضع المتقدم' : 'التبديل إلى الوضع البسيط'} title={simpleMode ? 'الوضع البسيط — اضغط لإظهار كل الأزرار' : 'الوضع المتقدم — اضغط لتبسيط الأزرار'} className={`rounded-xl border border-line bg-card/60 p-2.5 transition hover:border-accent hover:text-main ${simpleMode ? 'text-accent' : 'text-muted'}`}><SlidersHorizontal size={18} /></button>
       <button
         type="button"
-        onClick={onToggle}
+        onClick={onToggle
         aria-label={theme === 'dark' ? 'الوضع الفاتح' : 'الوضع الداكن'}
         className="rounded-xl border border-line bg-card/60 p-2.5 text-muted transition hover:border-accent hover:text-main"
       >
