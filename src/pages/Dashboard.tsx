@@ -73,6 +73,11 @@ export default function Dashboard() {
         </span>
       </div>
 
+      <a href="#/today" className="card flex items-center justify-between gap-3 border-accent/30 bg-accent/5 transition hover:border-accent">
+        <div><p className="font-bold">لوحة يومي الدراسي</p><p className="mt-1 text-xs text-muted">مهامك ومراجعاتك ووقت تركيزك في شاشة واحدة.</p></div>
+        <span className="btn btn-primary shrink-0 !px-3 !py-2 text-xs">افتح يومي ←</span>
+      </a>
+
       <section className="dashboard-hero relative overflow-hidden rounded-3xl border border-accent/25 p-5 shadow-xl shadow-accent2/10 sm:p-7" aria-label="ملخص تقدمك اليوم">
         <div className="dashboard-orb dashboard-orb-one" aria-hidden="true" />
         <div className="dashboard-orb dashboard-orb-two" aria-hidden="true" />
