@@ -276,22 +276,51 @@ function overLimit(ip: string): boolean {
   return cur.count > DAILY_LIMIT;
 }
 
-async function handlePost(request: Request): Promise<Response> {
-  // رفض الأجسام الكبيرة قبل تحليل JSON لتقليل استهلاك الذاكرة وموارد الدالة.
-  const contentLength = Number(request.headers.get('content-length') || 0);
-  if (Number.isFinite(contentLength) && contentLength > 64 * 1024) {
-    return json({ error: 'حجم الطلب أكبر من الحد المسموح.' }, 413);
+const MAX_REQUEST_BYTES = 64 * 1024;
+
+/** يفرض حدّاً فعلياً على جسم الطلب أثناء القراءة، حتى عند غياب Content-Length أو عدم صحته. */
+async function readBoundedJson(request: Request): Promise<{ body: unknown } | { response: Response }> {
+  if (!request.body) return { response: json({ error: 'طلب غير صالح' }, 400) };
+
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > MAX_REQUEST_BYTES) {
+        await reader.cancel().catch(() => undefined);
+        return { response: json({ error: 'حجم الطلب أكبر من الحد المسموح.' }, 413) };
+      }
+      chunks.push(value);
+    }
+  } catch {
+    return { response: json({ error: 'تعذّر قراءة الطلب.' }, 400) };
   }
 
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  try {
+    return { body: JSON.parse(new TextDecoder().decode(bytes)) as unknown };
+  } catch {
+    return { response: json({ error: 'طلب غير صالح' }, 400) };
+  }
+}
+
+async function handlePost(request: Request): Promise<Response> {
   const provider = pickProvider(environment());
   if (!provider) return json({ error: 'المساعد غير مفعّل بعد: لم يُضبط مفتاح الخدمة على الخادم.' }, 503);
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return json({ error: 'طلب غير صالح' }, 400);
-  }
+  const parsed = await readBoundedJson(request);
+  if ('response' in parsed) return parsed.response;
+  const body = parsed.body;
   const attachment = sanitizeAttachment(body);
   const quiz = quizRequest(body, attachment);
   if (quiz === 'invalid') return json({ error: 'اكتب موضوع الاختبار أو أرفق ملفاً.' }, 400);
