@@ -5,7 +5,7 @@ import { NumberField, PageTitle } from '../components/ui';
 import { SUBJECT_COLORS } from '../seed';
 import { exportBackup } from '../lib/backup';
 import { toDateKey } from '../lib/utils';
-import { playSound, primeAudio, SOUNDS, type SoundKind } from '../lib/sound';
+import { speak, type VoiceGender, type VoiceStyle } from '../lib/voice';
 
 export default function SettingsPage() {
   const settings = useApp((s) => s.settings);
@@ -113,41 +113,31 @@ export default function SettingsPage() {
             onChange={(e) => void update({ sound: e.target.checked })}
           />
         </label>
-        {settings.sound && (
-          <div className="flex items-center gap-2 text-sm">
-            <label htmlFor="sound-kind" className="shrink-0">
-              صوت التنبيه
-            </label>
-            <select
-              id="sound-kind"
-              className="input"
-              value={settings.soundKind ?? 'classic'}
-              onChange={(e) => {
-                const kind = e.target.value as SoundKind;
-                void update({ soundKind: kind });
-                primeAudio();
-                playSound(kind);
-              }}
-            >
-              {SOUNDS.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              className="btn btn-ghost shrink-0 !px-3"
-              aria-label="تجربة الصوت"
-              onClick={() => {
-                primeAudio();
-                playSound(settings.soundKind);
-              }}
-            >
-              <Volume2 size={16} />
+        <div className="space-y-3 rounded-xl border border-line/70 bg-base/40 p-3">
+            <p className="text-sm font-semibold">الصوت البشري للتنبيهات وقراءة المساعد</p>
+            <div className="grid grid-cols-2 gap-2">
+              <label className="space-y-1 text-xs text-muted">
+                <span>نوع الصوت</span>
+                <select className="input" value={settings.voiceGender ?? 'any'} onChange={(e) => void update({ voiceGender: e.target.value as VoiceGender })}>
+                  <option value="any">تلقائي</option>
+                  <option value="female">أنثى</option>
+                  <option value="male">ذكر</option>
+                </select>
+              </label>
+              <label className="space-y-1 text-xs text-muted">
+                <span>طابع الصوت</span>
+                <select className="input" value={settings.voiceStyle ?? 'soft'} onChange={(e) => void update({ voiceStyle: e.target.value as VoiceStyle })}>
+                  <option value="soft">ناعم وهادئ</option>
+                  <option value="strong">قوي وواضح</option>
+                  <option value="energetic">حيوي وصاخب</option>
+                </select>
+              </label>
+            </div>
+            <button type="button" className="btn btn-ghost w-full" onClick={() => speak('مرحباً! هذا اختبار للصوت البشري في تطبيق Study Flow.', {}, { gender: settings.voiceGender ?? 'any', style: settings.voiceStyle ?? 'soft' })}>
+              <Volume2 size={16} /> تجربة الصوت المختار
             </button>
-          </div>
-        )}
+            <p className="text-[11px] leading-relaxed text-muted">تختلف الأصوات المتاحة حسب الجهاز والمتصفح. قد لا يتوفر صوت عربي ذكر أو أنثى على كل جهاز؛ عندها يُستخدم أقرب صوت عربي متاح.</p>
+        </div>
         <div className="flex items-center justify-between gap-3 text-sm">
           <span>المظهر</span>
           <div className="grid grid-cols-2 gap-1 rounded-xl border border-line p-1">

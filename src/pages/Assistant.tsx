@@ -88,7 +88,7 @@ export default function Assistant() {
         setVoiceError(m);
         setSpeakingIdx(null);
       },
-    });
+    }, { gender: app.settings.voiceGender ?? 'any', style: app.settings.voiceStyle ?? 'soft' });
   };
 
   const pickFile = async (e: ChangeEvent<HTMLInputElement>) => {
