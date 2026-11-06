@@ -261,8 +261,46 @@ function systemPrompt(att: Attachment | null, profile = '', bookAsk = false, foc
 ${fileBlock(att)}`;
 }
 
-/** حدّ يومي بسيط لكل IP (في الذاكرة؛ يخفف الإساءة لكنه ليس حماية مطلقة). */
-function overLimit(ip: string): boolean {
+/**
+ * حدّ يومي لكل IP. عند ضبط Upstash يُستخدم عدّاد Redis ذري مشترك بين نسخ Vercel.
+ * النتيجة null تعني أن خدمة الحد الموزّع فشلت؛ عند تهيئتها لا نرجع بصمت إلى حدّ محلي.
+ */
+async function overLimit(ip: string): Promise<boolean | null> {
+  const env = environment();
+  const redisUrl = clean(env.UPSTASH_REDIS_REST_URL);
+  const redisToken = clean(env.UPSTASH_REDIS_REST_TOKEN);
+  const hasRedisConfig = !!redisUrl || !!redisToken;
+
+  if (redisUrl && redisToken) {
+    try {
+      const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(ip));
+      const ipHash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+      const day = new Date().toISOString().slice(0, 10);
+      const key = `studyflow:chat:daily:${day}:${ipHash}`;
+      const script = "local n = redis.call('INCR', KEYS[1]); if n == 1 then redis.call('EXPIRE', KEYS[1], ARGV[1]); end; return n";
+      const response = await fetch(redisUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${redisToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(['EVAL', script, '1', key, '172800']),
+        signal: AbortSignal.timeout(2500),
+      });
+      if (!response.ok) return null;
+      const result = (await response.json().catch(() => null)) as { result?: unknown; error?: unknown } | null;
+      const count = Number(result?.result);
+      if (!Number.isFinite(count) || count < 1 || result?.error) return null;
+      return count > DAILY_LIMIT;
+    } catch {
+      return null;
+    }
+  }
+
+  // Partial configuration is a setup error: do not silently use a non-shared limit.
+  if (hasRedisConfig) return null;
+
+  // Fallback for development only; Vercel instances do not share this memory.
   const day = new Date().toISOString().slice(0, 10);
   if (usage.size > 5000) {
     for (const [k, v] of usage) if (v.day !== day) usage.delete(k);
@@ -328,7 +366,11 @@ async function handlePost(request: Request): Promise<Response> {
   if (!messages) return json({ error: 'رسائل غير صالحة' }, 400);
   const profile = quiz ? '' : sanitizeProfile(body);
 
-  if (overLimit(clientIp(request))) {
+  const limited = await overLimit(clientIp(request));
+  if (limited === null) {
+    return json({ error: 'تعذّر التحقق من حدّ الاستخدام حالياً. حاول لاحقاً.' }, 503);
+  }
+  if (limited) {
     return json({ error: `وصلت إلى الحد اليومي (${DAILY_LIMIT} رسالة). جرّب غداً.` }, 429);
   }
 
