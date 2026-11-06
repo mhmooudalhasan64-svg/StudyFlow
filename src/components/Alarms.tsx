@@ -2,7 +2,8 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Bell, BellRing, Plus, Trash2 } from 'lucide-react';
 import { useApp } from '../store';
 import { dueAlarms, formatAlarmTime, isValidTime, notify, type Alarm } from '../lib/alarm';
-import { playSound, primeAudio } from '../lib/sound';
+import { primeAudio } from '../lib/sound';
+import { speak, stopSpeaking } from '../lib/voice';
 import { toDateKey } from '../lib/utils';
 
 const SNOOZE_MS = 5 * 60_000;
@@ -111,7 +112,9 @@ export default function Alarms() {
 /** يراقب المنبّهات ويُظهر شاشة الرنين. يُركَّب مرة واحدة في التطبيق. */
 export function AlarmRinger() {
   const alarms = useApp((s) => s.settings.alarms);
-  const soundKind = useApp((s) => s.settings.soundKind);
+  const voiceGender = useApp((s) => s.settings.voiceGender) ?? 'any';
+  const voiceStyle = useApp((s) => s.settings.voiceStyle) ?? 'soft';
+  const soundEnabled = useApp((s) => s.settings.sound);
   const updateSettings = useApp((s) => s.updateSettings);
   const [ringing, setRinging] = useState<Alarm | null>(null);
   const alarmsRef = useRef(alarms);
@@ -142,7 +145,7 @@ export function AlarmRinger() {
       window.clearInterval(every);
       window.clearTimeout(stop);
     };
-  }, [ringing, soundKind]);
+  }, [ringing, voiceGender, voiceStyle, soundEnabled]);
 
   useEffect(
     () => () => {
