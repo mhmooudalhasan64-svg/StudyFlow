@@ -328,7 +328,7 @@ export default function App() {
               href={`#/${r}`}
               aria-current={(route === r || (r === 'more' && !visibleNav.some((n) => n.route === route))) ? 'page' : undefined}
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                route === r || (r === 'more' && !NAV.some((n) => n.route === route))
+                route === r || (r === 'more' && !visibleNav.some((n) => n.route === route))
                   ? 'bg-gradient-to-l from-accent/20 to-accent2/20 text-accent'
                   : 'text-muted hover:bg-card/70 hover:text-main'
               }`}
