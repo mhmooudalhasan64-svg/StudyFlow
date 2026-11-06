@@ -1,11 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="VAYORA">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#22d3ee"/>
-      <stop offset="1" stop-color="#8b5cf6"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10233D"/>
+      <stop offset="1" stop-color="#263D68"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7DD3FC"/>
+      <stop offset="1" stop-color="#A5B4FC"/>
     </linearGradient>
   </defs>
-  <rect width="512" height="512" rx="112" fill="#080b18"/>
-  <circle cx="256" cy="256" r="150" fill="none" stroke="url(#g)" stroke-width="30" stroke-linecap="round" stroke-dasharray="720 940" transform="rotate(-90 256 256)"/>
-  <path d="M196 262l44 44 82-96" fill="none" stroke="url(#g)" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <path d="M256 62 414 153v206l-158 91L98 359V153Z" fill="none" stroke="url(#mark)" stroke-width="15" stroke-linejoin="round" opacity=".82"/>
+  <path d="m166 190 90 155 90-155M210 267h92" fill="none" stroke="url(#mark)" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="256" cy="143" r="12" fill="#7DD3FC"/>
 </svg>
