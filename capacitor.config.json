@@ -1,0 +1,8 @@
+{
+  "appId": "com.mhmooud.studyflow",
+  "appName": "Study Flow",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

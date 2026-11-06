@@ -17,7 +17,9 @@ export interface ChatAttachment {
 }
 
 function postChat(body: unknown): Promise<Response> {
-  return fetch('/api/chat', {
+  // In the Android build, call the deployed Vercel API; on the web, keep the same-origin route.
+  const apiBase = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
+  return fetch(`${apiBase}/api/chat`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(body),
