@@ -253,7 +253,6 @@ export default function App() {
       {route !== 'assistant' && (
         <button
           type="button"
-          onClick={() => setSkovaCallOpen(true)}
           aria-label="ابدأ مكالمة صوتية مع SKOVA AI، واسحب الزر لتغيير مكانه"
           title="اضغط لبدء مكالمة مع SKOVA AI أو اسحب الزر لتحريكه"
           style={assistantPosition ? { left: assistantPosition.left, top: assistantPosition.top } : undefined}
@@ -304,7 +303,11 @@ export default function App() {
           }}
           onPointerCancel={() => { assistantDrag.current = null; }}
           onClick={() => {
-            if (ignoreAssistantClick.current) ignoreAssistantClick.current = false;
+            if (ignoreAssistantClick.current) {
+              ignoreAssistantClick.current = false;
+              return;
+            }
+            setSkovaCallOpen(true);
           }}
           className={`fixed z-30 inline-flex touch-none select-none items-center gap-2 rounded-full border border-white/15 bg-gradient-to-l from-[#17131f] via-[#342052] to-[#18334c] px-3 py-2 text-white shadow-xl shadow-purple-950/30 transition hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-400 cursor-grab active:cursor-grabbing ${assistantPosition ? '' : 'bottom-24 left-4 md:bottom-6 md:left-6'}`}
         >
