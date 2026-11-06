@@ -350,7 +350,7 @@ export default function App() {
           <Brand />
           <div className="flex items-center gap-1">
             {!online && <OfflineChip />}
-            <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} />
+            <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} simpleMode={simpleMode} onToggleMode={toggleMode} onSearch={() => setSearchOpen(true)} />
           </div>
         </header>
 
@@ -367,7 +367,7 @@ export default function App() {
 
         {/* شريط التنقل السفلي (جوال) */}
         <nav
-          className="app-mobile-nav fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-line/70 bg-base/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
+          className={`app-mobile-nav fixed inset-x-0 bottom-0 z-20 grid ${simpleMode ? "grid-cols-4" : "grid-cols-5"} border-t border-line/70 bg-base/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden`}
           aria-label="التنقل الرئيسي"
         >
           {visibleMobileNav.map(({ route: r, label, Icon }) => {
