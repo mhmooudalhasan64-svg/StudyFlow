@@ -75,9 +75,10 @@ export default function More() {
           <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {group.items.map(({ href, label, Icon, tone }) => (
               <li key={href}>
-                <a href={href} className="card flex min-h-14 items-center gap-3 !p-3.5 transition hover:border-accent">
-                  <Icon size={20} className="shrink-0 text-accent" />
-                  <span className="font-medium">{label}</span>
+                <a href={href} className="card group flex min-h-[4.6rem] items-center gap-3 !p-3.5 transition hover:-translate-y-0.5 hover:border-accent">
+                  <span className={`feature-icon feature-icon-${tone}`} aria-hidden="true"><Icon size={21} /></span>
+                  <span className="min-w-0 flex-1 font-semibold">{label}</span>
+                  <span className="text-muted opacity-0 transition group-hover:translate-x-[-2px] group-hover:opacity-100" aria-hidden="true">←</span>
                 </a>
               </li>
             ))}
