@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { CalendarClock, Check, Circle, Flame, Gauge, ListChecks, Repeat, ShieldCheck, Target } from 'lucide-react';
+import { Bot, CalendarClock, Check, Circle, Flame, Gauge, ListChecks, Repeat, ShieldCheck, Target } from 'lucide-react';
 import { useApp } from '../store';
 import { TaskRow } from '../components/TaskRow';
 import { Empty, PageTitle, ProgressRing } from '../components/ui';
@@ -265,7 +265,7 @@ export default function Dashboard() {
               <p className="mt-1 text-[9px] text-sky-100 sm:text-[10px]">تجربة التعلم</p>
             </div>
             <div className="rounded-2xl border border-violet-300/20 bg-violet-300/10 px-1.5 py-3 text-center sm:px-3">
-              <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-violet-100/20 bg-white/10"><img src="/logo.png" alt="" className="h-7 w-7 rounded-lg object-cover" /></span>
+              <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-violet-100/20 bg-white/10"><Bot size={18} className="text-violet-100" /></span>
               <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">AVORA</p>
               <p className="mt-1 text-[9px] text-violet-100 sm:text-[10px]">المساعدة الذكية</p>
             </div>
