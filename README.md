@@ -80,7 +80,7 @@ src/
 
 ## إعداد خادم AVORA وحدّ الاستخدام
 
-في بنية المعاينة الحالية، الواجهة على Vercel وطلبات المحادثة والصوت تمر عبر خادم Railway. اضبط المتغيرات السرية من **Railway → مشروع VAYORA → خدمة studyflow-preview → Variables**:
+في بنية المعاينة الحالية، الواجهة على Vercel وطلبات المحادثة والصوت تمر عبر خادم Railway. اضبط المتغيرات السرية من **Railway → مشروع StudyFlow → خدمة studyflow-preview → Variables**:
 
 - مفتاح مزوّد واحد على الأقل: `GROQ_API_KEY` أو `OPENROUTER_API_KEY` أو `GEMINI_API_KEY` أو `XAI_API_KEY`.
 - `REDIS_URL` يُربط تلقائياً بخدمة Redis في مشروع Railway لضبط حدّ يومي موزّع.
