@@ -226,7 +226,7 @@ export default function App() {
           </section>
         </div>
       )}
-      {/* مجموعة أزرار عائمة موحّدة: ترتيب ثابت ومسافة آمنة فوق شريط الجوال */}
+      {route !== 'assistant' && (
       <div className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-30 flex flex-row-reverse items-center gap-2 md:bottom-6 md:right-6">
         <button
           type="button"
@@ -259,7 +259,7 @@ export default function App() {
           </span>
         </a>
       </div>
-      <Suspense fallback={null}><VoiceTeacher open={avoraCallOpen} onClose={() => setAvoraCallOpen(false)} /></Suspense>
+      )}      <Suspense fallback={null}><VoiceTeacher open={avoraCallOpen} onClose={() => setAvoraCallOpen(false)} /></Suspense>
       {/* الشريط الجانبي (شاشات كبيرة) */}
       <aside className="app-sidebar sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
         <Brand />
@@ -304,7 +304,7 @@ export default function App() {
               <button type="button" className="btn btn-ghost !px-2 !py-1 text-xs" onClick={() => { setHintVisible(false); try { localStorage.setItem('studyflow-hint-' + route, '1'); } catch { /* لا يؤثر على الاستخدام */ } }}>فهمت</button>
             </div>
           )}
-          <Suspense fallback={<div className="grid min-h-[40vh] place-items-center text-muted" role="status">جارٍ تحميل الصفحة…</div>}><Page /></Suspense>
+          <Suspense fallback={<div className="grid min-h-[40vh] place-items-center text-muted" role="status">جارٍ تحميل الصفحة…</div>}>{route === 'assistant' ? <Assistant onCallOpen={() => setAvoraCallOpen(true)} /> : <Page />}</Suspense>
         </main>
 
         {/* شريط التنقل السفلي (جوال) */}
