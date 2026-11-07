@@ -51,7 +51,7 @@ const groups: GuideGroup[] = [
       { title: 'الإحصاءات', href: '#/stats', icon: BarChart3, what: 'عرض أرقام نشاطك ونتائجك، بما فيها تحليل نقاط الضعف.', how: 'راجع المواد أو الوحدات التي تحتاج إلى اهتمام عندما تتوفر إجابات كافية.' },
       { title: 'التقارير', href: '#/reports', icon: FileBarChart, what: 'ملخصات وتقارير عن نشاطك الدراسي.', how: 'افتحها لمراجعة صورة أشمل عن جلساتك وإنجازك.' },
       { title: 'الإنجازات', href: '#/achievements', icon: Trophy, what: 'متابعة الإنجازات والتحفيز على الاستمرار.', how: 'اطّلع على ما حققته مع تقدمك في استخدام التطبيق.' },
-      { title: 'SKOVA AI', href: '#/assistant', icon: Bot, what: 'مساعدك الدراسي للإجابة والمساعدة في التعلم.', how: 'اكتب سؤالك بوضوح، ويمكنك استخدام خيارات الصوت المتاحة.' },
+      { title: 'AVORA AI', href: '#/assistant', icon: Bot, what: 'مساعدك الدراسي للإجابة والمساعدة في التعلم.', how: 'اكتب سؤالك بوضوح، ويمكنك استخدام خيارات الصوت المتاحة.' },
       { title: 'الإعدادات', href: '#/settings', icon: Settings, what: 'تخصيص المؤقت والصوت والمظهر والمواد والنسخ الاحتياطي.', how: 'عدّل الخيارات بهدوء. استخدم تصدير نسخة احتياطية لحماية بياناتك.' },
     ],
   },
@@ -120,11 +120,11 @@ export default function Help() {
       <section className="card space-y-2">
         <h2 className="flex items-center gap-2 font-bold"><Search size={18} className="text-accent" /> أدوات تسهّل التنقل</h2>
         <p className="text-sm leading-7 text-muted">زر البحث في الشريط العلوي يوصلك لأي صفحة، ويمكن فتحه باختصار Ctrl + K. زر الوضع البسيط والمتقدم يبدّل بين عرض الأدوات الأساسية وعرض كل الأدوات. عند أول زيارة لصفحة قد تظهر تلميحة صغيرة تشرحها.</p>
-        <p className="text-sm leading-7 text-muted">من زر SKOVA AI العائم، إذا فتحته من داخل صفحة أخرى، ينتقل اسم الصفحة إلى المساعد حتى يربط إجابته بها.</p>
+        <p className="text-sm leading-7 text-muted">من زر AVORA AI العائم، إذا فتحته من داخل صفحة أخرى، ينتقل اسم الصفحة إلى المساعد حتى يربط إجابته بها.</p>
       </section>
       <section className="card space-y-2">
         <h2 className="flex items-center gap-2 font-bold"><SunMoon size={18} className="text-accent" /> أزرار عامة مهمة</h2>
-        <p className="text-sm leading-7 text-muted">زر الشمس أو القمر يبدّل بين المظهر الفاتح والداكن. زر الترس يفتح الإعدادات. زر SKOVA AI العائم يفتح المساعد، ويمكن سحبه إلى مكان يناسبك.</p>
+        <p className="text-sm leading-7 text-muted">زر الشمس أو القمر يبدّل بين المظهر الفاتح والداكن. زر الترس يفتح الإعدادات. زر AVORA AI العائم يفتح المساعد، ويمكن سحبه إلى مكان يناسبك.</p>
         <p className="flex items-start gap-2 text-sm leading-7 text-muted"><ShieldCheck size={17} className="mt-1 shrink-0 text-accent" /> بياناتك محفوظة على جهازك؛ من الإعدادات صدّر نسخة احتياطية بشكل دوري، خصوصاً قبل تغيير الجهاز أو المتصفح.</p>
       </section>
       <p className="text-center text-xs text-muted">هذا الدليل يشرح الصفحات الحالية، ويمكنك الرجوع إليه في أي وقت من «كل الميزات».</p>
