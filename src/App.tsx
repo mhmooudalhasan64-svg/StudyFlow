@@ -29,6 +29,7 @@ const TimerPage = lazy(() => import('./pages/TimerPage'));
 const Exams = lazy(() => import('./pages/Exams'));
 const Quiz = lazy(() => import('./pages/Quiz'));
 const Assistant = lazy(() => import('./pages/Assistant'));
+const YouTubeStudy = lazy(() => import('./pages/YouTubeStudy'));
 const Stats = lazy(() => import('./pages/Stats'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const Bac = lazy(() => import('./pages/Bac'));
@@ -58,6 +59,7 @@ const PAGE_HINTS: Partial<Record<Route, string>> = {
   cards: 'افتح البطاقة وحاول تذكر الإجابة قبل إظهار الوجه الآخر.',
   stats: 'تعرض الإحصاءات ما سجلته فعلياً من جلسات وإجابات.',
   assistant: 'اكتب سؤالك أو أرفق ملفاً. إذا فتحت المساعد من صفحة أخرى فسيعرف سياقها.',
+  youtube: 'أدخل رابط فيديو، ثم أضف نص الترجمة لتسأل AVORA عن محتواه.',
   today: 'هذه لوحة مختصرة تجمع مهامك ومراجعاتك ووقت تركيزك لهذا اليوم.',
 };
 
@@ -80,6 +82,7 @@ const SEARCH_PAGES: { route: Route; label: string; keywords: string }[] = [
   { route: 'reports', label: 'التقارير', keywords: 'ملخص دراسة' },
   { route: 'achievements', label: 'الإنجازات', keywords: 'أوسمة تحفيز' },
   { route: 'assistant', label: 'AVORA AI', keywords: 'مساعد ذكي شرح سؤال' },
+  { route: 'youtube', label: 'فيديوهات YouTube', keywords: 'يوتيوب فيديو ترجمة تفريغ تنزيل تحليل شرح' },
   { route: 'settings', label: 'الإعدادات', keywords: 'صوت مظهر نسخ احتياطي مواد' },
   { route: 'help', label: 'شرح أزرار التطبيق', keywords: 'دليل مساعدة تعليمات' },
 ];
@@ -109,6 +112,7 @@ const PAGES: Record<Route, ComponentType> = {
   exams: Exams,
   quiz: Quiz,
   assistant: Assistant,
+  youtube: YouTubeStudy,
   stats: Stats,
   settings: SettingsPage,
   bac: Bac,
