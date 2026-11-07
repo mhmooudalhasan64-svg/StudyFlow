@@ -53,10 +53,10 @@ function PartnershipIdentity() {
           <span className="mt-4 inline-flex rounded-full border border-sky-200/25 bg-sky-100/10 px-3 py-1 text-[10px] font-bold text-sky-100">تجربة التعلم</span>
         </article>
         <article className="rounded-2xl border border-violet-300/25 bg-gradient-to-b from-violet-400/15 to-violet-950/20 p-4 text-center">
-          <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-violet-200/25 bg-violet-100/10 shadow-lg"><img src="/logo.png" alt="رمز SKOVA" className="h-10 w-10 rounded-xl object-cover" /></span>
-          <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">SKOVA</p>
-          <p className="mt-1 text-sm font-bold text-violet-100">سكوڤا · الذكاء التعليمي</p>
-          <p className="mt-3 text-xs leading-6 text-slate-200">الوجه التفاعلي الذكي للمنظومة: المساعد الدراسي والمعلم الصوتي، مع هوية قابلة للتوسع نحو الخدمات والمنتجات التعليمية.</p>
+          <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-violet-200/25 bg-violet-100/10 shadow-lg"><img src="/icon.svg" alt="رمز AVORA" className="h-10 w-10 rounded-xl object-cover" /></span>
+          <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">AVORA</p>
+          <p className="mt-1 text-sm font-bold text-violet-100">أفورا · الذكاء التعليمي</p>
+          <p className="mt-3 text-xs leading-6 text-slate-200">المساعد الذكي المستقل داخل VAYORA: يشرح الدروس، يجيب عن الأسئلة، ويدعم التفاعل النصي والصوتي.</p>
           <span className="mt-4 inline-flex rounded-full border border-violet-200/25 bg-violet-100/10 px-3 py-1 text-[10px] font-bold text-violet-100">المساعدة الذكية</span>
         </article>
       </div>
@@ -66,16 +66,16 @@ function PartnershipIdentity() {
         <div className="grid gap-2 sm:grid-cols-3">
           <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-slate-100">01 · AUREVON</p><p className="mt-1 text-[11px] leading-5 text-slate-300">تحدد الرؤية وتبني الأساس التقني</p></div>
           <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-sky-100">02 · VAYORA</p><p className="mt-1 text-[11px] leading-5 text-slate-300">تحوّل التقنية إلى رحلة تعلم منظمة</p></div>
-          <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-violet-100">03 · SKOVA</p><p className="mt-1 text-[11px] leading-5 text-slate-300">تضيف التفاعل والمساندة الذكية</p></div>
+          <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-violet-100">03 · AVORA</p><p className="mt-1 text-[11px] leading-5 text-slate-300">تضيف التفاعل والمساندة الذكية</p></div>
         </div>
-        <p className="mt-4 text-center text-sm font-extrabold tracking-wide">AUREVON تقود · VAYORA تجمع · SKOVA تساعد</p>
+        <p className="mt-4 text-center text-sm font-extrabold tracking-wide">AUREVON تقود · VAYORA تجمع · AVORA تساعد</p>
         <p className="mt-1 text-center text-[10px] text-slate-400">هوية مستقلة لكل علامة، وتجربة متناسقة للمستخدم.</p>
       </div>
 
       <div className="relative grid gap-3 sm:grid-cols-2">
         <a href="#/assistant" className="group flex items-center gap-3 rounded-2xl border border-violet-300/20 bg-violet-300/[0.07] p-4 transition hover:border-violet-200/50 hover:bg-violet-300/10">
           <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-violet-200/10 text-violet-100"><BrainCircuit size={22} /></span>
-          <span className="min-w-0 flex-1"><span className="block text-sm font-bold">جرّب SKOVA AI</span><span className="mt-1 block text-[11px] text-slate-300">انتقل إلى المساعد الدراسي الذكي</span></span>
+          <span className="min-w-0 flex-1"><span className="block text-sm font-bold">جرّب AVORA AI</span><span className="mt-1 block text-[11px] text-slate-300">انتقل إلى المساعد الدراسي الذكي</span></span>
           <span className="text-violet-200 transition group-hover:-translate-x-1">←</span>
         </a>
         <a href="#/home" className="group flex items-center gap-3 rounded-2xl border border-sky-300/20 bg-sky-300/[0.07] p-4 transition hover:border-sky-200/50 hover:bg-sky-300/10">
@@ -109,7 +109,7 @@ export default function About() {
           <h2 className="mt-3 text-lg font-extrabold">مساحة واحدة لرحلتك التعليمية</h2>
           <p className="mt-2 text-sm leading-7 text-muted">من تنظيم الوقت إلى فهم الدروس، ومن التدريب إلى قياس التقدم؛ صُممت VAYORA لتجمع احتياجات التعلم اليومية ضمن تجربة سهلة ومتناسقة.</p>
         </section>
-        <p className="text-center text-xs font-semibold text-muted">AUREVON × VAYORA × SKOVA</p>
+        <p className="text-center text-xs font-semibold text-muted">AUREVON × VAYORA · Powered by AVORA</p>
       </div>
     </div>
   );
