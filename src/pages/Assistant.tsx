@@ -195,9 +195,13 @@ export default function Assistant() {
           <option value="explain">اشرح ببساطة مع مثال</option>
           <option value="steps">حل خطوة بخطوة</option>
           <option value="summary">لخّص في نقاط</option>
-          <option value="coach">درّبني (أسئلة موجِّهة بدل الحل)</option>
+          <option value="coach">درّبني بأسئلة موجِّهة</option>
+          <option value="diagnose">شخّص نقطة ضعفي أولاً</option>
+          <option value="exam_coach">مدرّب الامتحان</option>
+          <option value="mastery">مسار الإتقان التفاعلي</option>
           <option value="voice_teacher">المدرّس الصوتي</option>
         </select>
+        {style === 'mastery' && <p className="rounded-xl border border-accent/20 bg-accent/5 px-3 py-2 text-xs leading-6 text-muted">سيعمل SKOVA معك بهدف واحد في كل مرة: تشخيص سريع، شرح متدرّج، تدريب، ثم تحقق من الإتقان قبل الانتقال.</p>}
       </div>
 
       <div className="card mb-3 min-h-[40vh] space-y-3" aria-live="polite">

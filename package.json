@@ -10,9 +10,13 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "icons": "pwa-assets-generator"
+    "icons": "pwa-assets-generator",
+    "start:railway": "tsx server.ts"
   },
   "dependencies": {
+    "@capacitor/core": "^6.2.0",
+    "@capacitor-community/speech-recognition": "^6.0.1",
+    "@capacitor-community/text-to-speech": "^4.1.1",
     "dexie": "^4.0.8",
     "lucide-react": "^0.460.0",
     "mammoth": "^1.8.0",
@@ -20,7 +24,9 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "read-excel-file": "^5.8.5",
-    "zustand": "^5.0.0"
+    "zustand": "^5.0.0",
+    "redis": "^5.8.3",
+    "tsx": "^4.20.6"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
@@ -28,8 +34,8 @@
     "@testing-library/react": "^16.0.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "@vite-pwa/assets-generator": "^0.2.6",
     "@vitejs/plugin-react": "^4.3.3",
+    "@vite-pwa/assets-generator": "^0.2.6",
     "autoprefixer": "^10.4.20",
     "fake-indexeddb": "^6.0.0",
     "jsdom": "^25.0.1",

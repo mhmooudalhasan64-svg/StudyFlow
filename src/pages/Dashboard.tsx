@@ -244,20 +244,37 @@ export default function Dashboard() {
           </p>
         </div>
       </a>
-      <a href="#/about" className="group block overflow-hidden rounded-3xl border border-accent/25 bg-gradient-to-l from-accent/10 via-card/90 to-accent2/10 p-4 shadow-lg shadow-accent2/10 transition hover:-translate-y-0.5 hover:border-accent/50 sm:p-5" aria-label="التعرّف على شراكة AUREVON ومتجر سكوڤا">
-        <div className="mb-3 text-[10px] font-bold tracking-wider text-accent sm:text-xs">شراكة وتعاون</div>
-        <div className="flex items-center justify-between gap-2 sm:gap-4">
-          <div className="flex min-w-0 flex-1 items-center justify-center gap-2 rounded-2xl border border-line/70 bg-black px-2 py-3 text-white sm:gap-3 sm:px-3">
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-white/70 text-lg font-black">A</span>
-            <span className="min-w-0 text-center text-sm font-black tracking-[0.12em] sm:text-base">AUREVON</span>
+      <a href="#/about" className="group relative block overflow-hidden rounded-3xl border border-sky-400/20 bg-gradient-to-br from-[#0B172A] via-[#142945] to-[#25254B] p-5 text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:border-sky-300/40 sm:p-6" aria-label="اكتشف منظومة AUREVON وVAYORA وSKOVA">
+        <div className="pointer-events-none absolute -left-12 -top-16 h-40 w-40 rounded-full bg-sky-400/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-16 -right-10 h-40 w-40 rounded-full bg-violet-400/10 blur-3xl" />
+        <div className="relative">
+          <div className="text-center">
+            <p className="text-[9px] font-black tracking-[0.28em] text-sky-200/75" dir="ltr">THE AUREVON ECOSYSTEM</p>
+            <h2 className="mt-2 text-lg font-black sm:text-xl">منظومة تعليمية بتكامل أذكى</h2>
+            <p className="mt-1 text-xs text-slate-300">شركة تقود، منصة تجمع، وذكاء يساند رحلتك.</p>
           </div>
-          <span className="shrink-0 text-xl font-black text-accent">×</span>
-          <div className="flex min-w-0 flex-1 items-center justify-center gap-2 rounded-2xl border border-line/70 bg-card px-2 py-3 sm:gap-3 sm:px-3">
-            <img src="/logo.png" alt="شعار متجر سكوڤا" width={40} height={40} className="h-9 w-9 shrink-0 rounded-xl object-cover" />
-            <span className="text-sm font-black tracking-widest sm:text-base" dir="ltr">SKOVA</span>
+          <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.06] px-1.5 py-3 text-center backdrop-blur-sm sm:px-3">
+              <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-white/15 bg-white/10 text-sm font-black">A</span>
+              <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">AUREVON</p>
+              <p className="mt-1 text-[9px] text-slate-300 sm:text-[10px]">الرؤية والتطوير</p>
+            </div>
+            <div className="rounded-2xl border border-sky-300/25 bg-sky-300/10 px-1.5 py-3 text-center sm:px-3">
+              <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-sky-100/20 bg-white/10"><img src="/icon.svg" alt="" className="h-6 w-6" /></span>
+              <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">VAYORA</p>
+              <p className="mt-1 text-[9px] text-sky-100 sm:text-[10px]">تجربة التعلم</p>
+            </div>
+            <div className="rounded-2xl border border-violet-300/20 bg-violet-300/10 px-1.5 py-3 text-center sm:px-3">
+              <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-violet-100/20 bg-white/10"><img src="/logo.png" alt="" className="h-7 w-7 rounded-lg object-cover" /></span>
+              <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">SKOVA</p>
+              <p className="mt-1 text-[9px] text-violet-100 sm:text-[10px]">المساعدة الذكية</p>
+            </div>
           </div>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-white/10 pt-3 text-[10px] font-semibold text-slate-200 sm:text-xs">
+            <span>AUREVON تقود</span><span className="text-slate-500">·</span><span>VAYORA تجمع</span><span className="text-slate-500">·</span><span>SKOVA تساعد</span>
+          </div>
+          <p className="mt-2 text-center text-[10px] font-bold text-sky-200 transition group-hover:text-white">اكتشف كيف تعمل المنظومة معاً ←</p>
         </div>
-        <p className="mt-3 text-center text-xs leading-relaxed text-muted sm:text-sm">AUREVON × SKOVA — شراكة تجمع الابتكار والتقنية.</p>
       </a>
         </div>
       </details>

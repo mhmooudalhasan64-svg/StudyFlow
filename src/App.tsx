@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ComponentType } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState, type ComponentType } from 'react';
 import {
   Bot,
   Phone,
@@ -13,38 +13,39 @@ import {
   WifiOff,
   Search,
   X,
-  SlidersHorizontal,
   HelpCircle,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useApp } from './store';
 import { useHashRoute, type Route } from './lib/route';
 import Dashboard from './pages/Dashboard';
 import About, { Intro } from './pages/About';
 import { AlarmRinger } from './components/Alarms';
-import VoiceTeacher from './components/VoiceTeacher';
 import { primeAudio } from './lib/sound';
-import Planner from './pages/Planner';
-import TimerPage from './pages/TimerPage';
-import Exams from './pages/Exams';
-import Quiz from './pages/Quiz';
-import Assistant from './pages/Assistant';
-import Stats from './pages/Stats';
-import SettingsPage from './pages/SettingsPage';
-import Bac from './pages/Bac';
-import Library from './pages/Library';
-import Curriculum from './pages/Curriculum';
-import Review from './pages/Review';
-import Cards from './pages/Cards';
-import Simulator from './pages/Simulator';
-import Calculator from './pages/Calculator';
-import Achievements from './pages/Achievements';
-import Reports from './pages/Reports';
-import More from './pages/More';
-import MindMap from './pages/MindMap';
-import Help from './pages/Help';
-import Today from './pages/Today';
 
-type NavItem = { route: Route; label: string; Icon: ComponentType<{ size?: number }> };
+const VoiceTeacher = lazy(() => import('./components/VoiceTeacher'));
+const Planner = lazy(() => import('./pages/Planner'));
+const TimerPage = lazy(() => import('./pages/TimerPage'));
+const Exams = lazy(() => import('./pages/Exams'));
+const Quiz = lazy(() => import('./pages/Quiz'));
+const Assistant = lazy(() => import('./pages/Assistant'));
+const Stats = lazy(() => import('./pages/Stats'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const Bac = lazy(() => import('./pages/Bac'));
+const Library = lazy(() => import('./pages/Library'));
+const Curriculum = lazy(() => import('./pages/Curriculum'));
+const Review = lazy(() => import('./pages/Review'));
+const Cards = lazy(() => import('./pages/Cards'));
+const Simulator = lazy(() => import('./pages/Simulator'));
+const Calculator = lazy(() => import('./pages/Calculator'));
+const Achievements = lazy(() => import('./pages/Achievements'));
+const Reports = lazy(() => import('./pages/Reports'));
+const More = lazy(() => import('./pages/More'));
+const MindMap = lazy(() => import('./pages/MindMap'));
+const Help = lazy(() => import('./pages/Help'));
+const Today = lazy(() => import('./pages/Today'));
+
+type NavItem = { route: Route; label: string; Icon: LucideIcon };
 
 const PAGE_HINTS: Partial<Record<Route, string>> = {
   home: 'هذه الصفحة تجمع ملخص يومك. ابدأ من زر جلسة التركيز أو افتح لوحة يومي الدراسي.',
@@ -148,9 +149,6 @@ export default function App() {
   const theme = useApp((s) => s.settings.theme);
   const updateSettings = useApp((s) => s.updateSettings);
   const [introDone, setIntroDone] = useState(false);
-  const [simpleMode, setSimpleMode] = useState(() => {
-    try { return localStorage.getItem('studyflow-ui-mode') !== 'advanced'; } catch { return true; }
-  });
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [hintVisible, setHintVisible] = useState(false);
@@ -160,8 +158,8 @@ export default function App() {
   const ignoreAssistantClick = useRef(false);
   const route = useHashRoute();
   const online = useOnline();
-  const visibleNav = simpleMode ? NAV.filter((item) => ['home', 'plan', 'timer', 'more'].includes(item.route)) : NAV;
-  const visibleMobileNav = simpleMode ? MOBILE_NAV.filter((item) => ['home', 'plan', 'timer', 'more'].includes(item.route)) : MOBILE_NAV;
+  const visibleNav = NAV;
+  const visibleMobileNav = MOBILE_NAV;
   const searchResults = SEARCH_PAGES.filter((item) => (item.label + ' ' + item.keywords).toLowerCase().includes(searchText.trim().toLowerCase()));
 
   useEffect(() => {
@@ -180,15 +178,6 @@ export default function App() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
-
-  const toggleMode = () => {
-    setSimpleMode((current) => {
-      const next = !current;
-      try { localStorage.setItem('studyflow-ui-mode', next ? 'simple' : 'advanced'); } catch { /* التبديل يعمل لهذه الجلسة */ }
-      window.dispatchEvent(new Event('studyflow:mode-change'));
-      return next;
-    });
-  };
 
   useEffect(() => {
     void init();
@@ -319,7 +308,7 @@ export default function App() {
           <span className="text-[9px] text-white/75">محادثة نصية</span>
         </span>
       </a>
-      <VoiceTeacher open={skovaCallOpen} onClose={() => setSkovaCallOpen(false)} />
+      <Suspense fallback={null}><VoiceTeacher open={skovaCallOpen} onClose={() => setSkovaCallOpen(false)} /></Suspense>
       {/* الشريط الجانبي (شاشات كبيرة) */}
       <aside className="app-sidebar sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
         <Brand />
@@ -342,7 +331,7 @@ export default function App() {
         </nav>
         <div className="mt-auto flex items-center gap-2 pt-3">
           {!online && <OfflineChip />}
-          <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} simpleMode={simpleMode} onToggleMode={toggleMode} onSearch={() => setSearchOpen(true)} />
+          <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} onSearch={() => setSearchOpen(true)} />
         </div>
       </aside>
 
@@ -352,7 +341,7 @@ export default function App() {
           <Brand />
           <div className="flex items-center gap-1">
             {!online && <OfflineChip />}
-            <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} simpleMode={simpleMode} onToggleMode={toggleMode} onSearch={() => setSearchOpen(true)} />
+            <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} onSearch={() => setSearchOpen(true)} />
           </div>
         </header>
 
@@ -364,12 +353,12 @@ export default function App() {
               <button type="button" className="btn btn-ghost !px-2 !py-1 text-xs" onClick={() => { setHintVisible(false); try { localStorage.setItem('studyflow-hint-' + route, '1'); } catch { /* لا يؤثر على الاستخدام */ } }}>فهمت</button>
             </div>
           )}
-          <Page />
+          <Suspense fallback={<div className="grid min-h-[40vh] place-items-center text-muted" role="status">جارٍ تحميل الصفحة…</div>}><Page /></Suspense>
         </main>
 
         {/* شريط التنقل السفلي (جوال) */}
         <nav
-          className={`app-mobile-nav fixed inset-x-0 bottom-0 z-20 grid ${simpleMode ? "grid-cols-4" : "grid-cols-5"} border-t border-line/70 bg-base/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden`}
+          className="app-mobile-nav fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-line/70 bg-base/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
           aria-label="التنقل الرئيسي"
         >
           {visibleMobileNav.map(({ route: r, label, Icon }) => {
@@ -409,16 +398,16 @@ function Brand() {
       <span className="flex flex-col leading-tight">
         <span className="text-lg font-extrabold tracking-[0.08em]" dir="ltr">VAYORA</span>
         <span className="text-[10px] text-muted">فايورا · منصة تعليمية ذكية</span>
+        <span className="mt-0.5 text-[8px] font-bold tracking-[0.14em] text-accent/80" dir="ltr">AN AUREVON COMPANY</span>
       </span>
     </a>
   );
 }
 
-function HeaderButtons({ theme, onToggle, simpleMode, onToggleMode, onSearch }: { theme: 'dark' | 'light'; onToggle: () => void; simpleMode: boolean; onToggleMode: () => void; onSearch: () => void }) {
+function HeaderButtons({ theme, onToggle, onSearch }: { theme: 'dark' | 'light'; onToggle: () => void; onSearch: () => void }) {
   return (
     <>
       <button type="button" onClick={onSearch} aria-label="البحث عن ميزة" title="البحث عن ميزة (Ctrl + K)" className="rounded-xl border border-line bg-card/60 p-2.5 text-muted transition hover:border-accent hover:text-main"><Search size={18} /></button>
-      <button type="button" onClick={onToggleMode} aria-label={simpleMode ? 'التبديل إلى الوضع المتقدم' : 'التبديل إلى الوضع البسيط'} title={simpleMode ? 'الوضع البسيط — اضغط لإظهار كل الأزرار' : 'الوضع المتقدم — اضغط لتبسيط الأزرار'} className={`rounded-xl border border-line bg-card/60 p-2.5 transition hover:border-accent hover:text-main ${simpleMode ? 'text-accent' : 'text-muted'}`}><SlidersHorizontal size={18} /></button>
       <button
         type="button"
         onClick={onToggle}
