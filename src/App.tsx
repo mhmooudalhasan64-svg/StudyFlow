@@ -226,7 +226,7 @@ export default function App() {
           </section>
         </div>
       )}
-      {route !== 'assistant' && (
+      {route !== 'assistant' && route !== 'home' && (
       <div className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-30 flex flex-row-reverse items-center gap-2 md:bottom-6 md:right-6">
         <button
           type="button"
