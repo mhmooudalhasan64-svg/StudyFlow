@@ -50,7 +50,7 @@ function pickProvider(raw: Record<string, string | undefined>): Provider | null 
       name: 'Groq',
       key: env.GROQ_API_KEY,
       endpoint: 'https://api.groq.com/openai/v1/chat/completions',
-      model: model || 'llama-3.3-70b-versatile',
+      model: model || 'openai/gpt-oss-120b',
     };
   if (env.OPENROUTER_API_KEY)
     return {
