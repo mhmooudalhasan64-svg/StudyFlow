@@ -2,33 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-/* هوية VAYORA: تعليم عصري بألوان معرفية هادئة */
+/* هوية VAYORA الفاخرة: أسود فحمي وفضي معدني */
 :root {
-  --base: 248 248 250;
-  --card: 255 255 255;
-  --main: 18 18 22;
-  --muted: 105 105 118;
-  --line: 222 222 230;
-  --accent: 28 28 32;
-  --accent2: 124 58 237;
-  --accent3: 37 99 235;
-  --onaccent: 255 255 255;
-  --ok: 5 150 105;
-  --bad: 220 38 38;
+  color-scheme: dark;
+  --base: 8 9 11;
+  --card: 19 20 23;
+  --main: 238 240 243;
+  --muted: 157 161 168;
+  --line: 66 69 75;
+  --accent: 166 170 178;
+  --accent2: 204 208 215;
+  --accent3: 232 235 240;
+  --onaccent: 9 10 12;
+  --ok: 160 190 174;
+  --bad: 207 139 139;
 }
 
 .dark {
-  --base: 8 8 11;
-  --card: 18 18 23;
-  --main: 245 245 248;
-  --muted: 160 160 174;
-  --line: 55 55 66;
-  --accent: 245 245 248;
-  --accent2: 168 85 247;
-  --accent3: 56 189 248;
-  --onaccent: 10 10 13;
-  --ok: 52 211 153;
-  --bad: 251 113 133;
+  --base: 6 7 9;
+  --card: 17 18 21;
+  --main: 238 240 243;
+  --muted: 157 161 168;
+  --line: 62 65 71;
+  --accent: 166 170 178;
+  --accent2: 204 208 215;
+  --accent3: 232 235 240;
+  --onaccent: 9 10 12;
+  --ok: 160 190 174;
+  --bad: 207 139 139;
 }
 
 html,
@@ -41,15 +42,15 @@ body {
   @apply bg-base text-main antialiased;
   font-family: Tajawal, 'Segoe UI', Tahoma, 'Noto Sans Arabic', system-ui, sans-serif;
   background-image:
-    radial-gradient(60rem 30rem at 85% -10%, rgb(var(--accent3) / 0.12), transparent 60%),
-    radial-gradient(50rem 30rem at 0% 110%, rgb(var(--accent2) / 0.14), transparent 60%);
+    radial-gradient(60rem 30rem at 85% -10%, rgb(var(--accent3) / 0.09), transparent 60%),
+    radial-gradient(50rem 30rem at 0% 110%, rgb(var(--accent) / 0.07), transparent 60%);
   background-attachment: fixed;
   -webkit-tap-highlight-color: transparent;
 }
 
 @layer components {
   .card {
-    @apply rounded-2xl border border-line/90 bg-card/75 p-4 shadow-lg shadow-accent2/10 backdrop-blur-md;
+    @apply rounded-2xl border border-line/90 bg-card/75 p-4 shadow-lg shadow-accent/10 backdrop-blur-md;
   }
 
   .btn {
@@ -57,7 +58,7 @@ body {
   }
 
   .btn-primary {
-    @apply bg-gradient-to-l from-accent to-accent2 text-onaccent shadow-lg shadow-accent2/30 hover:brightness-110;
+    @apply bg-gradient-to-l from-accent to-accent2 text-onaccent shadow-lg shadow-accent/25 hover:brightness-110;
   }
 
   .btn-ghost {
@@ -117,7 +118,7 @@ aside nav a[aria-current='page']::before {
   inset-inline-start: -1rem;
   width: 3px;
   border-radius: 999px;
-  background: linear-gradient(to bottom, rgb(var(--accent3)), rgb(var(--accent2)));
+  background: linear-gradient(to bottom, rgb(var(--accent3)), rgb(var(--accent));
   content: '';
 }
 
@@ -193,7 +194,7 @@ aside nav a[aria-current='page']::before {
   place-items: center;
   border: 1px solid rgb(var(--accent2) / 0.2);
   border-radius: 0.95rem;
-  background: linear-gradient(145deg, rgb(var(--accent3) / 0.12), rgb(var(--accent2) / 0.12));
+  background: linear-gradient(145deg, rgb(var(--accent3) / 0.12), rgb(var(--accent) / 0.12));
   color: rgb(var(--accent2));
 }
 
@@ -226,7 +227,7 @@ aside nav a[aria-current='page']::before {
 }
 .app-sidebar nav a[aria-current='page'] svg,
 .app-mobile-nav a[aria-current='page'] svg {
-  color: rgb(var(--accent3));
+  color: rgb(var(--accent2));
   opacity: 1;
   filter: drop-shadow(0 2px 5px rgb(var(--accent3) / 0.24));
 }
@@ -305,7 +306,7 @@ body {
   width: 1.7rem;
   height: 3px;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgb(var(--accent3)), rgb(var(--accent2)));
+  background: linear-gradient(90deg, rgb(var(--accent3)), rgb(var(--accent));
   content: '';
 }
 .app-main {
@@ -394,4 +395,23 @@ input, select, textarea {
 .feature-icon-slate { --feature-rgb: 100 116 139; }
 @media (prefers-reduced-motion: reduce) {
   .feature-icon, .group:hover .feature-icon { transition: none; transform: none; }
+}
+
+
+/* Monochrome luxury override: remove violet/blue accents from every feature tile. */
+.feature-icon-cyan, .feature-icon-blue, .feature-icon-violet, .feature-icon-teal,
+.feature-icon-indigo, .feature-icon-amber, .feature-icon-emerald, .feature-icon-orange,
+.feature-icon-sky, .feature-icon-yellow, .feature-icon-purple, .feature-icon-rose,
+.feature-icon-slate {
+  --feature-rgb: 190 195 203;
+}
+.feature-icon {
+  border-color: rgb(190 195 203 / 0.24);
+  color: rgb(218 221 226);
+  background: linear-gradient(145deg, rgb(190 195 203 / 0.15), rgb(190 195 203 / 0.045));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 5px 14px rgb(190 195 203 / 0.055);
+}
+.group:hover .feature-icon {
+  background: linear-gradient(145deg, rgb(210 214 220 / 0.2), rgb(190 195 203 / 0.075));
+  box-shadow: 0 8px 18px rgb(190 195 203 / 0.09);
 }
