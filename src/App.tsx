@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState, type ComponentType } from 'react';
+import { lazy, Suspense, useEffect, useState, type ComponentType } from 'react';
 import {
   Bot,
   Phone,
@@ -153,9 +153,6 @@ export default function App() {
   const [searchText, setSearchText] = useState('');
   const [hintVisible, setHintVisible] = useState(false);
   const [avoraCallOpen, setAvoraCallOpen] = useState(false);
-  const [assistantPosition, setAssistantPosition] = useState<{ left: number; top: number } | null>(null);
-  const assistantDrag = useRef<{ pointerId: number; x: number; y: number; left: number; top: number; moved: boolean } | null>(null);
-  const ignoreAssistantClick = useRef(false);
   const route = useHashRoute();
   const online = useOnline();
   const visibleNav = NAV;
@@ -229,61 +226,14 @@ export default function App() {
           </section>
         </div>
       )}
-      <button
+      {/* مجموعة أزرار عائمة موحّدة: ترتيب ثابت ومسافة آمنة فوق شريط الجوال */}
+      <div className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-30 flex flex-col items-end gap-3 md:bottom-6 md:right-6">
+        <button
           type="button"
-          aria-label="ابدأ مكالمة صوتية مع المعلم AVORA، واسحب الزر لتغيير مكانه"
-          title="مكالمة المعلم الصوتية — اضغط للاتصال أو اسحب الزر لتحريكه"
-          style={assistantPosition ? { left: assistantPosition.left, top: assistantPosition.top } : undefined}
-          onPointerDown={(event) => {
-            if (event.button !== 0) return;
-            const rect = event.currentTarget.getBoundingClientRect();
-            assistantDrag.current = {
-              pointerId: event.pointerId,
-              x: event.clientX,
-              y: event.clientY,
-              left: rect.left,
-              top: rect.top,
-              moved: false,
-            };
-            event.currentTarget.setPointerCapture(event.pointerId);
-          }}
-          onPointerMove={(event) => {
-            const drag = assistantDrag.current;
-            if (!drag || drag.pointerId !== event.pointerId) return;
-            const dx = event.clientX - drag.x;
-            const dy = event.clientY - drag.y;
-            if (!drag.moved && Math.hypot(dx, dy) < 6) return;
-            drag.moved = true;
-            const rect = event.currentTarget.getBoundingClientRect();
-            setAssistantPosition({
-              left: Math.max(8, Math.min(window.innerWidth - rect.width - 8, drag.left + dx)),
-              top: Math.max(8, Math.min(window.innerHeight - rect.height - 8, drag.top + dy)),
-            });
-          }}
-          onPointerUp={(event) => {
-            const drag = assistantDrag.current;
-            if (!drag || drag.pointerId !== event.pointerId) return;
-            if (drag.moved) {
-              const rect = event.currentTarget.getBoundingClientRect();
-              const position = {
-                left: Math.max(8, Math.min(window.innerWidth - rect.width - 8, drag.left + event.clientX - drag.x)),
-                top: Math.max(8, Math.min(window.innerHeight - rect.height - 8, drag.top + event.clientY - drag.y)),
-              };
-              setAssistantPosition(position);
-              // يحفظ الموقع أثناء الجلسة؛ يعود بجانب زر المساعد عند إعادة فتح التطبيق
-              ignoreAssistantClick.current = true;
-            }
-            assistantDrag.current = null;
-          }}
-          onPointerCancel={() => { assistantDrag.current = null; }}
-          onClick={() => {
-            if (ignoreAssistantClick.current) {
-              ignoreAssistantClick.current = false;
-              return;
-            }
-            setAvoraCallOpen(true);
-          }}
-          className={`fixed z-30 inline-flex touch-none select-none items-center gap-2 rounded-full border border-sky-300/30 bg-gradient-to-l from-[#17283d] via-[#194b66] to-[#28516a] px-3 py-2 text-white shadow-xl shadow-slate-950/25 transition hover:border-sky-200/60 hover:brightness-110 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-300 cursor-grab active:cursor-grabbing ${assistantPosition ? '' : 'bottom-24 right-36 md:bottom-6 md:right-36'}`}
+          aria-label="بدء مكالمة صوتية مع المعلم AVORA"
+          title="مكالمة المعلم الصوتية"
+          onClick={() => setAvoraCallOpen(true)}
+          className="inline-flex items-center gap-2 rounded-full border border-sky-300/30 bg-gradient-to-l from-[#17283d] via-[#194b66] to-[#28516a] px-3 py-2 text-white shadow-xl shadow-slate-950/25 transition hover:border-sky-200/60 hover:brightness-110 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-300"
         >
           <span className="relative grid h-7 w-7 place-items-center rounded-full border border-sky-200/35 bg-sky-300/15 text-sky-100">
             <Phone size={16} />
@@ -293,21 +243,22 @@ export default function App() {
             <span className="text-xs font-extrabold tracking-wide">مكالمة المعلم</span>
             <span className="text-[9px] text-white/75">AVORA الصوتي</span>
           </span>
-      </button>
-      <a
-        href="#/assistant"
-        aria-label="فتح المساعد الدراسي النصي"
-        title="المساعد الدراسي — محادثة نصية مع AVORA"
-        className="fixed bottom-24 right-4 z-30 inline-flex items-center gap-2 rounded-full border border-violet-300/30 bg-gradient-to-l from-[#20243a] via-[#343252] to-[#30435c] px-3 py-2 text-white shadow-xl shadow-slate-950/25 transition hover:border-violet-200/60 hover:brightness-110 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-300 md:bottom-6 md:right-6"
-      >
-        <span className="grid h-7 w-7 place-items-center rounded-full border border-violet-200/35 bg-violet-300/15 text-violet-100">
-          <Bot size={16} />
-        </span>
-        <span className="flex flex-col text-right leading-tight">
-          <span className="text-xs font-extrabold tracking-wide">المساعد</span>
-          <span className="text-[9px] text-white/75">محادثة نصية</span>
-        </span>
-      </a>
+        </button>
+        <a
+          href="#/assistant"
+          aria-label="فتح المساعد الدراسي النصي"
+          title="المساعد الدراسي — محادثة نصية مع AVORA"
+          className="inline-flex items-center gap-2 rounded-full border border-violet-300/30 bg-gradient-to-l from-[#20243a] via-[#343252] to-[#30435c] px-3 py-2 text-white shadow-xl shadow-slate-950/25 transition hover:border-violet-200/60 hover:brightness-110 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-300"
+        >
+          <span className="grid h-7 w-7 place-items-center rounded-full border border-violet-200/35 bg-violet-300/15 text-violet-100">
+            <Bot size={16} />
+          </span>
+          <span className="flex flex-col text-right leading-tight">
+            <span className="text-xs font-extrabold tracking-wide">المساعد</span>
+            <span className="text-[9px] text-white/75">محادثة نصية</span>
+          </span>
+        </a>
+      </div>
       <Suspense fallback={null}><VoiceTeacher open={avoraCallOpen} onClose={() => setAvoraCallOpen(false)} /></Suspense>
       {/* الشريط الجانبي (شاشات كبيرة) */}
       <aside className="app-sidebar sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
