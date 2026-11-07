@@ -283,11 +283,11 @@ export default function App() {
             }
             setAvoraCallOpen(true);
           }}
-          className={`fixed z-30 inline-flex touch-none select-none items-center gap-2 rounded-full border border-slate-300/25 bg-gradient-to-l from-[#202329] via-[#41464f] to-[#626975] px-3 py-2 text-white shadow-xl shadow-slate-950/25 transition hover:brightness-110 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-300 cursor-grab active:cursor-grabbing ${assistantPosition ? '' : 'bottom-24 right-36 md:bottom-6 md:right-36'}`}
+          className={`fixed z-30 inline-flex touch-none select-none items-center gap-2 rounded-full border border-sky-300/30 bg-gradient-to-l from-[#17283d] via-[#194b66] to-[#28516a] px-3 py-2 text-white shadow-xl shadow-slate-950/25 transition hover:border-sky-200/60 hover:brightness-110 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-300 cursor-grab active:cursor-grabbing ${assistantPosition ? '' : 'bottom-24 right-36 md:bottom-6 md:right-36'}`}
         >
-          <span className="relative grid h-7 w-7 place-items-center rounded-full border border-slate-200/30 bg-white/10 text-slate-100">
+          <span className="relative grid h-7 w-7 place-items-center rounded-full border border-sky-200/35 bg-sky-300/15 text-sky-100">
             <Phone size={16} />
-            <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#41464f] bg-slate-200" />
+            <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#194b66] bg-cyan-300" />
           </span>
           <span className="flex flex-col text-right leading-tight">
             <span className="text-xs font-extrabold tracking-wide">مكالمة المعلم</span>
@@ -298,9 +298,9 @@ export default function App() {
         href="#/assistant"
         aria-label="فتح المساعد الدراسي النصي"
         title="المساعد الدراسي — محادثة نصية مع AVORA"
-        className="fixed bottom-24 right-4 z-30 inline-flex items-center gap-2 rounded-full border border-slate-300/25 bg-gradient-to-l from-[#202329] via-[#41464f] to-[#626975] px-3 py-2 text-white shadow-xl shadow-slate-950/25 transition hover:brightness-110 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-slate-300 md:bottom-6 md:right-6"
+        className="fixed bottom-24 right-4 z-30 inline-flex items-center gap-2 rounded-full border border-violet-300/30 bg-gradient-to-l from-[#20243a] via-[#343252] to-[#30435c] px-3 py-2 text-white shadow-xl shadow-slate-950/25 transition hover:border-violet-200/60 hover:brightness-110 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-300 md:bottom-6 md:right-6"
       >
-        <span className="grid h-7 w-7 place-items-center rounded-full border border-slate-200/30 bg-white/10 text-slate-100">
+        <span className="grid h-7 w-7 place-items-center rounded-full border border-violet-200/35 bg-violet-300/15 text-violet-100">
           <Bot size={16} />
         </span>
         <span className="flex flex-col text-right leading-tight">
