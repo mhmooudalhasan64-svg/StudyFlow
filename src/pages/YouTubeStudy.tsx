@@ -6,7 +6,7 @@ import { askVideo } from '../lib/chatStore';
 function youtubeId(value: string): string | null {
   try {
     const url = new URL(value.trim().startsWith('http') ? value.trim() : `https://${value.trim()}`);
-    const host = url.hostname.toLowerCase().replace(/^www\\./, '');
+    const host = url.hostname.toLowerCase().replace(/^www\./, '');
     if (!['youtube.com', 'm.youtube.com', 'youtu.be', 'youtube-nocookie.com'].includes(host)) return null;
     const parts = url.pathname.split('/').filter(Boolean);
     const id = host === 'youtu.be'
@@ -20,19 +20,19 @@ function youtubeId(value: string): string | null {
 
 function cleanTranscript(raw: string): string {
   return raw
-    .replace(/^\\uFEFF/, '')
+    .replace(/^\uFEFF/, '')
     .replace(/<[^>]+>/g, ' ')
     .replace(/^WEBVTT.*$/gim, '')
     .replace(/^NOTE.*$/gim, '')
-    .replace(/^\\d+\\s*$/gm, '')
-    .replace(/^\\d{1,2}:\\d{2}(?::\\d{2})?[.,]\\d{3}\\s+-->.*$/gm, '')
+    .replace(/^\d+\s*$/gm, '')
+    .replace(/^\d{1,2}:\d{2}(?::\d{2})?[.,]\d{3}\s+-->.*$/gm, '')
     .replace(/&nbsp;/g, ' ')
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
-    .replace(/\\r/g, '')
-    .replace(/[ \\t]+/g, ' ')
-    .replace(/\\n{3,}/g, '\\n\\n')
+    .replace(/\r/g, '')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
     .trim();
 }
 
@@ -57,7 +57,7 @@ export default function YouTubeStudy() {
       setError('ملف الترجمة كبير. الحد الأقصى 1 ميغابايت.');
       return;
     }
-    if (!/\\.(vtt|srt|txt)$/i.test(file.name)) {
+    if (!/\.(vtt|srt|txt)$/i.test(file.name)) {
       setError('الملفات المدعومة: VTT وSRT وTXT.');
       return;
     }
