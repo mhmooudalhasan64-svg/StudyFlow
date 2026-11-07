@@ -181,7 +181,7 @@ function sanitizeAttachment(body: unknown): Attachment | null {
 function sanitizeProfile(body: unknown): string {
   if (typeof body !== 'object' || body === null) return '';
   const p = (body as { profile?: unknown }).profile;
-  return typeof p === 'string' ? p.replace(/[\r\n]+/g, ' ').trim().slice(0, MAX_PROFILE_CHARS) : '';
+  return typeof p === 'string' ? redactPersonalData(p.replace(/[\r\n]+/g, ' ').trim()).slice(0, MAX_PROFILE_CHARS) : '';
 }
 
 function fileBlock(att: Attachment): string {
