@@ -244,7 +244,7 @@ export default function Dashboard() {
           </p>
         </div>
       </a>
-      <a href="#/about" className="group relative block overflow-hidden rounded-3xl border border-sky-400/20 bg-gradient-to-br from-[#0B172A] via-[#142945] to-[#25254B] p-5 text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:border-sky-300/40 sm:p-6" aria-label="اكتشف منظومة AUREVON وVAYORA وSKOVA">
+      <a href="#/about" className="group relative block overflow-hidden rounded-3xl border border-sky-400/20 bg-gradient-to-br from-[#0B172A] via-[#142945] to-[#25254B] p-5 text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:border-sky-300/40 sm:p-6" aria-label="اكتشف منظومة AUREVON وVAYORA وAVORA">
         <div className="pointer-events-none absolute -left-12 -top-16 h-40 w-40 rounded-full bg-sky-400/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-16 -right-10 h-40 w-40 rounded-full bg-violet-400/10 blur-3xl" />
         <div className="relative">
@@ -266,12 +266,12 @@ export default function Dashboard() {
             </div>
             <div className="rounded-2xl border border-violet-300/20 bg-violet-300/10 px-1.5 py-3 text-center sm:px-3">
               <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-violet-100/20 bg-white/10"><img src="/logo.png" alt="" className="h-7 w-7 rounded-lg object-cover" /></span>
-              <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">SKOVA</p>
+              <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">AVORA</p>
               <p className="mt-1 text-[9px] text-violet-100 sm:text-[10px]">المساعدة الذكية</p>
             </div>
           </div>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-white/10 pt-3 text-[10px] font-semibold text-slate-200 sm:text-xs">
-            <span>AUREVON تقود</span><span className="text-slate-500">·</span><span>VAYORA تجمع</span><span className="text-slate-500">·</span><span>SKOVA تساعد</span>
+            <span>AUREVON تقود</span><span className="text-slate-500">·</span><span>VAYORA تجمع</span><span className="text-slate-500">·</span><span>AVORA تساعد</span>
           </div>
           <p className="mt-2 text-center text-[10px] font-bold text-sky-200 transition group-hover:text-white">اكتشف كيف تعمل المنظومة معاً ←</p>
         </div>
