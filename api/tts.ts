@@ -1,3 +1,5 @@
+declare const process: { env: Record<string, string | undefined> };
+
 const MAX_TTS_CHARS = 2600;
 const dailyUsage = new Map<string, { day: string; count: number }>();
 
