@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
-import { Bot, Copy, FileText, Loader2, Mic, Paperclip, RefreshCw, Send, Square, Trash2, Volume2, X } from 'lucide-react';
+import { Bot, Copy, FileText, Loader2, Mic, Paperclip, Phone, RefreshCw, Send, Square, Trash2, Volume2, X } from 'lucide-react';
 import { useChat, type ChatStyle } from '../lib/chatStore';
 import { PageTitle } from '../components/ui';
 import Advisor from '../components/Advisor';
@@ -22,7 +22,7 @@ const FILE_SUGGESTIONS = [
   'اشرح لي أهم الأفكار فيه ببساطة',
 ];
 
-export default function Assistant() {
+export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
   const { messages, attachment, loading, error, send, setAttachment, clear, useProfile, setUseProfile, subject, setSubject, style, setStyle, regenerate } = useChat();
   const [copied, setCopied] = useState<number | null>(null);
   const app = useApp();
@@ -273,6 +273,25 @@ export default function Assistant() {
         <div ref={endRef} />
       </div>
 
+      <div className="mb-2 flex items-center justify-center gap-2" role="group" aria-label="خيارات AVORA">
+        <a
+          href="#/assistant"
+          aria-current="page"
+          className="inline-flex items-center gap-2 rounded-full border border-violet-300/30 bg-gradient-to-l from-[#20243a] via-[#343252] to-[#30435c] px-3 py-2 text-white shadow-lg"
+        >
+          <span className="grid h-7 w-7 place-items-center rounded-full border border-violet-200/35 bg-violet-300/15 text-violet-100"><Bot size={16} /></span>
+          <span className="text-xs font-bold">المساعد النصي</span>
+        </a>
+        <button
+          type="button"
+          onClick={onCallOpen}
+          aria-label="بدء مكالمة صوتية مع AVORA"
+          className="inline-flex items-center gap-2 rounded-full border border-sky-300/30 bg-gradient-to-l from-[#17283d] via-[#194b66] to-[#28516a] px-3 py-2 text-white shadow-lg transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-300"
+        >
+          <span className="grid h-7 w-7 place-items-center rounded-full border border-sky-200/35 bg-sky-300/15 text-sky-100"><Phone size={16} /></span>
+          <span className="text-xs font-bold">المكالمة الصوتية</span>
+        </button>
+      </div>
       <div className="sticky bottom-20 space-y-2 md:bottom-4">
         {voiceError && (
           <p role="alert" className="card !p-2.5 text-sm text-bad">
