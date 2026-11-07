@@ -113,7 +113,7 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center bg-[#070910]/95 px-4 py-6 text-white backdrop-blur-xl" role="dialog" aria-modal="true" aria-label="مكالمة صوتية مع AVORA AI">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute left-1/2 top-[28%] h-72 w-72 -translate-x-1/2 rounded-full blur-3xl transition-opacity duration-700 ${active ? 'bg-emerald-500/15 opacity-100' : 'bg-violet-500/15 opacity-70'}`} />
+        <div className={`absolute left-1/2 top-[28%] h-72 w-72 -translate-x-1/2 rounded-full blur-3xl transition-opacity duration-700 ${active ? 'bg-slate-300/15 opacity-100' : 'bg-slate-500/15 opacity-70'}`} />
       </div>
       <section className="relative flex max-h-full w-full max-w-md flex-col items-center">
         <header className="flex w-full items-center justify-between">
@@ -126,10 +126,10 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
         </header>
         <div className="flex flex-1 flex-col items-center justify-center py-8">
           <div className="relative mb-8 grid h-44 w-44 place-items-center">
-            {active && <span className={`absolute inset-0 rounded-full border border-emerald-400/30 ${phase === 'listening' ? 'animate-ping' : 'animate-pulse'}`} />}
-            <span className={`absolute inset-3 rounded-full border border-white/10 ${active ? 'bg-emerald-400/10 shadow-[0_0_70px_rgba(16,185,129,0.16)]' : 'bg-violet-400/10 shadow-[0_0_70px_rgba(139,92,246,0.16)]'}`} />
+            {active && <span className={`absolute inset-0 rounded-full border border-slate-300/30 ${phase === 'listening' ? 'animate-ping' : 'animate-pulse'}`} />}
+            <span className={`absolute inset-3 rounded-full border border-white/10 ${active ? 'bg-slate-300/10 shadow-[0_0_70px_rgba(203,213,225,0.16)]' : 'bg-slate-400/10 shadow-[0_0_70px_rgba(148,163,184,0.16)]'}`} />
             <span className={`relative grid h-28 w-28 place-items-center rounded-full border border-white/15 bg-gradient-to-br from-[#342052] to-[#142f43] shadow-2xl ${active && (phase === 'listening' || phase === 'speaking') ? 'scale-105' : ''} transition-transform duration-500`}>
-              <AudioLines size={44} className={active ? 'text-emerald-300' : 'text-violet-200'} />
+              <AudioLines size={44} className={active ? 'text-slate-100' : 'text-slate-300'} />
             </span>
           </div>
           <h2 className="text-2xl font-bold">AVORA AI</h2>
