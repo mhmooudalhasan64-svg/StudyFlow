@@ -38,43 +38,26 @@ function environment(): Record<string, string | undefined> {
 }
 
 function pickProvider(raw: Record<string, string | undefined>): Provider | null {
-  const env = {
-    GROQ_API_KEY: clean(raw.GROQ_API_KEY),
-    OPENROUTER_API_KEY: clean(raw.OPENROUTER_API_KEY),
-    GEMINI_API_KEY: clean(raw.GEMINI_API_KEY),
-    XAI_API_KEY: clean(raw.XAI_API_KEY),
+  const key = clean(raw.OPENROUTER_API_KEY);
+  if (!key) return null;
+  return {
+    name: 'OpenRouter',
+    key,
+    endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+    // Free-only routing: never accept a paid model override from environment.
+    model: 'openrouter/free',
+    headers: { 'X-Title': 'VAYORA / SKOVA' },
   };
-  const model = raw.AI_MODEL?.trim() || raw.XAI_MODEL?.trim();
-  if (env.GROQ_API_KEY)
-    return {
-      name: 'Groq',
-      key: env.GROQ_API_KEY,
-      endpoint: 'https://api.groq.com/openai/v1/chat/completions',
-      model: model || 'openai/gpt-oss-120b',
-    };
-  if (env.OPENROUTER_API_KEY)
-    return {
-      name: 'OpenRouter',
-      key: env.OPENROUTER_API_KEY,
-      endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-      model: model || 'openrouter/free',
-      headers: { 'X-Title': 'StudyFlow' },
-    };
-  if (env.GEMINI_API_KEY)
-    return {
-      name: 'Gemini',
-      key: env.GEMINI_API_KEY,
-      endpoint: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
-      model: model || 'gemini-2.5-flash',
-    };
-  if (env.XAI_API_KEY)
-    return {
-      name: 'xAI',
-      key: env.XAI_API_KEY,
-      endpoint: 'https://api.x.ai/v1/chat/completions',
-      model: model || 'grok-4.7',
-    };
-  return null;
+}
+
+/** Remove common direct identifiers before any content leaves our server. */
+function redactPersonalData(value: string): string {
+  return value
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, '[بريد محذوف]')
+    .replace(/(?:\+?\d[\d\s().-]{7,}\d)/g, '[رقم هاتف محذوف]')
+    .replace(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g, '[عنوان شبكة محذوف]')
+    .replace(/((?:الاسم|اسمي|اسم الطالب|اسم الطالبة|رقم الهاتف|العنوان|البريد الإلكتروني)\s*[:：]?\s*)[^،؛\n]{2,80}/gi, '$1[بيانات تعريف محذوفة]')
+    .replace(/\b(?:my name is|name|phone|email|address)\s*[:：]?\s*[^,;\n]{2,80}/gi, '[personal details removed]');
 }
 
 const DAILY_LIMIT = Number(environment().CHAT_DAILY_LIMIT) > 0 ? Number(environment().CHAT_DAILY_LIMIT) : 30;
@@ -177,7 +160,7 @@ function sanitize(body: unknown): Msg[] | null {
     if (typeof m !== 'object' || m === null) return null;
     const { role, content } = m as { role?: unknown; content?: unknown };
     if ((role !== 'user' && role !== 'assistant') || typeof content !== 'string') return null;
-    const text = content.trim().slice(0, MAX_CHARS);
+    const text = redactPersonalData(content.trim()).slice(0, MAX_CHARS);
     if (text) out.push({ role, content: text });
   }
   if (out.length === 0 || out[out.length - 1].role !== 'user') return null;
@@ -192,7 +175,7 @@ function sanitizeAttachment(body: unknown): Attachment | null {
   const { name, text } = a as { name?: unknown; text?: unknown };
   if (typeof text !== 'string' || !text.trim()) return null;
   const safeName = (typeof name === 'string' ? name : 'ملف').replace(/[\r\n"«»]/g, ' ').trim().slice(0, 80) || 'ملف';
-  return { name: safeName, text: text.trim().slice(0, MAX_ATTACH_CHARS) };
+  return { name: redactPersonalData(safeName), text: redactPersonalData(text.trim()).slice(0, MAX_ATTACH_CHARS) };
 }
 
 function sanitizeProfile(body: unknown): string {
@@ -436,6 +419,8 @@ async function handlePost(request: Request): Promise<Response> {
     messages: [{ role: 'system', content: quiz ? quiz.system : systemPrompt(attachment, profile, !!attachment && (body as { bookAsk?: unknown }).bookAsk === true, focusLine(body)) }, ...messages],
     max_tokens: quiz ? 2600 : 1200,
     temperature: quiz ? 0.3 : 0.4,
+    // Fail closed to endpoints that promise zero retention and deny data collection.
+    provider: { zdr: true, data_collection: 'deny' },
     stream: false,
   });
   const call = (body = payload) =>
