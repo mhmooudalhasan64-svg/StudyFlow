@@ -139,6 +139,25 @@ export async function askBook(args: { question: string; name: string; text: stri
   return data.reply;
 }
 
+/** سؤال AVORA عن تفريغ فيديو؛ لا يُطلب من النموذج اختراع مشاهد أو توقيتات. */
+export async function askVideo(args: { question: string; title: string; transcript: string }): Promise<string> {
+  const transcript = args.transcript.trim().slice(0, 8000);
+  if (transcript.length < 20) throw new Error('أضف نص ترجمة أو تفريغاً أطول للفيديو أولاً.');
+  let res: Response;
+  try {
+    res = await postChat({
+      messages: [{ role: 'user', content: args.question.trim() }],
+      attachment: { name: args.title.slice(0, 80), text: transcript },
+      videoAsk: true,
+    });
+  } catch {
+    throw new Error('لا يوجد اتصال بالإنترنت. يحتاج تحليل الفيديو إلى اتصال.');
+  }
+  const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
+  if (!res.ok || !data.reply) throw new Error(data.error ?? 'تعذّر تحليل الفيديو. حاول مرة أخرى.');
+  return data.reply;
+}
+
 /** يطلب من المساعد إنشاء اختبار (نص JSON خام يُحلَّل لاحقاً بـ parseGeneratedQuiz) */
 export async function requestQuiz(args: {
   topic: string;
