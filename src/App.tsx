@@ -227,7 +227,7 @@ export default function App() {
         </div>
       )}
       {/* مجموعة أزرار عائمة موحّدة: ترتيب ثابت ومسافة آمنة فوق شريط الجوال */}
-      <div className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-30 flex flex-col items-end gap-3 md:bottom-6 md:right-6">
+      <div className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-30 flex flex-row-reverse items-center gap-2 md:bottom-6 md:right-6">
         <button
           type="button"
           aria-label="بدء مكالمة صوتية مع المعلم AVORA"
