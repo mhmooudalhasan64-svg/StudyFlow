@@ -151,7 +151,7 @@ export default function SettingsPage() {
                   settings.theme === t ? 'bg-gradient-to-l from-accent to-accent2 text-onaccent' : 'text-muted'
                 }`}
               >
-                {t === 'dark' ? 'داكن' : 'فاتح'}
+                {t === 'dark' ? 'أسود' : 'أبيض'}
               </button>
             ))}
           </div>
