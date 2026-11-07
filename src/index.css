@@ -2,23 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-/* هوية VAYORA الفاخرة: أسود فحمي وفضي معدني */
+/* هوية VAYORA: أبيض وفضي للوضع الفاتح، وأسود وفضي للوضع الداكن */
 :root {
-  color-scheme: dark;
-  --base: 8 9 11;
-  --card: 19 20 23;
-  --main: 238 240 243;
-  --muted: 157 161 168;
-  --line: 66 69 75;
-  --accent: 166 170 178;
-  --accent2: 204 208 215;
-  --accent3: 232 235 240;
-  --onaccent: 9 10 12;
-  --ok: 160 190 174;
-  --bad: 207 139 139;
+  color-scheme: light;
+  --base: 247 248 250;
+  --card: 255 255 255;
+  --main: 27 29 33;
+  --muted: 103 108 117;
+  --line: 218 221 226;
+  --accent: 112 119 129;
+  --accent2: 151 158 168;
+  --accent3: 205 210 218;
+  --onaccent: 18 20 24;
+  --ok: 49 122 82;
+  --bad: 185 65 65;
 }
 
 .dark {
+  color-scheme: dark;
   --base: 6 7 9;
   --card: 17 18 21;
   --main: 238 240 243;
@@ -406,6 +407,12 @@ input, select, textarea {
   --feature-rgb: 190 195 203;
 }
 .feature-icon {
+  border-color: rgb(112 119 129 / 0.24);
+  color: rgb(76 82 91);
+  background: linear-gradient(145deg, rgb(112 119 129 / 0.13), rgb(112 119 129 / 0.035));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.72), 0 5px 14px rgb(50 55 65 / 0.045);
+}
+.dark .feature-icon {
   border-color: rgb(190 195 203 / 0.24);
   color: rgb(218 221 226);
   background: linear-gradient(145deg, rgb(190 195 203 / 0.15), rgb(190 195 203 / 0.045));
