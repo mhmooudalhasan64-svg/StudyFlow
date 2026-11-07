@@ -7,6 +7,7 @@ export const ROUTES = [
   'exams',
   'quiz',
   'assistant',
+  'youtube',
   'stats',
   'settings',
   'bac',
