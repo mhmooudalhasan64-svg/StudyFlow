@@ -3,7 +3,7 @@ name: Build Study Flow Android APK
 on:
   workflow_dispatch:
   pull_request:
-    branches: ["main"]
+    branches: ["feat/vayora-aurevon-skova-identity"]
   push:
     branches: ["main"]
     paths:
@@ -44,7 +44,7 @@ jobs:
 
       - name: Build web app for Android
         env:
-          VITE_API_BASE_URL: https://study-flow-mhm23.vercel.app
+          VITE_API_BASE_URL: https://studyflow-preview-preview.up.railway.app
         run: npm run build
 
       - name: Create Android project and sync web assets
