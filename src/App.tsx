@@ -79,7 +79,7 @@ const SEARCH_PAGES: { route: Route; label: string; keywords: string }[] = [
   { route: 'stats', label: 'الإحصاءات', keywords: 'نقاط ضعف دقة تقدم' },
   { route: 'reports', label: 'التقارير', keywords: 'ملخص دراسة' },
   { route: 'achievements', label: 'الإنجازات', keywords: 'أوسمة تحفيز' },
-  { route: 'assistant', label: 'SKOVA AI', keywords: 'مساعد ذكي شرح سؤال' },
+  { route: 'assistant', label: 'AVORA AI', keywords: 'مساعد ذكي شرح سؤال' },
   { route: 'settings', label: 'الإعدادات', keywords: 'صوت مظهر نسخ احتياطي مواد' },
   { route: 'help', label: 'شرح أزرار التطبيق', keywords: 'دليل مساعدة تعليمات' },
 ];
@@ -152,7 +152,7 @@ export default function App() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [hintVisible, setHintVisible] = useState(false);
-  const [skovaCallOpen, setSkovaCallOpen] = useState(false);
+  const [avoraCallOpen, setAvoraCallOpen] = useState(false);
   const [assistantPosition, setAssistantPosition] = useState<{ left: number; top: number } | null>(null);
   const assistantDrag = useRef<{ pointerId: number; x: number; y: number; left: number; top: number; moved: boolean } | null>(null);
   const ignoreAssistantClick = useRef(false);
@@ -231,7 +231,7 @@ export default function App() {
       )}
       <button
           type="button"
-          aria-label="ابدأ مكالمة صوتية مع المعلم SKOVA، واسحب الزر لتغيير مكانه"
+          aria-label="ابدأ مكالمة صوتية مع المعلم AVORA، واسحب الزر لتغيير مكانه"
           title="مكالمة المعلم الصوتية — اضغط للاتصال أو اسحب الزر لتحريكه"
           style={assistantPosition ? { left: assistantPosition.left, top: assistantPosition.top } : undefined}
           onPointerDown={(event) => {
@@ -281,7 +281,7 @@ export default function App() {
               ignoreAssistantClick.current = false;
               return;
             }
-            setSkovaCallOpen(true);
+            setAvoraCallOpen(true);
           }}
           className={`fixed z-30 inline-flex touch-none select-none items-center gap-2 rounded-full border border-emerald-300/20 bg-gradient-to-l from-[#102d2a] via-[#145447] to-[#123d4c] px-3 py-2 text-white shadow-xl shadow-emerald-950/30 transition hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-400 cursor-grab active:cursor-grabbing ${assistantPosition ? '' : 'bottom-24 right-36 md:bottom-6 md:right-36'}`}
         >
@@ -291,13 +291,13 @@ export default function App() {
           </span>
           <span className="flex flex-col text-right leading-tight">
             <span className="text-xs font-extrabold tracking-wide">مكالمة المعلم</span>
-            <span className="text-[9px] text-white/75">SKOVA الصوتي</span>
+            <span className="text-[9px] text-white/75">AVORA الصوتي</span>
           </span>
       </button>
       <a
         href="#/assistant"
         aria-label="فتح المساعد الدراسي النصي"
-        title="المساعد الدراسي — محادثة نصية مع SKOVA"
+        title="المساعد الدراسي — محادثة نصية مع AVORA"
         className="fixed bottom-24 right-4 z-30 inline-flex items-center gap-2 rounded-full border border-violet-300/20 bg-gradient-to-l from-[#21152f] via-[#392052] to-[#263653] px-3 py-2 text-white shadow-xl shadow-purple-950/30 transition hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-400 md:bottom-6 md:right-6"
       >
         <span className="grid h-7 w-7 place-items-center rounded-full border border-white/20 bg-white/10">
@@ -308,7 +308,7 @@ export default function App() {
           <span className="text-[9px] text-white/75">محادثة نصية</span>
         </span>
       </a>
-      <Suspense fallback={null}><VoiceTeacher open={skovaCallOpen} onClose={() => setSkovaCallOpen(false)} /></Suspense>
+      <Suspense fallback={null}><VoiceTeacher open={avoraCallOpen} onClose={() => setAvoraCallOpen(false)} /></Suspense>
       {/* الشريط الجانبي (شاشات كبيرة) */}
       <aside className="app-sidebar sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
         <Brand />
