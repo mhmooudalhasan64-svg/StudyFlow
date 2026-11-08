@@ -23,7 +23,7 @@ const FILE_SUGGESTIONS = [
 ];
 
 export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
-  const { messages, attachment, loading, error, send, setAttachment, clear, useProfile, setUseProfile, subject, setSubject, style, setStyle, regenerate } = useChat();
+  const { messages, attachment, loading, error, extraUsagePending, continueWithExtraUsage, cancelExtraUsage, send, setAttachment, clear, useProfile, setUseProfile, subject, setSubject, style, setStyle, regenerate } = useChat();
   const [copied, setCopied] = useState<number | null>(null);
   const app = useApp();
   const profile = useMemo(() => buildLearnerProfile(contextFrom(app, toDateKey())), [app]);
@@ -272,6 +272,23 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
         )}
         <div ref={endRef} />
       </div>
+
+      {extraUsagePending && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4" role="presentation">
+          <section role="dialog" aria-modal="true" aria-labelledby="avora-extra-title" className="w-full max-w-md rounded-2xl border border-line bg-card p-5 shadow-2xl">
+            <div className="mb-3 flex items-center gap-3">
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent/10 text-accent"><Bot size={22} /></span>
+              <h2 id="avora-extra-title" className="text-lg font-bold">استمرار استخدام AVORA AI</h2>
+            </div>
+            <p className="text-sm leading-7 text-muted">انتهى رصيدك المجاني الحالي. هل توافق على تفعيل الاستخدام الإضافي لمتابعة العمل مع AVORA AI؟</p>
+            <p className="mt-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs leading-6">قد تترتب تكلفة إضافية على هذا الخيار. لن يتم تفعيله دون موافقتك.</p>
+            <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <button type="button" className="btn btn-primary" onClick={() => void continueWithExtraUsage()}>نعم، أوافق</button>
+              <button type="button" className="btn btn-ghost border border-line" onClick={cancelExtraUsage}>لا، سأنتظر</button>
+            </div>
+          </section>
+        </div>
+      )}
 
       <div className="mb-2 flex items-center justify-center gap-2" role="group" aria-label="خيارات AVORA">
         <a
