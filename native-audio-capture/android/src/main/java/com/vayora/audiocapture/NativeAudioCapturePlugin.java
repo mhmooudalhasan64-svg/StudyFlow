@@ -81,14 +81,32 @@ public class NativeAudioCapturePlugin extends Plugin {
     }
 
     private void requestProjection(PluginCall call) {
-        MediaProjectionManager manager = (MediaProjectionManager) getContext().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-        startActivityForResult(call, manager.createScreenCaptureIntent(), "projectionResult");
+        try {
+            Intent serviceIntent = new Intent(getContext(), PlaybackCaptureService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                getContext().startForegroundService(serviceIntent);
+            } else {
+                getContext().startService(serviceIntent);
+            }
+            MediaProjectionManager manager = (MediaProjectionManager) getContext().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+            startActivityForResult(call, manager.createScreenCaptureIntent(), "projectionResult");
+        } catch (Exception error) {
+            stopProjectionService();
+            call.reject("تعذّر تجهيز خدمة التقاط صوت النظام: " + error.getMessage());
+        }
+    }
+
+    private void stopProjectionService() {
+        try {
+            getContext().stopService(new Intent(getContext(), PlaybackCaptureService.class));
+        } catch (Exception ignored) {}
     }
 
     @ActivityCallback
     private void projectionResult(PluginCall call, ActivityResult result) {
         if (call == null) return;
         if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
+            stopProjectionService();
             call.reject("ألغيت موافقة Android على التقاط صوت الجهاز.");
             return;
         }
@@ -255,6 +273,7 @@ public class NativeAudioCapturePlugin extends Plugin {
             try { projection.stop(); } catch (Exception ignored) {}
             projection = null;
         }
+        stopProjectionService();
         if (inferenceExecutor != null) {
             inferenceExecutor.shutdownNow();
             try { inferenceExecutor.awaitTermination(2, TimeUnit.SECONDS); } catch (InterruptedException interrupted) { Thread.currentThread().interrupt(); }
