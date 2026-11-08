@@ -76,18 +76,8 @@ jobs:
             npx cap sync android
           fi
 
-      - name: Persist Android project in the same repository
-        if: github.ref == 'refs/heads/feat/vayora-aurevon-skova-identity'
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add android
-          if ! git diff --cached --quiet; then
-            git commit -m "Add Capacitor Android project [skip ci]"
-            git push origin "HEAD:${GITHUB_REF_NAME}"
-          fi
+      - name: Verify native plugin is included in Android project
+        run: grep -q "vayora-native-audio-capture" android/app/capacitor.build.gradle
 
       - name: Build installable debug APK
         run: |
