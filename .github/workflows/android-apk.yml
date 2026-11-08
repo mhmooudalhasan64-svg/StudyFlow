@@ -17,6 +17,10 @@ on:
       - "native-audio-capture/**"
       - ".github/workflows/android-apk.yml"
 
+concurrency:
+  group: android-whisper-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-android:
     runs-on: ubuntu-latest
