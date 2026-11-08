@@ -107,9 +107,9 @@ export default function YouTubeStudy() {
           setCapturing(false);
         });
         nativeListenersRef.current = [transcriptListener, errorListener];
+        activeRef.current = true;
         await NativeAudioCapture.start();
         nativeCaptureRef.current = true;
-        activeRef.current = true;
         setCapturing(true);
         return;
       } catch (captureError) {
