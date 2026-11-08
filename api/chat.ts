@@ -1,8 +1,8 @@
 import { createClient } from 'redis';
 
 /**
- * AVORA uses Gemini as its free primary engine. If its free quota is exhausted,
- * the server asks the student for consent before using the additional-use engine.
+ * AVORA uses Groq as its free primary engine. If its free quota is exhausted,
+ * the server asks the student for consent before using the optional additional-use engine.
  * Provider keys remain server-side only.
  */
 
@@ -29,13 +29,13 @@ function environment(): Record<string, string | undefined> {
 }
 
 function pickProvider(raw: Record<string, string | undefined>): Provider | null {
-  const key = clean(raw.GEMINI_API_KEY);
+  const key = clean(raw.GROQ_API_KEY);
   if (!key) return null;
   return {
-    name: 'Gemini',
+    name: 'Groq',
     key,
-    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
-    model: 'gemini-2.5-flash',
+    endpoint: 'https://api.groq.com/openai/v1/chat/completions',
+    model: 'openai/gpt-oss-20b',
   };
 }
 
@@ -439,20 +439,18 @@ async function handlePost(request: Request): Promise<Response> {
       upstream = null;
     }
   } else {
-    const geminiPayload = {
-      systemInstruction: { parts: [{ text: activeSystem }] },
-      contents: messages.map((m) => ({
-        role: m.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: m.content }],
-      })),
-      generationConfig: { maxOutputTokens: quiz ? 2600 : 1200, temperature: quiz ? 0.3 : 0.4 },
+    const groqPayload = {
+      model: provider.model,
+      messages: [{ role: 'system', content: activeSystem }, ...messages],
+      max_tokens: quiz ? 2600 : 1200,
+      temperature: quiz ? 0.3 : 0.4,
     };
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
         upstream = await fetch(provider.endpoint, {
           method: 'POST',
-          headers: { 'content-type': 'application/json', 'x-goog-api-key': provider.key },
-          body: JSON.stringify(geminiPayload),
+          headers: { 'content-type': 'application/json', authorization: `Bearer ${provider.key}` },
+          body: JSON.stringify(groqPayload),
           signal: AbortSignal.timeout(40_000),
         });
       } catch {
@@ -461,7 +459,7 @@ async function handlePost(request: Request): Promise<Response> {
       if (upstream?.status === 429) {
         return json({
           code: 'extra_usage_consent_required',
-          error: 'انتهى رصيدك المجاني الحالي. هل توافق على تفعيل الاستخدام الإضافي لمتابعة العمل مع AVORA AI؟ قد تترتب تكلفة إضافية، ولن نفعّله دون موافقتك.',
+          error: 'انتهت الحصة المجانية الحالية لـ Groq. هل توافق على استخدام الخدمة الإضافية لمتابعة العمل مع AVORA AI؟ قد تترتب تكلفة إضافية، ولن نفعّلها دون موافقتك.',
         }, 402);
       }
       const transient = upstream === null || upstream.status >= 500;
@@ -483,11 +481,8 @@ async function handlePost(request: Request): Promise<Response> {
   }
 
   type ChatCompletion = { choices?: { message?: { content?: string } }[] };
-  type GeminiCompletion = { candidates?: { content?: { parts?: { text?: string }[] } }[] };
-  const rawData = await upstream.json().catch(() => null) as (ChatCompletion & GeminiCompletion) | null;
-  let reply = extraUsageConsent
-    ? rawData?.choices?.[0]?.message?.content?.trim() || ''
-    : rawData?.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('').trim() || '';
+  const rawData = await upstream.json().catch(() => null) as ChatCompletion | null;
+  const reply = rawData?.choices?.[0]?.message?.content?.trim() || '';
   const arabicRequest = /[\u0600-\u06FF]/.test(messages[messages.length - 1].content);
 
   // لا نعرض للمستخدم إجابة عربية مشوّهة أو مليئة بالرموز على أنها رد سليم.
