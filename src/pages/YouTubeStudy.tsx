@@ -225,12 +225,12 @@ export default function YouTubeStudy() {
           <h2 className="font-bold">اسأل AVORA عن الفيديو</h2>
         </div>
         <p className="text-sm leading-6 text-muted">
-          شغّل الفيديو ثم ابدأ الالتقاط. نسخة الويب تستخدم الميكروفون. أما Android فسيُفعّل التقاط صوت النظام بعد دمج محرك Whisper المحلي واختباره؛ لن يستخدم الميكروفون بديلاً عن صوت الفيديو.
+          شغّل الفيديو ثم ابدأ الالتقاط. على Android يلتقط VAYORA صوت تشغيل الوسائط المسموح به من النظام ويحوّله محلياً إلى نص باستخدام Whisper المضمّن داخل التطبيق، دون استخدام الميكروفون بديلاً. نسخة الويب تحتفظ بالتقاط الميكروفون.
         </p>
         <div className="flex flex-wrap gap-2">
           {!capturing ? (
-            <button type="button" className="btn btn-primary flex-1" onClick={startCapture} disabled={!videoId || Capacitor.isNativePlatform()} title={Capacitor.isNativePlatform() ? "التقاط صوت النظام قيد التطوير" : undefined}>
-              <Mic size={17} /> {Capacitor.isNativePlatform() ? "التقاط صوت النظام — قريباً" : "ابدأ التقاط صوت الفيديو"}
+            <button type="button" className="btn btn-primary flex-1" onClick={startCapture} disabled={!videoId}>
+              <Mic size={17} /> {Capacitor.isNativePlatform() ? "ابدأ التقاط صوت الجهاز" : "ابدأ التقاط صوت الفيديو"}
             </button>
           ) : (
             <button type="button" className="btn btn-ghost flex-1" onClick={stopCapture}>
@@ -241,7 +241,7 @@ export default function YouTubeStudy() {
             مسح النص
           </button>
         </div>
-        {Capacitor.isNativePlatform() && <p className="text-xs leading-5 text-muted">التقاط صوت النظام على Android قيد الدمج مع Whisper المحلي. الميزة متوقفة مؤقتاً لضمان عدم فتح الميكروفون تلقائياً. يمكنك استخدام الالتقاط بالميكروفون من نسخة الويب.</p>}
+        {Capacitor.isNativePlatform() && <p className="text-xs leading-5 text-muted">يعالج Whisper الصوت محلياً على الجهاز. يتطلب الالتقاط موافقة Android، وقد تمنع بعض التطبيقات أو الفيديوهات التقاط صوتها وفق سياسة النظام.</p>}
         {capturing && !Capacitor.isNativePlatform() && <p className="text-xs text-muted">نسخة الويب تستخدم الميكروفون للتعرّف على الكلام.</p>}
         {liveText && <div className="rounded-lg bg-surface-secondary p-3 text-sm"><span className="font-semibold">يلتقط الآن: </span>{liveText}</div>}
         <div className="rounded-lg border border-subtle p-3 space-y-1">
