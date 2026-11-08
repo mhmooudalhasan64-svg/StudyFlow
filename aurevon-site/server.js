@@ -5,9 +5,9 @@ const root = path.join(__dirname, "public");
 const types = { ".html":"text/html; charset=utf-8", ".svg":"image/svg+xml", ".txt":"text/plain; charset=utf-8" };
 http.createServer((req,res) => {
   const pathname = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
-  const requested = pathname === "/" ? "index.html" : pathname.replace(/^\\/+/, "");
+  const requested = pathname === "/" ? "index.html" : (pathname.startsWith("/") ? pathname.slice(1) : pathname);
   const file = path.resolve(root, requested);
-  if (!file.startsWith(root + path.sep) && file !== path.join(root,"index.html")) { res.writeHead(403); return res.end("Forbidden"); }
+  if (file !== path.join(root,"index.html") && !file.startsWith(root + path.sep)) { res.writeHead(403); return res.end("Forbidden"); }
   fs.readFile(file, (err,data) => {
     if (err) {
       if (path.extname(pathname) === "" || pathname.endsWith("/")) {
