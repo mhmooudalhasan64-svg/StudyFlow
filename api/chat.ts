@@ -397,7 +397,7 @@ async function handlePost(request: Request): Promise<Response> {
     return json({ error: 'مصدر الطلب غير مسموح.' }, 403);
   }
   const contentType = request.headers.get('content-type') ?? '';
-  if (!/^application\\/json(?:\\s*;|$)/i.test(contentType)) {
+  if (!/^application\/json(?:\s*;|$)/i.test(contentType)) {
     return json({ error: 'نوع محتوى الطلب غير مدعوم.' }, 415);
   }
   const declaredLength = Number(request.headers.get('content-length'));
