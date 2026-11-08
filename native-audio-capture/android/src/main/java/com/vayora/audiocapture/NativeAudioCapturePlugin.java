@@ -202,7 +202,10 @@ public class NativeAudioCapturePlugin extends Plugin {
             .build();
         if (recorder.getState() != AudioRecord.STATE_INITIALIZED) throw new IllegalStateException("تعذّر تهيئة التقاط صوت الوسائط.");
 
-        inferenceExecutor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(1), new ThreadPoolExecutor.DiscardOldestPolicy());
+        if (inferenceExecutor == null || inferenceExecutor.isShutdown()) {
+            inferenceExecutor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<>(1), new ThreadPoolExecutor.DiscardOldestPolicy());
+        }
         recorder.startRecording();
         if (recorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) throw new IllegalStateException("لم يبدأ التقاط صوت النظام.");
         running = true;
@@ -277,18 +280,32 @@ public class NativeAudioCapturePlugin extends Plugin {
             projection = null;
         }
         stopProjectionService();
-        if (inferenceExecutor != null) {
-            inferenceExecutor.shutdownNow();
-            try { inferenceExecutor.awaitTermination(2, TimeUnit.SECONDS); } catch (InterruptedException interrupted) { Thread.currentThread().interrupt(); }
-            inferenceExecutor = null;
-        }
         captureThread = null;
     }
 
     @Override
     protected void handleOnDestroy() {
         stopCapture();
-        if (whisperContext != 0L) {
+        final ExecutorService executor = inferenceExecutor;
+        inferenceExecutor = null;
+        if (executor != null) {
+            executor.shutdownNow();
+            new Thread(() -> {
+                try {
+                    executor.awaitTermination(30, TimeUnit.SECONDS);
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                }
+                if (executor.isTerminated() && whisperContext != 0L) {
+                    synchronized (NativeAudioCapturePlugin.this) {
+                        if (whisperContext != 0L) {
+                            nativeFree(whisperContext);
+                            whisperContext = 0L;
+                        }
+                    }
+                }
+            }, "VayoraWhisperCleanup").start();
+        } else if (whisperContext != 0L) {
             nativeFree(whisperContext);
             whisperContext = 0L;
         }
