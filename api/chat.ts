@@ -1,9 +1,8 @@
 import { createClient } from 'redis';
 
 /**
- * AVORA uses Gemini as its free primary engine. If its free quota is exhausted,
- * the server asks the student for consent before using the additional-use engine.
- * Provider keys remain server-side only.
+ * AVORA uses Groq's free API tier as its primary engine, with OpenRouter as an
+ * optional fallback. Provider keys remain server-side only.
  */
 
 interface Provider {
@@ -39,18 +38,7 @@ function pickProvider(raw: Record<string, string | undefined>): Provider | null 
     };
   }
 
-  const geminiKey = clean(raw.GEMINI_API_KEY);
-  if (geminiKey) {
-    return {
-      name: 'Gemini',
-      key: geminiKey,
-      endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
-      model: 'gemini-2.5-flash',
-    };
-  }
-
-  // Vercel Preview can use the already-configured OpenRouter key when Gemini
-  // is not configured. Keep provider credentials server-side.
+  // Optional free-model fallback if a Groq key is not configured.
   const openRouterKey = clean(raw.OPENROUTER_API_KEY);
   if (openRouterKey) {
     return {
