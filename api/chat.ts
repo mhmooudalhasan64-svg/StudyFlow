@@ -29,14 +29,28 @@ function environment(): Record<string, string | undefined> {
 }
 
 function pickProvider(raw: Record<string, string | undefined>): Provider | null {
-  const key = clean(raw.GEMINI_API_KEY);
-  if (!key) return null;
-  return {
-    name: 'Gemini',
-    key,
-    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
-    model: 'gemini-2.5-flash',
-  };
+  const geminiKey = clean(raw.GEMINI_API_KEY);
+  if (geminiKey) {
+    return {
+      name: 'Gemini',
+      key: geminiKey,
+      endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
+      model: 'gemini-2.5-flash',
+    };
+  }
+
+  // Vercel Preview can use the already-configured OpenRouter key when Gemini
+  // is not configured. Keep provider credentials server-side.
+  const openRouterKey = clean(raw.OPENROUTER_API_KEY);
+  if (openRouterKey) {
+    return {
+      name: 'OpenRouter',
+      key: openRouterKey,
+      endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+      model: 'openrouter/free',
+    };
+  }
+  return null;
 }
 
 /** Remove common direct identifiers before any content leaves our server. */
@@ -315,7 +329,9 @@ async function overLimit(ip: string): Promise<boolean | null> {
 
   // Production must fail closed: Vercel instances do not share in-memory counters.
   // Configure both Upstash REST variables before enabling chat in production.
-  if (env.VERCEL === '1' || env.NODE_ENV === 'production') return null;
+  // Preview deployments may use a per-instance fallback while being tested.
+  // Production remains fail-closed and requires a shared Redis rate limiter.
+  if ((env.VERCEL === '1' || env.NODE_ENV === 'production') && env.VERCEL_ENV !== 'preview') return null;
 
   // Local-development fallback only.
   const day = new Date().toISOString().slice(0, 10);
@@ -418,17 +434,21 @@ async function handlePost(request: Request): Promise<Response> {
   const started = Date.now();
   let upstream: Response | null = null;
 
-  if (extraUsageConsent) {
-    const fallbackKey = clean(environment().OPENAI_API_KEY);
+  if (extraUsageConsent || provider.name === 'OpenRouter') {
+    const fallbackKey = extraUsageConsent ? clean(environment().OPENAI_API_KEY) : provider.key;
     if (!fallbackKey) {
       return json({ error: 'خيار الاستمرار غير متاح حالياً. يمكنك المحاولة بعد تجدد الرصيد المجاني.' }, 503);
     }
+    const endpoint = extraUsageConsent
+      ? 'https://api.openai.com/v1/chat/completions'
+      : provider.endpoint;
+    const model = extraUsageConsent ? 'gpt-4.1-mini' : provider.model;
     try {
-      upstream = await fetch('https://api.openai.com/v1/chat/completions', {
+      upstream = await fetch(endpoint, {
         method: 'POST',
         headers: { 'content-type': 'application/json', authorization: `Bearer ${fallbackKey}` },
         body: JSON.stringify({
-          model: 'gpt-4.1-mini',
+          model,
           messages: [{ role: 'system', content: activeSystem }, ...messages],
           max_tokens: quiz ? 2600 : 1200,
           temperature: quiz ? 0.3 : 0.4,
@@ -485,7 +505,7 @@ async function handlePost(request: Request): Promise<Response> {
   type ChatCompletion = { choices?: { message?: { content?: string } }[] };
   type GeminiCompletion = { candidates?: { content?: { parts?: { text?: string }[] } }[] };
   const rawData = await upstream.json().catch(() => null) as (ChatCompletion & GeminiCompletion) | null;
-  let reply = extraUsageConsent
+  let reply = extraUsageConsent || provider.name === 'OpenRouter'
     ? rawData?.choices?.[0]?.message?.content?.trim() || ''
     : rawData?.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('').trim() || '';
   const arabicRequest = /[\u0600-\u06FF]/.test(messages[messages.length - 1].content);
