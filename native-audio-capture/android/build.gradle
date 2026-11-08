@@ -1,0 +1,16 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'com.vayora.audiocapture'
+    compileSdk 35
+
+    defaultConfig {
+        minSdk 23
+    }
+}
+
+dependencies {
+    implementation project(':capacitor-android')
+}
