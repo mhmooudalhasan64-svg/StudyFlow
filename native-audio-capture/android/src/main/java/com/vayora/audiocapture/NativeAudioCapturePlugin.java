@@ -54,6 +54,7 @@ public class NativeAudioCapturePlugin extends Plugin {
     private AudioRecord recorder;
     private Thread captureThread;
     private volatile boolean running = false;
+    private volatile long captureSession = 0L;
     private volatile long whisperContext = 0L;
     private ExecutorService inferenceExecutor;
 
@@ -204,22 +205,28 @@ public class NativeAudioCapturePlugin extends Plugin {
 
         if (inferenceExecutor == null || inferenceExecutor.isShutdown()) {
             inferenceExecutor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<>(1), new ThreadPoolExecutor.DiscardOldestPolicy());
+                new ArrayBlockingQueue<>(1), (task, executor) -> {
+                    if (running) {
+                        notifyCaptureError("المعالجة لم تستطع مواكبة سرعة الصوت؛ أوقفنا الالتقاط حتى لا ينتج تفريغ ناقص.");
+                        stopCapture();
+                    }
+                });
         }
         recorder.startRecording();
         if (recorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) throw new IllegalStateException("لم يبدأ التقاط صوت النظام.");
+        final long sessionId = ++captureSession;
         running = true;
-        captureThread = new Thread(this::captureLoop, "VayoraPlaybackCapture");
+        captureThread = new Thread(() -> captureLoop(sessionId), "VayoraPlaybackCapture");
         captureThread.start();
     }
 
-    private void captureLoop() {
+    private void captureLoop(long sessionId) {
         final int chunkSamples = SAMPLE_RATE * CHUNK_SECONDS;
         float[] chunk = new float[chunkSamples];
         byte[] buffer = new byte[8192];
         int filled = 0;
         try {
-            while (running) {
+            while (running && sessionId == captureSession) {
                 int count = recorder.read(buffer, 0, buffer.length);
                 if (count < 0) throw new IllegalStateException("AudioRecord read error " + count);
                 for (int i = 0; i + 1 < count && filled < chunkSamples; i += 2) {
@@ -228,7 +235,7 @@ public class NativeAudioCapturePlugin extends Plugin {
                 }
                 if (filled == chunkSamples) {
                     final float[] completed = chunk;
-                    inferenceExecutor.execute(() -> transcribeChunk(completed));
+                    inferenceExecutor.execute(() -> transcribeChunk(completed, sessionId));
                     chunk = new float[chunkSamples];
                     filled = 0;
                 }
@@ -241,11 +248,11 @@ public class NativeAudioCapturePlugin extends Plugin {
         }
     }
 
-    private void transcribeChunk(float[] samples) {
-        if (!running || whisperContext == 0L) return;
+    private void transcribeChunk(float[] samples, long sessionId) {
+        if (!running || sessionId != captureSession || whisperContext == 0L) return;
         try {
             String text = nativeTranscribe(whisperContext, samples, Math.max(2, Runtime.getRuntime().availableProcessors() / 2));
-            if (text != null && !text.trim().isEmpty() && running) {
+            if (text != null && !text.trim().isEmpty() && running && sessionId == captureSession) {
                 JSObject event = new JSObject();
                 event.put("text", text.trim());
                 event.put("final", true);
@@ -270,6 +277,10 @@ public class NativeAudioCapturePlugin extends Plugin {
 
     private synchronized void stopCapture() {
         running = false;
+        captureSession++;
+        if (inferenceExecutor instanceof ThreadPoolExecutor) {
+            ((ThreadPoolExecutor) inferenceExecutor).getQueue().clear();
+        }
         if (recorder != null) {
             try { recorder.stop(); } catch (Exception ignored) {}
             recorder.release();
