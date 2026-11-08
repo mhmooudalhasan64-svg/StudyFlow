@@ -47,19 +47,11 @@ public class NativeAudioCapturePlugin extends Plugin {
 
     @PluginMethod
     public void start(PluginCall call) {
-        if (Build.VERSION.SDK_INT < 33) {
-            call.reject("يلزم Android 13 أو أحدث لاستخدام مصدر الصوت المباشر مع خدمة التعرّف على الكلام.");
-            return;
-        }
-        if (!SpeechRecognizer.isRecognitionAvailable(getContext())) {
-            call.reject("لا توجد خدمة تعرّف على الكلام متاحة على هذا الجهاز.");
-            return;
-        }
-        if (getPermissionState("audio") != com.getcapacitor.PermissionState.GRANTED) {
-            requestPermissionForAlias("audio", call, "startAfterPermission");
-            return;
-        }
-        requestProjection(call);
+        // Fail closed until the local Whisper engine is integrated.
+        // Android SpeechRecognizer may silently open the microphone when an
+        // implementation does not support EXTRA_AUDIO_SOURCE. Never use it
+        // as a fallback for system playback capture.
+        call.reject("التقاط صوت الفيديو المباشر متوقف مؤقتاً حتى دمج محرك Whisper المحلي. لن يستخدم VAYORA الميكروفون بديلاً عن صوت النظام.");
     }
 
     @PermissionCallback
