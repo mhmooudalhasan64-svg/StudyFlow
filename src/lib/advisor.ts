@@ -310,7 +310,7 @@ export function buildLearnerProfile(ctx: AdvisorContext): string {
     const ok = ctx.attempts.filter((a) => a.correct).length;
     parts.push(`حلّ ${ctx.attempts.length} سؤالاً بدقة إجمالية ${Math.round((ok / ctx.attempts.length) * 100)}%.`);
 
-    // SKOVA adapts from recent evidence, not a permanent label: use the latest
+    // Adaptive tutoring uses recent evidence, not a permanent label: use the latest
     // ten attempts per subject and avoid conclusions from fewer than three.
     const subjectIds = [...new Set(ctx.attempts.map((a) => a.subjectId))];
     const recentSignals = subjectIds.flatMap((subjectId) => {
@@ -344,7 +344,7 @@ export function buildLearnerProfile(ctx: AdvisorContext): string {
       return [`${subjectName}: ${accuracy}% في آخر ${recent.length} محاولات؛ ${trend}؛ الخطوة المقترحة: ${nextStep}`];
     }).slice(0, 5);
     if (recentSignals.length) {
-      parts.push(`مؤشرات SKOVA الحديثة (آخر المحاولات، وليست حكماً ثابتاً على المستوى): ${recentSignals.join('؛ ')}.`);
+      parts.push(`مؤشرات التعلّم الحديثة (آخر المحاولات، وليست حكماً ثابتاً على المستوى): ${recentSignals.join('؛ ')}.`);
     }
   }
 
