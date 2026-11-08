@@ -5,6 +5,7 @@ import { Download, ExternalLink, Youtube, Compass, MessageCircle, Mic, MicOff, S
 import { PageTitle } from '../components/ui';
 import { askVideo } from '../lib/chatStore';
 import { listen } from '../lib/voice';
+import { NativeAudioCapture } from '@vayora/native-audio-capture';
 
 function youtubeId(value: string): string | null {
   try {
@@ -33,6 +34,8 @@ export default function YouTubeStudy() {
   const activeRef = useRef(false);
   const stopRef = useRef<(() => void) | null>(null);
   const draftRef = useRef('');
+  const nativeCaptureRef = useRef(false);
+  const nativeListenersRef = useRef<Array<{ remove: () => Promise<void> }>>([]);
 
   const videoId = useMemo(() => youtubeId(url), [url]);
   const videoUrl = videoId ? `https://www.youtube.com/watch?v=${videoId}` : '';
@@ -40,6 +43,8 @@ export default function YouTubeStudy() {
   useEffect(() => () => {
     activeRef.current = false;
     stopRef.current?.();
+    if (nativeCaptureRef.current) void NativeAudioCapture.stop();
+    nativeListenersRef.current.forEach(listener => void listener.remove());
   }, []);
 
   const openYouTube = async () => {
@@ -57,6 +62,14 @@ export default function YouTubeStudy() {
 
   const stopCapture = () => {
     activeRef.current = false;
+    if (nativeCaptureRef.current) {
+      nativeCaptureRef.current = false;
+      setCapturing(false);
+      void NativeAudioCapture.stop();
+      nativeListenersRef.current.forEach(listener => void listener.remove());
+      nativeListenersRef.current = [];
+      return;
+    }
     setCapturing(false);
     stopRef.current?.();
     stopRef.current = null;
@@ -67,16 +80,51 @@ export default function YouTubeStudy() {
     }
   };
 
-  const startCapture = () => {
+  const startCapture = async () => {
     if (!videoId) {
       setError('أدخل رابط فيديو صالحاً أولاً.');
       return;
     }
     setError('');
     setAnswer('');
+    setTranscript('');
+    setLiveText('');
+
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const transcriptListener = await NativeAudioCapture.addListener('transcript', event => {
+          if (!activeRef.current) return;
+          setLiveText(event.text);
+          if (event.final && event.text.trim()) {
+            setTranscript(current => [current, event.text.trim()].filter(Boolean).join(' ').slice(0, 8000));
+            setLiveText('');
+          }
+        });
+        const errorListener = await NativeAudioCapture.addListener('captureError', event => {
+          setError(event.message);
+          activeRef.current = false;
+          nativeCaptureRef.current = false;
+          setCapturing(false);
+        });
+        nativeListenersRef.current = [transcriptListener, errorListener];
+        await NativeAudioCapture.start();
+        nativeCaptureRef.current = true;
+        activeRef.current = true;
+        setCapturing(true);
+        return;
+      } catch (captureError) {
+        nativeListenersRef.current.forEach(listener => void listener.remove());
+        nativeListenersRef.current = [];
+        nativeCaptureRef.current = false;
+        activeRef.current = false;
+        setCapturing(false);
+        setError(captureError instanceof Error ? captureError.message : 'تعذّر تشغيل التقاط صوت الجهاز.');
+        return;
+      }
+    }
+
     activeRef.current = true;
     setCapturing(true);
-
     const listenAgain = () => {
       if (!activeRef.current) return;
       draftRef.current = '';
@@ -177,7 +225,7 @@ export default function YouTubeStudy() {
           <h2 className="font-bold">اسأل AVORA عن الفيديو</h2>
         </div>
         <p className="text-sm leading-6 text-muted">
-          حل مجاني دون خدمة API مدفوعة: شغّل الفيديو بصوت مسموع، ثم فعّل التقاط الصوت ليحوّل الجهاز الكلام المسموع إلى نص تلقائياً. بعد ذلك يجيب AVORA اعتماداً على النص الذي تم التقاطه فقط.
+          شغّل الفيديو ثم ابدأ الالتقاط. في Android يحاول VAYORA التقاط صوت تشغيل الوسائط مباشرةً من النظام، بينما تستخدم نسخة الويب الميكروفون. يجيب AVORA اعتماداً على النص الذي تم التعرّف عليه فقط.
         </p>
         <div className="flex flex-wrap gap-2">
           {!capturing ? (
@@ -193,7 +241,7 @@ export default function YouTubeStudy() {
             مسح النص
           </button>
         </div>
-        {capturing && <p className="text-xs text-muted">الميكروفون يعمل. ارفع صوت الفيديو واجعل مكبّر الصوت مسموعاً للميكروفون. قد لا يلتقط الجهاز صوته الداخلي مباشرةً.</p>}
+        {capturing && <p className="text-xs text-muted">نسخة الويب تستخدم الميكروفون. في Android يجري التقاط صوت تشغيل الوسائط من النظام بعد موافقتك، إذا كان التطبيق المصدر يسمح بذلك.</p>}
         {liveText && <div className="rounded-lg bg-surface-secondary p-3 text-sm"><span className="font-semibold">يلتقط الآن: </span>{liveText}</div>}
         <div className="rounded-lg border border-subtle p-3 space-y-1">
           <div className="flex items-center justify-between text-sm">
@@ -214,7 +262,7 @@ export default function YouTubeStudy() {
         {error && <p role="alert" className="text-sm text-bad">{error}</p>}
         {answer && <div className="rounded-xl border border-subtle p-4 space-y-2"><h3 className="font-bold">إجابة AVORA</h3><p className="text-sm leading-7 whitespace-pre-wrap">{answer}</p></div>}
         <p className="text-xs leading-5 text-muted">
-          لا توجد رسوم لخدمة تفريغ مدفوعة. يعتمد التعرّف الصوتي على دعم جهازك أو المتصفح وخدمة الكلام المثبّتة عليه، وقد لا يعمل في كل الأجهزة أو اللغات. قد تتم معالجة الصوت بواسطة خدمة التعرّف التي يوفرها نظام التشغيل أو المتصفح؛ لا تبدأ الالتقاط إلا إذا كنت موافقاً على استخدام الميكروفون.
+          يعتمد التقاط صوت النظام على إصدار Android وخدمة التعرّف المثبّتة وسياسة التقاط الصوت في التطبيق المشغّل. قد تمنع بعض الفيديوهات أو التطبيقات التقاط الصوت. في نسخة الويب يُستخدم الميكروفون وقد تتم معالجة الصوت بواسطة خدمة التعرّف في المتصفح أو نظام التشغيل.
         </p>
       </section>
     </div>
