@@ -1,5 +1,7 @@
 import { useMemo, useState, type ChangeEvent } from 'react';
-import { Captions, Download, ExternalLink, FileText, Loader2, Play, Send, Youtube } from 'lucide-react';
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
+import { Captions, Download, ExternalLink, FileText, Loader2, Play, Send, Youtube, Compass } from 'lucide-react';
 import { PageTitle } from '../components/ui';
 import { askVideo } from '../lib/chatStore';
 
@@ -47,6 +49,20 @@ export default function YouTubeStudy() {
 
   const videoId = useMemo(() => youtubeId(url), [url]);
   const videoUrl = videoId ? `https://www.youtube.com/watch?v=${videoId}` : '';
+
+  const openYouTube = async () => {
+    setError('');
+    try {
+      if (Capacitor.isNativePlatform()) {
+        await Browser.open({ url: 'https://m.youtube.com', presentationStyle: 'fullscreen', toolbarColor: '#10233D' });
+      } else {
+        const opened = window.open('https://m.youtube.com', '_blank', 'noopener,noreferrer');
+        if (!opened) window.location.assign('https://m.youtube.com');
+      }
+    } catch {
+      setError('تعذّر فتح YouTube. تحقق من اتصال الإنترنت ثم حاول مجدداً.');
+    }
+  };
 
   const loadSubtitle = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -103,12 +119,20 @@ export default function YouTubeStudy() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <PageTitle title="فيديوهات YouTube" subtitle="شاهد الدرس، أضف ترجمته، ثم اسأل AVORA عن محتواه." />
+      <PageTitle title="YouTube داخل VAYORA" subtitle="تصفّح الدروس وافتحها من داخل التطبيق، ثم ناقش محتواها مع AVORA." />
 
       <section className="card space-y-3">
         <div className="flex items-center gap-2">
           <Youtube size={22} className="text-rose-500" />
-          <h2 className="font-bold">فتح فيديو</h2>
+          <h2 className="font-bold">تصفّح YouTube من داخل VAYORA</h2>
+        </div>
+        <p className="text-sm leading-6 text-muted">افتح واجهة YouTube الكاملة في نافذة تصفح مدمجة مع التطبيق، وابحث عن الدروس وشاهدها. على نسخة Android الأصلية تُفتح عبر نافذة المتصفح المدمجة من Capacitor؛ وعلى نسخة الويب قد تُفتح في تبويب جديد.</p>
+        <button type="button" className="btn btn-primary w-full" onClick={() => void openYouTube()}>
+          <Compass size={17} /> فتح YouTube داخل التطبيق
+        </button>
+        <div className="border-t border-line pt-3">
+          <h3 className="font-semibold">تحليل فيديو بواسطة AVORA</h3>
+          <p className="text-xs leading-5 text-muted">بعد اختيار الفيديو من YouTube، انسخ رابطه وضعه أدناه. أضف نص الترجمة لتسأل AVORA عن محتواه.</p>
         </div>
         <label className="label" htmlFor="youtube-url">رابط الفيديو</label>
         <input
