@@ -105,6 +105,9 @@ export default function YouTubeStudy() {
           activeRef.current = false;
           nativeCaptureRef.current = false;
           setCapturing(false);
+          void NativeAudioCapture.stop();
+          nativeListenersRef.current.forEach(listener => void listener.remove());
+          nativeListenersRef.current = [];
         });
         nativeListenersRef.current = [transcriptListener, errorListener];
         activeRef.current = true;
