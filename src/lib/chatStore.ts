@@ -21,7 +21,9 @@ function postChat(body: unknown): Promise<Response> {
   const apiBase = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
   return fetch(`${apiBase}/api/chat`, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    // text/plain is CORS-safelisted, avoiding a fragile OPTIONS preflight in Android WebView.
+    // The server still parses the JSON request body with request.json().
+    headers: { 'content-type': 'text/plain;charset=UTF-8' },
     body: JSON.stringify(body),
   });
 }
