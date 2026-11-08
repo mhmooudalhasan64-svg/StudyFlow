@@ -11,6 +11,8 @@ import android.media.AudioPlaybackCaptureConfiguration;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.activity.result.ActivityResult;
 import com.getcapacitor.JSObject;
@@ -114,29 +116,42 @@ public class NativeAudioCapturePlugin extends Plugin {
     }
 
     private void initializeProjection(PluginCall call, ActivityResult result) {
+        final MediaProjection currentProjection;
+        final long sessionId;
         try {
             MediaProjectionManager manager = (MediaProjectionManager) getContext().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-            projection = manager.getMediaProjection(result.getResultCode(), result.getData());
-            if (projection == null) throw new IllegalStateException("تعذّر بدء جلسة التقاط النظام.");
-            projection.registerCallback(new MediaProjection.Callback() {
+            currentProjection = manager.getMediaProjection(result.getResultCode(), result.getData());
+            if (currentProjection == null) throw new IllegalStateException("تعذّر بدء جلسة التقاط النظام.");
+            synchronized (this) {
+                projection = currentProjection;
+                sessionId = ++captureSession;
+            }
+            currentProjection.registerCallback(new MediaProjection.Callback() {
                 @Override public void onStop() {
-                    if (running) {
+                    if (sessionId == captureSession) {
                         stopCapture();
                         notifyCaptureError("أوقف Android جلسة التقاط صوت الجهاز.");
                     }
                 }
-            }, null);
+            }, new Handler(Looper.getMainLooper()));
 
             new Thread(() -> {
                 try {
                     ensureModelLoaded();
-                    startAudioPipeline();
+                    synchronized (NativeAudioCapturePlugin.this) {
+                        if (sessionId != captureSession || projection != currentProjection) {
+                            throw new IllegalStateException("تم إيقاف جلسة الالتقاط قبل اكتمال التهيئة.");
+                        }
+                        startAudioPipeline(sessionId);
+                    }
                     JSObject response = new JSObject();
                     response.put("active", true);
                     response.put("source", "android-playback");
                     call.resolve(response);
                 } catch (Exception error) {
-                    stopCapture();
+                    synchronized (NativeAudioCapturePlugin.this) {
+                        if (sessionId == captureSession) stopCapture();
+                    }
                     call.reject("تعذّر تشغيل Whisper أو التقاط صوت الفيديو: " + error.getMessage());
                 }
             }, "VayoraWhisperInit").start();
@@ -183,7 +198,7 @@ public class NativeAudioCapturePlugin extends Plugin {
     }
 
     @android.annotation.TargetApi(Build.VERSION_CODES.Q)
-    private void startAudioPipeline() throws Exception {
+    private void startAudioPipeline(long sessionId) throws Exception {
         AudioPlaybackCaptureConfiguration config = new AudioPlaybackCaptureConfiguration.Builder(projection)
             .addMatchingUsage(android.media.AudioAttributes.USAGE_MEDIA)
             .addMatchingUsage(android.media.AudioAttributes.USAGE_GAME)
@@ -214,7 +229,6 @@ public class NativeAudioCapturePlugin extends Plugin {
         }
         recorder.startRecording();
         if (recorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) throw new IllegalStateException("لم يبدأ التقاط صوت النظام.");
-        final long sessionId = ++captureSession;
         running = true;
         captureThread = new Thread(() -> captureLoop(sessionId), "VayoraPlaybackCapture");
         captureThread.start();
