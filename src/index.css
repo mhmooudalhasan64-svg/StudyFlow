@@ -422,3 +422,116 @@ input, select, textarea {
   background: linear-gradient(145deg, rgb(210 214 220 / 0.2), rgb(190 195 203 / 0.075));
   box-shadow: 0 8px 18px rgb(190 195 203 / 0.09);
 }
+
+
+/* Unified action system: consistent sizing, hierarchy and spacing. */
+.btn {
+  min-height: 2.75rem;
+  border-radius: 0.85rem;
+  padding-inline: 1rem;
+  font-weight: 700;
+  line-height: 1.25;
+  box-shadow: none;
+}
+.btn-primary {
+  border: 1px solid rgb(var(--accent2) / 0.42);
+  background: linear-gradient(135deg, rgb(var(--accent2)), rgb(var(--accent3)));
+  color: rgb(var(--onaccent));
+  box-shadow: 0 5px 14px rgb(var(--accent) / 0.16);
+}
+.btn-primary:hover {
+  filter: brightness(1.045);
+  box-shadow: 0 8px 18px rgb(var(--accent) / 0.2);
+}
+.btn-ghost {
+  border: 1px solid rgb(var(--line) / 0.9);
+  background: rgb(var(--card) / 0.72);
+}
+.btn-danger {
+  background: rgb(var(--bad) / 0.055);
+}
+button:not(:disabled), a[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+button:active, a.btn:active {
+  transform: translateY(1px) scale(0.985);
+}
+button:disabled {
+  cursor: not-allowed;
+}
+.avora-launcher-trigger {
+  display: inline-flex;
+  min-height: 3.1rem;
+  align-items: center;
+  gap: 0.6rem;
+  border: 1px solid rgb(var(--accent2) / 0.5);
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem 0.45rem 0.55rem;
+  background: linear-gradient(135deg, rgb(var(--card)), rgb(var(--base)));
+  color: rgb(var(--main));
+  box-shadow: 0 10px 28px rgb(0 0 0 / 0.16);
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+}
+.avora-launcher-trigger-icon {
+  display: grid;
+  width: 2.1rem;
+  height: 2.1rem;
+  place-items: center;
+  border-radius: 999px;
+  background: linear-gradient(145deg, rgb(var(--accent)), rgb(var(--accent2)));
+  color: rgb(var(--onaccent));
+}
+.avora-launcher-menu {
+  border-color: rgb(var(--line) / 0.9);
+  animation: avora-menu-in 150ms ease both;
+}
+.avora-launcher-option {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 0.9rem;
+  padding: 0.55rem 0.65rem;
+  color: rgb(var(--main));
+  text-align: right;
+  transition: background 150ms ease, transform 150ms ease;
+}
+.avora-launcher-option:hover {
+  background: rgb(var(--accent) / 0.09);
+}
+.avora-launcher-option-icon {
+  display: grid;
+  width: 2.35rem;
+  height: 2.35rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgb(var(--line));
+  border-radius: 0.8rem;
+  background: rgb(var(--base) / 0.85);
+  color: rgb(var(--accent2));
+}
+.avora-launcher-option strong,
+.avora-launcher-option small {
+  display: block;
+}
+.avora-launcher-option strong {
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+.avora-launcher-option small {
+  margin-top: 0.15rem;
+  color: rgb(var(--muted));
+  font-size: 0.68rem;
+}
+@keyframes avora-menu-in {
+  from { opacity: 0; transform: translateY(5px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (max-width: 767px) {
+  .btn { min-height: 2.65rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .avora-launcher-menu { animation: none; }
+}
