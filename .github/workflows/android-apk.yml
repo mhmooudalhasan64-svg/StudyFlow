@@ -64,7 +64,7 @@ jobs:
 
       - name: Build web app for Android
         env:
-          VITE_API_BASE_URL: https://studyflow-preview-preview.up.railway.app
+          VITE_API_BASE_URL: https://aurevonteam-mhm23.vercel.app
         run: npm run build
 
       - name: Create or sync Android project
