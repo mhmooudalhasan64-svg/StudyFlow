@@ -88,7 +88,7 @@ public class NativeAudioCapturePlugin extends Plugin {
             projection = manager.getMediaProjection(result.getResultCode(), result.getData());
             if (projection == null) throw new IllegalStateException("تعذّر بدء جلسة التقاط النظام.");
             projection.registerCallback(new MediaProjection.Callback() {
-                @Override public void onStop() { stopCapture(); notifyCaptureError("أوقف Android جلسة التقاط صوت الجهاز."); }
+                @Override public void onStop() { if (running) { stopCapture(); notifyCaptureError("أوقف Android جلسة التقاط صوت الجهاز."); } }
             }, null);
             startAudioPipeline();
             JSObject response = new JSObject();
