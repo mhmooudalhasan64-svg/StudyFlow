@@ -1,6 +1,6 @@
 {
   "name": "NativeAudioCapture",
   "version": "1.0.0",
-  "description": "Captures permitted Android media playback and streams it to system speech recognition",
+  "description": "Captures permitted Android media playback and transcribes it locally with bundled whisper.cpp",
   "platforms": ["android"]
 }
