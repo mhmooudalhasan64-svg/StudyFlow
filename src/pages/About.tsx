@@ -37,7 +37,7 @@ function PartnershipIdentity() {
         <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-slate-300">تتكامل الخبرة التقنية مع تجربة التعلم والذكاء الاصطناعي ضمن منظومة مترابطة؛ لكل علامة دور واضح، ولكل دور قيمة يلمسها المستخدم.</p>
       </div>
 
-      <div className="relative grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="relative grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <article className="rounded-2xl border border-white/10 bg-white/[0.055] p-4 text-center backdrop-blur-sm">
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-slate-300/20 bg-slate-200/10 text-slate-100 shadow-lg"><Building2 size={26} /></span>
           <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">AUREVON</p>
@@ -59,25 +59,17 @@ function PartnershipIdentity() {
           <p className="mt-3 text-xs leading-6 text-slate-200">المساعد الذكي المستقل داخل VAYORA: يشرح الدروس، يجيب عن الأسئلة، ويدعم التفاعل النصي والصوتي.</p>
           <span className="mt-4 inline-flex rounded-full border border-violet-200/25 bg-violet-100/10 px-3 py-1 text-[10px] font-bold text-violet-100">المساعدة الذكية</span>
         </article>
-        <article className="rounded-2xl border border-emerald-300/25 bg-gradient-to-b from-emerald-400/15 to-emerald-950/20 p-4 text-center">
-          <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-emerald-200/25 bg-emerald-100/10 text-emerald-100 shadow-lg"><BrainCircuit size={26} /></span>
-          <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">SKOVA</p>
-          <p className="mt-1 text-sm font-bold text-emerald-100">سكوفا · محرك التدريس التكيفي</p>
-          <p className="mt-3 text-xs leading-6 text-slate-200">يقرأ أدلة التعلّم الحديثة، ويراعي الثقة وحجم العينة، ثم يكيّف مستوى التحدي والتلميحات وطريقة الشرح دون تثبيت الطالب في تصنيف دائم.</p>
-          <span className="mt-4 inline-flex rounded-full border border-emerald-200/25 bg-emerald-100/10 px-3 py-1 text-[10px] font-bold text-emerald-100">التكيّف والإتقان</span>
-        </article>
       </div>
 
       <div className="relative rounded-2xl border border-white/10 bg-black/15 p-4 sm:p-5">
         <div className="mb-4 flex items-center justify-center gap-2 text-xs font-bold text-sky-100"><Layers3 size={15} /> كيف تتكامل المنظومة؟</div>
-        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-2 sm:grid-cols-3">
           <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-slate-100">01 · AUREVON</p><p className="mt-1 text-[11px] leading-5 text-slate-300">تحدد الرؤية وتبني الأساس التقني</p></div>
           <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-sky-100">02 · VAYORA</p><p className="mt-1 text-[11px] leading-5 text-slate-300">تحوّل التقنية إلى رحلة تعلم منظمة</p></div>
           <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-violet-100">03 · AVORA</p><p className="mt-1 text-[11px] leading-5 text-slate-300">تضيف التفاعل والمساندة الذكية</p></div>
-          <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-emerald-100">04 · SKOVA</p><p className="mt-1 text-[11px] leading-5 text-slate-300">تكيّف التدريس وفق أدلة تعلّم الطالب</p></div>
         </div>
-        <p className="mt-4 text-center text-sm font-extrabold tracking-wide">AUREVON تقود · VAYORA تجمع · AVORA تشرح · SKOVA تكيّف</p>
-        <p className="mt-1 text-center text-[10px] text-slate-400">هوية مستقلة لكل علامة، وتجربة متناسقة للمستخدم.</p>
+        <p className="mt-4 text-center text-sm font-extrabold tracking-wide">AUREVON تقود · VAYORA تجمع · AVORA تشرح</p>
+        <p className="mt-1 text-center text-[10px] text-slate-400">ثلاث هويات متكاملة، وتجربة تعليمية متناسقة للمستخدم.</p>
       </div>
 
       <div className="relative grid gap-3 sm:grid-cols-2">
