@@ -308,8 +308,25 @@ export function buildLearnerProfile(ctx: AdvisorContext): string {
 
   if (ctx.attempts.length > 0) {
     const ok = ctx.attempts.filter((a) => a.correct).length;
-    parts.push(`حلّ ${ctx.attempts.length} سؤالاً بدقة ${Math.round((ok / ctx.attempts.length) * 100)}%.`);
+    parts.push(`حلّ ${ctx.attempts.length} سؤالاً بدقة إجمالية ${Math.round((ok / ctx.attempts.length) * 100)}%.`);
+
+    // SKOVA adapts from recent evidence, not a permanent label: use the latest
+    // ten attempts per subject and avoid conclusions from fewer than three.
+    const subjectIds = [...new Set(ctx.attempts.map((a) => a.subjectId))];
+    const recentSignals = subjectIds.flatMap((subjectId) => {
+      const recent = ctx.attempts
+        .filter((a) => a.subjectId === subjectId)
+        .sort((a, b) => b.at - a.at)
+        .slice(0, 10);
+      if (recent.length < 3) return [];
+      const accuracy = Math.round((recent.filter((a) => a.correct).length / recent.length) * 100);
+      const subjectName = name(subjectId) ?? 'مادة غير محددة';
+      return [`${subjectName}: ${accuracy}% في آخر ${recent.length} محاولات`];
+    }).slice(0, 5);
+    if (recentSignals.length) {
+      parts.push(`مؤشرات SKOVA الحديثة (آخر المحاولات، وليست حكماً ثابتاً على المستوى): ${recentSignals.join('؛ ')}.`);
+    }
   }
 
-  return parts.join(' ').slice(0, 600);
+  return parts.join(' ').slice(0, 700);
 }
