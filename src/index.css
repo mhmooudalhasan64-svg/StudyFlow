@@ -535,3 +535,142 @@ button:disabled {
 @media (prefers-reduced-motion: reduce) {
   .avora-launcher-menu { animation: none; }
 }
+
+
+/* ── VAYORA × AUREVON: luxury technology design system ── */
+:root {
+  --base: 246 247 249;
+  --card: 255 255 255;
+  --main: 20 27 39;
+  --muted: 104 112 125;
+  --line: 218 222 229;
+  --accent: 166 126 57;
+  --accent2: 196 157 83;
+  --accent3: 225 202 151;
+  --onaccent: 22 25 31;
+}
+.dark {
+  --base: 10 14 22;
+  --card: 18 24 35;
+  --main: 239 242 247;
+  --muted: 160 169 182;
+  --line: 52 62 77;
+  --accent: 196 157 83;
+  --accent2: 218 183 112;
+  --accent3: 238 216 164;
+  --onaccent: 18 22 30;
+}
+body {
+  background-image:
+    radial-gradient(58rem 32rem at 100% -12%, rgb(196 157 83 / 0.095), transparent 58%),
+    radial-gradient(48rem 30rem at -8% 100%, rgb(34 55 83 / 0.07), transparent 62%);
+}
+.dark body {
+  background-image:
+    radial-gradient(58rem 32rem at 100% -12%, rgb(196 157 83 / 0.105), transparent 58%),
+    radial-gradient(48rem 30rem at -8% 100%, rgb(39 61 91 / 0.2), transparent 62%);
+}
+.app-sidebar {
+  background: linear-gradient(180deg, rgb(var(--card) / .96), rgb(var(--base) / .92));
+  border-inline-end-color: rgb(var(--accent2) / .22);
+}
+.app-mobile-header, .app-mobile-nav {
+  background: rgb(var(--card) / .94);
+  border-color: rgb(var(--accent2) / .2);
+}
+.vayora-brand { min-width: 0; text-decoration: none; }
+.vayora-brand-mark {
+  display: grid; width: 2.8rem; height: 2.8rem; flex: 0 0 auto;
+  place-items: center; border: 1px solid rgb(var(--accent2) / .42);
+  border-radius: 1rem; background: linear-gradient(145deg, rgb(20 30 46), rgb(37 48 65));
+  box-shadow: 0 5px 16px rgb(18 28 42 / .2), inset 0 1px 0 rgb(255 255 255 / .18);
+}
+.vayora-brand-name {
+  color: rgb(var(--main)); font-size: 1.08rem; font-weight: 950;
+  letter-spacing: .13em; line-height: 1.1;
+}
+.vayora-brand-parent {
+  display: inline-flex; align-items: center; gap: .3rem;
+  color: rgb(var(--accent)); font-size: .52rem; font-weight: 900;
+  letter-spacing: .16em;
+}
+.vayora-brand-parent span { color: rgb(var(--accent2)); font-size: .55rem; }
+.vayora-brand-hero {
+  border-color: rgb(218 183 112 / .38);
+  background:
+    radial-gradient(ellipse at 12% 5%, rgb(218 183 112 / .19), transparent 43%),
+    radial-gradient(ellipse at 92% 95%, rgb(47 75 105 / .48), transparent 48%),
+    linear-gradient(135deg, #0c1421 0%, #17263a 56%, #202c3d 100%);
+  box-shadow: 0 22px 58px rgb(8 15 25 / .2), inset 0 1px 0 rgb(255 255 255 / .1);
+}
+.vayora-brand-hero .text-sky-100,
+.vayora-brand-hero .text-sky-200\/80 { color: #e5c98e !important; }
+.vayora-brand-hero .border-sky-400\/20 { border-color: rgb(218 183 112 / .3) !important; }
+.vayora-brand-hero .bg-white\/10 { background: rgb(218 183 112 / .12) !important; }
+.vayora-brand-hero .text-slate-200 { color: #d4dbe5 !important; }
+.aurevon-ecosystem {
+  border-color: rgb(218 183 112 / .34);
+  background:
+    radial-gradient(ellipse at 8% 0%, rgb(218 183 112 / .14), transparent 42%),
+    radial-gradient(ellipse at 100% 100%, rgb(43 65 92 / .42), transparent 45%),
+    linear-gradient(135deg, #0a1220, #142338 58%, #1c293b);
+}
+.aurevon-ecosystem .text-sky-100,
+.aurevon-ecosystem .text-sky-200\/80 { color: #e5c98e !important; }
+.aurevon-ecosystem .border-sky-300\/30,
+.aurevon-ecosystem .border-sky-200\/25 { border-color: rgb(218 183 112 / .34) !important; }
+.aurevon-ecosystem .bg-sky-400\/15,
+.aurevon-ecosystem .bg-sky-100\/10 { background-color: rgb(218 183 112 / .12) !important; }
+.aurevon-ecosystem .text-violet-100,
+.aurevon-ecosystem .text-violet-200 { color: #d8c39a !important; }
+.dashboard-hero {
+  border-color: rgb(var(--accent2) / .28);
+  background:
+    radial-gradient(ellipse at 8% 8%, rgb(var(--accent2) / .15), transparent 48%),
+    radial-gradient(ellipse at 94% 90%, rgb(42 65 91 / .09), transparent 42%),
+    linear-gradient(135deg, rgb(var(--card) / .99), rgb(var(--card) / .88));
+}
+.dashboard-orb { border-color: rgb(var(--accent2) / .18); }
+.dashboard-stat-icon {
+  border-color: rgb(var(--accent2) / .3);
+  background: linear-gradient(145deg, rgb(var(--accent3) / .2), rgb(var(--accent) / .1));
+}
+.feature-icon {
+  --feature-rgb: 176 139 75 !important;
+  border-color: rgb(var(--accent2) / .3);
+  color: rgb(var(--accent)) !important;
+  background: linear-gradient(145deg, rgb(var(--accent3) / .18), rgb(var(--accent) / .055));
+}
+.dark .feature-icon {
+  color: rgb(var(--accent3)) !important;
+  background: linear-gradient(145deg, rgb(var(--accent3) / .16), rgb(var(--accent) / .07));
+}
+.btn-primary {
+  border-color: rgb(var(--accent2) / .62);
+  background: linear-gradient(125deg, #b58b4c, #e0c38a);
+  color: #171b23;
+  box-shadow: 0 7px 18px rgb(151 111 48 / .2);
+}
+.btn-primary:hover { background: linear-gradient(125deg, #c39a5a, #ecd5a4); }
+.btn-ghost:hover, .input:focus {
+  border-color: rgb(var(--accent2) / .65);
+}
+aside nav a[aria-current='page'] {
+  border-color: rgb(var(--accent2) / .32);
+  background: linear-gradient(100deg, rgb(var(--accent2) / .17), rgb(var(--accent3) / .055));
+  color: rgb(var(--accent));
+}
+.app-mobile-nav a[aria-current='page'] { color: rgb(var(--accent)); }
+.avora-launcher-trigger {
+  border-color: rgb(var(--accent2) / .55);
+  background: linear-gradient(135deg, rgb(var(--card)), rgb(var(--base)));
+}
+.avora-launcher-trigger-icon {
+  background: linear-gradient(145deg, #b58b4c, #e0c38a);
+}
+.card { box-shadow: 0 9px 28px rgb(16 25 39 / .045), inset 0 1px 0 rgb(255 255 255 / .18); }
+.dark .card { box-shadow: 0 10px 30px rgb(0 0 0 / .16), inset 0 1px 0 rgb(255 255 255 / .035); }
+@media (max-width: 767px) {
+  .vayora-brand-mark { width: 2.55rem; height: 2.55rem; border-radius: .9rem; }
+  .vayora-brand-name { font-size: 1rem; }
+}

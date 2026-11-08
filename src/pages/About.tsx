@@ -9,7 +9,7 @@ const pillars = [
 
 function BrandHero() {
   return (
-    <section className="relative isolate overflow-hidden rounded-3xl border border-sky-400/20 bg-gradient-to-br from-[#10233D] via-[#172E50] to-[#263D68] p-6 text-center text-white shadow-xl sm:p-9">
+    <section className="vayora-brand-hero relative isolate overflow-hidden rounded-3xl border p-6 text-center text-white shadow-xl sm:p-9">
       <div className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full border border-sky-200/15 shadow-[0_0_0_24px_rgb(125_211_252/0.035),0_0_0_48px_rgb(165_180_252/0.025)]" />
       <div className="relative mx-auto grid h-20 w-20 place-items-center rounded-[1.6rem] border border-white/20 bg-white/10 shadow-lg backdrop-blur">
         <img src="/icon.svg" alt="رمز VAYORA الهندسي" className="h-14 w-14" />
@@ -28,7 +28,7 @@ function BrandHero() {
 
 function PartnershipIdentity() {
   return (
-    <section className="relative isolate space-y-6 overflow-hidden rounded-3xl border border-sky-400/20 bg-gradient-to-br from-[#0B172A] via-[#142945] to-[#25254B] p-5 text-white shadow-2xl shadow-slate-950/15 sm:p-7">
+    <section className="aurevon-ecosystem relative isolate space-y-6 overflow-hidden rounded-3xl border p-5 text-white shadow-2xl sm:p-7">
       <div className="pointer-events-none absolute -left-20 -top-24 h-64 w-64 rounded-full bg-sky-400/10 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-24 -right-16 h-64 w-64 rounded-full bg-violet-400/10 blur-3xl" />
       <div className="relative text-center">

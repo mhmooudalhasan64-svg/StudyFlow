@@ -356,12 +356,14 @@ function OfflineChip() {
 
 function Brand() {
   return (
-    <a href="#/home" className="flex items-center gap-2.5">
-      <img src="/icon.svg" alt="" width={36} height={36} className="h-9 w-9 rounded-xl object-cover" />
+    <a href="#/home" className="vayora-brand flex items-center gap-3" aria-label="VAYORA by AUREVON — الرئيسية">
+      <span className="vayora-brand-mark">
+        <img src="/icon.svg" alt="" width={38} height={38} className="h-9 w-9 object-contain" />
+      </span>
       <span className="flex flex-col leading-tight">
-        <span className="text-lg font-extrabold tracking-[0.08em]" dir="ltr">VAYORA</span>
+        <span className="vayora-brand-name" dir="ltr">VAYORA</span>
         <span className="text-[10px] text-muted">فايورا · منصة تعليمية ذكية</span>
-        <span className="mt-0.5 text-[8px] font-bold tracking-[0.14em] text-accent/80" dir="ltr">AN AUREVON COMPANY</span>
+        <span className="vayora-brand-parent mt-1" dir="ltr"><span aria-hidden="true">◆</span> AUREVON TECHNOLOGY</span>
       </span>
     </a>
   );

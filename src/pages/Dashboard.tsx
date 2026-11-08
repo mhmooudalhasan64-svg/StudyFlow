@@ -82,7 +82,7 @@ export default function Dashboard() {
         <div className="dashboard-orb dashboard-orb-one" aria-hidden="true" />
         <div className="dashboard-orb dashboard-orb-two" aria-hidden="true" />
         <div className="relative z-10">
-          <p className="mb-5 text-xs font-semibold text-accent">✦ مساحة إنجازك اليومية</p>
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-semibold text-accent">✦ مساحة إنجازك اليومية</p><span className="rounded-full border border-accent/25 bg-accent/5 px-3 py-1 text-[9px] font-black tracking-[0.16em] text-accent" dir="ltr">VAYORA · BY AUREVON</span></div>
           <div className="flex flex-col items-center gap-5 sm:flex-row sm:justify-between">
             <div className="order-2 flex-1 text-center sm:order-1 sm:text-start">
               <p className="text-sm text-muted">مدة دراستك اليوم</p>
