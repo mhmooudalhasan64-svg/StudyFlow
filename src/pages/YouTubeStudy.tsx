@@ -266,7 +266,7 @@ export default function YouTubeStudy() {
         {error && <p role="alert" className="text-sm text-bad">{error}</p>}
         {answer && <div className="rounded-xl border border-subtle p-4 space-y-2"><h3 className="font-bold">إجابة AVORA</h3><p className="text-sm leading-7 whitespace-pre-wrap">{answer}</p></div>}
         <p className="text-xs leading-5 text-muted">
-          يعتمد التقاط صوت النظام على إصدار Android وخدمة التعرّف المثبّتة وسياسة التقاط الصوت في التطبيق المشغّل. قد تمنع بعض الفيديوهات أو التطبيقات التقاط الصوت. في نسخة الويب يُستخدم الميكروفون وقد تتم معالجة الصوت بواسطة خدمة التعرّف في المتصفح أو نظام التشغيل.
+          على Android تتم معالجة الصوت محلياً بمحرك Whisper المضمّن، ولا يعتمد تحويله إلى نص على خدمة تعرّف خارجية. قد يمنع Android التقاط صوت بعض التطبيقات أو الفيديوهات وفق سياسة الحماية. في نسخة الويب يبقى الالتقاط عبر الميكروفون وخدمة التعرّف المتاحة في المتصفح.
         </p>
       </section>
     </div>
