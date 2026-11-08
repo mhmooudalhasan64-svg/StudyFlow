@@ -112,8 +112,12 @@ export default function YouTubeStudy() {
         nativeListenersRef.current = [transcriptListener, errorListener];
         activeRef.current = true;
         await NativeAudioCapture.start();
-        nativeCaptureRef.current = true;
-        setCapturing(true);
+        // A native capture error can arrive before start() resolves; do not
+        // overwrite that stopped/error state with a false active state.
+        if (activeRef.current) {
+          nativeCaptureRef.current = true;
+          setCapturing(true);
+        }
         return;
       } catch (captureError) {
         nativeListenersRef.current.forEach(listener => void listener.remove());
