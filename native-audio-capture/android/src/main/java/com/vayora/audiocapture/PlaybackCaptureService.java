@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
@@ -12,6 +13,25 @@ import android.os.IBinder;
 public final class PlaybackCaptureService extends Service {
     private static final String CHANNEL_ID = "vayora_playback_capture";
     private static final int NOTIFICATION_ID = 7401;
+    private static Runnable pendingReadyCallback;
+
+    public static void startAfterConsent(Context context, Runnable onReady) {
+        synchronized (PlaybackCaptureService.class) {
+            pendingReadyCallback = onReady;
+        }
+        Intent intent = new Intent(context, PlaybackCaptureService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
+    }
+
+    public static void clearPendingCallback() {
+        synchronized (PlaybackCaptureService.class) {
+            pendingReadyCallback = null;
+        }
+    }
 
     @Override
     public void onCreate() {
@@ -41,6 +61,22 @@ public final class PlaybackCaptureService extends Service {
         }
     }
 
-    @Override public int onStartCommand(Intent intent, int flags, int startId) { return START_NOT_STICKY; }
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Runnable callback;
+        synchronized (PlaybackCaptureService.class) {
+            callback = pendingReadyCallback;
+            pendingReadyCallback = null;
+        }
+        if (callback != null) callback.run();
+        return START_NOT_STICKY;
+    }
+
     @Override public IBinder onBind(Intent intent) { return null; }
+
+    @Override
+    public void onDestroy() {
+        clearPendingCallback();
+        super.onDestroy();
+    }
 }
