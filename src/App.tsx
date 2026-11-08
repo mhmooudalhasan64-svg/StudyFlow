@@ -14,6 +14,7 @@ import {
   Search,
   X,
   HelpCircle,
+  ChevronDown,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useApp } from './store';
@@ -157,11 +158,16 @@ export default function App() {
   const [searchText, setSearchText] = useState('');
   const [hintVisible, setHintVisible] = useState(false);
   const [avoraCallOpen, setAvoraCallOpen] = useState(false);
+  const [avoraToolsOpen, setAvoraToolsOpen] = useState(false);
   const route = useHashRoute();
   const online = useOnline();
   const visibleNav = NAV;
   const visibleMobileNav = MOBILE_NAV;
   const searchResults = SEARCH_PAGES.filter((item) => (item.label + ' ' + item.keywords).toLowerCase().includes(searchText.trim().toLowerCase()));
+
+  useEffect(() => {
+    setAvoraToolsOpen(false);
+  }, [route]);
 
   useEffect(() => {
     try { setHintVisible(Boolean(PAGE_HINTS[route]) && localStorage.getItem('studyflow-hint-' + route) !== '1'); }
@@ -231,38 +237,40 @@ export default function App() {
         </div>
       )}
       {route !== 'assistant' && route !== 'home' && (
-      <div className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-30 flex flex-row-reverse items-center gap-2 md:bottom-6 md:right-6">
-        <button
-          type="button"
-          aria-label="بدء مكالمة صوتية مع المعلم AVORA"
-          title="مكالمة المعلم الصوتية"
-          onClick={() => setAvoraCallOpen(true)}
-          className="inline-flex items-center gap-2 rounded-full border border-sky-300/30 bg-gradient-to-l from-[#17283d] via-[#194b66] to-[#28516a] px-3 py-2 text-white shadow-xl shadow-slate-950/25 transition hover:border-sky-200/60 hover:brightness-110 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-300"
-        >
-          <span className="relative grid h-7 w-7 place-items-center rounded-full border border-sky-200/35 bg-sky-300/15 text-sky-100">
-            <Phone size={16} />
-            <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#194b66] bg-cyan-300" />
-          </span>
-          <span className="flex flex-col text-right leading-tight">
-            <span className="text-xs font-extrabold tracking-wide">مكالمة المعلم</span>
-            <span className="text-[9px] text-white/75">AVORA الصوتي</span>
-          </span>
-        </button>
-        <a
-          href="#/assistant"
-          aria-label="فتح المساعد الدراسي النصي"
-          title="المساعد الدراسي — محادثة نصية مع AVORA"
-          className="inline-flex items-center gap-2 rounded-full border border-violet-300/30 bg-gradient-to-l from-[#20243a] via-[#343252] to-[#30435c] px-3 py-2 text-white shadow-xl shadow-slate-950/25 transition hover:border-violet-200/60 hover:brightness-110 hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-300"
-        >
-          <span className="grid h-7 w-7 place-items-center rounded-full border border-violet-200/35 bg-violet-300/15 text-violet-100">
-            <Bot size={16} />
-          </span>
-          <span className="flex flex-col text-right leading-tight">
-            <span className="text-xs font-extrabold tracking-wide">المساعد</span>
-            <span className="text-[9px] text-white/75">محادثة نصية</span>
-          </span>
-        </a>
-      </div>
+        <div className="avora-launcher fixed bottom-[calc(5.2rem+env(safe-area-inset-bottom))] right-4 z-30 flex flex-col items-end gap-2 md:bottom-6 md:right-6">
+          {avoraToolsOpen && (
+            <div id="avora-launcher-menu" className="avora-launcher-menu flex min-w-[13.5rem] flex-col gap-1.5 rounded-2xl border border-line bg-card/95 p-2 shadow-2xl backdrop-blur-xl" role="group" aria-label="أدوات AVORA">
+              <button
+                type="button"
+                onClick={() => { setAvoraToolsOpen(false); setAvoraCallOpen(true); }}
+                className="avora-launcher-option"
+              >
+                <span className="avora-launcher-option-icon"><Phone size={17} /></span>
+                <span><strong>مكالمة المعلم</strong><small>محادثة صوتية مباشرة</small></span>
+              </button>
+              <a
+                href="#/assistant"
+                onClick={() => setAvoraToolsOpen(false)}
+                className="avora-launcher-option"
+              >
+                <span className="avora-launcher-option-icon"><Bot size={17} /></span>
+                <span><strong>المساعد الدراسي</strong><small>محادثة وشرح وملفات</small></span>
+              </a>
+            </div>
+          )}
+          <button
+            type="button"
+            aria-label={avoraToolsOpen ? "إغلاق أدوات AVORA" : "فتح أدوات AVORA"}
+            aria-expanded={avoraToolsOpen}
+            aria-controls="avora-launcher-menu"
+            onClick={() => setAvoraToolsOpen((open) => !open)}
+            className="avora-launcher-trigger"
+          >
+            <span className="avora-launcher-trigger-icon">{avoraToolsOpen ? <X size={19} /> : <Bot size={20} />}</span>
+            <span>AVORA</span>
+            <ChevronDown size={15} className={avoraToolsOpen ? "rotate-180 transition-transform" : "transition-transform"} />
+          </button>
+        </div>
       )}      <Suspense fallback={null}><VoiceTeacher open={avoraCallOpen} onClose={() => setAvoraCallOpen(false)} /></Suspense>
       {/* الشريط الجانبي (شاشات كبيرة) */}
       <aside className="app-sidebar sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
