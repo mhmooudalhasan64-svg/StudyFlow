@@ -1,0 +1,6 @@
+{
+  "name": "NativeAudioCapture",
+  "version": "1.0.0",
+  "description": "Captures permitted Android media playback and streams it to system speech recognition",
+  "platforms": ["android"]
+}
