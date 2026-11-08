@@ -29,6 +29,16 @@ function environment(): Record<string, string | undefined> {
 }
 
 function pickProvider(raw: Record<string, string | undefined>): Provider | null {
+  const groqKey = clean(raw.GROQ_API_KEY);
+  if (groqKey) {
+    return {
+      name: 'Groq',
+      key: groqKey,
+      endpoint: 'https://api.groq.com/openai/v1/chat/completions',
+      model: 'openai/gpt-oss-20b',
+    };
+  }
+
   const geminiKey = clean(raw.GEMINI_API_KEY);
   if (geminiKey) {
     return {
@@ -434,7 +444,7 @@ async function handlePost(request: Request): Promise<Response> {
   const started = Date.now();
   let upstream: Response | null = null;
 
-  if (extraUsageConsent || provider.name === 'OpenRouter') {
+  if (extraUsageConsent || provider.name === 'OpenRouter' || provider.name === 'Groq') {
     const fallbackKey = extraUsageConsent ? clean(environment().OPENAI_API_KEY) : provider.key;
     if (!fallbackKey) {
       return json({ error: 'خيار الاستمرار غير متاح حالياً. يمكنك المحاولة بعد تجدد الرصيد المجاني.' }, 503);
@@ -505,7 +515,7 @@ async function handlePost(request: Request): Promise<Response> {
   type ChatCompletion = { choices?: { message?: { content?: string } }[] };
   type GeminiCompletion = { candidates?: { content?: { parts?: { text?: string }[] } }[] };
   const rawData = await upstream.json().catch(() => null) as (ChatCompletion & GeminiCompletion) | null;
-  let reply = extraUsageConsent || provider.name === 'OpenRouter'
+  let reply = extraUsageConsent || provider.name === 'OpenRouter' || provider.name === 'Groq'
     ? rawData?.choices?.[0]?.message?.content?.trim() || ''
     : rawData?.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('').trim() || '';
   const arabicRequest = /[\u0600-\u06FF]/.test(messages[messages.length - 1].content);
