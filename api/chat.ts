@@ -389,6 +389,21 @@ async function readBoundedJson(request: Request): Promise<{ body: unknown } | { 
 }
 
 async function handlePost(request: Request): Promise<Response> {
+  // Reject browser-origin requests unless the exact origin is explicitly trusted.
+  // Native Capacitor origins are allowlisted below; requests without Origin remain
+  // available to native clients and server-to-server callers.
+  const origin = request.headers.get('origin');
+  if (origin && !isAllowedOrigin(origin)) {
+    return json({ error: 'مصدر الطلب غير مسموح.' }, 403);
+  }
+  const contentType = request.headers.get('content-type') ?? '';
+  if (!/^application\\/json(?:\\s*;|$)/i.test(contentType)) {
+    return json({ error: 'نوع محتوى الطلب غير مدعوم.' }, 415);
+  }
+  const declaredLength = Number(request.headers.get('content-length'));
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_REQUEST_BYTES) {
+    return json({ error: 'حجم الطلب أكبر من الحد المسموح.' }, 413);
+  }
   const provider = pickProvider(environment());
   if (!provider) return json({ error: 'المساعد غير مفعّل بعد: لم يُضبط مفتاح الخدمة على الخادم.' }, 503);
 
@@ -527,6 +542,10 @@ const CONFIGURED_WEB_ORIGINS = new Set(
     .map((origin) => origin.trim())
     .filter(Boolean),
 );
+
+function isAllowedOrigin(origin: string): boolean {
+  return MOBILE_APP_ORIGINS.has(origin) || CONFIGURED_WEB_ORIGINS.has(origin);
+}
 
 function withCors(response: Response, request: Request): Response {
   const origin = request.headers.get('origin');
