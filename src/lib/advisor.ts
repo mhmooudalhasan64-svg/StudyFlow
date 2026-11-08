@@ -321,7 +321,27 @@ export function buildLearnerProfile(ctx: AdvisorContext): string {
       if (recent.length < 3) return [];
       const accuracy = Math.round((recent.filter((a) => a.correct).length / recent.length) * 100);
       const subjectName = name(subjectId) ?? 'مادة غير محددة';
-      return [`${subjectName}: ${accuracy}% في آخر ${recent.length} محاولات`];
+      const latestFive = recent.slice(0, 5);
+      const previousFive = recent.slice(5, 10);
+      const latestAccuracy = Math.round((latestFive.filter((a) => a.correct).length / latestFive.length) * 100);
+      const previousAccuracy = previousFive.length >= 3
+        ? Math.round((previousFive.filter((a) => a.correct).length / previousFive.length) * 100)
+        : null;
+      const trend = previousAccuracy === null
+        ? 'لا توجد مقارنة زمنية كافية'
+        : latestAccuracy >= previousAccuracy + 15
+          ? 'تحسّن حديث'
+          : latestAccuracy <= previousAccuracy - 15
+            ? 'تراجع حديث'
+            : 'أداء مستقر تقريباً';
+      const nextStep = accuracy < 50
+        ? 'ابدأ بمفهوم أصغر ومثال محلول وتلميح'
+        : accuracy < 70
+          ? 'ثبّت الفهم بتدريب متوسط وتغذية راجعة'
+          : accuracy < 85
+            ? 'ارفع التحدي تدريجياً مع مراجعة الأخطاء'
+            : 'انتقل إلى تطبيق أعمق واسترجاع متباعد';
+      return [`${subjectName}: ${accuracy}% في آخر ${recent.length} محاولات؛ ${trend}؛ الخطوة المقترحة: ${nextStep}`];
     }).slice(0, 5);
     if (recentSignals.length) {
       parts.push(`مؤشرات SKOVA الحديثة (آخر المحاولات، وليست حكماً ثابتاً على المستوى): ${recentSignals.join('؛ ')}.`);
