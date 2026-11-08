@@ -160,6 +160,7 @@ public class NativeAudioCapturePlugin extends Plugin {
         return result.toString();
     }
 
+    @android.annotation.TargetApi(Build.VERSION_CODES.Q)
     private void startAudioPipeline() throws Exception {
         AudioPlaybackCaptureConfiguration config = new AudioPlaybackCaptureConfiguration.Builder(projection)
             .addMatchingUsage(android.media.AudioAttributes.USAGE_MEDIA)
