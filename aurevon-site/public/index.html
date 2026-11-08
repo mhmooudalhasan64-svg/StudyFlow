@@ -9,7 +9,7 @@
 <meta property="og:locale" content="ar_AR">
 <meta name="twitter:card" content="summary">
 <meta name="description" content="AUREVON TECH — أوريفون تيك. شركة تقنية تطوّر منتجات رقمية، وتقدّم VAYORA كمنصتها التعليمية الذكية.">
-<meta property="og:title" content="AUREVON — نبني ما هو قادم"><meta property="og:description" content="AUREVON TECH — حلول رقمية ورؤية تقنية تركز على تجربة المستخدم.">
+<meta property="og:title" content="AUREVON TECH — نبني ما هو قادم"><meta property="og:description" content="AUREVON TECH — حلول رقمية ورؤية تقنية تركز على تجربة المستخدم.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <title>AUREVON TECH — أوريفون تيك | نبني ما هو قادم</title>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"AUREVON TECH","alternateName":"أوريفون تيك","url":"https://aurevon-website-production.up.railway.app/","description":"مظلّة تقنية لتطوير منتجات رقمية متكاملة.","brand":[{"@type":"Brand","name":"VAYORA"}]}</script>
@@ -37,31 +37,57 @@ header{background:#080808e8}.word small{color:#a7a7a7}.navbtn,.primary{backgroun
 .mark path:first-child{stroke:#dedede}.mark path:last-child{stroke:#fff}.core svg path:first-child{stroke:#ddd}.core svg path:last-child{stroke:#fff}
 .products{grid-template-columns:minmax(0,1fr)}.featured{max-width:850px;width:100%}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}}
+/* Premium refinement */
+:root{--max:1200px}
+::selection{background:#d9d9d9;color:#080808}
+html{scroll-padding-top:100px}
+.hero{padding-top:104px;padding-bottom:86px;position:relative}
+.hero:after{content:"";position:absolute;bottom:0;right:50%;width:min(78%,900px);height:1px;background:linear-gradient(90deg,transparent,#ffffff30,transparent);transform:translateX(50%)}
+.eyebrow,.gold,.label{letter-spacing:.16em}
+.card,.principle,.cta,.node,.navbtn,.btn{transition:transform .25s ease,border-color .25s ease,background .25s ease,box-shadow .25s ease}
+.card:hover,.principle:hover{transform:translateY(-4px);border-color:#ffffff48;box-shadow:0 18px 48px #0007}
+.featured{border-color:#ffffff38;box-shadow:0 24px 70px #0008}
+.featured .prodname{font-size:clamp(32px,5vw,48px);letter-spacing:.19em}
+.featured .prodicon{width:60px;height:60px;border-radius:18px;font-size:28px}
+section{position:relative}
+section:nth-of-type(even){background:linear-gradient(180deg,transparent,#ffffff03,transparent)}
+.head{margin-bottom:34px}
+.head h2{letter-spacing:-.025em}
+.principle{min-height:120px}
+.cta{padding:38px;border-radius:26px;box-shadow:0 24px 70px #0008}
+.cta h2{font-size:clamp(23px,3vw,32px)}
+footer .brand{opacity:.92}
+.reveal-ready .reveal{opacity:0;transform:translateY(18px)}
+.reveal-ready .reveal.is-visible{opacity:1;transform:translateY(0);transition:opacity .65s ease,transform .65s ease}
+@media(max-width:780px){.hero{padding-top:54px;padding-bottom:54px}.hero:after{width:90%}.cta{padding:25px}.principle{min-height:unset}}
+@media(prefers-reduced-motion:reduce){.reveal-ready .reveal,.reveal-ready .reveal.is-visible{opacity:1;transform:none;transition:none}}
+
 </style></head>
 <body>
 <a class="skip" href="#main">تجاوز إلى المحتوى</a>
 <header><div class="wrap nav">
-<a class="brand" href="#home" aria-label="AUREVON"><svg class="mark" viewBox="0 0 64 64" fill="none"><path d="M32 5 57 19v26L32 59 7 45V19Z" stroke="#72D9E7" stroke-width="2"/><path d="m18 42 14-25 14 25M24 32h16" stroke="#EDF8FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="word">AUREVON TECH<small>TECHNOLOGY & DIGITAL PRODUCTS</small></span></a>
-<nav class="links" aria-label="التنقل الرئيسي"><a href="#about">عن الشركة</a><a href="#services">مجالات العمل</a><a href="#products">VAYORA</a><a href="#vision">رؤيتنا</a></nav>
+<a class="brand" href="#home" aria-label="AUREVON TECH"><svg class="mark" viewBox="0 0 64 64" fill="none"><path d="M32 5 57 19v26L32 59 7 45V19Z" stroke="#72D9E7" stroke-width="2"/><path d="m18 42 14-25 14 25M24 32h16" stroke="#EDF8FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="word">AUREVON TECH<small>TECHNOLOGY & DIGITAL PRODUCTS</small></span></a>
+<nav class="links" aria-label="التنقل الرئيسي"><a href="#about">عن الشركة</a><a href="#services">مجالات العمل</a><a href="#products">VAYORA</a><a href="#vayora-experience">تجربة التعلّم</a><a href="#vision">منهجنا</a></nav>
 <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu">القائمة</button>
 <a class="navbtn" href="#products">اكتشف منتجاتنا ←</a>
-</div><nav class="mobile-links" id="mobile-menu" aria-label="التنقل عبر الهاتف"><a href="#about">عن الشركة</a><a href="#services">مجالات العمل</a><a href="#products">VAYORA</a><a href="#vision">رؤيتنا</a></nav></header>
+</div><nav class="mobile-links" id="mobile-menu" aria-label="التنقل عبر الهاتف"><a href="#about">عن الشركة</a><a href="#services">مجالات العمل</a><a href="#products">VAYORA</a><a href="#vayora-experience">تجربة التعلّم</a><a href="#vision">منهجنا</a></nav></header>
 <main id="main">
 <section class="hero" id="home"><div class="wrap hero-grid">
-<div><div class="eyebrow">AUREVON TECH · DIGITAL INNOVATION</div><h1>نبني التقنية<br><span class="shine">لتصنع أثراً.</span></h1><p class="lead">أوريفون مظلّة تقنية تطوّر منتجات رقمية متكاملة، تجمع بين التصميم المدروس والهندسة الذكية وتجربة استخدام واضحة.</p><div class="actions"><a class="btn primary" href="#products">استكشف منتجاتنا ←</a><a class="btn ghost" href="#about">تعرّف على أوريفون</a></div><div class="note">رؤية واحدة · منتجات متخصصة · تجارب مترابطة</div></div>
+<div><div class="eyebrow">AUREVON TECH · DIGITAL INNOVATION</div><h1>نحوّل الأفكار<br><span class="shine">إلى تجارب ذكية.</span></h1><p class="lead">أوريفون تيك شركة تقنية تركّز على ابتكار وتطوير المنتجات الرقمية، حيث تلتقي الرؤية الواضحة مع التصميم المتقن والهندسة العملية لصناعة تجارب رقمية ذات قيمة.</p><div class="actions"><a class="btn primary" href="#products">استكشف منتجاتنا ←</a><a class="btn ghost" href="#about">تعرّف على أوريفون</a></div><div class="note">THINK CLEARLY&nbsp; · &nbsp;BUILD INTELLIGENTLY&nbsp; · &nbsp;MOVE FORWARD</div></div>
 <div class="visual"><div class="orbit"><div class="core"><svg viewBox="0 0 100 100" fill="none"><path d="M50 9 88 31v38L50 91 12 69V31Z" stroke="#73DCE8" stroke-width="2.4"/><path d="m28 66 22-39 22 39M37 51h26" stroke="#F0F8FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="node n1"><b>IDEAS</b><span>من الرؤية إلى الفكرة</span></div><div class="node n2"><b>ENGINEERING</b><span>هندسة تصنع الحلول</span></div><div class="node n3"><b>EXPERIENCE</b><span>تجربة تتمحور حول الإنسان</span></div></div></div>
 </div></section>
-<section id="about"><div class="wrap"><div class="head"><div class="gold">WHO WE ARE</div><h2>مظلّة واحدة، لبناء منتجات ذات معنى</h2><p>نعمل على تحويل الأفكار إلى منتجات رقمية عملية، مع اهتمام بالوضوح والاعتمادية وقابلية التطوير.</p></div><div class="about"><article class="card"><span class="tag">01 · الرؤية</span><h3>نبدأ من المشكلة الحقيقية</h3><p>نبحث عن احتياج واضح، ثم نبني حوله تجربة رقمية تساعد المستخدم على الإنجاز بطريقة أبسط وأكثر تنظيماً.</p></article><article class="card"><span class="tag">02 · المنهج</span><h3>التكامل قبل التعقيد</h3><p>نربط التصميم بالتقنية، ونطوّر المنتجات على مراحل، مع إعطاء الأولوية للفائدة الفعلية وسهولة الاستخدام.</p></article></div></div></section>
+<section id="about"><div class="wrap"><div class="head"><div class="gold">ABOUT AUREVON TECH</div><h2>تقنية برؤية واضحة، ومنتجات تصنع فرقاً</h2><p>نطوّر حلولاً رقمية تنطلق من احتياجات حقيقية، ونجمع في بنائها بين التفكير المنهجي والتصميم وتجربة المستخدم.</p></div><div class="about"><article class="card"><span class="tag">01 · الرؤية</span><h3>نبدأ من المشكلة الحقيقية</h3><p>نبحث عن احتياج واضح، ثم نبني حوله تجربة رقمية تساعد المستخدم على الإنجاز بطريقة أبسط وأكثر تنظيماً.</p></article><article class="card"><span class="tag">02 · المنهج</span><h3>التكامل قبل التعقيد</h3><p>نربط التصميم بالتقنية، ونطوّر المنتجات على مراحل، مع إعطاء الأولوية للفائدة الفعلية وسهولة الاستخدام.</p></article></div></div></section>
 <section id="services"><div class="wrap"><div class="head"><div class="gold">WHAT WE DO</div><h2>مجالات نطوّر فيها الحلول الرقمية</h2><p>نركّز على بناء منتجات رقمية عملية، تجمع بين التقنية وتجربة المستخدم.</p></div><div class="principles"><div class="principle"><b>تطوير المنتجات الرقمية</b><span>تحويل الأفكار والمتطلبات إلى تجارب ومنصات رقمية قابلة للتطوير.</span></div><div class="principle"><b>التقنيات التعليمية</b><span>تصميم تجارب تعلم رقمية تدعم التنظيم والفهم والتفاعل.</span></div><div class="principle"><b>الذكاء الاصطناعي</b><span>دمج قدرات ذكية داخل المنتجات بما يخدم الاستخدام الفعلي.</span></div></div></div></section>
 <section id="products"><div class="wrap"><div class="head"><div class="gold">OUR PRODUCTS</div><h2>منتجنا الرقمي</h2><p>نركّز في عرض منتجاتنا على VAYORA، منصتنا التعليمية الذكية.</p></div><div class="products">
 <article class="card featured"><div class="prodtop"><div class="prodicon">V</div><span class="label">AUREVON PRODUCT · 01</span></div><h3 class="prodname">VAYORA</h3><p>منصة تعليمية ذكية تجمع تنظيم الدراسة، أدوات التركيز والمراجعة، والاختبارات، مع أدوات مساعدة تدعم رحلة الطالب التعليمية.</p><a class="btn primary" href="https://study-flow-one-sand.vercel.app/" target="_blank" rel="noopener">افتح منصة VAYORA ↗</a><p class="tiny">متاحة عبر الويب، ويمكن إضافتها إلى الشاشة الرئيسية من متصفح أندرويد.</p></article>
 
 </div></div></section>
-<section id="vision"><div class="wrap"><div class="head"><div class="gold">OUR PRINCIPLES</div><h2>كيف نفكر في بناء المنتجات؟</h2></div><div class="principles"><div class="principle"><b>تصميم واضح</b><span>واجهات مفهومة تقلل التعقيد وتسهّل الوصول إلى الوظائف.</span></div><div class="principle"><b>تقنية مسؤولة</b><span>اهتمام بالاعتمادية والخصوصية والأمان منذ مراحل البناء.</span></div><div class="principle"><b>تطوير مستمر</b><span>تحسينات تدريجية مبنية على الاستخدام والملاحظات.</span></div></div></div></section>
+<section id="vision"><div class="wrap"><div class="head"><div class="gold">THE AUREVON APPROACH</div><h2>من الفكرة إلى تجربة تستحق الاستخدام</h2><p>منهج عمل يوازن بين الفائدة، الوضوح، والاستمرارية.</p></div><div class="principles"><div class="principle"><b>تصميم واضح</b><span>واجهات مفهومة تقلل التعقيد وتسهّل الوصول إلى الوظائف.</span></div><div class="principle"><b>تقنية مسؤولة</b><span>اهتمام بالاعتمادية والخصوصية والأمان منذ مراحل البناء.</span></div><div class="principle"><b>تطوير مستمر</b><span>تحسينات تدريجية مبنية على الاستخدام والملاحظات.</span></div></div></div></section>
+<section id="vayora-experience"><div class="wrap"><div class="head"><div class="gold">INSIDE VAYORA</div><h2>مساحة واحدة لتنظيم رحلة التعلّم</h2><p>تجمع VAYORA أدوات تساعد الطالب على إدارة وقته، متابعة تقدّمه، والتفاعل مع المحتوى التعليمي.</p></div><div class="principles"><div class="principle"><b>تنظيم الدراسة</b><span>ترتيب المهام والجلسات الدراسية ضمن مساحة واضحة.</span></div><div class="principle"><b>التركيز وإدارة الوقت</b><span>أدوات تساعد على بناء جلسات تركيز أكثر انتظاماً.</span></div><div class="principle"><b>التعلّم والتقييم</b><span>مراجعة واختبارات لدعم الفهم ومتابعة مستوى التقدّم.</span></div></div></div></section>
 <section><div class="wrap"><div class="cta"><div><h2>اكتشف VAYORA وابدأ تجربتك</h2><p>انتقل إلى المنصة التعليمية وجرّب أدواتها من هاتفك أو حاسوبك.</p></div><a class="btn primary" href="https://study-flow-one-sand.vercel.app/" target="_blank" rel="noopener">الدخول إلى المنصة ↗</a></div></div></section>
 </main>
-<footer><div class="wrap foot"><a class="brand" href="#home"><svg class="mark" viewBox="0 0 64 64" fill="none"><path d="M32 5 57 19v26L32 59 7 45V19Z" stroke="#72D9E7" stroke-width="2"/><path d="m18 42 14-25 14 25M24 32h16" stroke="#EDF8FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="word">AUREVON<small>TECHNOLOGY & DIGITAL PRODUCTS</small></span></a><span>© 2026 AUREVON TECH · جميع الحقوق محفوظة</span></div></footer>
+<footer><div class="wrap foot"><a class="brand" href="#home"><svg class="mark" viewBox="0 0 64 64" fill="none"><path d="M32 5 57 19v26L32 59 7 45V19Z" stroke="#72D9E7" stroke-width="2"/><path d="m18 42 14-25 14 25M24 32h16" stroke="#EDF8FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="word">AUREVON TECH<small>TECHNOLOGY & DIGITAL PRODUCTS</small></span></a><span>© 2026 AUREVON TECH · جميع الحقوق محفوظة</span></div></footer>
 <script>
-(()=>{const toggle=document.querySelector(".menu-toggle");const menu=document.querySelector("#mobile-menu");if(!toggle||!menu)return;toggle.addEventListener("click",()=>{const open=toggle.getAttribute("aria-expanded")!=="true";toggle.setAttribute("aria-expanded",String(open));menu.classList.toggle("open",open)});menu.querySelectorAll("a").forEach(link=>link.addEventListener("click",()=>{toggle.setAttribute("aria-expanded","false");menu.classList.remove("open")}));document.addEventListener("keydown",event=>{if(event.key==="Escape"){toggle.setAttribute("aria-expanded","false");menu.classList.remove("open")}})})();
+(()=>{const revealItems=document.querySelectorAll(".head,.card,.principle,.cta,.visual");if("IntersectionObserver" in window&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches){document.documentElement.classList.add("reveal-ready");revealItems.forEach(item=>item.classList.add("reveal"));const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add("is-visible");observer.unobserve(entry.target)}}),{threshold:.12});revealItems.forEach(item=>observer.observe(item))}const toggle=document.querySelector(".menu-toggle");const menu=document.querySelector("#mobile-menu");if(!toggle||!menu)return;toggle.addEventListener("click",()=>{const open=toggle.getAttribute("aria-expanded")!=="true";toggle.setAttribute("aria-expanded",String(open));menu.classList.toggle("open",open)});menu.querySelectorAll("a").forEach(link=>link.addEventListener("click",()=>{toggle.setAttribute("aria-expanded","false");menu.classList.remove("open")}));document.addEventListener("keydown",event=>{if(event.key==="Escape"){toggle.setAttribute("aria-expanded","false");menu.classList.remove("open")}})})();
 </script>
 </body></html>
