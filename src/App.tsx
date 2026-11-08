@@ -105,7 +105,7 @@ const MOBILE_NAV: NavItem[] = [
   { route: 'more', label: 'المزيد', Icon: MoreHorizontal },
 ];
 
-const PAGES: Record<Route, ComponentType> = {
+const PAGES: Record<Route, ComponentType<any>> = {
   home: Dashboard,
   plan: Planner,
   timer: TimerPage,
