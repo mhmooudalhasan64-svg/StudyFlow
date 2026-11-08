@@ -8,11 +8,9 @@ import android.content.res.AssetManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioPlaybackCaptureConfiguration;
-import android.media.MediaRecorder;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
-import android.os.ParcelFileDescriptor;
 
 import com.getcapacitor.ActivityResult;
 import com.getcapacitor.JSObject;
@@ -29,8 +27,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.security.MessageDigest;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @CapacitorPlugin(
     name = "NativeAudioCapture",
@@ -180,7 +180,7 @@ public class NativeAudioCapturePlugin extends Plugin {
             .build();
         if (recorder.getState() != AudioRecord.STATE_INITIALIZED) throw new IllegalStateException("تعذّر تهيئة التقاط صوت الوسائط.");
 
-        inferenceExecutor = Executors.newSingleThreadExecutor();
+        inferenceExecutor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(1), new ThreadPoolExecutor.DiscardOldestPolicy());
         recorder.startRecording();
         if (recorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) throw new IllegalStateException("لم يبدأ التقاط صوت النظام.");
         running = true;
@@ -256,6 +256,7 @@ public class NativeAudioCapturePlugin extends Plugin {
         }
         if (inferenceExecutor != null) {
             inferenceExecutor.shutdownNow();
+            try { inferenceExecutor.awaitTermination(2, TimeUnit.SECONDS); } catch (InterruptedException interrupted) { Thread.currentThread().interrupt(); }
             inferenceExecutor = null;
         }
         captureThread = null;
