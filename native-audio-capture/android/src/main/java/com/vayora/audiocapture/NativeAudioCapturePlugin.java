@@ -82,21 +82,15 @@ public class NativeAudioCapturePlugin extends Plugin {
 
     private void requestProjection(PluginCall call) {
         try {
-            Intent serviceIntent = new Intent(getContext(), PlaybackCaptureService.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                getContext().startForegroundService(serviceIntent);
-            } else {
-                getContext().startService(serviceIntent);
-            }
             MediaProjectionManager manager = (MediaProjectionManager) getContext().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
             startActivityForResult(call, manager.createScreenCaptureIntent(), "projectionResult");
         } catch (Exception error) {
-            stopProjectionService();
-            call.reject("تعذّر تجهيز خدمة التقاط صوت النظام: " + error.getMessage());
+            call.reject("تعذّر طلب موافقة Android على التقاط صوت النظام: " + error.getMessage());
         }
     }
 
     private void stopProjectionService() {
+        PlaybackCaptureService.clearPendingCallback();
         try {
             getContext().stopService(new Intent(getContext(), PlaybackCaptureService.class));
         } catch (Exception ignored) {}
@@ -110,6 +104,15 @@ public class NativeAudioCapturePlugin extends Plugin {
             call.reject("ألغيت موافقة Android على التقاط صوت الجهاز.");
             return;
         }
+        try {
+            PlaybackCaptureService.startAfterConsent(getContext(), () -> initializeProjection(call, result));
+        } catch (Exception error) {
+            stopProjectionService();
+            call.reject("تعذّر تشغيل خدمة التقاط صوت النظام: " + error.getMessage());
+        }
+    }
+
+    private void initializeProjection(PluginCall call, ActivityResult result) {
         try {
             MediaProjectionManager manager = (MediaProjectionManager) getContext().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
             projection = manager.getMediaProjection(result.getResultCode(), result.getData());
