@@ -1,14 +1,13 @@
-import { useMemo, useState, type ChangeEvent } from 'react';
+import { useMemo, useState } from 'react';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
-import { Captions, Download, ExternalLink, FileText, Loader2, Play, Send, Youtube, Compass } from 'lucide-react';
+import { Download, ExternalLink, Youtube, Compass, MessageCircle } from 'lucide-react';
 import { PageTitle } from '../components/ui';
-import { askVideo } from '../lib/chatStore';
 
 function youtubeId(value: string): string | null {
   try {
     const url = new URL(value.trim().startsWith('http') ? value.trim() : `https://${value.trim()}`);
-    const host = url.hostname.toLowerCase().replace(/^www\./, '');
+    const host = url.hostname.toLowerCase().replace(/^www\\./, '');
     if (!['youtube.com', 'm.youtube.com', 'youtu.be', 'youtube-nocookie.com'].includes(host)) return null;
     const parts = url.pathname.split('/').filter(Boolean);
     const id = host === 'youtu.be'
@@ -20,38 +19,13 @@ function youtubeId(value: string): string | null {
   }
 }
 
-function cleanTranscript(raw: string): string {
-  return raw
-    .replace(/^\uFEFF/, '')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/^WEBVTT.*$/gim, '')
-    .replace(/^NOTE.*$/gim, '')
-    .replace(/^\d+\s*$/gm, '')
-    .replace(/^\d{1,2}:\d{2}(?::\d{2})?[.,]\d{3}\s+-->.*$/gm, '')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/\r/g, '')
-    .replace(/[ \t]+/g, ' ')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
-}
-
 export default function YouTubeStudy() {
   const [url, setUrl] = useState('');
-  const [transcript, setTranscript] = useState('');
   const [question, setQuestion] = useState('');
-  const [answer, setAnswer] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const [sourceName, setSourceName] = useState('ترجمة فيديو YouTube');
-
   const videoId = useMemo(() => youtubeId(url), [url]);
   const videoUrl = videoId ? `https://www.youtube.com/watch?v=${videoId}` : '';
 
   const openYouTube = async () => {
-    setError('');
     try {
       if (Capacitor.isNativePlatform()) {
         await Browser.open({ url: 'https://m.youtube.com', presentationStyle: 'fullscreen', toolbarColor: '#10233D' });
@@ -60,80 +34,29 @@ export default function YouTubeStudy() {
         if (!opened) window.location.assign('https://m.youtube.com');
       }
     } catch {
-      setError('تعذّر فتح YouTube. تحقق من اتصال الإنترنت ثم حاول مجدداً.');
-    }
-  };
-
-  const loadSubtitle = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    event.target.value = '';
-    if (!file) return;
-    setError('');
-    if (file.size > 1_000_000) {
-      setError('ملف الترجمة كبير. الحد الأقصى 1 ميغابايت.');
-      return;
-    }
-    if (!/\.(vtt|srt|txt)$/i.test(file.name)) {
-      setError('الملفات المدعومة: VTT وSRT وTXT.');
-      return;
-    }
-    try {
-      const text = cleanTranscript(await file.text()).slice(0, 8000);
-      if (text.length < 20) throw new Error('لم نعثر على نص كافٍ داخل ملف الترجمة.');
-      setTranscript(text);
-      setSourceName(file.name);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'تعذّرت قراءة ملف الترجمة.');
-    }
-  };
-
-  const analyze = async () => {
-    if (!videoId) {
-      setError('أدخل رابط YouTube صحيحاً أولاً.');
-      return;
-    }
-    if (transcript.trim().length < 20) {
-      setError('أضف نص الترجمة أو التفريغ أولاً؛ لا يمكن تحليل كلام الفيديو من الرابط وحده.');
-      return;
-    }
-    if (!question.trim()) {
-      setError('اكتب سؤالك عن الفيديو.');
-      return;
-    }
-    setBusy(true);
-    setError('');
-    setAnswer('');
-    try {
-      const result = await askVideo({
-        question: question.trim(),
-        title: sourceName,
-        transcript: transcript.trim(),
-      });
-      setAnswer(result);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'تعذّر تحليل الفيديو.');
-    } finally {
-      setBusy(false);
+      window.location.assign('https://m.youtube.com');
     }
   };
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <PageTitle title="YouTube داخل VAYORA" subtitle="تصفّح الدروس وافتحها من داخل التطبيق، ثم ناقش محتواها مع AVORA." />
+      <PageTitle title="YouTube داخل VAYORA" subtitle="تصفّح YouTube وابحث عن الدروس وشاهدها من داخل تجربة VAYORA." />
 
       <section className="card space-y-3">
         <div className="flex items-center gap-2">
           <Youtube size={22} className="text-rose-500" />
           <h2 className="font-bold">تصفّح YouTube من داخل VAYORA</h2>
         </div>
-        <p className="text-sm leading-6 text-muted">افتح واجهة YouTube الكاملة في نافذة تصفح مدمجة مع التطبيق، وابحث عن الدروس وشاهدها. على نسخة Android الأصلية تُفتح عبر نافذة المتصفح المدمجة من Capacitor؛ وعلى نسخة الويب قد تُفتح في تبويب جديد.</p>
+        <p className="text-sm leading-6 text-muted">
+          افتح واجهة YouTube لتبحث عن الفيديوهات وتتصفحها وتشاهدها. في تطبيق Android تُفتح نافذة تصفح مدمجة؛ أما نسخة الويب فقد تفتح YouTube في تبويب جديد بسبب قيود المتصفح.
+        </p>
         <button type="button" className="btn btn-primary w-full" onClick={() => void openYouTube()}>
-          <Compass size={17} /> فتح YouTube داخل التطبيق
+          <Compass size={17} /> فتح YouTube
         </button>
-        <div className="border-t border-line pt-3">
-          <h3 className="font-semibold">تحليل فيديو بواسطة AVORA</h3>
-          <p className="text-xs leading-5 text-muted">بعد اختيار الفيديو من YouTube، انسخ رابطه وضعه أدناه. أضف نص الترجمة لتسأل AVORA عن محتواه.</p>
-        </div>
+      </section>
+
+      <section className="card space-y-3">
+        <h2 className="font-bold">مشاهدة فيديو داخل VAYORA</h2>
         <label className="label" htmlFor="youtube-url">رابط الفيديو</label>
         <input
           id="youtube-url"
@@ -143,7 +66,7 @@ export default function YouTubeStudy() {
           inputMode="url"
           placeholder="https://www.youtube.com/watch?v=..."
           value={url}
-          onChange={(event) => { setUrl(event.target.value); setAnswer(''); setError(''); }}
+          onChange={(event) => setUrl(event.target.value)}
         />
         {videoId ? (
           <>
@@ -166,66 +89,37 @@ export default function YouTubeStudy() {
               </a>
             </div>
             <p className="text-xs leading-5 text-muted">
-              التنزيل متاح فقط عبر خيارات YouTube الرسمية عندما يسمح الفيديو والمنطقة والحساب بذلك. لا يوفر التطبيق تنزيل ملفات الفيديو من خوادم YouTube.
+              التنزيل متاح فقط عبر خيارات YouTube الرسمية عندما يسمح الفيديو والمنطقة والحساب بذلك. لا يتيح VAYORA تنزيل ملفات الفيديو من خوادم YouTube.
             </p>
           </>
         ) : url.trim() ? (
           <p className="text-xs text-bad">الرابط غير صالح. استخدم رابط فيديو عادي أو Shorts أو youtu.be.</p>
         ) : (
-          <p className="text-xs text-muted">يدعم روابط الفيديو العادية وShorts وروابط youtu.be.</p>
+          <p className="text-xs text-muted">أدخل رابط فيديو عادي أو Shorts أو youtu.be لعرضه هنا.</p>
         )}
       </section>
 
       <section className="card space-y-3">
         <div className="flex items-center gap-2">
-          <Captions size={20} className="text-accent" />
-          <h2 className="font-bold">إضافة الترجمة أو التفريغ النصي</h2>
+          <MessageCircle size={19} className="text-accent" />
+          <h2 className="font-bold">اسأل AVORA عن الفيديو</h2>
         </div>
         <p className="text-sm leading-6 text-muted">
-          للحصول على تحليل دقيق، الصق نص الترجمة أو ارفع ملف ترجمة VTT أو SRT أو TXT. لا يستطيع التطبيق سحب ترجمة كل فيديو تلقائياً؛ بعض الفيديوهات لا توفر ترجمة أو تمنع الوصول إليها.
+          هذه الإمكانية قيد التطوير: سيحلّل AVORA محتوى الفيديو مباشرةً دون أن تطلب المنصة منك رفع ترجمة أو نسخ نص يدوياً. لن نقدّم إجابات عن فيديو لم يتمكن النظام فعلياً من قراءة محتواه.
         </p>
-        <label className="btn btn-ghost w-full cursor-pointer">
-          <FileText size={16} /> رفع ملف ترجمة
-          <input className="sr-only" type="file" accept=".vtt,.srt,.txt,text/vtt,text/plain" onChange={(event) => void loadSubtitle(event)} />
-        </label>
-        <textarea
-          className="input min-h-40 resize-y"
-          value={transcript}
-          onChange={(event) => { setTranscript(event.target.value.slice(0, 8000)); setSourceName('ترجمة فيديو YouTube'); }}
-          maxLength={8000}
-          placeholder="الصق هنا نص الترجمة أو التفريغ النصي للفيديو..."
-          aria-label="نص ترجمة الفيديو"
-        />
-        <div className="flex justify-between text-xs text-muted">
-          <span>{sourceName}</span>
-          <span>{transcript.length.toLocaleString('ar')} / 8000</span>
-        </div>
-      </section>
-
-      <section className="card space-y-3">
-        <h2 className="font-bold">اسأل AVORA عن الفيديو</h2>
         <input
           className="input"
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
           maxLength={500}
-          placeholder="مثلاً: لخّص الدرس واشرح أهم الأفكار..."
+          placeholder="اكتب سؤالك عن الفيديو..."
           aria-label="سؤالك عن الفيديو"
+          disabled
         />
-        <button className="btn btn-primary w-full" type="button" onClick={() => void analyze()} disabled={busy || !videoId || transcript.trim().length < 20 || !question.trim()}>
-          {busy ? <><Loader2 size={17} className="animate-spin" /> جارٍ تحليل المحتوى…</> : <><Send size={17} /> اسأل AVORA</>}
+        <button className="btn btn-primary w-full" type="button" disabled>
+          اسأل AVORA — قريباً
         </button>
-        {error && <p className="text-sm text-bad" role="alert">{error}</p>}
-        {answer && (
-          <div className="rounded-xl border border-accent/25 bg-accent/5 p-4">
-            <div className="mb-2 flex items-center gap-2 font-bold"><Play size={16} className="text-accent" /> إجابة AVORA</div>
-            <p className="whitespace-pre-wrap text-sm leading-7">{answer}</p>
-          </div>
-        )}
       </section>
-      <p className="text-center text-xs leading-5 text-muted">
-        يُرسل نص الترجمة وسؤالك فقط إلى خدمة AVORA لتحليل المحتوى، ولا يُرفع ملف الفيديو نفسه.
-      </p>
     </div>
   );
 }
