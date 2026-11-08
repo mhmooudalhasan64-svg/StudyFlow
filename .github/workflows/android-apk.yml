@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: ["feat/vayora-aurevon-skova-identity"]
   push:
-    branches: ["main"]
+    branches: ["main", "feat/vayora-aurevon-skova-identity"]
     paths:
       - "src/**"
       - "public/**"
@@ -49,8 +49,10 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Set up Android NDK
+      - name: Set up Android SDK, NDK and CMake
         uses: android-actions/setup-android@v3
+      - name: Install Android native build tools
+        run: sdkmanager "ndk;27.2.12479018" "cmake;3.22.1"
 
       - name: Install web dependencies
         run: npm install --no-audit --no-fund
