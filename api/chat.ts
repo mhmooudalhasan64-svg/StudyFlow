@@ -315,7 +315,8 @@ async function overLimit(ip: string): Promise<boolean | null> {
 
   // Production must fail closed: Vercel instances do not share in-memory counters.
   // Configure both Upstash REST variables before enabling chat in production.
-  if (env.VERCEL === '1' || env.NODE_ENV === 'production') return null;
+  // Preview-only fallback: keep testing available without shared Redis. Production remains fail-closed.
+  if ((env.VERCEL === '1' || env.NODE_ENV === 'production') && env.VERCEL_ENV !== 'preview') return null;
 
   // Local-development fallback only.
   const day = new Date().toISOString().slice(0, 10);
@@ -526,7 +527,16 @@ const CONFIGURED_WEB_ORIGINS = new Set(
 );
 
 function isAllowedOrigin(origin: string): boolean {
-  return MOBILE_APP_ORIGINS.has(origin) || CONFIGURED_WEB_ORIGINS.has(origin);
+  let isThisVercelPreview = false;
+  try {
+    const parsed = new URL(origin);
+    isThisVercelPreview =
+      parsed.protocol === 'https:' &&
+      /^aurevonteam-[a-z0-9-]+-mhm23\\.vercel\\.app$/i.test(parsed.hostname);
+  } catch {
+    isThisVercelPreview = false;
+  }
+  return MOBILE_APP_ORIGINS.has(origin) || CONFIGURED_WEB_ORIGINS.has(origin) || isThisVercelPreview;
 }
 
 function withCors(response: Response, request: Request): Response {
