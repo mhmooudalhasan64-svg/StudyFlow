@@ -45,6 +45,9 @@ interface ChatState {
   setUseProfile: (v: boolean) => void;
   loading: boolean;
   error: string | null;
+  extraUsagePending: boolean;
+  continueWithExtraUsage: () => Promise<void>;
+  cancelExtraUsage: () => void;
   send: (text: string) => Promise<void>;
   clear: () => void;
   /** يعيد آخر محادثة محفوظة في الجهاز (إن لم توجد محادثة حالية) */
@@ -59,6 +62,7 @@ export const useChat = create<ChatState>((set, get) => ({
   setUseProfile: (useProfile) => set({ useProfile }),
   loading: false,
   error: null,
+  extraUsagePending: false,
 
   setAttachment: (attachment) => set({ attachment }),
 
@@ -81,10 +85,8 @@ export const useChat = create<ChatState>((set, get) => ({
   send: async (text) => {
     const content = text.trim();
     if (!content || get().loading) return;
-
     const messages = [...get().messages, { role: 'user' as const, content }];
-    set({ messages, loading: true, error: null });
-
+    set({ messages, loading: true, error: null, extraUsagePending: false });
     try {
       const res = await postChat({
         messages: messages.slice(-12),
@@ -93,21 +95,56 @@ export const useChat = create<ChatState>((set, get) => ({
         ...(get().useProfile ? { profile: learnerProfile() } : {}),
         ...(get().attachment ? { attachment: { name: get().attachment!.name, text: get().attachment!.text } } : {}),
       });
-      const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
+      const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string; code?: string };
+      if (res.status === 402 && data.code === 'extra_usage_consent_required') {
+        set({ loading: false, extraUsagePending: true, error: null });
+        return;
+      }
       if (!res.ok || !data.reply) {
         set({ loading: false, error: data.error ?? 'حدث خطأ، حاول مرة أخرى' });
         return;
       }
       const done = [...get().messages, { role: 'assistant' as const, content: data.reply }];
-      set({ loading: false, messages: done });
+      set({ loading: false, messages: done, extraUsagePending: false });
       void db.chatLogs.put({ key: 'main', messages: done.slice(-40), at: Date.now() }).catch(() => undefined);
     } catch {
       set({ loading: false, error: 'لا يوجد اتصال بالإنترنت. المساعد يحتاج إلى اتصال.' });
     }
   },
 
+  continueWithExtraUsage: async () => {
+    const current = get();
+    if (!current.extraUsagePending || current.loading || current.messages.length === 0) return;
+    set({ loading: true, error: null, extraUsagePending: false });
+    try {
+      const res = await postChat({
+        messages: current.messages.slice(-12),
+        extraUsageConsent: true,
+        ...(current.subject ? { subject: current.subject } : {}),
+        ...(current.style !== 'normal' ? { style: current.style } : {}),
+        ...(current.useProfile ? { profile: learnerProfile() } : {}),
+        ...(current.attachment ? { attachment: { name: current.attachment.name, text: current.attachment.text } } : {}),
+      });
+      const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
+      if (!res.ok || !data.reply) {
+        set({ loading: false, error: data.error ?? 'تعذّر تفعيل الاستخدام الإضافي حالياً.' });
+        return;
+      }
+      const done = [...get().messages, { role: 'assistant' as const, content: data.reply }];
+      set({ loading: false, messages: done, extraUsagePending: false });
+      void db.chatLogs.put({ key: 'main', messages: done.slice(-40), at: Date.now() }).catch(() => undefined);
+    } catch {
+      set({ loading: false, error: 'لا يوجد اتصال بالإنترنت. المساعد يحتاج إلى اتصال.' });
+    }
+  },
+
+  cancelExtraUsage: () => set({
+    extraUsagePending: false,
+    error: 'اخترت الانتظار حتى يتجدد رصيد AVORA AI المجاني.',
+  }),
+
   clear: () => {
-    set({ messages: [], attachment: null, error: null, loading: false });
+    set({ messages: [], attachment: null, error: null, loading: false, extraUsagePending: false });
     void db.chatLogs.delete('main').catch(() => undefined);
   },
 
