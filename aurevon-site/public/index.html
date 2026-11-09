@@ -310,6 +310,73 @@ header.scrolled{background:#08090bf5;border-color:#d6dce044;box-shadow:0 12px 36
 .mobile-links a:focus-visible{outline-offset:-2px;background:#ffffff12}
 @media(prefers-reduced-motion:reduce){.reading-progress span,.back-top{transition:none}}
 
+
+/* AUREVON signature composition — editorial hierarchy and restrained material depth */
+.hero{padding-top:clamp(88px,10vw,142px);padding-bottom:clamp(76px,9vw,118px);isolation:isolate}
+.hero:before{content:"";position:absolute;z-index:-1;inset:8% 0 4%;background:linear-gradient(112deg,transparent 8%,#d6dde408 48%,transparent 88%);pointer-events:none}
+.hero-grid{grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr);gap:clamp(32px,6vw,88px)}
+.hero-copy{position:relative;z-index:2;max-width:690px}
+.hero-copy h1{max-width:760px;font-size:clamp(48px,6.7vw,88px);line-height:1.08;letter-spacing:-.055em;text-wrap:balance}
+.hero-copy .lead{max-width:570px;font-size:clamp(14px,1.15vw,16px);line-height:2.05}
+.hero-copy .actions{margin-top:32px}
+.visual{min-height:490px;border:1px solid #d6dde41a;border-radius:48% 48% 34% 34% / 43% 43% 28% 28%;background:radial-gradient(ellipse at 50% 48%,#aeb8c014,transparent 56%),linear-gradient(145deg,#ffffff08,#ffffff00 58%);overflow:visible}
+.visual:before{content:"AUREVON";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-90deg);font-size:clamp(54px,7vw,96px);font-weight:950;letter-spacing:.22em;white-space:nowrap;color:#e5ebef08;pointer-events:none}
+.visual:after{content:"DIGITAL / SYSTEMS / EXPERIENCE";position:absolute;bottom:7%;left:50%;transform:translateX(-50%);direction:ltr;white-space:nowrap;font-size:8px;letter-spacing:.24em;color:#aeb8c077}
+.orbit{width:min(88%,430px);border-color:#dbe2e72b;background:radial-gradient(circle at 50% 48%,#b8c2cc13,transparent 66%);box-shadow:inset 0 0 100px #dce4ec0a,0 30px 100px #0006}
+.orbit-ring{border-color:#dce4ec32}
+.core{width:clamp(126px,13vw,166px);height:clamp(126px,13vw,166px);border-radius:42px;background:linear-gradient(145deg,#555d66,#15191e 72%);box-shadow:0 0 90px #cbd5df25,inset 0 1px #fff8}
+.node{border-color:#cbd5df38;background:linear-gradient(145deg,#22272dF2,#101317F2);box-shadow:0 16px 42px #0009}
+.signature-strip{position:relative;border-block:1px solid #dce2e51c;background:linear-gradient(90deg,#ffffff02,#dce2e508,#ffffff02)}
+.signature-inner{min-height:106px}
+.signature-item{position:relative}
+.signature-item:not(:last-child):after{content:"";position:absolute;inset-inline-end:0;top:22%;height:56%;width:1px;background:#dce2e51b}
+.signature-number{color:#d8dfe477}
+.section{padding-block:clamp(76px,8vw,112px)}
+.section-head{max-width:760px;margin-bottom:42px}
+.section-head h2{font-size:clamp(32px,4.2vw,52px);line-height:1.22;text-wrap:balance}
+.section-head p{max-width:650px;font-size:14px}
+.capabilities{gap:16px;counter-reset:cap}
+.capability{position:relative;min-height:238px;padding:29px 27px 26px;overflow:hidden;background:linear-gradient(145deg,#20252a9c,#101317c9);backdrop-filter:blur(14px)}
+.capability:after{counter-increment:cap;content:"0" counter(cap);position:absolute;top:20px;inset-inline-end:22px;color:#dbe1e51b;font-size:42px;font-weight:900;letter-spacing:-.06em;line-height:1}
+.cap-icon{width:48px;height:48px;border-radius:15px;background:linear-gradient(145deg,#515a63,#181c21);border-color:#dce2e53b;box-shadow:inset 0 1px #fff2,0 10px 25px #0004}
+.capability h3{font-size:19px;letter-spacing:-.02em}
+.capability p{max-width:34em;font-size:13px;line-height:2.05}
+.panel,.step,.principle,.product-side,details{background:linear-gradient(145deg,#20242a9c,#101317c9);backdrop-filter:blur(12px)}
+.product-main{background:radial-gradient(ellipse at 88% 8%,#d7c18c24,transparent 36%),linear-gradient(135deg,#292b2d,#101215 72%);border-color:#d8c18b45}
+.product-main .gold-badge{box-shadow:0 0 28px #c6a86a1a}
+.product-side{border-color:#dce2e522}
+.final-cta{background:radial-gradient(ellipse at 95% 0%,#c9b27a1c,transparent 38%),linear-gradient(115deg,#25292e,#101317);border-color:#dce2e52c}
+.btn{min-height:51px;border-radius:13px}
+.primary{background:linear-gradient(115deg,#f5f6f6,#aeb5bb);box-shadow:0 12px 35px #dce3e51a}
+.secondary{border-color:#dce2e544;background:#dce2e508}
+@media(max-width:900px){
+ .hero-grid{grid-template-columns:minmax(0,1fr) minmax(280px,.82fr);gap:24px}
+ .visual{min-height:380px}
+ .orbit{width:94%}
+}
+@media(max-width:760px){
+ .hero{padding-top:54px;padding-bottom:70px}
+ .hero-grid{grid-template-columns:1fr;gap:8px}
+ .visual{min-height:330px;width:min(100%,470px);margin-inline:auto;order:-1}
+ .visual:before{font-size:65px}
+ .hero-copy h1{font-size:clamp(43px,11vw,61px);line-height:1.13}
+ .hero-copy .lead{font-size:14px}
+ .signature-inner{min-height:unset}
+ .signature-item:not(:last-child):after{display:none}
+ .signature-item{border-bottom:1px solid #dce2e512}
+ .section-head{margin-bottom:28px}
+}
+@media(max-width:520px){
+ .visual{min-height:290px;border-radius:44% 44% 25% 25% / 35% 35% 20% 20%}
+ .visual:before{font-size:49px;letter-spacing:.16em}
+ .visual:after{font-size:7px;letter-spacing:.16em}
+ .orbit{width:86%}
+ .node{max-width:126px}
+ .capability{padding:24px;min-height:unset}
+ .capability:after{font-size:34px}
+}
+@media(prefers-reduced-motion:reduce){.orbit-ring{animation:none}}
+
 </style>
 </head>
 <body>
