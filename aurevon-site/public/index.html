@@ -536,6 +536,7 @@ const applyLanguage=(next)=>{
  language=next;
  document.documentElement.lang=next;
  document.documentElement.dir=next==="ar"?"rtl":"ltr";
+ document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{const key=el.getAttribute("data-i18n-placeholder");const value=translations[next][key];if(value!==undefined)el.setAttribute("placeholder",value);});
  document.querySelectorAll("[data-i18n]").forEach(el=>{
   const key=el.getAttribute("data-i18n");
   const value=translations[next][key];
@@ -568,8 +569,8 @@ if(inquiryForm){
   const timeline=selected("timeline").selectedOptions[0].textContent.trim();
   const details=String(data.get("details")||"").trim();
   const message=language==="ar"
-   ?["مرحباً فريق AUREVON TECH،","أرغب بمناقشة مشروع معكم.","","نوع الخدمة: "+service,"حالة المشروع: "+project,"الإطار الزمني: "+timeline,details?"ملخص الفكرة: "+details:"","أرجو التواصل معي لمناقشة التفاصيل والخطوة التالية."].filter(Boolean).join("\\n")
-   :["Hello AUREVON TECH team,","I would like to discuss a project with you.","","Service: "+service,"Project status: "+project,"Timeline: "+timeline,details?"Project brief: "+details:"","Please contact me to discuss the details and next steps."].filter(Boolean).join("\\n");
+   ?["مرحباً فريق AUREVON TECH،","أرغب بمناقشة مشروع معكم.","","نوع الخدمة: "+service,"حالة المشروع: "+project,"الإطار الزمني: "+timeline,details?"ملخص الفكرة: "+details:"","أرجو التواصل معي لمناقشة التفاصيل والخطوة التالية."].filter(Boolean).join("\n")
+   :["Hello AUREVON TECH team,","I would like to discuss a project with you.","","Service: "+service,"Project status: "+project,"Timeline: "+timeline,details?"Project brief: "+details:"","Please contact me to discuss the details and next steps."].filter(Boolean).join("\n");
   window.location.href="https://wa.me/963959990122?text="+encodeURIComponent(message);
  });
 }
