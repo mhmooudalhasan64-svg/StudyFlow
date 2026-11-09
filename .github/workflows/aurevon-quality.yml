@@ -1,0 +1,64 @@
+name: AUREVON Site Quality
+
+on:
+  pull_request:
+    branches: [aurevon-official-site]
+    paths:
+      - "aurevon-site/**"
+      - ".github/workflows/aurevon-quality.yml"
+  push:
+    branches: [aurevon-premium-refresh]
+    paths:
+      - "aurevon-site/**"
+      - ".github/workflows/aurevon-quality.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: HTML, links, translations and scripts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Validate AUREVON site
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          const file = 'aurevon-site/public/index.html';
+          const html = fs.readFileSync(file, 'utf8');
+          const fail = (message) => { console.error('FAIL:', message); process.exitCode = 1; };
+          const ids = [...html.matchAll(/\\bid=["']([^"']+)["']/g)].map(m => m[1]);
+          const duplicates = [...new Set(ids.filter((id, i) => ids.indexOf(id) !== i))];
+          if (duplicates.length) fail('Duplicate IDs: ' + duplicates.join(', '));
+          const anchors = [...html.matchAll(/href=["']#([^"']+)["']/g)].map(m => m[1]);
+          const missing = [...new Set(anchors.filter(id => !ids.includes(id)))];
+          if (missing.length) fail('Broken in-page links: ' + missing.join(', '));
+          const keys = [...new Set([...html.matchAll(/data-i18n(?:-placeholder)?=["']([^"']+)["']/g)].map(m => m[1]))];
+          const arStart = html.indexOf('ar:{');
+          const enStart = html.indexOf('en:{', arStart);
+          const end = html.indexOf('\\n};', enStart);
+          if (arStart < 0 || enStart < 0 || end < 0) fail('Could not locate Arabic/English translation dictionaries');
+          else {
+            const ar = html.slice(arStart, enStart);
+            const en = html.slice(enStart, end);
+            const has = (source, key) => new RegExp('\\\\b' + key + '\\\\s*:').test(source);
+            const missingAr = keys.filter(key => !has(ar, key));
+            const missingEn = keys.filter(key => !has(en, key));
+            if (missingAr.length) fail('Missing Arabic translations: ' + missingAr.join(', '));
+            if (missingEn.length) fail('Missing English translations: ' + missingEn.join(', '));
+          }
+          for (const match of html.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/gi)) {
+            if (/type=["']application\\/ld\\+json["']/i.test(match[0])) continue;
+            try { new vm.Script(match[1], { filename: 'inline-script.js' }); }
+            catch (error) { fail('Inline JavaScript syntax error: ' + error.message); }
+          }
+          if (!html.includes('id="project-inquiry"')) fail('Project inquiry form is missing');
+          if (!html.includes('productionHosts.includes(window.location.hostname)')) fail('Analytics is not restricted to the production hostname');
+          if (!html.includes('https://js.hs-scripts.com/149735987.js')) fail('HubSpot tracking script is missing');
+          if ((html.match(/property=["']og:type["']/g) || []).length !== 1) fail('Expected exactly one og:type declaration');
+          if (!html.includes('<meta name="viewport"')) fail('Responsive viewport metadata is missing');
+          if (!process.exitCode) console.log('AUREVON site quality checks passed.');
+          NODE
