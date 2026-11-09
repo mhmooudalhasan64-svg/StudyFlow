@@ -7,6 +7,11 @@
 <meta name="color-scheme" content="dark">
 <meta name="description" content="AUREVON TECH تطوّر منتجات رقمية وتجارب تعليمية ذكية عبر الاستراتيجية والتصميم والهندسة، وتقدّم VAYORA كمنصتها التعليمية.">
 <meta name="author" content="AUREVON TECH">
+<link rel="canonical" href="https://aurevon-website-production.up.railway.app/">
+<meta property="og:type" content="website">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"AUREVON TECH","url":"https://aurevon-website-production.up.railway.app/","description":"AUREVON TECH develops digital products, intelligent learning experiences and applied AI solutions.","brand":{"@type":"Brand","name":"AUREVON TECH"},"knowsAbout":["Digital product development","Educational technology","Artificial intelligence","User experience design"]}
+</script>
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ar_AR">
 <meta property="og:site_name" content="AUREVON TECH">
@@ -398,6 +403,18 @@ header.scrolled{background:#08090bf5;border-color:#d6dce044;box-shadow:0 12px 36
 @media(max-width:800px){.inquiry-shell{grid-template-columns:1fr;gap:26px}.inquiry-assurance{margin-top:18px}}
 @media(max-width:520px){.inquiry-shell{padding:21px 17px;border-radius:20px}.inquiry-fields{grid-template-columns:1fr;gap:13px}.inquiry-message{grid-column:auto}.inquiry-submit{width:100%}}
 
+
+/* Privacy-first HubSpot analytics consent */
+.analytics-consent{position:fixed;z-index:30;inset-inline:22px;bottom:22px;margin-inline:auto;width:min(760px,calc(100% - 44px));display:grid;grid-template-columns:1fr auto;align-items:center;gap:20px;padding:20px 22px;border:1px solid #d9e0e24a;border-radius:19px;background:linear-gradient(135deg,#1b2025f5,#0b0e11f7);box-shadow:0 24px 80px #000b;backdrop-filter:blur(20px)}
+.analytics-consent[hidden]{display:none}
+.consent-copy strong{display:block;font-size:13px;letter-spacing:-.01em;margin-bottom:4px}
+.consent-copy p{font-size:11px;line-height:1.9;color:#aeb6ba;margin:0;max-width:480px}
+.consent-actions{display:flex;gap:8px;flex-wrap:wrap}
+.consent-actions button{min-height:40px;padding:8px 13px;border-radius:10px;border:1px solid #ffffff38;background:#ffffff08;color:#f2f4f5;font:inherit;font-size:11px;font-weight:800;cursor:pointer}
+.consent-actions .consent-accept{background:linear-gradient(120deg,#f2f3f3,#aeb7bc);color:#101316;border-color:transparent}
+.consent-actions button:focus-visible{outline:2px solid #fff;outline-offset:3px}
+@media(max-width:620px){.analytics-consent{grid-template-columns:1fr;gap:12px;inset-inline:12px;bottom:12px;width:calc(100% - 24px);padding:16px}.consent-actions button{flex:1}}
+
 </style>
 </head>
 <body>
@@ -509,7 +526,7 @@ header.scrolled{background:#08090bf5;border-color:#d6dce044;box-shadow:0 12px 36
 (()=> {
 const translations = {
 ar:{
-skip:"تجاوز إلى المحتوى",nav_about:"من نحن",nav_work:"خبراتنا",nav_product:"VAYORA",nav_process:"كيف نعمل",nav_faq:"الأسئلة الشائعة",nav_contact:"تواصل معنا",contact_kicker:"تواصل مع أوريفون",contact_title:"لنبنِ شيئاً يستحق أن يُرى.",contact_desc:"هل لديك فكرة أو تحدٍ تريد تحويله إلى حل رقمي؟ تواصل مع فريق أوريفون لبدء حوار واضح حول احتياجك والخطوة التالية.",contact_note:"تواصل مباشر مع فريق AUREVON TECH",contact_whatsapp:"ابدأ محادثة عبر واتساب ↗",contact_call:"اتصل بفريقنا",contact_form_kicker:"PROJECT INTAKE",contact_form_title:"ابدأ طلب مشروعك",contact_form_desc:"أجب عن الحقول الأساسية، وسنجهّز رسالة واضحة لفريق أوريفون عبر واتساب.",contact_privacy:"لن تُرسل أي بيانات تلقائياً؛ ستراجع الرسالة وتؤكد إرسالها داخل واتساب.",contact_service_label:"ما الذي تريد تطويره؟",contact_service_website:"موقع إلكتروني احترافي",contact_service_platform:"منصة أو تطبيق ويب",contact_service_ai:"دمج الذكاء الاصطناعي",contact_service_learning:"منتج أو نظام تعليمي",contact_service_other:"استشارة أو فكرة أخرى",contact_project_label:"حالة المشروع",contact_project_new:"مشروع جديد",contact_project_improve:"تطوير مشروع قائم",contact_project_consult:"استشارة وتحديد المتطلبات",contact_timeline_label:"الإطار الزمني",contact_timeline_urgent:"في أقرب وقت",contact_timeline_month:"خلال 2–4 أسابيع",contact_timeline_flexible:"مرن، حسب خطة العمل",contact_details_label:"ملخص الفكرة (اختياري)",contact_details_placeholder:"اكتب ما تريد تحقيقه أو المشكلة التي تريد حلها...",contact_submit:"إرسال ملخص المشروع عبر واتساب ↗",nav_cta:"اكتشف VAYORA ↗",menu:"القائمة",
+skip:"تجاوز إلى المحتوى",nav_about:"من نحن",nav_work:"خبراتنا",nav_product:"VAYORA",nav_process:"كيف نعمل",nav_faq:"الأسئلة الشائعة",nav_contact:"تواصل معنا",contact_kicker:"تواصل مع أوريفون",contact_title:"لنبنِ شيئاً يستحق أن يُرى.",contact_desc:"هل لديك فكرة أو تحدٍ تريد تحويله إلى حل رقمي؟ تواصل مع فريق أوريفون لبدء حوار واضح حول احتياجك والخطوة التالية.",contact_note:"تواصل مباشر مع فريق AUREVON TECH",contact_whatsapp:"ابدأ محادثة عبر واتساب ↗",contact_call:"اتصل بفريقنا",contact_form_kicker:"PROJECT INTAKE",contact_form_title:"ابدأ طلب مشروعك",contact_form_desc:"أجب عن الحقول الأساسية، وسنجهّز رسالة واضحة لفريق أوريفون عبر واتساب.",contact_privacy:"لن تُرسل أي بيانات تلقائياً؛ ستراجع الرسالة وتؤكد إرسالها داخل واتساب.",contact_service_label:"ما الذي تريد تطويره؟",contact_service_website:"موقع إلكتروني احترافي",contact_service_platform:"منصة أو تطبيق ويب",contact_service_ai:"دمج الذكاء الاصطناعي",contact_service_learning:"منتج أو نظام تعليمي",contact_service_other:"استشارة أو فكرة أخرى",contact_project_label:"حالة المشروع",contact_project_new:"مشروع جديد",contact_project_improve:"تطوير مشروع قائم",contact_project_consult:"استشارة وتحديد المتطلبات",contact_timeline_label:"الإطار الزمني",contact_timeline_urgent:"في أقرب وقت",contact_timeline_month:"خلال 2–4 أسابيع",contact_timeline_flexible:"مرن، حسب خطة العمل",contact_details_label:"ملخص الفكرة (اختياري)",contact_details_placeholder:"اكتب ما تريد تحقيقه أو المشكلة التي تريد حلها...",contact_submit:"إرسال ملخص المشروع عبر واتساب ↗",consent_title:"إعدادات الخصوصية",consent_desc:"نستخدم تحليلات الزيارة لفهم أداء الموقع وتحسينه. لن يتم تفعيل تحليلات HubSpot إلا بعد موافقتك.",consent_reject:"رفض التحليلات",consent_accept:"السماح بالتحليلات",nav_cta:"اكتشف VAYORA ↗",menu:"القائمة",
 hero_kicker:"AUREVON TECH · DIGITAL PRODUCTS & INTELLIGENCE",scroll_hint:"اكتشف ما نبنيه",hero_title:'من الفكرة الأولى<br><span class="shine">إلى منتج يُعتمد عليه.</span>',hero_lead:"نصمّم ونبني منتجات رقمية تبدأ من مشكلة واضحة وتنتهي بتجربة يمكن استخدامها والاعتماد عليها. في أوريفون، تتكامل الرؤية مع التصميم والهندسة؛ لتكون التقنية مفيدة، لا مجرد واجهة لامعة.",hero_primary:"اكتشف VAYORA ↗",hero_secondary:"اكتشف رؤيتنا",node_vision:"نحدد المشكلة قبل الحل",node_engineering:"نبني أساساً قابلاً للتطوير",node_experience:"نصمم لما يحتاجه المستخدم",strip_products:"DIGITAL PRODUCTS",strip_products_sub:"منتجات رقمية مصممة للاستخدام",strip_learning:"LEARNING SYSTEMS",strip_learning_sub:"تجارب ترتقي بالتعلّم",strip_intelligence:"APPLIED INTELLIGENCE",strip_intelligence_sub:"ذكاء يخدم هدفاً واضحاً",
 about_kicker:"من نحن · ABOUT AUREVON",about_title:"لا نضيف تقنية إلى العالم. نبني ما يحتاجه فعلاً.",about_desc:"AUREVON TECH تعمل على تحويل الاحتياجات الواضحة إلى منتجات رقمية قابلة للاستخدام والتطوير. نبدأ بفهم المستخدم والمشكلة، ثم نحدد الحل المناسب ونبنيه بعناية؛ من بنية المنتج إلى أدق تفاصيل التجربة.",about_card1_title:"المشكلة أولاً، لا الأداة",about_card1_desc:"نحدد من سيستخدم المنتج، وما الذي يحاول إنجازه، وأين تكمن الصعوبة. بعدها فقط نقرر ما الذي يستحق البناء.",about_card2_title:"منظومة واحدة، لا أجزاء متفرقة",about_card2_desc:"نوازن بين وضوح الواجهة، وسلامة البنية التقنية، وسرعة الأداء؛ لأن جودة المنتج تظهر في تكامل هذه العناصر.",
 cap_kicker:"ما نطوّره · OUR CAPABILITIES",cap_title:"من التخطيط إلى تجربة تعمل كما ينبغي.",cap_desc:"نعمل عبر ثلاث دوائر متكاملة: هندسة المنتج، وتجربة التعلّم، والذكاء الاصطناعي التطبيقي. نختار من كل مجال ما يخدم وظيفة المنتج ونتيجته.",cap1_title:"بناء المنتجات الرقمية",cap1_desc:"مواقع ومنصات بهيكل واضح، وتصفح مفهوم، وأساس تقني يسهل صيانته وتطويره مع نمو الحاجة.",cap2_title:"أنظمة وتجارب التعلّم",cap2_desc:"أدوات تساعد المتعلّم على تنظيم وقته، والتدرّب، ومراجعة أخطائه، وفهم تقدّمه خطوة بخطوة.",cap3_title:"ذكاء اصطناعي له وظيفة",cap3_desc:"نستخدمه عندما يقدّم مساعدة فعلية: يشرح، أو ينظّم، أو يحلّل، أو يختصر مهمة؛ لا لمجرد وضع كلمة AI على المنتج.",
@@ -520,7 +537,7 @@ faq_kicker:"إجابات واضحة · GOOD TO KNOW",faq_title:"قبل أن تت
 final_title:"لديك تحدٍ رقمي؟ لنبدأ من المشكلة.",final_desc:"اعرض علينا الفكرة أو التحدي كما هو. نبدأ بفهم المطلوب، ثم نحدد إن كان الحل الرقمي هو الخيار الصحيح.",final_button:"استكشف VAYORA ↗",copyright:"© 2026 AUREVON TECH · جميع الحقوق محفوظة"
 },
 en:{
-skip:"Skip to content",nav_about:"About",nav_work:"Capabilities",nav_product:"VAYORA",nav_process:"Our approach",nav_faq:"FAQ",nav_contact:"Contact",contact_kicker:"CONTACT AUREVON",contact_title:"Let’s build something meaningful.",contact_desc:"Have an idea or a challenge that calls for a digital solution? Talk to the AUREVON team about your goals, your users, and the right next step.",contact_note:"Direct contact with the AUREVON TECH team",contact_whatsapp:"Start a WhatsApp conversation ↗",contact_call:"Call our team",contact_form_kicker:"PROJECT INTAKE",contact_form_title:"Tell us what you want to build",contact_form_desc:"Complete the essentials and we will prepare a clear project brief for the AUREVON team in WhatsApp.",contact_privacy:"Nothing is sent automatically. Review the prepared message and confirm it in WhatsApp.",contact_service_label:"What do you need?",contact_service_website:"Professional website",contact_service_platform:"Web platform or application",contact_service_ai:"AI integration",contact_service_learning:"Learning product or system",contact_service_other:"Consultation or another idea",contact_project_label:"Project status",contact_project_new:"A new project",contact_project_improve:"Improve an existing product",contact_project_consult:"Consultation and scoping",contact_timeline_label:"Timeline",contact_timeline_urgent:"As soon as possible",contact_timeline_month:"Within 2–4 weeks",contact_timeline_flexible:"Flexible, based on the plan",contact_details_label:"Project brief (optional)",contact_details_placeholder:"Describe the outcome you want or the problem you need to solve...",contact_submit:"Prepare project brief in WhatsApp ↗",nav_cta:"Discover VAYORA ↗",menu:"Menu",
+skip:"Skip to content",nav_about:"About",nav_work:"Capabilities",nav_product:"VAYORA",nav_process:"Our approach",nav_faq:"FAQ",nav_contact:"Contact",contact_kicker:"CONTACT AUREVON",contact_title:"Let’s build something meaningful.",contact_desc:"Have an idea or a challenge that calls for a digital solution? Talk to the AUREVON team about your goals, your users, and the right next step.",contact_note:"Direct contact with the AUREVON TECH team",contact_whatsapp:"Start a WhatsApp conversation ↗",contact_call:"Call our team",contact_form_kicker:"PROJECT INTAKE",contact_form_title:"Tell us what you want to build",contact_form_desc:"Complete the essentials and we will prepare a clear project brief for the AUREVON team in WhatsApp.",contact_privacy:"Nothing is sent automatically. Review the prepared message and confirm it in WhatsApp.",contact_service_label:"What do you need?",contact_service_website:"Professional website",contact_service_platform:"Web platform or application",contact_service_ai:"AI integration",contact_service_learning:"Learning product or system",contact_service_other:"Consultation or another idea",contact_project_label:"Project status",contact_project_new:"A new project",contact_project_improve:"Improve an existing product",contact_project_consult:"Consultation and scoping",contact_timeline_label:"Timeline",contact_timeline_urgent:"As soon as possible",contact_timeline_month:"Within 2–4 weeks",contact_timeline_flexible:"Flexible, based on the plan",contact_details_label:"Project brief (optional)",contact_details_placeholder:"Describe the outcome you want or the problem you need to solve...",contact_submit:"Prepare project brief in WhatsApp ↗",consent_title:"Privacy preferences",consent_desc:"We use visit analytics to understand and improve this website. HubSpot analytics will only load after you consent.",consent_reject:"Reject analytics",consent_accept:"Allow analytics",nav_cta:"Discover VAYORA ↗",menu:"Menu",
 hero_kicker:"AUREVON TECH · DIGITAL PRODUCTS & INTELLIGENCE",scroll_hint:"Explore what we build",hero_title:'From first idea<br><span class="shine">to a product you can rely on.</span>',hero_lead:"We design and build digital products around clear problems and real use. Strategy, design, and engineering work together so technology does more than look impressive—it works, lasts, and serves a purpose.",hero_primary:"Discover VAYORA ↗",hero_secondary:"Explore our vision",node_vision:"A vision that defines what matters",node_engineering:"Engineering that makes ideas real",node_experience:"Experiences built around people",strip_products:"DIGITAL PRODUCTS",strip_products_sub:"Digital products made for real use",strip_learning:"LEARNING SYSTEMS",strip_learning_sub:"Experiences that advance learning",strip_intelligence:"APPLIED INTELLIGENCE",strip_intelligence_sub:"AI with a clear purpose",
 about_kicker:"ABOUT AUREVON",about_title:"We do not add technology for its own sake. We build what is needed.",about_desc:"AUREVON TECH turns defined needs into usable digital products built to evolve. We begin with the user and the problem, choose the right solution, and engineer it carefully—from product architecture to the smallest interaction.",about_card1_title:"Grounded in real needs",about_card1_desc:"We examine the goal, audience, and context of use to define what should be built and where real value lies.",about_card2_title:"Every detail works together",about_card2_desc:"We connect strategic thinking, design, and engineering to create a coherent experience from the first interaction to the last.",
 cap_kicker:"OUR CAPABILITIES",cap_title:"From a clear plan to a product that works.",cap_desc:"Our work connects three disciplines: product engineering, learning experiences, and applied AI. We use what serves the product and its intended outcome—not technology for its own sake.",cap1_title:"Digital product engineering",cap1_desc:"We design and develop websites and platforms with clear architecture, intuitive experiences, and maintainable foundations built to scale.",cap2_title:"Learning technology",cap2_desc:"We turn learning needs into digital tools that support planning, focus, practice, and progress measurement.",cap3_title:"AI with a defined role",cap3_desc:"We apply AI when it can explain, organize, analyze, or reduce effort in a meaningful task—not simply to attach an AI label to a product.",
@@ -558,6 +575,34 @@ let savedLanguage="ar";
 try{const storedLanguage=localStorage.getItem("aurevon-language");if(storedLanguage==="ar"||storedLanguage==="en")savedLanguage=storedLanguage;}catch(error){}
 applyLanguage(savedLanguage);
 langButton.addEventListener("click",()=>applyLanguage(language==="ar"?"en":"ar"));
+
+/* HubSpot portal analytics — production host only, opt-in only. */
+const consentPanel=document.getElementById("analytics-consent");
+const consentKey="aurevon-analytics-consent-v1";
+const productionHosts=["aurevon-website-production.up.railway.app"];
+const isProductionHost=productionHosts.includes(window.location.hostname);
+const loadHubSpotAnalytics=()=>{
+ if(!isProductionHost||window.__aurevonHubSpotLoaded)return;
+ window.__aurevonHubSpotLoaded=true;
+ const hs=document.createElement("script");
+ hs.src="https://js.hs-scripts.com/149735987.js";
+ hs.async=true;
+ hs.id="hs-script-loader";
+ document.head.appendChild(hs);
+};
+if(isProductionHost&&consentPanel){
+ let savedConsent=null;
+ try{savedConsent=localStorage.getItem(consentKey);}catch(error){}
+ if(savedConsent==="accepted")loadHubSpotAnalytics();
+ else if(savedConsent!=="rejected")consentPanel.hidden=false;
+ const saveConsent=value=>{
+  try{localStorage.setItem(consentKey,value);}catch(error){}
+  consentPanel.hidden=true;
+  if(value==="accepted")loadHubSpotAnalytics();
+ };
+ document.getElementById("consent-accept").addEventListener("click",()=>saveConsent("accepted"));
+ document.getElementById("consent-reject").addEventListener("click",()=>saveConsent("rejected"));
+}
 const inquiryForm=document.getElementById("project-inquiry");
 if(inquiryForm){
  inquiryForm.addEventListener("submit",event=>{
@@ -642,5 +687,6 @@ if("IntersectionObserver" in window&&!window.matchMedia("(prefers-reduced-motion
 }
 })();
 </script>
+<aside class="analytics-consent" id="analytics-consent" role="dialog" aria-modal="false" aria-labelledby="consent-title" hidden><div class="consent-copy"><strong id="consent-title" data-i18n="consent_title">إعدادات الخصوصية</strong><p data-i18n="consent_desc">نستخدم تحليلات الزيارة لفهم أداء الموقع وتحسينه. لن يتم تفعيل تحليلات HubSpot إلا بعد موافقتك.</p></div><div class="consent-actions"><button type="button" id="consent-reject" data-i18n="consent_reject">رفض التحليلات</button><button type="button" class="consent-accept" id="consent-accept" data-i18n="consent_accept">السماح بالتحليلات</button></div></aside>
 </body>
 </html>
