@@ -1,9 +1,8 @@
 import { createClient } from 'redis';
 
 /**
- * AVORA uses Groq as its free primary engine. If its free quota is exhausted,
- * the server asks the student for consent before using the optional additional-use engine.
- * Provider keys remain server-side only.
+ * AVORA uses Gemini as its server-side AI engine.
+ * Provider keys remain server-side only and are never sent to the browser.
  */
 
 interface Provider {
