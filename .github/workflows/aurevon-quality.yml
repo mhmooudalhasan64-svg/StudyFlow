@@ -30,7 +30,7 @@ jobs:
           const file = 'aurevon-site/public/index.html';
           const html = fs.readFileSync(file, 'utf8');
           const fail = (message) => { console.error('FAIL:', message); process.exitCode = 1; };
-          const ids = [...html.matchAll(/\\bid=["']([^"']+)["']/g)].map(m => m[1]);
+          const ids = [...html.matchAll(/\bid=["']([^"']+)["']/g)].map(m => m[1]);
           const duplicates = [...new Set(ids.filter((id, i) => ids.indexOf(id) !== i))];
           if (duplicates.length) fail('Duplicate IDs: ' + duplicates.join(', '));
           const anchors = [...html.matchAll(/href=["']#([^"']+)["']/g)].map(m => m[1]);
@@ -39,19 +39,19 @@ jobs:
           const keys = [...new Set([...html.matchAll(/data-i18n(?:-placeholder)?=["']([^"']+)["']/g)].map(m => m[1]))];
           const arStart = html.indexOf('ar:{');
           const enStart = html.indexOf('en:{', arStart);
-          const end = html.indexOf('\\n};', enStart);
+          const end = html.indexOf('\n};', enStart);
           if (arStart < 0 || enStart < 0 || end < 0) fail('Could not locate Arabic/English translation dictionaries');
           else {
             const ar = html.slice(arStart, enStart);
             const en = html.slice(enStart, end);
-            const has = (source, key) => new RegExp('\\\\b' + key + '\\\\s*:').test(source);
+            const has = (source, key) => new RegExp('\\b' + key + '\\s*:').test(source);
             const missingAr = keys.filter(key => !has(ar, key));
             const missingEn = keys.filter(key => !has(en, key));
             if (missingAr.length) fail('Missing Arabic translations: ' + missingAr.join(', '));
             if (missingEn.length) fail('Missing English translations: ' + missingEn.join(', '));
           }
-          for (const match of html.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/gi)) {
-            if (/type=["']application\\/ld\\+json["']/i.test(match[0])) continue;
+          for (const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)) {
+            if (/type=["']application\/ld\+json["']/i.test(match[0])) continue;
             try { new vm.Script(match[1], { filename: 'inline-script.js' }); }
             catch (error) { fail('Inline JavaScript syntax error: ' + error.message); }
           }
