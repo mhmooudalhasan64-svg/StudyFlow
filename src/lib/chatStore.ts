@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import { create } from 'zustand';
 import { db } from '../db';
 import { useApp } from '../store';
@@ -17,8 +18,15 @@ export interface ChatAttachment {
 }
 
 function postChat(body: unknown): Promise<Response> {
-  // In the Android build, call the deployed Vercel API; on the web, keep the same-origin route.
-  const apiBase = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
+  // Web Preview uses Vercel's same-origin API. Native Android must use the public
+  // Railway Preview API because its WebView origin is https://localhost.
+  const configuredNativeApi =
+    import.meta.env.VITE_API_BASE_URL ??
+    import.meta.env.VITE_RAILWAY_API_BASE_URL ??
+    'https://studyflow-preview-preview.up.railway.app';
+  const apiBase = Capacitor.isNativePlatform()
+    ? configuredNativeApi.replace(/\/+$/, '')
+    : '';
   return fetch(`${apiBase}/api/chat`, {
     method: 'POST',
     // text/plain is CORS-safelisted, avoiding a fragile OPTIONS preflight in Android WebView.
