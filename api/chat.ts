@@ -388,11 +388,11 @@ async function handlePost(request: Request): Promise<Response> {
   // Native Capacitor origins are allowlisted below; requests without Origin remain
   // available to native clients and server-to-server callers.
   const origin = request.headers.get('origin');
-  if (origin && !isAllowedOrigin(origin)) {
+  if (origin && !isAllowedOrigin(origin, request)) {
     return json({ error: 'مصدر الطلب غير مسموح.' }, 403);
   }
   const contentType = request.headers.get('content-type') ?? '';
-  if (!/^application\/json(?:\s*;|$)/i.test(contentType)) {
+  if (!/^(?:application\/json|text\/plain)(?:\s*;|$)/i.test(contentType)) {
     return json({ error: 'نوع محتوى الطلب غير مدعوم.' }, 415);
   }
   const declaredLength = Number(request.headers.get('content-length'));
@@ -548,15 +548,20 @@ const CONFIGURED_WEB_ORIGINS = new Set(
     .filter(Boolean),
 );
 
-function isAllowedOrigin(origin: string): boolean {
-  return MOBILE_APP_ORIGINS.has(origin) || CONFIGURED_WEB_ORIGINS.has(origin);
+function isAllowedOrigin(origin: string, request?: Request): boolean {
+  // Same-origin browser requests are trusted without requiring a duplicate allowlist entry.
+  let sameOrigin = false;
+  if (request) {
+    try { sameOrigin = new URL(request.url).origin === origin; } catch { /* invalid request URL */ }
+  }
+  return sameOrigin || MOBILE_APP_ORIGINS.has(origin) || CONFIGURED_WEB_ORIGINS.has(origin);
 }
 
 function withCors(response: Response, request: Request): Response {
   const origin = request.headers.get('origin');
   const headers = new Headers(response.headers);
   headers.set('Vary', 'Origin');
-  if (origin && (MOBILE_APP_ORIGINS.has(origin) || CONFIGURED_WEB_ORIGINS.has(origin))) {
+  if (origin && isAllowedOrigin(origin, request)) {
     headers.set('Access-Control-Allow-Origin', origin);
     headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
     headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
