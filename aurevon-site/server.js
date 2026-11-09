@@ -5,7 +5,9 @@ const root = path.join(__dirname, "public");
 const types = { ".html":"text/html; charset=utf-8", ".svg":"image/svg+xml", ".txt":"text/plain; charset=utf-8" };
 http.createServer((req,res) => {
   const pathname = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
-  const requested = pathname === "/" ? "index.html" : (pathname.startsWith("/") ? pathname.slice(1) : pathname);
+  // Some mobile clients still request legacy favicon filenames; serve the existing SVG mark.
+  const normalizedPath = pathname === "/favicon.ico" || pathname === "/favicon.png" ? "/favicon.svg" : pathname;
+  const requested = normalizedPath === "/" ? "index.html" : (normalizedPath.startsWith("/") ? normalizedPath.slice(1) : normalizedPath);
   const file = path.resolve(root, requested);
   if (file !== path.join(root,"index.html") && !file.startsWith(root + path.sep)) { res.writeHead(403); return res.end("Forbidden"); }
   fs.readFile(file, (err,data) => {
