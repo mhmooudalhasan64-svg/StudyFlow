@@ -842,6 +842,32 @@ html[data-theme="light"] .hero-scroll-cue i:after{background:#b58a3b}
 html[data-theme="light"] #reading-progress-bar{background:linear-gradient(90deg,#9b742e,#d7b96f)}
 @media(max-width:760px){html[data-theme="light"] .mobile-links{background:#fffdf8}}
 
+
+
+/* Light-mode legibility patch: replace dark-theme white/grey copy with ink and antique-gold contrast */
+html[data-theme="light"] .links a[aria-current="location"],
+html[data-theme="light"] .mobile-links a[aria-current="location"],
+html[data-theme="light"] .menu-toggle[aria-expanded="true"]{color:#765c2a;background:#f0e8d8;border-color:#b58a3b66}
+html[data-theme="light"] .showcase-caption{color:#665d4b!important}
+html[data-theme="light"] .preview-stats b span{color:#897b5d}
+html[data-theme="light"] .preview-greeting strong,
+html[data-theme="light"] .preview-brand,
+html[data-theme="light"] .preview-stats b,
+html[data-theme="light"] .preview-progress-head b,
+html[data-theme="light"] .showcase-heading h3{color:#59451f}
+html[data-theme="light"] .preview-greeting small,
+html[data-theme="light"] .preview-stats small,
+html[data-theme="light"] .preview-progress-head,
+html[data-theme="light"] .preview-bottom{color:#75684f}
+html[data-theme="light"] .hero-scroll-cue{color:#765c2a}
+html[data-theme="light"] .hero-scroll-cue i{background:linear-gradient(90deg,#9b742e,#d7b96f)}
+html[data-theme="light"] .visual:before{color:#765c2a12}
+html[data-theme="light"] .visual:after{color:#765c2a88}
+html[data-theme="light"] .core svg path{stroke:#fff3d2}
+html[data-theme="light"] .product-showcase .showcase-live{color:#75684f;border-color:#b58a3b66}
+html[data-theme="light"] .product-showcase .showcase-caption,
+html[data-theme="light"] .product-showcase .preview-bottom{opacity:1}
+
 </style>
 </head>
 <body>
