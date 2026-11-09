@@ -380,8 +380,8 @@ const applyLanguage=(next)=>{
  });
  langButton.textContent=next==="ar"?"EN":"عربي";
  langButton.setAttribute("aria-label",next==="ar"?"Switch to English":"التبديل إلى العربية");
- backTop.setAttribute("aria-label",next==="ar"?"العودة إلى الأعلى":"Back to top");
- backTop.setAttribute("title",next==="ar"?"العودة إلى الأعلى":"Back to top");
+ const backTopButton=document.getElementById("back-to-top");
+ if(backTopButton){backTopButton.setAttribute("aria-label",next==="ar"?"العودة إلى الأعلى":"Back to top");backTopButton.setAttribute("title",next==="ar"?"العودة إلى الأعلى":"Back to top");}
  document.title=next==="ar"?"AUREVON TECH — أوريفون تيك | نبتكر المستقبل برؤية مختلفة":"AUREVON TECH — Building What’s Next";
  const description=next==="ar"?"AUREVON TECH — شركة تقنية تطوّر منتجات رقمية وتجارب تعليمية ذكية، وتبني VAYORA كمنصتها التعليمية.":"AUREVON TECH develops digital products and intelligent learning experiences, including the VAYORA learning platform.";
  document.querySelector('meta[name="description"]').content=description;
