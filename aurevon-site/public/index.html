@@ -284,6 +284,32 @@ header.scrolled{background:#08090bf5;border-color:#d6dce044;box-shadow:0 12px 36
 .showcase-caption{font-size:10px!important;color:#969fa4!important;line-height:1.9!important;margin:0!important}
 @media(max-width:760px){.product-showcase{padding:23px}.study-preview{padding:14px}}
 
+
+/* Responsive refinement: balanced tablet grids and deliberate focus states */
+@media(min-width:761px) and (max-width:1020px){
+ .capabilities,.principles{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .capability:last-child,.principle:last-child{grid-column:1/-1}
+ .product{grid-template-columns:1fr 1fr}
+ .product-main{padding:30px}
+ .signature-item{padding-inline:17px}
+}
+@media(max-width:760px){
+ .capabilities,.principles{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .capability,.principle{min-height:170px}
+ .product{gap:13px}
+ .hero-scroll-cue{letter-spacing:.12em}
+}
+@media(max-width:520px){
+ .capabilities,.principles{grid-template-columns:1fr}
+ .capability,.principle{min-height:unset}
+ .signature-item{padding:14px 16px}
+ .showcase-heading{align-items:flex-start}
+ .showcase-live{font-size:8px}
+}
+.menu-toggle[aria-expanded="true"]{border-color:#d4b76f88;background:#c9a85a16;color:#f0d99e}
+.mobile-links a:focus-visible{outline-offset:-2px;background:#ffffff12}
+@media(prefers-reduced-motion:reduce){.reading-progress span,.back-top{transition:none}}
+
 </style>
 </head>
 <body>
@@ -445,23 +471,35 @@ applyLanguage(savedLanguage);
 langButton.addEventListener("click",()=>applyLanguage(language==="ar"?"en":"ar"));
 const toggle=document.querySelector(".menu-toggle");
 const menu=document.getElementById("mobile-menu");
-toggle.addEventListener("click",()=>{
- const open=toggle.getAttribute("aria-expanded")!=="true";
- toggle.setAttribute("aria-expanded",String(open));
- toggle.setAttribute("aria-label",open?(language==="ar"?"إغلاق القائمة":"Close menu"):(language==="ar"?"فتح القائمة":"Open menu"));
- menu.classList.toggle("open",open);
-});
-menu.querySelectorAll("a").forEach(link=>link.addEventListener("click",()=>{
+const menuLinks=[...menu.querySelectorAll("a")];
+const closeMenu=(returnFocus=false)=>{
  toggle.setAttribute("aria-expanded","false");
  toggle.setAttribute("aria-label",language==="ar"?"فتح القائمة":"Open menu");
+ toggle.textContent=language==="ar"?"القائمة":"Menu";
  menu.classList.remove("open");
-}));
+ if(returnFocus)toggle.focus();
+};
+toggle.setAttribute("aria-label",language==="ar"?"فتح القائمة":"Open menu");
+toggle.addEventListener("click",()=>{
+ const open=toggle.getAttribute("aria-expanded")!=="true";
+ if(open){
+  toggle.setAttribute("aria-expanded","true");
+  toggle.setAttribute("aria-label",language==="ar"?"إغلاق القائمة":"Close menu");
+  toggle.textContent=language==="ar"?"إغلاق":"Close";
+  menu.classList.add("open");
+  requestAnimationFrame(()=>menuLinks[0]?.focus());
+ }else closeMenu(true);
+});
+menuLinks.forEach(link=>link.addEventListener("click",()=>closeMenu()));
 document.addEventListener("keydown",event=>{
- if(event.key==="Escape"){toggle.setAttribute("aria-expanded","false");toggle.setAttribute("aria-label",language==="ar"?"فتح القائمة":"Open menu");menu.classList.remove("open");}
+ if(event.key==="Escape"&&toggle.getAttribute("aria-expanded")==="true")closeMenu(true);
 });
 document.addEventListener("click",event=>{
- if(!menu.contains(event.target)&&!toggle.contains(event.target)){toggle.setAttribute("aria-expanded","false");menu.classList.remove("open");}
+ if(toggle.getAttribute("aria-expanded")==="true"&&!menu.contains(event.target)&&!toggle.contains(event.target))closeMenu();
 });
+window.addEventListener("resize",()=>{
+ if(window.innerWidth>760)closeMenu();
+},{passive:true});
 const progressBar=document.getElementById("reading-progress-bar");
 const backTop=document.getElementById("back-to-top");
 const siteHeader=document.querySelector("header");
