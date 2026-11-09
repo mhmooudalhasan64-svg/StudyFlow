@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#f5f1e9">
-<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#090a0c">
+<meta name="color-scheme" content="dark">
 <meta name="description" content="AUREVON TECH — شركة تقنية تطوّر منتجات رقمية وتجارب تعليمية ذكية، وتبني VAYORA كمنصتها التعليمية.">
 <meta name="author" content="AUREVON TECH">
 <meta property="og:type" content="website">
@@ -192,6 +192,79 @@ details p{color:#68787b}
 .final-cta p{color:#5f7074}
 footer{border-color:#71827b40;color:#718084}
 .reveal-ready .reveal.is-visible{transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+@media(prefers-reduced-motion:reduce){.reveal-ready .reveal,.reveal-ready .reveal.is-visible{opacity:1;transform:none}}
+
+
+/* Black watercolor: layered ink washes, graphite and liquid silver */
+:root{color-scheme:dark;--bg:#090a0c;--surface:#111316;--surface2:#191b20;--line:#d8dce126;--text:#f0f0ef;--muted:#a6a8aa;--silver:#d8dcdf;--silver2:#858c92}
+body{
+ background:
+  radial-gradient(ellipse at 12% 8%,#777d8650 0,transparent 27%),
+  radial-gradient(ellipse at 88% 14%,#3f4b555e 0,transparent 29%),
+  radial-gradient(ellipse at 72% 68%,#5c56504a 0,transparent 31%),
+  radial-gradient(ellipse at 16% 84%,#343b4657 0,transparent 30%),
+  radial-gradient(ellipse at 50% 40%,#171a1f 0,transparent 60%),
+  linear-gradient(135deg,#070809,#111216 52%,#08090b);
+ color:var(--text)
+}
+::selection{background:#c9cdd0;color:#090a0c}
+header{background:#090a0ce8;border-bottom:1px solid #d6dce02a;box-shadow:0 8px 32px #0008}
+.mark path{stroke:#d9dcde}
+.word small{color:#92989d}
+.links{color:#c0c3c5}
+.links a:hover,.mobile-links a:hover{color:#fff}
+.lang,.menu-toggle{border-color:#d1d6d83d;background:#ffffff0a;color:#e6e8e9;box-shadow:0 5px 18px #0005}
+.mobile-links{background:#14161a;border-color:#d1d6d83d;box-shadow:0 18px 50px #000c}
+.mobile-links a{color:#c5c8ca}
+.mobile-links a:hover{background:#ffffff0c}
+.primary{background:linear-gradient(118deg,#f1f2f1,#aeb4b8 48%,#777f86);color:#101215;box-shadow:0 10px 30px #dce1e31a;border-color:#ffffff70}
+.secondary{border-color:#d3d8dc55;background:#ffffff09;color:#e6e8e9}
+.hero:after{background:linear-gradient(90deg,transparent,#c8cdd044,transparent)}
+.eyebrow,.kicker{color:#b8bec2}
+.eyebrow:before{background:#aeb7bc}
+.shine{background:linear-gradient(105deg,#fff 3%,#b8c0c5 45%,#777f88 72%,#e1e2df);background-clip:text;color:transparent}
+.lead{color:#b2b6b9}
+.orbit{border-color:#c3cbd04a;background:radial-gradient(circle at 48% 45%,#747d8730,#242a304a 43%,#11131766 73%);box-shadow:inset 0 0 100px #dce1e310,0 20px 70px #0009}
+.orbit:before,.orbit:after{border-color:#c3cbd052}
+.orbit-ring{border-color:#c6cdd044}
+.core{background:linear-gradient(145deg,#42474d,#111317 72%);border-color:#d8dce080;box-shadow:0 15px 60px #aeb8c020}
+.core svg path{stroke:#e2e5e6}
+.node{border-color:#cbd1d54d;background:#171a1eeb;color:#e4e6e7;box-shadow:0 15px 35px #0009}
+.node span{color:#a2a8ac}
+.section:nth-of-type(even){background:linear-gradient(120deg,#ffffff04,#7f899008,#ffffff03)}
+.section-head p{color:#a8adb0}
+.panel,.product-side{border-color:#d4d9dc24;background:linear-gradient(145deg,#202328dc,#101216e8);box-shadow:0 12px 38px #0007;backdrop-filter:blur(14px)}
+.panel:hover,.capability:hover,.step:hover,.principle:hover{border-color:#c5cdd15e;box-shadow:0 22px 55px #000b}
+.index{border-color:#aeb7bd6b;color:#d4d9dc;background:#ffffff09}
+.panel p,.capability p{color:#aeb3b6}
+.capability{border-color:#d4d9dc26;background:linear-gradient(145deg,#202328e8,#111317e8);box-shadow:0 12px 35px #0008;backdrop-filter:blur(12px)}
+.cap-icon{border-color:#d4d9dc55;background:linear-gradient(145deg,#596168,#252a30);box-shadow:0 8px 22px #0008}
+.cap-icon svg{stroke:#f0f1f1}
+.product-main{border-color:#dce0e34f;background:
+ radial-gradient(ellipse at 90% 10%,#8c969e55 0,transparent 38%),
+ radial-gradient(ellipse at 12% 88%,#5e626c5c 0,transparent 42%),
+ radial-gradient(ellipse at 65% 100%,#6c625a30 0,transparent 40%),
+ linear-gradient(130deg,#292d32,#111418 55%,#25272c);
+ box-shadow:0 25px 75px #000b}
+.product-main:after{color:#ffffff0a}
+.v-mark{background:linear-gradient(145deg,#f1f2f1,#929ba1);color:#171a1e;box-shadow:0 10px 30px #0009}
+.product-main p{color:#c0c4c6}
+.product-note{color:#969da1!important}
+.product-side p{color:#aeb4b7}
+.step{border-color:#d4d9dc25;background:#ffffff06;box-shadow:0 10px 28px #0006}
+.step .num{color:#aeb5b9}.step p{color:#a8afb2}
+.principle{border-color:#d4d9dc25;background:#ffffff06;box-shadow:0 10px 28px #0006}
+.principle span{color:#a8afb2}
+details{border-color:#d4d9dc29;background:#ffffff07;box-shadow:0 8px 25px #0006}
+summary:after{color:#c0c6c9}
+details p{color:#aab0b3}
+.final-cta{border-color:#dce0e34a;background:
+ radial-gradient(ellipse at 95% 0%,#747e874f 0,transparent 36%),
+ radial-gradient(ellipse at 10% 100%,#53576052 0,transparent 38%),
+ linear-gradient(115deg,#282c31,#121519 60%,#24262b);
+ box-shadow:0 25px 70px #000b}
+.final-cta p{color:#b2b7ba}
+footer{border-color:#d4d9dc30;color:#969da1}
 @media(prefers-reduced-motion:reduce){.reveal-ready .reveal,.reveal-ready .reveal.is-visible{opacity:1;transform:none}}
 
 </style>
