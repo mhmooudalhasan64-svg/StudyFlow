@@ -231,6 +231,20 @@ footer{border-color:#d4d9dc30;color:#969da1}
 @media(max-width:390px){.word{font-size:13px}.word small{font-size:6px}.visual{min-height:280px}.node{padding:7px 8px}.hero{padding-top:42px}.actions .btn{width:100%}.product-main{padding:22px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}.reveal-ready .reveal,.reveal-ready .reveal.is-visible{opacity:1;transform:none}}
 
+
+/* Navigation intelligence and editorial scroll cue */
+header{transition:background .28s ease,border-color .28s ease,box-shadow .28s ease}
+header.scrolled{background:#08090bf5;border-color:#d6dce044;box-shadow:0 12px 36px #0009}
+.links a[aria-current="location"],.mobile-links a[aria-current="location"]{color:#fff}
+.links a[aria-current="location"]:after{transform:scaleX(1)}
+.mobile-links a[aria-current="location"]{background:#ffffff10}
+.hero-scroll-cue{position:absolute;bottom:25px;inset-inline-start:max(26px,calc((100vw - var(--max))/2));display:inline-flex;align-items:center;gap:12px;color:#aab1b6;font-size:9px;letter-spacing:.17em;text-transform:uppercase;z-index:1}
+.hero-scroll-cue i{display:block;width:36px;height:1px;background:linear-gradient(90deg,#cbd2d8,#626c73);position:relative;overflow:hidden}
+.hero-scroll-cue i:after{content:"";position:absolute;inset:0;background:#fff;transform:translateX(-100%);animation:cueSweep 2.2s ease-in-out infinite}
+@keyframes cueSweep{0%{transform:translateX(-100%)}65%,100%{transform:translateX(100%)}}
+@media(max-width:760px){.hero-scroll-cue{bottom:14px;inset-inline-start:18px;font-size:8px}.hero{padding-bottom:75px}}
+@media(prefers-reduced-motion:reduce){.hero-scroll-cue i:after{animation:none}}
+
 </style>
 </head>
 <body>
@@ -267,7 +281,9 @@ footer{border-color:#d4d9dc30;color:#969da1}
 <div class="visual" role="img" aria-label="AUREVON abstract brand symbol">
 <div class="orbit"><div class="orbit-ring"></div><div class="core"><svg viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 9 88 31v38L50 91 12 69V31Z" stroke="#dedede" stroke-width="2.4"/><path d="m28 66 22-39 22 39M37 51h26" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="node n1"><b>VISION</b><span data-i18n="node_vision">رؤية تصنع الاتجاه</span></div><div class="node n2"><b>ENGINEERING</b><span data-i18n="node_engineering">هندسة تصنع الحلول</span></div><div class="node n3"><b>EXPERIENCE</b><span data-i18n="node_experience">تجربة تتمحور حول الإنسان</span></div></div>
 </div>
-</div></section>
+</div>
+<a class="hero-scroll-cue" href="#about"><span data-i18n="scroll_hint">اكتشف المزيد</span><i aria-hidden="true"></i></a>
+</section>
 <section class="signature-strip" aria-label="AUREVON focus areas"><div class="wrap signature-inner">
 <div class="signature-item"><span class="signature-number">01</span><div><strong data-i18n="strip_products">DIGITAL PRODUCTS</strong><small data-i18n="strip_products_sub">منصات وتجارب رقمية</small></div></div>
 <div class="signature-item"><span class="signature-number">02</span><div><strong data-i18n="strip_learning">LEARNING SYSTEMS</strong><small data-i18n="strip_learning_sub">تقنيات تعليمية ذكية</small></div></div>
@@ -331,7 +347,7 @@ footer{border-color:#d4d9dc30;color:#969da1}
 const translations = {
 ar:{
 skip:"تجاوز إلى المحتوى",nav_about:"عن الشركة",nav_work:"مجالاتنا",nav_product:"VAYORA",nav_process:"منهج العمل",nav_faq:"الأسئلة",nav_contact:"تواصل معنا",contact_kicker:"CONTACT AUREVON",contact_title:"لنبدأ محادثة.",contact_desc:"للاستفسارات والتواصل مع فريق أوريفون، يمكنك الاتصال مباشرة أو مراسلتنا عبر واتساب.",contact_note:"قناة التواصل المباشر مع AUREVON TECH",contact_whatsapp:"راسلنا عبر واتساب ↗",contact_call:"اتصل بنا",nav_cta:"اكتشف VAYORA ↗",menu:"القائمة",
-hero_kicker:"AUREVON TECH · DIGITAL INNOVATION",hero_title:'نبتكر المستقبل<br><span class="shine">برؤية مختلفة.</span>',hero_lead:"نحوّل الأفكار إلى منتجات رقمية وتجارب ذكية تجمع بين التقنية والتعليم والتصميم المدروس. نبني حلولاً تبدأ من احتياج حقيقي، وتكبر مع طموح مستخدميها.",hero_primary:"اكتشف VAYORA ↗",hero_secondary:"تعرّف على أوريفون",node_vision:"رؤية تصنع الاتجاه",node_engineering:"هندسة تصنع الحلول",node_experience:"تجربة تتمحور حول الإنسان",strip_products:"DIGITAL PRODUCTS",strip_products_sub:"منصات وتجارب رقمية",strip_learning:"LEARNING SYSTEMS",strip_learning_sub:"تقنيات تعليمية ذكية",strip_intelligence:"APPLIED INTELLIGENCE",strip_intelligence_sub:"ذكاء اصطناعي يخدم التجربة",
+hero_kicker:"AUREVON TECH · DIGITAL INNOVATION",scroll_hint:"اكتشف المزيد",hero_title:'نبتكر المستقبل<br><span class="shine">برؤية مختلفة.</span>',hero_lead:"نحوّل الأفكار إلى منتجات رقمية وتجارب ذكية تجمع بين التقنية والتعليم والتصميم المدروس. نبني حلولاً تبدأ من احتياج حقيقي، وتكبر مع طموح مستخدميها.",hero_primary:"اكتشف VAYORA ↗",hero_secondary:"تعرّف على أوريفون",node_vision:"رؤية تصنع الاتجاه",node_engineering:"هندسة تصنع الحلول",node_experience:"تجربة تتمحور حول الإنسان",strip_products:"DIGITAL PRODUCTS",strip_products_sub:"منصات وتجارب رقمية",strip_learning:"LEARNING SYSTEMS",strip_learning_sub:"تقنيات تعليمية ذكية",strip_intelligence:"APPLIED INTELLIGENCE",strip_intelligence_sub:"ذكاء اصطناعي يخدم التجربة",
 about_kicker:"ABOUT AUREVON",about_title:"نصنع التقنية لتخدم الإنسان.",about_desc:"AUREVON TECH شركة تقنية تركّز على تطوير المنتجات الرقمية والتجارب التعليمية الذكية. نؤمن أن قيمة التقنية لا تُقاس بتعقيدها، بل بما تمنحه للناس من وضوح وقدرة وإنجاز.",about_card1_title:"رؤية تبدأ من الواقع",about_card1_desc:"نبحث عن الاحتياجات الحقيقية ونحوّلها إلى فرص لبناء منتجات مفيدة، واضحة، وقابلة للنمو.",about_card2_title:"تفكير متكامل",about_card2_desc:"نجمع بين الاستراتيجية والتصميم والهندسة، حتى تعمل كل التفاصيل معاً لتقديم تجربة متماسكة.",
 cap_kicker:"OUR CAPABILITIES",cap_title:"ثلاثة مجالات، واتجاه واحد.",cap_desc:"نركّز على مجالات مترابطة تتيح لنا بناء منتجات رقمية عملية وتجارب أكثر ذكاءً.",cap1_title:"المنتجات الرقمية",cap1_desc:"تصميم وتطوير منصات وتجارب رقمية قابلة للتوسع، مع التركيز على الأداء وسهولة الاستخدام.",cap2_title:"التقنيات التعليمية",cap2_desc:"ابتكار أدوات وتجارب تعلّم رقمية تساعد على التنظيم والتركيز والمراجعة والتقدّم.",cap3_title:"الذكاء الاصطناعي",cap3_desc:"دمج قدرات ذكية داخل المنتجات عندما تضيف قيمة ملموسة وتحسّن تجربة المستخدم.",
 product_kicker:"FLAGSHIP PRODUCT",product_title:"من الفكرة إلى منتج يستخدمه الناس.",product_desc:"VAYORA هي المنصة التعليمية التي نطوّرها ضمن رؤية أوريفون للتقنية التعليمية.",product_body:"منصة تعليمية ذكية تجمع تنظيم الدراسة، أدوات التركيز والمراجعة، الاختبارات، ومساعدات تعليمية في تجربة واحدة تساعد الطالب على إدارة رحلته التعليمية.",product_button:"زيارة منصة VAYORA ↗",product_note:"منصة رقمية متاحة عبر الويب، وتجري مواصلة تطويرها وتحسينها.",product_side_kicker:"BUILT AROUND LEARNING",product_side_title:"التعلّم بتجربة أكثر تنظيماً.",product_side_desc:"من التخطيط اليومي إلى جلسات التركيز والاختبارات ومتابعة التقدّم؛ صُممت VAYORA لتجمع أدوات الطالب في مساحة واحدة.",
@@ -342,7 +358,7 @@ final_title:"المستقبل لا يُنتظر. بل يُبنى.",final_desc:"�
 },
 en:{
 skip:"Skip to content",nav_about:"About",nav_work:"Capabilities",nav_product:"VAYORA",nav_process:"Our process",nav_faq:"FAQ",nav_contact:"Contact",contact_kicker:"CONTACT AUREVON",contact_title:"Let’s start a conversation.",contact_desc:"For inquiries and to reach the AUREVON team, call us directly or send a message on WhatsApp.",contact_note:"Direct contact channel for AUREVON TECH",contact_whatsapp:"Message us on WhatsApp ↗",contact_call:"Call us",nav_cta:"Explore VAYORA ↗",menu:"Menu",
-hero_kicker:"AUREVON TECH · DIGITAL INNOVATION",hero_title:'We build what’s next.<br><span class="shine">With a different vision.</span>',hero_lead:"We turn ideas into digital products and intelligent experiences shaped by technology, education, and thoughtful design. Every solution starts with a real need and grows with the ambition of its users.",hero_primary:"Explore VAYORA ↗",hero_secondary:"Discover AUREVON",node_vision:"A vision that sets direction",node_engineering:"Engineering meaningful solutions",node_experience:"Human-centered experiences",strip_products:"DIGITAL PRODUCTS",strip_products_sub:"Digital platforms and experiences",strip_learning:"LEARNING SYSTEMS",strip_learning_sub:"Intelligent educational technology",strip_intelligence:"APPLIED INTELLIGENCE",strip_intelligence_sub:"AI that serves the experience",
+hero_kicker:"AUREVON TECH · DIGITAL INNOVATION",scroll_hint:"SCROLL TO DISCOVER",hero_title:'We build what’s next.<br><span class="shine">With a different vision.</span>',hero_lead:"We turn ideas into digital products and intelligent experiences shaped by technology, education, and thoughtful design. Every solution starts with a real need and grows with the ambition of its users.",hero_primary:"Explore VAYORA ↗",hero_secondary:"Discover AUREVON",node_vision:"A vision that sets direction",node_engineering:"Engineering meaningful solutions",node_experience:"Human-centered experiences",strip_products:"DIGITAL PRODUCTS",strip_products_sub:"Digital platforms and experiences",strip_learning:"LEARNING SYSTEMS",strip_learning_sub:"Intelligent educational technology",strip_intelligence:"APPLIED INTELLIGENCE",strip_intelligence_sub:"AI that serves the experience",
 about_kicker:"ABOUT AUREVON",about_title:"Technology, designed around people.",about_desc:"AUREVON TECH is a technology company focused on digital products and intelligent learning experiences. We believe technology is measured not by complexity, but by the clarity, capability, and progress it creates.",about_card1_title:"Grounded in real needs",about_card1_desc:"We identify meaningful needs and turn them into opportunities for useful, clear, and scalable products.",about_card2_title:"One integrated mindset",about_card2_desc:"We bring strategy, design, and engineering together so every detail contributes to a coherent experience.",
 cap_kicker:"OUR CAPABILITIES",cap_title:"Three disciplines. One direction.",cap_desc:"Our connected disciplines help us build practical digital products and more intelligent experiences.",cap1_title:"Digital products",cap1_desc:"Designing and developing scalable platforms and digital experiences with performance and usability in mind.",cap2_title:"Educational technology",cap2_desc:"Creating digital learning tools and experiences that support planning, focus, revision, and progress.",cap3_title:"Artificial intelligence",cap3_desc:"Integrating intelligent capabilities when they create tangible value and improve the user experience.",
 product_kicker:"FLAGSHIP PRODUCT",product_title:"From an idea to a product people use.",product_desc:"VAYORA is the learning platform we are developing as part of AUREVON’s educational technology vision.",product_body:"An intelligent learning platform bringing study planning, focus and revision tools, assessments, and learning assistance into one experience that helps students manage their learning journey.",product_button:"Visit VAYORA ↗",product_note:"A web-based platform that continues to evolve through ongoing development.",product_side_kicker:"BUILT AROUND LEARNING",product_side_title:"A more organized learning experience.",product_side_desc:"From daily planning to focus sessions, assessments, and progress tracking, VAYORA brings essential student tools into one space.",
@@ -364,6 +380,8 @@ const applyLanguage=(next)=>{
  });
  langButton.textContent=next==="ar"?"EN":"عربي";
  langButton.setAttribute("aria-label",next==="ar"?"Switch to English":"التبديل إلى العربية");
+ backTop.setAttribute("aria-label",next==="ar"?"العودة إلى الأعلى":"Back to top");
+ backTop.setAttribute("title",next==="ar"?"العودة إلى الأعلى":"Back to top");
  document.title=next==="ar"?"AUREVON TECH — أوريفون تيك | نبتكر المستقبل برؤية مختلفة":"AUREVON TECH — Building What’s Next";
  const description=next==="ar"?"AUREVON TECH — شركة تقنية تطوّر منتجات رقمية وتجارب تعليمية ذكية، وتبني VAYORA كمنصتها التعليمية.":"AUREVON TECH develops digital products and intelligent learning experiences, including the VAYORA learning platform.";
  document.querySelector('meta[name="description"]').content=description;
@@ -397,11 +415,26 @@ document.addEventListener("click",event=>{
 });
 const progressBar=document.getElementById("reading-progress-bar");
 const backTop=document.getElementById("back-to-top");
+const siteHeader=document.querySelector("header");
+const navLinks=[...document.querySelectorAll('.links a[href^="#"],.mobile-links a[href^="#"]')];
+const observedSections=[...new Set(navLinks.map(link=>document.querySelector(link.getAttribute("href"))).filter(Boolean))];
+const sectionObserver=("IntersectionObserver" in window)?new IntersectionObserver(entries=>{
+ entries.forEach(entry=>{
+  if(entry.isIntersecting){
+   navLinks.forEach(link=>{
+    if(link.getAttribute("href")==="#"+entry.target.id)link.setAttribute("aria-current","location");
+    else link.removeAttribute("aria-current");
+   });
+  }
+ });
+},{rootMargin:"-28% 0px -58% 0px",threshold:0}):null;
+if(sectionObserver)observedSections.forEach(section=>sectionObserver.observe(section));
 const updateScrollUI=()=>{
  const scrollable=document.documentElement.scrollHeight-window.innerHeight;
  const progress=scrollable>0?(window.scrollY/scrollable)*100:0;
  progressBar.style.width=progress+"%";
  backTop.classList.toggle("visible",window.scrollY>520);
+ siteHeader.classList.toggle("scrolled",window.scrollY>18);
 };
 window.addEventListener("scroll",updateScrollUI,{passive:true});
 updateScrollUI();
