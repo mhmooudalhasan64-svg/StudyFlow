@@ -17,7 +17,7 @@
 <link rel="canonical" href="https://aurevon-website-production.up.railway.app/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <title>AUREVON TECH — أوريفون تيك | نبتكر المستقبل برؤية مختلفة</title>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"AUREVON TECH","alternateName":"أوريفون تيك","url":"https://aurevon-website-production.up.railway.app/","description":"شركة تقنية تطوّر منتجات رقمية وتجارب تعليمية ذكية، وتبني VAYORA كمنصتها التعليمية.","brand":{"@type":"Brand","name":"VAYORA"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"AUREVON TECH","alternateName":"أوريفون تيك","url":"https://aurevon-website-production.up.railway.app/","description":"شركة تقنية تطوّر منتجات رقمية وتجارب تعليمية ذكية، وتبني VAYORA كمنصتها التعليمية.","brand":{"@type":"Brand","name":"VAYORA"},"contactPoint":{"@type":"ContactPoint","telephone":"+963959990122","contactType":"customer service","availableLanguage":["Arabic","English"]}}</script>
 <style>
 :root{color-scheme:dark;--bg:#090909;--surface:#111;--surface2:#171717;--line:#ffffff20;--text:#f5f5f5;--muted:#aaa;--silver:#d9d9d9;--silver2:#858585;--max:1200px}
 *{box-sizing:border-box}
@@ -153,7 +153,7 @@ footer{border-top:1px solid var(--line);padding:27px 0 32px;color:#858585;font-s
 <div class="actions"><a class="btn primary" href="#product" data-i18n="hero_primary">اكتشف VAYORA ↗</a><a class="btn secondary" href="#about" data-i18n="hero_secondary">تعرّف على أوريفون</a></div>
 <div class="micro">TECHNOLOGY · EDUCATION · INNOVATION</div>
 </div>
-<div class="visual" aria-label="AUREVON abstract brand symbol">
+<div class="visual" role="img" aria-label="AUREVON abstract brand symbol">
 <div class="orbit"><div class="orbit-ring"></div><div class="core"><svg viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 9 88 31v38L50 91 12 69V31Z" stroke="#dedede" stroke-width="2.4"/><path d="m28 66 22-39 22 39M37 51h26" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="node n1"><b>VISION</b><span data-i18n="node_vision">رؤية تصنع الاتجاه</span></div><div class="node n2"><b>ENGINEERING</b><span data-i18n="node_engineering">هندسة تصنع الحلول</span></div><div class="node n3"><b>EXPERIENCE</b><span data-i18n="node_experience">تجربة تتمحور حول الإنسان</span></div></div>
 </div>
 </div></section>
@@ -248,22 +248,32 @@ const applyLanguage=(next)=>{
  langButton.textContent=next==="ar"?"EN":"عربي";
  langButton.setAttribute("aria-label",next==="ar"?"Switch to English":"التبديل إلى العربية");
  document.title=next==="ar"?"AUREVON TECH — أوريفون تيك | نبتكر المستقبل برؤية مختلفة":"AUREVON TECH — Building What’s Next";
- document.querySelector('meta[name="description"]').content=next==="ar"?"AUREVON TECH — شركة تقنية تطوّر منتجات رقمية وتجارب تعليمية ذكية، وتبني VAYORA كمنصتها التعليمية.":"AUREVON TECH develops digital products and intelligent learning experiences, including the VAYORA learning platform.";
+ const description=next==="ar"?"AUREVON TECH — شركة تقنية تطوّر منتجات رقمية وتجارب تعليمية ذكية، وتبني VAYORA كمنصتها التعليمية.":"AUREVON TECH develops digital products and intelligent learning experiences, including the VAYORA learning platform.";
+ document.querySelector('meta[name="description"]').content=description;
+ document.querySelector('meta[property="og:locale"]').content=next==="ar"?"ar_AR":"en_US";
+ document.querySelector('meta[property="og:title"]').content=next==="ar"?"AUREVON TECH — نبني ما هو قادم":"AUREVON TECH — Building What’s Next";
+ document.querySelector('meta[property="og:description"]').content=description;
+ try{localStorage.setItem("aurevon-language",next);}catch(error){}
 };
+let savedLanguage="ar";
+try{const storedLanguage=localStorage.getItem("aurevon-language");if(storedLanguage==="ar"||storedLanguage==="en")savedLanguage=storedLanguage;}catch(error){}
+applyLanguage(savedLanguage);
 langButton.addEventListener("click",()=>applyLanguage(language==="ar"?"en":"ar"));
 const toggle=document.querySelector(".menu-toggle");
 const menu=document.getElementById("mobile-menu");
 toggle.addEventListener("click",()=>{
  const open=toggle.getAttribute("aria-expanded")!=="true";
  toggle.setAttribute("aria-expanded",String(open));
+ toggle.setAttribute("aria-label",open?(language==="ar"?"إغلاق القائمة":"Close menu"):(language==="ar"?"فتح القائمة":"Open menu"));
  menu.classList.toggle("open",open);
 });
 menu.querySelectorAll("a").forEach(link=>link.addEventListener("click",()=>{
  toggle.setAttribute("aria-expanded","false");
+ toggle.setAttribute("aria-label",language==="ar"?"فتح القائمة":"Open menu");
  menu.classList.remove("open");
 }));
 document.addEventListener("keydown",event=>{
- if(event.key==="Escape"){toggle.setAttribute("aria-expanded","false");menu.classList.remove("open");}
+ if(event.key==="Escape"){toggle.setAttribute("aria-expanded","false");toggle.setAttribute("aria-label",language==="ar"?"فتح القائمة":"Open menu");menu.classList.remove("open");}
 });
 document.addEventListener("click",event=>{
  if(!menu.contains(event.target)&&!toggle.contains(event.target)){toggle.setAttribute("aria-expanded","false");menu.classList.remove("open");}
