@@ -3,7 +3,7 @@ import {
   BookOpen, CalendarCheck, Timer, GraduationCap, MoreHorizontal, Bot, Settings,
   Library, Brain, Repeat, Layers, ClipboardList, FileQuestion, Trophy, BarChart3,
   FileBarChart, Calculator, CalendarClock, HelpCircle, Search, X, ChevronDown,
-  SunMoon, ShieldCheck, Download, Sparkles,
+  SunMoon, ShieldCheck, Download, Sparkles, AudioLines,
 } from 'lucide-react';
 import { PageTitle } from '../components/ui';
 
@@ -32,6 +32,7 @@ const groups: GuideGroup[] = [
       { title: 'الخرائط الذهنية', href: '#/mindmap', icon: Brain, what: 'ترتيب الأفكار والمفاهيم بصرياً.', how: 'أنشئ خريطة واربط الأفكار الرئيسية بالتفاصيل.' },
       { title: 'المراجعة الذكية', href: '#/review', icon: Repeat, what: 'تذكيرك بمراجعة الدروس وفق فواصل زمنية.', how: 'راجع العناصر المستحقة وسجّل إن كنت تذكرتها.' },
       { title: 'البطاقات التعليمية', href: '#/cards', icon: Layers, what: 'بطاقات سؤال وجواب لحفظ التعريفات والمعلومات.', how: 'أنشئ بطاقة بوجه وسؤال وظهر وإجابة، ثم اختبر تذكرك.' },
+      { title: 'مدرّب مخارج الحروف', href: '#/pronunciation', icon: AudioLines, what: 'تدريب تدريجي على مواضع نطق الحروف العربية مع أمثلة صوتية وتكرار بصوتك.', how: 'اختر مجموعة الحروف ثم الحرف المطلوب، استمع إلى النموذج، اقرأ موضع النطق، وبعدها ابدأ التدريب من الميكروفون. مطابقة الكلمات المسموعة لا تعني قياساً دقيقاً لمخرج الحرف.' },
     ],
   },
   {
