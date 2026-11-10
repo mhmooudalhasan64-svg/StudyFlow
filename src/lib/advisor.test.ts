@@ -46,6 +46,21 @@ describe('advisor', () => {
     expect(plan.some((p) => p.subjectId === 1 && p.title.startsWith('مراجعة نهائية'))).toBe(true);
   });
 
+  it('adapts priorities to reliable weak-subject evidence and explains the reason', () => {
+    const at = (correct: boolean, i: number): Attempt => ({ id: i, questionId: i, subjectId: 1, correct, at: i, dateKey: '2026-11-01' });
+    const plan = generatePlan({ ...base, attempts: Array.from({ length: 5 }, (_, i) => at(false, i)) }, 7);
+    const weakMinutes = plan.filter((p) => p.subjectId === 1).reduce((sum, p) => sum + p.minutes, 0);
+    const otherMinutes = plan.filter((p) => p.subjectId !== 1).reduce((sum, p) => sum + p.minutes, 0);
+    expect(weakMinutes).toBeGreaterThan(otherMinutes / 2);
+    expect(plan.filter((p) => p.subjectId === 1).every((p) => p.reason.includes('الدقة الحالية 0%'))).toBe(true);
+  });
+
+  it('does not infer a weak subject from fewer than five attempts', () => {
+    const attempts: Attempt[] = [true, false, false, false].map((correct, i) => ({ id: i, questionId: i, subjectId: 1, correct, at: i, dateKey: '2026-11-01' }));
+    const plan = generatePlan({ ...base, attempts }, 1);
+    expect(plan.filter((p) => p.subjectId === 1).every((p) => !p.reason.includes('الدقة الحالية'))).toBe(true);
+  });
+
   it('plan stops scheduling a subject after its exam day', () => {
     const ctx = { ...base, exams: [exam(1, 1, '2026-11-03')] };
     const plan = generatePlan(ctx, 5);
