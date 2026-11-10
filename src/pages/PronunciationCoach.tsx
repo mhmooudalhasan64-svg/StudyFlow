@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AudioLines, BookOpen, CheckCircle2, Mic, MicOff, RotateCcw, Volume2 } from 'lucide-react';
 import { PageTitle } from '../components/ui';
 import { canListen, canSpeak, listen, prepareVoice, speak, stopSpeaking } from '../lib/voice';
@@ -68,7 +68,8 @@ export default function PronunciationCoach() {
   const [busy, setBusy] = useState(false);
   const [practiceCount, setPracticeCount] = useState(0);
   const [recognized, setRecognized] = useState(false);
-  const stopRef = useState<{ current: (() => void) | null }>({ current: null })[0];
+  const stopRef = useRef<(() => void) | null>(null);
+  const transcriptRef = useRef('');
 
   const visibleLessons = useMemo(
     () => LESSONS.filter(lesson => selectedGroup === 'الكل' || lesson.group === selectedGroup),
@@ -99,6 +100,7 @@ export default function PronunciationCoach() {
       setError('');
       setFeedback('');
       setHeard('');
+      transcriptRef.current = '';
       setRecognized(false);
       setBusy(true);
       await prepareVoice();
@@ -106,13 +108,13 @@ export default function PronunciationCoach() {
       setListening(true);
       stopRef.current = listen({
         lang: 'ar-SA',
-        onText: text => setHeard(text),
+        onText: text => { transcriptRef.current = text; setHeard(text); },
         onError: message => setError(message),
         onEnd: () => {
           setListening(false);
           stopRef.current = null;
           setPracticeCount(count => count + 1);
-          const result = heard.trim();
+          const result = transcriptRef.current.trim();
           if (!result) {
             setFeedback('لم ألتقط كلمات واضحة. استمع إلى المثال مرة أخرى، ثم أعد المحاولة بهدوء.');
             return;
@@ -163,7 +165,7 @@ export default function PronunciationCoach() {
         </div>
         <div className="grid grid-cols-5 gap-2 sm:grid-cols-7 md:grid-cols-10">
           {visibleLessons.map(item => (
-            <button key={item.letter} type="button" onClick={() => { setSelectedLetter(item.letter); setHeard(''); setFeedback(''); setError(''); setRecognized(false); stopPractice(); stopSpeaking(); }} aria-pressed={selectedLetter === item.letter} className={`grid aspect-square place-items-center rounded-xl border text-2xl font-bold transition ${selectedLetter === item.letter ? 'border-accent bg-accent/15 text-accent shadow-sm' : 'border-line bg-card text-main hover:border-accent/50'}`}>
+            <button key={item.letter} type="button" onClick={() => { setSelectedLetter(item.letter); setHeard(''); transcriptRef.current = ''; setFeedback(''); setError(''); setRecognized(false); stopPractice(); stopSpeaking(); }} aria-pressed={selectedLetter === item.letter} className={`grid aspect-square place-items-center rounded-xl border text-2xl font-bold transition ${selectedLetter === item.letter ? 'border-accent bg-accent/15 text-accent shadow-sm' : 'border-line bg-card text-main hover:border-accent/50'}`}>
               {item.letter}
             </button>
           ))}
