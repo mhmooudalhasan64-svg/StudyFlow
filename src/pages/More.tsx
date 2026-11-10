@@ -1,12 +1,12 @@
-import { useEffect, useState, type ComponentType } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Award, BarChart3, BookOpen, Bot, Calculator, CalendarClock, CalendarCheck,
   FileBarChart, GitBranch, Layers, ListChecks, Repeat, Info,
-  Settings as SettingsIcon, Timer as TimerIcon, CircleHelp,
+  Settings as SettingsIcon, Timer as TimerIcon, CircleHelp, type LucideIcon,
 } from 'lucide-react';
 import { PageTitle } from '../components/ui';
 
-type Item = { href: string; label: string; Icon: ComponentType<{ size?: number; className?: string }> };
+type Item = { href: string; label: string; Icon: LucideIcon };
 
 const GROUPS: { title: string; description: string; items: Item[] }[] = [
   {
