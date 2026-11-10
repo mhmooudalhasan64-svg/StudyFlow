@@ -48,6 +48,17 @@ function pickProvider(raw: Record<string, string | undefined>): Provider | null 
       model: 'openrouter/free',
     };
   }
+
+  // Use the already-configured Gemini key when Groq/OpenRouter are unavailable.
+  const geminiKey = clean(raw.GEMINI_API_KEY);
+  if (geminiKey) {
+    return {
+      name: 'Gemini',
+      key: geminiKey,
+      endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
+      model: 'gemini-2.5-flash',
+    };
+  }
   return null;
 }
 
