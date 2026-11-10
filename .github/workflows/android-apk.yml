@@ -9,6 +9,7 @@ on:
     paths:
       - "src/**"
       - "public/**"
+      - "assets/**"
       - "api/**"
       - "index.html"
       - "package.json"
@@ -52,6 +53,11 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      - name: Generate VAYORA Android launcher icons
+        run: |
+          npm install --no-save --package-lock=false @capacitor/assets
+          npx capacitor-assets generate --android --assetPath assets --iconBackgroundColor '#101A3A'
+
       - name: Set and verify VAYORA Android version
         run: |
           python3 - <<'PY'
@@ -74,7 +80,7 @@ jobs:
           if code_count != 1 or name_count != 1:
               raise SystemExit(f"Could not safely set Android version (versionCode matches={code_count}, versionName matches={name_count}).")
           gradle_file.write_text(content)
-          print(f"Updated {gradle_file}: versionCode=3, versionName=1.0.2")
+          print(f"Updated {gradle_file}: versionCode=4, versionName=1.0.2")
           PY
           grep -E 'versionCode|versionName' android/app/build.gradle android/app/build.gradle.kts 2>/dev/null || true
 
