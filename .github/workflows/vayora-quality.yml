@@ -1,0 +1,51 @@
+name: VAYORA Quality
+
+on:
+  pull_request:
+    branches: [aurevon-official-site]
+    paths:
+      - "src/**"
+      - "api/**"
+      - "public/**"
+      - "package.json"
+      - "vite.config.ts"
+      - "tsconfig.json"
+      - "tailwind.config.js"
+      - "postcss.config.js"
+      - ".github/workflows/vayora-quality.yml"
+  push:
+    branches: [aurevon-premium-refresh]
+    paths:
+      - "src/**"
+      - "api/**"
+      - "public/**"
+      - "package.json"
+      - "vite.config.ts"
+      - "tsconfig.json"
+      - "tailwind.config.js"
+      - "postcss.config.js"
+      - ".github/workflows/vayora-quality.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: TypeScript, tests and production build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Type-check
+        run: npm run typecheck
+      - name: Run unit tests
+        run: npm test
+      - name: Build production bundle
+        run: npm run build
