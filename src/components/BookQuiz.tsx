@@ -170,8 +170,8 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
     if (!pages) return;
     const sel = selection() ?? { from: 1, to: pages.length };
     const source = pages.slice(sel.from - 1, sel.to)
-      .map((page, index) => `[ص ${sel.from + index}]\\n${page}`)
-      .join('\\n\\n');
+      .map((page, index) => `[ص ${sel.from + index}]\n${page}`)
+      .join('\n\n');
     const chunks = chunkText(source, 6000);
     if (chunks.length === 0) {
       setError('لا يوجد نص قابل للتلخيص في الصفحات المحددة.');
@@ -197,7 +197,7 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
         parts.push(part);
       }
       setSummary({
-        text: parts.join('\\n\\n---\\n\\n'),
+        text: parts.join('\n\n---\n\n'),
         from: sel.from,
         to: sel.to,
         sampled: chunks.length > indexes.length,
