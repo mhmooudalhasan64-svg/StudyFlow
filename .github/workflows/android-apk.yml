@@ -3,7 +3,7 @@ name: Build Study Flow Android APK
 on:
   workflow_dispatch:
   push:
-    branches: ["main", "feat/vayora-aurevon-skova-identity"]
+    branches: ["main", "feat/vayora-aurevon-skova-identity", "golden-vayora-1"]
     paths:
       - "src/**"
       - "public/**"
@@ -12,6 +12,7 @@ on:
       - "package.json"
       - "vite.config.ts"
       - "capacitor.config.json"
+      - "android/**"
       - "native-audio-capture/**"
       - ".github/workflows/android-apk.yml"
 
