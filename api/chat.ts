@@ -132,8 +132,13 @@ function json(body: unknown, status = 200): Response {
   });
 }
 
+/**
+ * العميل يستطيع إرسال قيم مزوّرة في أول x-forwarded-for، أما آخر قيمة فيضيفها وكيل Vercel
+ * نفسه ولا يمكن للعميل التحكم بها، لذلك نعتمد عليها لحدّ الاستخدام.
+ */
 function clientIp(request: Request): string {
-  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const parts = request.headers.get('x-forwarded-for')?.split(',') ?? [];
+  return parts[parts.length - 1]?.trim() || 'unknown';
 }
 
 function sanitize(body: unknown): Msg[] | null {
@@ -332,14 +337,14 @@ async function handlePost(request: Request): Promise<Response> {
   if (!upstream) return json({ error: 'تعذّر الاتصال بخدمة الذكاء الاصطناعي' }, 502);
 
   if (!upstream.ok) {
-    // نذكر المزوّد المستخدم وطول المفتاح (دون كشفه) لتسهيل اكتشاف الإعداد الخاطئ
-    const hint = ` [المزوّد: ${provider.name}، رمز ${upstream.status}، طول المفتاح: ${provider.key.length}]`;
+    // لا نكشف للعميل تفاصيل الإعداد الداخلية، ونكتفي برمز الحالة في السجلات
+    console.error(`[chat] upstream ${provider.name} responded ${upstream.status}`);
     const msg =
       upstream.status === 401 || upstream.status === 403
-        ? `مفتاح الخدمة غير صالح أو غير مصرّح له${hint}`
+        ? `مفتاح الخدمة غير صالح أو غير مصرّح له`
         : upstream.status === 429
-          ? `الخدمة مشغولة أو انتهت الحصة المجانية، جرّب بعد قليل${hint}`
-          : `حدث خطأ من خدمة الذكاء الاصطناعي${hint}`;
+          ? `الخدمة مشغولة أو انتهت الحصة المجانية، جرّب بعد قليل`
+          : `حدث خطأ من خدمة الذكاء الاصطناعي`;
     return json({ error: msg }, 502);
   }
 
