@@ -1,4 +1,4 @@
-import { BookOpen, BrainCircuit, Compass, GraduationCap, Layers3, Sparkles, Store, Building2 } from 'lucide-react';
+import { BookOpen, BrainCircuit, Compass, GraduationCap, Layers3, Sparkles, Building2 } from 'lucide-react';
 import { PageTitle } from '../components/ui';
 
 const pillars = [
@@ -53,7 +53,7 @@ function ProductIdentity() {
           <span className="mt-4 inline-flex rounded-full border border-sky-200/25 bg-sky-100/10 px-3 py-1 text-[10px] font-bold text-sky-100">تجربة التعلم</span>
         </article>
         <article className="rounded-2xl border border-violet-300/25 bg-gradient-to-b from-violet-400/15 to-violet-950/20 p-4 text-center">
-          <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-violet-200/25 bg-violet-100/10 shadow-lg"><img src="/icon.svg" alt="رمز AVORA" className="h-10 w-10 rounded-xl object-cover" /></span>
+          <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-violet-200/25 bg-violet-100/10 shadow-lg"><BrainCircuit size={27} /></span>
           <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">AVORA</p>
           <p className="mt-1 text-sm font-bold text-violet-100">أفورا · المساعد الذكي لفايورا</p>
           <p className="mt-3 text-xs leading-6 text-slate-200">الذكاء الاصطناعي المخصص لمنصة VAYORA؛ يساعد الطالب على فهم الدروس، والإجابة عن الأسئلة، والتفاعل النصي والصوتي ضمن تجربته التعليمية.</p>
