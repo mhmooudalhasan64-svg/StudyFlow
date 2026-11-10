@@ -597,7 +597,7 @@ export const useApp = create<AppState>((set, get) => {
 
       if (finishedMode === 'focus') await get().addSession(settings.focusMin, timer.subjectId);
       const announcement = finishedMode === 'focus' ? 'انتهت جلسة التركيز. أحسنت! خذ استراحة قصيرة.' : 'انتهت الاستراحة. هيا نبدأ جلسة تركيز جديدة.';
-      if (settings.sound) speak(announcement, {}, { gender: settings.voiceGender ?? 'any', style: settings.voiceStyle ?? 'soft' });
+      if (settings.sound) speak(announcement, {}, { gender: settings.voiceGender ?? 'any', style: settings.voiceStyle ?? 'soft', rate: settings.voiceRate ?? 1 });
       if (finishedMode === 'focus') notify('انتهت جلسة التركيز', 'أحسنت! خذ استراحة قصيرة.');
       else notify('انتهت الاستراحة', 'هيا نبدأ جلسة تركيز جديدة.');
     },
