@@ -75,7 +75,7 @@ export default function Planner() {
           <div className="rounded-xl bg-accent/10 p-2 text-accent"><CalendarRange size={20} /></div>
           <div className="min-w-0 flex-1">
             <h2 className="font-bold">المخطط الدراسي الذكي</h2>
-            <p className="mt-1 text-sm text-muted">خطة أسبوعية تراعي هدفك اليومي وموادك ومواعيد امتحاناتك والمهام الموجودة مسبقًا.</p>
+            <p className="mt-1 text-sm text-muted">خطة أسبوعية تتكيّف مع هدفك اليومي ومواعيد الامتحانات ونتائجك السابقة والمواد التي انقطعت عنها، وتشرح سبب اقتراح كل جلسة.</p>
           </div>
         </div>
         <button type="button" className="btn btn-primary w-full" onClick={createSmartPlan}>
@@ -98,6 +98,7 @@ export default function Planner() {
                       <span className="chip shrink-0">{formatMinutes(task.minutes)}</span>
                     </div>
                     <p className="mt-1 text-xs text-muted">{formatLongDate(task.date)}</p>
+                    <p className="mt-1 text-xs leading-5 text-accent">{task.reason}</p>
                   </li>
                 ))}
               </ul>
