@@ -103,7 +103,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
         setVoiceError(m);
         setSpeakingIdx(null);
       },
-    }, { gender: app.settings.voiceGender ?? 'any', style: app.settings.voiceStyle ?? 'soft' });
+    }, { gender: app.settings.voiceGender ?? 'any', style: app.settings.voiceStyle ?? 'soft', rate: app.settings.voiceRate ?? 1 });
   };
 
   const pickFile = async (e: ChangeEvent<HTMLInputElement>) => {
