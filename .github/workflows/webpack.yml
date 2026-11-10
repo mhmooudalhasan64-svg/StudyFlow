@@ -5,10 +5,12 @@ on:
     branches:
       - main
       - feat/vayora-aurevon-skova-identity
+      - titan-enhancements
   pull_request:
     branches:
       - main
       - feat/vayora-aurevon-skova-identity
+      - titan-enhancements
 
 permissions:
   contents: read
