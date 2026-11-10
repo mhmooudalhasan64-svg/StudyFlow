@@ -87,7 +87,7 @@ export default function PronunciationCoach() {
     setFeedback('');
     speak(lesson.practice, {
       onError: message => setError(message),
-    }, { rate: 0.85, style: 'soft' });
+    }, { rate: 1, style: 'soft' });
   };
 
   const startPractice = async () => {
