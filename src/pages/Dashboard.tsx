@@ -244,20 +244,16 @@ export default function Dashboard() {
           </p>
         </div>
       </a>
-      <a href="#/about" className="group block overflow-hidden rounded-3xl border border-accent/25 bg-gradient-to-l from-accent/10 via-card/90 to-accent2/10 p-4 shadow-lg shadow-accent2/10 transition hover:-translate-y-0.5 hover:border-accent/50 sm:p-5" aria-label="التعرّف على شراكة AUREVON ومتجر سكوڤا">
-        <div className="mb-3 text-[10px] font-bold tracking-wider text-accent sm:text-xs">شراكة وتعاون</div>
-        <div className="flex items-center justify-between gap-2 sm:gap-4">
-          <div className="flex min-w-0 flex-1 items-center justify-center gap-2 rounded-2xl border border-line/70 bg-black px-2 py-3 text-white sm:gap-3 sm:px-3">
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-white/70 text-lg font-black">A</span>
-            <span className="min-w-0 text-center text-sm font-black tracking-[0.12em] sm:text-base">AUREVON</span>
-          </div>
-          <span className="shrink-0 text-xl font-black text-accent">×</span>
-          <div className="flex min-w-0 flex-1 items-center justify-center gap-2 rounded-2xl border border-line/70 bg-card px-2 py-3 sm:gap-3 sm:px-3">
-            <img src="/logo.png" alt="شعار متجر سكوڤا" width={40} height={40} className="h-9 w-9 shrink-0 rounded-xl object-cover" />
-            <span className="text-sm font-black tracking-widest sm:text-base" dir="ltr">SKOVA</span>
+      <a href="#/about" className="group block overflow-hidden rounded-3xl border border-accent/25 bg-gradient-to-l from-accent/10 via-card/90 to-accent2/10 p-4 shadow-lg shadow-accent2/10 transition hover:-translate-y-0.5 hover:border-accent/50 sm:p-5" aria-label="التعرّف على منصة فايورا">
+        <div className="mb-3 text-[10px] font-bold tracking-wider text-accent sm:text-xs">منصتك التعليمية</div>
+        <div className="flex items-center justify-center gap-3 rounded-2xl border border-line/70 bg-card px-4 py-4">
+          <img src="/icon.svg" alt="شعار فايورا" width={48} height={48} className="h-12 w-12 shrink-0 rounded-xl" />
+          <div className="text-right">
+            <p className="text-base font-black tracking-widest" dir="ltr">VAYORA</p>
+            <p className="mt-1 text-xs text-muted">منصة تعليمية ذكية متكاملة</p>
           </div>
         </div>
-        <p className="mt-3 text-center text-xs leading-relaxed text-muted sm:text-sm">AUREVON × SKOVA — شراكة تجمع الابتكار والتقنية.</p>
+        <p className="mt-3 text-center text-xs leading-relaxed text-muted sm:text-sm">تعلّم بذكاء. تطوّر بثقة.</p>
       </a>
         </div>
       </details>
