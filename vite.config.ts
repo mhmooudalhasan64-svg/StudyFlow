@@ -11,15 +11,15 @@ export default defineConfig({
       manifest: {
         name: 'VAYORA 1.0.0 — Stable Release',
         short_name: 'VAYORA',
-        description: 'منصة تعليمية ذكية متكاملة تجمع أدوات التعلم والمساعد الذكي وتنظيم الدراسة.',
+        description: 'VAYORA — An intelligent, integrated learning platform.',
         lang: 'ar',
         dir: 'rtl',
         start_url: '/',
         scope: '/',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#10233D',
-        theme_color: '#10233D',
+        background_color: '#101522',
+        theme_color: '#101522',
         icons: [
           { src: 'pwa-64x64.png', sizes: '64x64', type: 'image/png' },
           { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },

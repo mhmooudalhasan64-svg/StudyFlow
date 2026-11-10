@@ -1,0 +1,10 @@
+{
+  "name": "@vayora/native-audio-capture",
+  "version": "1.0.0",
+  "description": "Android system playback audio capture bridge for VAYORA",
+  "main": "dist/esm/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "files": ["android", "dist", "plugin.json"],
+  "capacitor": { "android": { "src": "android" } }
+}

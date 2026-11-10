@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
-import { Bot, Copy, FileText, Loader2, Mic, Paperclip, RefreshCw, Send, Square, Trash2, Volume2, X } from 'lucide-react';
+import { Bot, Copy, FileText, Loader2, Mic, Paperclip, Phone, RefreshCw, Send, Square, Trash2, Volume2, X } from 'lucide-react';
 import { useChat, type ChatStyle } from '../lib/chatStore';
 import { PageTitle } from '../components/ui';
 import Advisor from '../components/Advisor';
@@ -22,12 +22,16 @@ const FILE_SUGGESTIONS = [
   'اشرح لي أهم الأفكار فيه ببساطة',
 ];
 
-export default function Assistant() {
-  const { messages, attachment, loading, error, send, setAttachment, clear, useProfile, setUseProfile, subject, setSubject, style, setStyle, regenerate } = useChat();
+export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
+  const { messages, attachment, loading, error, extraUsagePending, continueWithExtraUsage, cancelExtraUsage, send, setAttachment, clear, useProfile, setUseProfile, subject, setSubject, style, setStyle, regenerate } = useChat();
   const [copied, setCopied] = useState<number | null>(null);
   const app = useApp();
   const profile = useMemo(() => buildLearnerProfile(contextFrom(app, toDateKey())), [app]);
   const [listening, setListening] = useState(false);
+  const [handsFree, setHandsFree] = useState(false);
+  const handsFreeRef = useRef(false);
+  const handsFreeDraftRef = useRef('');
+  const lastHandsFreeSpokenRef = useRef(-1);
   const [speakingIdx, setSpeakingIdx] = useState<number | null>(null);
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const stopListenRef = useRef<(() => void) | null>(null);
@@ -60,6 +64,7 @@ export default function Assistant() {
   useEffect(
     () => () => {
       stopSpeaking();
+      handsFreeRef.current = false;
       stopListenRef.current?.();
     },
     [],
@@ -73,6 +78,44 @@ export default function Assistant() {
     } catch {
       /* النسخ غير متاح في هذا المتصفح */
     }
+  };
+
+  const startHandsFreeListening = () => {
+    if (!handsFreeRef.current) return;
+    handsFreeDraftRef.current = '';
+    setListening(true);
+    stopListenRef.current = listen({
+      onText: (spoken) => { handsFreeDraftRef.current = spoken; },
+      onEnd: () => {
+        setListening(false);
+        const spoken = handsFreeDraftRef.current.trim();
+        handsFreeDraftRef.current = '';
+        if (spoken && handsFreeRef.current) void contextualSend(spoken);
+        else if (handsFreeRef.current) window.setTimeout(() => startHandsFreeListening(), 450);
+      },
+      onError: (message) => {
+        setVoiceError(message);
+        handsFreeRef.current = false;
+        setHandsFree(false);
+        setListening(false);
+      },
+    });
+  };
+
+  const toggleHandsFree = () => {
+    if (handsFreeRef.current) {
+      handsFreeRef.current = false;
+      setHandsFree(false);
+      setListening(false);
+      stopListenRef.current?.();
+      stopListenRef.current = null;
+      return;
+    }
+    setVoiceError(null);
+    handsFreeRef.current = true;
+    lastHandsFreeSpokenRef.current = messages.length - 1;
+    setHandsFree(true);
+    startHandsFreeListening();
   };
 
   const toggleMic = () => {
@@ -103,7 +146,7 @@ export default function Assistant() {
         setVoiceError(m);
         setSpeakingIdx(null);
       },
-    }, { gender: app.settings.voiceGender ?? 'any', style: app.settings.voiceStyle ?? 'soft' });
+    }, { gender: app.settings.voiceGender ?? 'any', style: app.settings.voiceStyle ?? 'soft', rate: app.settings.voiceRate ?? 1 });
   };
 
   const pickFile = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -123,6 +166,21 @@ export default function Assistant() {
   };
 
   useEffect(() => {
+    const index = messages.length - 1;
+    const latest = messages[index];
+    if (!handsFree || loading || !latest || latest.role !== 'assistant' || index <= lastHandsFreeSpokenRef.current) return;
+    lastHandsFreeSpokenRef.current = index;
+    speak(latest.content, {
+      onEnd: () => { if (handsFreeRef.current) startHandsFreeListening(); },
+      onError: (message) => {
+        setVoiceError(message);
+        handsFreeRef.current = false;
+        setHandsFree(false);
+      },
+    }, { gender: app.settings.voiceGender ?? 'any', style: app.settings.voiceStyle ?? 'soft', rate: app.settings.voiceRate ?? 1 });
+  }, [messages, handsFree, loading, app.settings.voiceGender, app.settings.voiceStyle, app.settings.voiceRate]);
+
+  useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [messages.length, loading, error]);
 
@@ -137,7 +195,7 @@ export default function Assistant() {
   return (
     <div className="mx-auto flex max-w-2xl flex-col">
       <PageTitle
-        title="SKOVA AI"
+        title="AVORA AI"
         subtitle="خطة مراجعة تلقائية، وأسئلة عن دروسك"
         action={
           messages.length > 0 ? (
@@ -148,7 +206,7 @@ export default function Assistant() {
         }
       />
 
-      {sourcePage && <div className="mb-3 rounded-xl border border-accent/25 bg-accent/5 px-3 py-2 text-xs text-muted">سياق المساعدة: فتحت SKOVA AI من صفحة <strong className="text-main">{sourcePage}</strong>، لذلك ستكون الإجابات مرتبطة بها.</div>}
+      {sourcePage && <div className="mb-3 rounded-xl border border-accent/25 bg-accent/5 px-3 py-2 text-xs text-muted">سياق المساعدة: فتحت AVORA AI من صفحة <strong className="text-main">{sourcePage}</strong>، لذلك ستكون الإجابات مرتبطة بها.</div>}
 
       <Advisor />
 
@@ -195,9 +253,15 @@ export default function Assistant() {
           <option value="explain">اشرح ببساطة مع مثال</option>
           <option value="steps">حل خطوة بخطوة</option>
           <option value="summary">لخّص في نقاط</option>
-          <option value="coach">درّبني (أسئلة موجِّهة بدل الحل)</option>
+          <option value="coach">درّبني بأسئلة موجِّهة</option>
+          <option value="diagnose">شخّص نقطة ضعفي أولاً</option>
+          <option value="exam_coach">مدرّب الامتحان</option>
+          <option value="mastery">مسار الإتقان التفاعلي</option>
+          <option value="problem_solver">مساعد حل المسائل خطوة بخطوة</option>
           <option value="voice_teacher">المدرّس الصوتي</option>
         </select>
+        {style === 'mastery' && <p className="rounded-xl border border-accent/20 bg-accent/5 px-3 py-2 text-xs leading-6 text-muted">سيعمل AVORA معك بهدف واحد في كل مرة: تشخيص سريع، شرح متدرّج، تدريب، ثم تحقق من الإتقان قبل الانتقال.</p>}
+        {style === 'problem_solver' && <p className="rounded-xl border border-accent/20 bg-accent/5 px-3 py-2 text-xs leading-6 text-muted">حلّ منظم: تحديد المعطيات والمطلوب، اختيار القانون، التعويض والحساب بالوحدات، ثم التحقق من النتيجة. اكتب المسألة كاملة وحدد المادة، وإذا أردت تلميحاً دون الحل الكامل فاذكر ذلك.</p>}
       </div>
 
       <div className="card mb-3 min-h-[40vh] space-y-3" aria-live="polite">
@@ -205,7 +269,7 @@ export default function Assistant() {
           <div className="space-y-3 py-4 text-center">
             <Bot className="mx-auto text-accent" size={36} />
             <p className="text-sm text-muted">
-              {attachment ? 'تم إرفاق الملف. اسأل عنه أو اختر مما يلي:' : 'مرحباً! أنا SKOVA AI، مساعدك الدراسي. جرّب أحد هذه الأسئلة:'}
+              {attachment ? 'تم إرفاق الملف. اسأل عنه أو اختر مما يلي:' : 'مرحباً! أنا AVORA AI، مساعدك الدراسي. جرّب أحد هذه الأسئلة:'}
             </p>
             <div className="flex flex-col gap-2">
               {(attachment ? FILE_SUGGESTIONS : SUGGESTIONS).map((s) => (
@@ -269,6 +333,23 @@ export default function Assistant() {
         <div ref={endRef} />
       </div>
 
+      {extraUsagePending && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4" role="presentation">
+          <section role="dialog" aria-modal="true" aria-labelledby="avora-extra-title" className="w-full max-w-md rounded-2xl border border-line bg-card p-5 shadow-2xl">
+            <div className="mb-3 flex items-center gap-3">
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent/10 text-accent"><Bot size={22} /></span>
+              <h2 id="avora-extra-title" className="text-lg font-bold">استمرار استخدام AVORA AI</h2>
+            </div>
+            <p className="text-sm leading-7 text-muted">انتهى رصيدك المجاني الحالي. هل توافق على تفعيل الاستخدام الإضافي لمتابعة العمل مع AVORA AI؟</p>
+            <p className="mt-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs leading-6">قد تترتب تكلفة إضافية على هذا الخيار. لن يتم تفعيله دون موافقتك.</p>
+            <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <button type="button" className="btn btn-primary" onClick={() => void continueWithExtraUsage()}>نعم، أوافق</button>
+              <button type="button" className="btn btn-ghost border border-line" onClick={cancelExtraUsage}>لا، سأنتظر</button>
+            </div>
+          </section>
+        </div>
+      )}
+
       <div className="sticky bottom-20 space-y-2 md:bottom-4">
         {voiceError && (
           <p role="alert" className="card !p-2.5 text-sm text-bad">
@@ -329,6 +410,19 @@ export default function Assistant() {
         >
           <Paperclip size={18} />
         </button>
+        {canListen() && (
+          <button
+            type="button"
+            className={`btn shrink-0 !px-3 ${handsFree ? 'btn-primary' : 'btn-ghost'}`}
+            aria-pressed={handsFree}
+            aria-label={handsFree ? 'إيقاف المحادثة الصوتية المستمرة' : 'بدء المحادثة الصوتية المستمرة'}
+            title={handsFree ? 'إيقاف المحادثة المستمرة' : 'محادثة صوتية دون ضغط متكرر'}
+            disabled={loading}
+            onClick={toggleHandsFree}
+          >
+            <Phone size={18} />
+          </button>
+        )}
         {canListen() && (
           <button
             type="button"

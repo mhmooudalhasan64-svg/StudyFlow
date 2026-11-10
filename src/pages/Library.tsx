@@ -22,12 +22,18 @@ export default function Library() {
   const [unit, setUnit] = useState('');
   const [lesson, setLesson] = useState('');
   const [filter, setFilter] = useState<number | 'all'>('all');
+  const [search, setSearch] = useState('');
   const [message, setMessage] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const grouped = useMemo(() => {
-    const list = filter === 'all' ? books : books.filter((b) => b.subjectId === filter);
+    const query = search.trim().toLocaleLowerCase('ar');
+    const list = books.filter((b) => {
+      const matchesSubject = filter === 'all' || b.subjectId === filter;
+      const haystack = `${b.title} ${b.unit ?? ''} ${b.lesson ?? ''}`.toLocaleLowerCase('ar');
+      return matchesSubject && (!query || haystack.includes(query));
+    });
     const bySubject = new Map<number | null, Map<string, typeof books>>();
     for (const b of list) {
       const units = bySubject.get(b.subjectId) ?? new Map<string, typeof books>();
@@ -36,7 +42,7 @@ export default function Library() {
       bySubject.set(b.subjectId, units);
     }
     return [...bySubject.entries()];
-  }, [books, filter]);
+  }, [books, filter, search]);
 
   const nameOf = (id: number | null) => subjects.find((s) => s.id === id)?.name ?? 'بدون مادة';
 
@@ -134,6 +140,15 @@ export default function Library() {
         )}
       </form>
 
+      <input
+        className="input"
+        type="search"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="ابحث باسم الكتاب أو الوحدة أو الدرس…"
+        aria-label="البحث في مكتبة الكتب"
+      />
+
       <select
         className="input"
         aria-label="تصفية حسب المادة"
@@ -149,7 +164,7 @@ export default function Library() {
       </select>
 
       {grouped.length === 0 ? (
-        <Empty>لا توجد كتب بعد. أضف كتبك الرسمية بصيغة PDF لتبقى متاحة دون اتصال بالإنترنت.</Empty>
+        <Empty>{books.length === 0 ? 'لا توجد كتب بعد. أضف كتبك الرسمية بصيغة PDF لتبقى متاحة دون اتصال بالإنترنت.' : 'لا توجد نتائج مطابقة لبحثك أو للمادة المحددة.'}</Empty>
       ) : (
         grouped.map(([sid, units]) => (
           <section key={String(sid)} className="card space-y-3">

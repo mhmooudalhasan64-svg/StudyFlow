@@ -21,6 +21,8 @@ export interface PlanSuggestion {
   subjectId: number;
   date: string;
   minutes: number;
+  /** سبب أولوية المادة، مع تجنب استنتاج الضعف من عينة صغيرة */
+  reason: string;
 }
 
 export interface Insight {
@@ -48,6 +50,7 @@ interface SubjectInfo {
   /** أيام منذ آخر جلسة لهذه المادة (محدودة بسقف) */
   sinceStudy: number;
   weight: number;
+  accuracyPct: number | null;
 }
 
 function analyse(ctx: AdvisorContext): SubjectInfo[] {
@@ -65,6 +68,7 @@ function analyse(ctx: AdvisorContext): SubjectInfo[] {
     if (!prev || e.date < prev) nearestExam.set(e.subjectId, e.date);
   }
   const anyExam = nearestExam.size > 0;
+  const accuracy = accuracyBySubject(ctx.attempts);
 
   return ctx.subjects.map((subject) => {
     const examDate = nearestExam.get(subject.id) ?? null;
@@ -77,7 +81,18 @@ function analyse(ctx: AdvisorContext): SubjectInfo[] {
     if (examLeft !== null) base = 10 / (Math.max(examLeft, 1) + 2); // كلما اقترب الامتحان زاد الوزن
     else base = anyExam ? 0.1 : 1; // لا امتحان لها: وزن صغير إن وُجدت امتحانات لمواد أخرى
 
-    return { subject, examDate, examLeft, sinceStudy, weight: base * neglect };
+    const evidence = accuracy.get(subject.id);
+    // لا نرفع/نخفض الأولوية بسبب نتيجة اختبار قبل توفر خمس محاولات.
+    const accuracyPct = evidence && evidence.total >= 5
+      ? Math.round((evidence.correct / evidence.total) * 100)
+      : null;
+    const performanceFactor = accuracyPct !== null && accuracyPct < 60
+      ? 1.5
+      : accuracyPct !== null && accuracyPct >= 85
+        ? 0.85
+        : 1;
+
+    return { subject, examDate, examLeft, sinceStudy, accuracyPct, weight: base * neglect * performanceFactor };
   });
 }
 
@@ -124,11 +139,18 @@ export function generatePlan(ctx: AdvisorContext, days = 7): PlanSuggestion[] {
       if (ctx.tasks.some((t) => t.date === date && t.subjectId === id)) continue;
       const info = infos.find((x) => x.subject.id === id)!;
       const final = info.examLeft !== null && info.examLeft <= 7;
+      const reasons: string[] = [];
+      if (info.examLeft !== null && info.examLeft <= 14) reasons.push(`الامتحان ${daysLabel(info.examLeft)}`);
+      if (info.accuracyPct !== null && info.accuracyPct < 60) reasons.push(`الدقة الحالية ${info.accuracyPct}% وتحتاج إلى تقوية`);
+      if (info.sinceStudy >= 4) reasons.push(info.sinceStudy >= MAX_NEGLECT_DAYS ? 'لم تُسجّل جلسة دراسة سابقة لهذه المادة' : `مرّ ${info.sinceStudy} أيام على آخر جلسة`);
+      if (reasons.length === 0 && info.accuracyPct !== null && info.accuracyPct >= 85) reasons.push('للمحافظة على المستوى والمراجعة المتباعدة');
+      if (reasons.length === 0) reasons.push('لتحقيق توازن بين المواد ضمن هدفك اليومي');
       out.push({
         title: final ? `مراجعة نهائية: ${info.subject.name}` : `مراجعة ${info.subject.name}`,
         subjectId: id,
         date,
         minutes,
+        reason: reasons.join(' • '),
       });
     }
   }
@@ -308,8 +330,45 @@ export function buildLearnerProfile(ctx: AdvisorContext): string {
 
   if (ctx.attempts.length > 0) {
     const ok = ctx.attempts.filter((a) => a.correct).length;
-    parts.push(`حلّ ${ctx.attempts.length} سؤالاً بدقة ${Math.round((ok / ctx.attempts.length) * 100)}%.`);
+    parts.push(`حلّ ${ctx.attempts.length} سؤالاً بدقة إجمالية ${Math.round((ok / ctx.attempts.length) * 100)}%.`);
+
+    // Adaptive tutoring uses recent evidence, not a permanent label: use the latest
+    // ten attempts per subject and avoid conclusions from fewer than three.
+    const subjectIds = [...new Set(ctx.attempts.map((a) => a.subjectId))];
+    const recentSignals = subjectIds.flatMap((subjectId) => {
+      const recent = ctx.attempts
+        .filter((a) => a.subjectId === subjectId)
+        .sort((a, b) => b.at - a.at)
+        .slice(0, 10);
+      if (recent.length < 3) return [];
+      const accuracy = Math.round((recent.filter((a) => a.correct).length / recent.length) * 100);
+      const subjectName = name(subjectId) ?? 'مادة غير محددة';
+      const latestFive = recent.slice(0, 5);
+      const previousFive = recent.slice(5, 10);
+      const latestAccuracy = Math.round((latestFive.filter((a) => a.correct).length / latestFive.length) * 100);
+      const previousAccuracy = previousFive.length >= 3
+        ? Math.round((previousFive.filter((a) => a.correct).length / previousFive.length) * 100)
+        : null;
+      const trend = previousAccuracy === null
+        ? 'لا توجد مقارنة زمنية كافية'
+        : latestAccuracy >= previousAccuracy + 15
+          ? 'تحسّن حديث'
+          : latestAccuracy <= previousAccuracy - 15
+            ? 'تراجع حديث'
+            : 'أداء مستقر تقريباً';
+      const nextStep = accuracy < 50
+        ? 'ابدأ بمفهوم أصغر ومثال محلول وتلميح'
+        : accuracy < 70
+          ? 'ثبّت الفهم بتدريب متوسط وتغذية راجعة'
+          : accuracy < 85
+            ? 'ارفع التحدي تدريجياً مع مراجعة الأخطاء'
+            : 'انتقل إلى تطبيق أعمق واسترجاع متباعد';
+      return [`${subjectName}: ${accuracy}% في آخر ${recent.length} محاولات؛ ${trend}؛ الخطوة المقترحة: ${nextStep}`];
+    }).slice(0, 5);
+    if (recentSignals.length) {
+      parts.push(`مؤشرات التعلّم الحديثة (آخر المحاولات، وليست حكماً ثابتاً على المستوى): ${recentSignals.join('؛ ')}.`);
+    }
   }
 
-  return parts.join(' ').slice(0, 600);
+  return parts.join(' ').slice(0, 700);
 }

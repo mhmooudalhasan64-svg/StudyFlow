@@ -10,7 +10,7 @@ import {
   minutesBySubject,
   minutesByDay,
 } from '../lib/stats';
-import { formatMinutes, toDateKey, weekdayShort } from '../lib/utils';
+import { addDays, daysUntil, formatMinutes, toDateKey, weekdayShort } from '../lib/utils';
 
 export default function Stats() {
   const sessions = useApp((s) => s.sessions);
@@ -18,6 +18,9 @@ export default function Stats() {
   const subjects = useApp((s) => s.subjects);
   const goal = useApp((s) => s.settings.dailyGoalMin);
   const questions = useApp((s) => s.questions);
+  const exams = useApp((s) => s.exams);
+  const lessons = useApp((s) => s.lessons);
+  const today = toDateKey();
 
   const data = useMemo(() => {
     const byDay = minutesByDay(sessions);
@@ -61,6 +64,31 @@ export default function Stats() {
       : weakestSubject
         ? 'خصّص جلسة إضافية لمادة ' + (subjects.find((s) => s.id === weakestSubject.id)?.name ?? 'المادة') + '، وراجع الإجابات التي أخطأت فيها.'
         : 'واصل حل الأسئلة في مختلف المواد؛ ستظهر توصية محددة عندما تتوفر بيانات كافية عن كل مادة أو وحدة.';
+
+    // مؤشر استعداد تقديري لكل امتحان قادم، وليس احتمال نجاح أو علامة متوقعة.
+    const cutoff = addDays(today, -13);
+    const readiness = exams.filter((exam) => exam.subjectId !== null && exam.date >= today)
+      .sort((a, b) => a.date.localeCompare(b.date)).slice(0, 5).map((exam) => {
+        const subjectId = exam.subjectId as number;
+        const subjectName = subjects.find((subject) => subject.id === subjectId)?.name ?? 'المادة';
+        const subjectAttempts = attempts.filter((attempt) => attempt.subjectId === subjectId);
+        const accuracy = subjectAttempts.length >= 5 ? Math.round((subjectAttempts.filter((attempt) => attempt.correct).length / subjectAttempts.length) * 100) : null;
+        const subjectLessons = lessons.filter((lesson) => lesson.subjectId === subjectId);
+        const lessonProgress = subjectLessons.length ? Math.round((subjectLessons.filter((lesson) => lesson.done).length / subjectLessons.length) * 100) : null;
+        const recentSessions = sessions.filter((session) => session.subjectId === subjectId && session.dateKey >= cutoff && session.dateKey <= today);
+        const recentMinutes = recentSessions.reduce((sum, session) => sum + session.minutes, 0);
+        const studyCoverage = recentSessions.length > 0 && goal > 0 ? Math.min(100, Math.round((recentMinutes / (goal * 14)) * 100)) : null;
+        const indicators = [
+          accuracy === null ? null : { value: accuracy, weight: 55 },
+          lessonProgress === null ? null : { value: lessonProgress, weight: 30 },
+          studyCoverage === null ? null : { value: studyCoverage, weight: 15 },
+        ].filter((item): item is { value: number; weight: number } => item !== null);
+        const totalWeight = indicators.reduce((sum, item) => sum + item.weight, 0);
+        const score = indicators.length >= 2 && (accuracy !== null || lessonProgress !== null)
+          ? Math.round(indicators.reduce((sum, item) => sum + item.value * item.weight, 0) / totalWeight)
+          : null;
+        return { id: exam.id, title: exam.title, subjectName, daysLeft: daysUntil(exam.date), score, accuracy, lessonProgress, studyCoverage, confidence: indicators.length === 3 ? 'جيد' : indicators.length === 2 ? 'متوسط' : 'بيانات غير كافية' };
+      });
     return {
       days,
       values,
@@ -71,11 +99,12 @@ export default function Stats() {
       subjectMin,
       acc,
       weakness: { total: attempts.length, wrong: attempts.filter((a) => !a.correct).length, weakSubjects, weakUnits, recommendation },
+      readiness,
       answered: attempts.length,
       correct,
       badges: computeBadges({ totalMin, streak, answered: attempts.length, correct }),
     };
-  }, [sessions, attempts, questions, subjects]);
+  }, [sessions, attempts, questions, subjects, exams, lessons, goal, today]);
 
   const nameOf = (id: number | null) => subjects.find((s) => s.id === id)?.name ?? 'بدون مادة';
   const colorOf = (id: number | null) => subjects.find((s) => s.id === id)?.color ?? 'rgb(var(--muted))';
@@ -185,6 +214,20 @@ export default function Stats() {
         <p className="text-[11px] text-muted">يُبنى التحليل على الأسئلة التي أجبت عنها داخل التطبيق فقط. لا يستنتج مستوى الدروس التي لم تختبرها بعد.</p>
       </section>
 
+      <section className="card space-y-3">
+        <div><h2 className="font-bold">مؤشر الاستعداد للامتحانات</h2><p className="mt-1 text-xs text-muted">تقدير إرشادي يجمع أداءك في الأسئلة وإنجاز الدروس وانتظام الدراسة خلال آخر 14 يوماً. لا يمثل احتمال النجاح أو علامة مضمونة.</p></div>
+        {data.readiness.length === 0 ? <Empty>أضف امتحاناً قادماً واربطه بمادة من صفحة الامتحانات لعرض مؤشر الاستعداد.</Empty> : (
+          <ul className="space-y-3">{data.readiness.map((item) => (
+            <li key={item.id} className="rounded-xl border border-line/70 bg-base/40 p-3">
+              <div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="font-semibold">{item.title}</p><p className="mt-1 text-xs text-muted">{item.subjectName} · {item.daysLeft === 0 ? "الامتحان اليوم" : "باقي " + item.daysLeft + " يوم"}</p></div><div className="shrink-0 text-end"><p className="text-lg font-extrabold">{item.score === null ? "—" : item.score + "%"}</p><p className="text-[10px] text-muted">{item.confidence}</p></div></div>
+              {item.score === null ? <p className="mt-2 text-xs text-muted">نحتاج إلى مؤشرين على الأقل، أحدهما أداء الأسئلة أو إنجاز الدروس. حلّ 5 أسئلة على الأقل أو حدّث تقدمك في المنهاج.</p> : (
+                <><div className="mt-2 h-2 overflow-hidden rounded-full bg-line/60"><div className="h-full rounded-full bg-gradient-to-l from-accent2 to-accent" style={{ width: item.score + "%" }} /></div>
+                <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-muted">{item.accuracy !== null && <span>دقة الأسئلة: {item.accuracy}%</span>}{item.lessonProgress !== null && <span>إنجاز الدروس: {item.lessonProgress}%</span>}{item.studyCoverage !== null && <span>انتظام الدراسة: {item.studyCoverage}%</span>}</div></>
+              )}
+            </li>
+          ))}</ul>
+        )}
+      </section>
       <section className="card">
         <div className="mb-3 flex items-baseline justify-between">
           <h2 className="font-bold">دقّة الأسئلة</h2>

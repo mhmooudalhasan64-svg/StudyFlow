@@ -53,6 +53,8 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
   const [note, setNote] = useState('');
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState<{ text: string; pages: number[] } | null>(null);
+  const [summary, setSummary] = useState<{ text: string; from: number; to: number; sampled: boolean } | null>(null);
+  const [summaryLevel, setSummaryLevel] = useState<'quick' | 'balanced' | 'detailed'>('balanced');
 
   const chapters = useMemo(() => (pages ? detectChapters(pages) : []), [pages]);
   const subject = subjects.find((s) => s.id === (subjectId === '' ? subjects[0]?.id : subjectId));
@@ -62,6 +64,8 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
     setPages(p);
     setScope('all');
     setChapter(0);
+    setAnswer(null);
+    setSummary(null);
   };
 
   const pick = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -159,6 +163,51 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
       throw new Error(lastError || 'لم أجد في هذه الصفحات محتوى موثوقًا يستند إلى نص الكتاب. جرّب نطاقًا أوسع أو أعد المحاولة.');
     }
     return { items, dropped };
+  };
+
+  /** تلخيص نطاق الصفحات بمقاطع موزعة، مع إبقاء أرقام الصفحات داخل المصدر. */
+  const summarize = async () => {
+    if (!pages) return;
+    const sel = selection() ?? { from: 1, to: pages.length };
+    const source = pages.slice(sel.from - 1, sel.to)
+      .map((page, index) => `[ص ${sel.from + index}]\n${page}`)
+      .join('\n\n');
+    const chunks = chunkText(source, 6000);
+    if (chunks.length === 0) {
+      setError('لا يوجد نص قابل للتلخيص في الصفحات المحددة.');
+      return;
+    }
+    // نغطي بداية النطاق ووسطه ونهايته عند اختيار فصل طويل، لتجنّب إرسال عشرات الطلبات.
+    const indexes = chunks.length <= 4
+      ? chunks.map((_, index) => index)
+      : [...new Set([0, Math.round((chunks.length - 1) / 3), Math.round(2 * (chunks.length - 1) / 3), chunks.length - 1])];
+    setError('');
+    setAnswer(null);
+    setSummary(null);
+    setBusy(true);
+    const parts: string[] = [];
+    try {
+      for (let i = 0; i < indexes.length; i++) {
+        setProgress(`جارٍ تلخيص الكتاب… (${i + 1} / ${indexes.length})`);
+        const part = await askBook({
+          question: `لخّص هذا الجزء من الكتاب باللغة العربية الفصحى بمستوى ${summaryLevel === 'quick' ? 'مختصر جداً في نقاط أساسية' : summaryLevel === 'detailed' ? 'مفصل ومنظم مع شرح العلاقات والأسباب والنتائج' : 'متوازن بعناوين ونقاط واضحة'}. استخرج التعريفات والتواريخ والقواعد المهمة إن وجدت. لا تضف معلومات من خارج النص، وضع أرقام الصفحات بجانب الأفكار التي تستند إليها.`,
+          name,
+          text: chunks[indexes[i]],
+        });
+        parts.push(part);
+      }
+      setSummary({
+        text: parts.join('\n\n---\n\n'),
+        from: sel.from,
+        to: sel.to,
+        sampled: chunks.length > indexes.length,
+      });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'تعذّر تلخيص الصفحات.');
+    } finally {
+      setBusy(false);
+      setProgress('');
+    }
   };
 
   /** سؤال حر عن الكتاب: بحث محلي عن أقرب الصفحات ثم إرسالها فقط */
@@ -407,6 +456,41 @@ export default function BookQuiz({ onStart }: { onStart: (list: Question[]) => v
             {busy ? <Loader2 size={16} className="animate-spin" /> : <BookOpen size={16} />}
             {busy ? progress || 'جارٍ العمل…' : 'اختبرني'}
           </button>
+          <div className="space-y-2 border-t border-line/60 pt-3">
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <h3 className="font-semibold">تلخيص ذكي للصفحات</h3>
+                <p className="text-xs text-muted">ملخص من نص الكتاب مع الإشارة إلى أرقام الصفحات.</p>
+              </div>
+              <select
+                className="input !w-auto !py-2 text-xs"
+                aria-label="مستوى التفصيل في الملخص"
+                value={summaryLevel}
+                onChange={(e) => setSummaryLevel(e.target.value as 'quick' | 'balanced' | 'detailed')}
+              >
+                <option value="quick">مختصر</option>
+                <option value="balanced">متوازن</option>
+                <option value="detailed">مفصل</option>
+              </select>
+            </div>
+            <button type="button" className="btn btn-primary w-full" disabled={busy} onClick={() => void summarize()}>
+              {busy ? <Loader2 size={16} className="animate-spin" /> : <BookOpen size={16} />}
+              {busy ? progress || 'جارٍ التلخيص…' : 'لخّص الصفحات المحددة'}
+            </button>
+            {summary && (
+              <div className="rounded-xl border border-line/70 bg-base/40 p-3" aria-live="polite">
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <p className="text-xs font-semibold">ملخص الصفحات {summary.from}–{summary.to}</p>
+                  <button type="button" className="btn btn-ghost !py-1 text-xs" onClick={() => void navigator.clipboard?.writeText(summary.text)}>
+                    <Copy size={14} /> نسخ
+                  </button>
+                </div>
+                <p className="whitespace-pre-wrap text-sm leading-relaxed">{summary.text}</p>
+                {summary.sampled && <p className="mt-2 text-[11px] text-muted">النطاق طويل؛ بُني الملخص على مقاطع موزعة من بدايته ووسطه ونهايته، وليس على كل صفحة.</p>}
+              </div>
+            )}
+          </div>
+
           <div className="space-y-2 border-t border-line/60 pt-3">
             <label className="label" htmlFor="book-ask">
               اسأل كتابك (ضمن الصفحات المحددة أعلاه)

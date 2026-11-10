@@ -74,6 +74,8 @@ export interface Settings {
   /** تفضيلات الصوت البشري */
   voiceGender?: 'any' | 'female' | 'male';
   voiceStyle?: 'soft' | 'strong' | 'energetic';
+  /** سرعة قراءة المساعد الصوتي */
+  voiceRate?: 1 | 1.25 | 1.5;
   /** فرع البكالوريا المختار */
   branch: Branch;
   grade: Grade;
@@ -159,6 +161,14 @@ export interface BookText {
   at: number;
 }
 
+/** ذاكرة مؤقتة محلية لتفريغ فيديوهات الدراسة وملخصاتها. */
+export interface VideoStudyCache {
+  videoId: string;
+  transcript: string;
+  summary: string;
+  updatedAt: number;
+}
+
 /** سجل محادثة المساعد (محلي فقط، لا يدخل في النسخ الاحتياطي) */
 export interface ChatLog {
   key: 'main';
@@ -182,6 +192,7 @@ class StudyDB extends Dexie {
   results!: EntityTable<ExamResult, 'id'>;
   bookTexts!: EntityTable<BookText, 'key'>;
   chatLogs!: EntityTable<ChatLog, 'key'>;
+  videoStudy!: EntityTable<VideoStudyCache, 'videoId'>;
 
   constructor() {
     super('studyflow');
@@ -210,6 +221,10 @@ class StudyDB extends Dexie {
     // الإصدار 4: سجل المحادثة
     this.version(4).stores({
       chatLogs: 'key',
+    });
+    // الإصدار 5: تخزين تفريغات الفيديو وملخصاتها محلياً لإعادة فتحها دون إعادة الالتقاط.
+    this.version(5).stores({
+      videoStudy: 'videoId, updatedAt',
     });
   }
 }

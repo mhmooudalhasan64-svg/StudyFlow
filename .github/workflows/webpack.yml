@@ -1,21 +1,45 @@
-name: StudyFlow build
+name: VAYORA quality checks
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+      - feat/vayora-aurevon-skova-identity
+      - titan-enhancements
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
+      - feat/vayora-aurevon-skova-identity
+      - titan-enhancements
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vayora-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  quality:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Use Node.js 22
         uses: actions/setup-node@v4
         with:
           node-version: 22.x
+
       - name: Install dependencies
         run: npm install --no-audit --no-fund
-      - name: Build Study Flow
+
+      - name: TypeScript check
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Production build
         run: npm run build

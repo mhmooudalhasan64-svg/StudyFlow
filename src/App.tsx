@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ComponentType } from 'react';
+import { lazy, Suspense, useEffect, useState, type ComponentType } from 'react';
 import {
   Bot,
   Phone,
@@ -13,38 +13,42 @@ import {
   WifiOff,
   Search,
   X,
-  SlidersHorizontal,
   HelpCircle,
+  ChevronDown,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useApp } from './store';
 import { useHashRoute, type Route } from './lib/route';
 import Dashboard from './pages/Dashboard';
 import About, { Intro } from './pages/About';
 import { AlarmRinger } from './components/Alarms';
-import VoiceTeacher from './components/VoiceTeacher';
 import { primeAudio } from './lib/sound';
-import Planner from './pages/Planner';
-import TimerPage from './pages/TimerPage';
-import Exams from './pages/Exams';
-import Quiz from './pages/Quiz';
-import Assistant from './pages/Assistant';
-import Stats from './pages/Stats';
-import SettingsPage from './pages/SettingsPage';
-import Bac from './pages/Bac';
-import Library from './pages/Library';
-import Curriculum from './pages/Curriculum';
-import Review from './pages/Review';
-import Cards from './pages/Cards';
-import Simulator from './pages/Simulator';
-import Calculator from './pages/Calculator';
-import Achievements from './pages/Achievements';
-import Reports from './pages/Reports';
-import More from './pages/More';
-import MindMap from './pages/MindMap';
-import Help from './pages/Help';
-import Today from './pages/Today';
 
-type NavItem = { route: Route; label: string; Icon: ComponentType<{ size?: number }> };
+const VoiceTeacher = lazy(() => import('./components/VoiceTeacher'));
+const Planner = lazy(() => import('./pages/Planner'));
+const TimerPage = lazy(() => import('./pages/TimerPage'));
+const Exams = lazy(() => import('./pages/Exams'));
+const Quiz = lazy(() => import('./pages/Quiz'));
+const Assistant = lazy(() => import('./pages/Assistant'));
+const YouTubeStudy = lazy(() => import('./pages/YouTubeStudy'));
+const Stats = lazy(() => import('./pages/Stats'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const Bac = lazy(() => import('./pages/Bac'));
+const Library = lazy(() => import('./pages/Library'));
+const Curriculum = lazy(() => import('./pages/Curriculum'));
+const Review = lazy(() => import('./pages/Review'));
+const Cards = lazy(() => import('./pages/Cards'));
+const Simulator = lazy(() => import('./pages/Simulator'));
+const Calculator = lazy(() => import('./pages/Calculator'));
+const Achievements = lazy(() => import('./pages/Achievements'));
+const Reports = lazy(() => import('./pages/Reports'));
+const More = lazy(() => import('./pages/More'));
+const MindMap = lazy(() => import('./pages/MindMap'));
+const Help = lazy(() => import('./pages/Help'));
+const Today = lazy(() => import('./pages/Today'));
+const PronunciationCoach = lazy(() => import('./pages/PronunciationCoach'));
+
+type NavItem = { route: Route; label: string; Icon: LucideIcon };
 
 const PAGE_HINTS: Partial<Record<Route, string>> = {
   home: 'هذه الصفحة تجمع ملخص يومك. ابدأ من زر جلسة التركيز أو افتح لوحة يومي الدراسي.',
@@ -57,7 +61,9 @@ const PAGE_HINTS: Partial<Record<Route, string>> = {
   cards: 'افتح البطاقة وحاول تذكر الإجابة قبل إظهار الوجه الآخر.',
   stats: 'تعرض الإحصاءات ما سجلته فعلياً من جلسات وإجابات.',
   assistant: 'اكتب سؤالك أو أرفق ملفاً. إذا فتحت المساعد من صفحة أخرى فسيعرف سياقها.',
+  youtube: 'أدخل رابط فيديو، ثم أضف نص الترجمة لتسأل AVORA عن محتواه.',
   today: 'هذه لوحة مختصرة تجمع مهامك ومراجعاتك ووقت تركيزك لهذا اليوم.',
+  pronunciation: 'تدرّب على مخارج الحروف العربية، واستمع إلى النماذج وكرّر بصوتك.',
 };
 
 const SEARCH_PAGES: { route: Route; label: string; keywords: string }[] = [
@@ -78,9 +84,11 @@ const SEARCH_PAGES: { route: Route; label: string; keywords: string }[] = [
   { route: 'stats', label: 'الإحصاءات', keywords: 'نقاط ضعف دقة تقدم' },
   { route: 'reports', label: 'التقارير', keywords: 'ملخص دراسة' },
   { route: 'achievements', label: 'الإنجازات', keywords: 'أوسمة تحفيز' },
-  { route: 'assistant', label: 'SKOVA AI', keywords: 'مساعد ذكي شرح سؤال' },
+  { route: 'assistant', label: 'AVORA AI', keywords: 'مساعد ذكي شرح سؤال' },
+  { route: 'youtube', label: 'فيديوهات YouTube', keywords: 'يوتيوب فيديو ترجمة تفريغ تنزيل تحليل شرح' },
   { route: 'settings', label: 'الإعدادات', keywords: 'صوت مظهر نسخ احتياطي مواد' },
   { route: 'help', label: 'شرح أزرار التطبيق', keywords: 'دليل مساعدة تعليمات' },
+  { route: 'pronunciation', label: 'مدرّب مخارج الحروف', keywords: 'النطق مخارج الحروف تدريب صوت قراءة فصحى' },
 ];
 
 /** التنقل المختصر؛ جميع الصفحات متاحة من «كل الميزات» */
@@ -101,13 +109,14 @@ const MOBILE_NAV: NavItem[] = [
   { route: 'more', label: 'المزيد', Icon: MoreHorizontal },
 ];
 
-const PAGES: Record<Route, ComponentType> = {
+const PAGES: Record<Route, ComponentType<any>> = {
   home: Dashboard,
   plan: Planner,
   timer: TimerPage,
   exams: Exams,
   quiz: Quiz,
   assistant: Assistant,
+  youtube: YouTubeStudy,
   stats: Stats,
   settings: SettingsPage,
   bac: Bac,
@@ -124,6 +133,7 @@ const PAGES: Record<Route, ComponentType> = {
   about: About,
   help: Help,
   today: Today,
+  pronunciation: PronunciationCoach,
 };
 
 function useOnline(): boolean {
@@ -148,21 +158,20 @@ export default function App() {
   const theme = useApp((s) => s.settings.theme);
   const updateSettings = useApp((s) => s.updateSettings);
   const [introDone, setIntroDone] = useState(false);
-  const [simpleMode, setSimpleMode] = useState(() => {
-    try { return localStorage.getItem('studyflow-ui-mode') !== 'advanced'; } catch { return true; }
-  });
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [hintVisible, setHintVisible] = useState(false);
-  const [skovaCallOpen, setSkovaCallOpen] = useState(false);
-  const [assistantPosition, setAssistantPosition] = useState<{ left: number; top: number } | null>(null);
-  const assistantDrag = useRef<{ pointerId: number; x: number; y: number; left: number; top: number; moved: boolean } | null>(null);
-  const ignoreAssistantClick = useRef(false);
+  const [avoraCallOpen, setAvoraCallOpen] = useState(false);
+  const [avoraToolsOpen, setAvoraToolsOpen] = useState(false);
   const route = useHashRoute();
   const online = useOnline();
-  const visibleNav = simpleMode ? NAV.filter((item) => ['home', 'plan', 'timer', 'more'].includes(item.route)) : NAV;
-  const visibleMobileNav = simpleMode ? MOBILE_NAV.filter((item) => ['home', 'plan', 'timer', 'more'].includes(item.route)) : MOBILE_NAV;
+  const visibleNav = NAV;
+  const visibleMobileNav = MOBILE_NAV;
   const searchResults = SEARCH_PAGES.filter((item) => (item.label + ' ' + item.keywords).toLowerCase().includes(searchText.trim().toLowerCase()));
+
+  useEffect(() => {
+    setAvoraToolsOpen(false);
+  }, [route]);
 
   useEffect(() => {
     try { setHintVisible(Boolean(PAGE_HINTS[route]) && localStorage.getItem('studyflow-hint-' + route) !== '1'); }
@@ -180,15 +189,6 @@ export default function App() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
-
-  const toggleMode = () => {
-    setSimpleMode((current) => {
-      const next = !current;
-      try { localStorage.setItem('studyflow-ui-mode', next ? 'simple' : 'advanced'); } catch { /* التبديل يعمل لهذه الجلسة */ }
-      window.dispatchEvent(new Event('studyflow:mode-change'));
-      return next;
-    });
-  };
 
   useEffect(() => {
     void init();
@@ -240,86 +240,42 @@ export default function App() {
           </section>
         </div>
       )}
-      <button
-          type="button"
-          aria-label="ابدأ مكالمة صوتية مع المعلم SKOVA، واسحب الزر لتغيير مكانه"
-          title="مكالمة المعلم الصوتية — اضغط للاتصال أو اسحب الزر لتحريكه"
-          style={assistantPosition ? { left: assistantPosition.left, top: assistantPosition.top } : undefined}
-          onPointerDown={(event) => {
-            if (event.button !== 0) return;
-            const rect = event.currentTarget.getBoundingClientRect();
-            assistantDrag.current = {
-              pointerId: event.pointerId,
-              x: event.clientX,
-              y: event.clientY,
-              left: rect.left,
-              top: rect.top,
-              moved: false,
-            };
-            event.currentTarget.setPointerCapture(event.pointerId);
-          }}
-          onPointerMove={(event) => {
-            const drag = assistantDrag.current;
-            if (!drag || drag.pointerId !== event.pointerId) return;
-            const dx = event.clientX - drag.x;
-            const dy = event.clientY - drag.y;
-            if (!drag.moved && Math.hypot(dx, dy) < 6) return;
-            drag.moved = true;
-            const rect = event.currentTarget.getBoundingClientRect();
-            setAssistantPosition({
-              left: Math.max(8, Math.min(window.innerWidth - rect.width - 8, drag.left + dx)),
-              top: Math.max(8, Math.min(window.innerHeight - rect.height - 8, drag.top + dy)),
-            });
-          }}
-          onPointerUp={(event) => {
-            const drag = assistantDrag.current;
-            if (!drag || drag.pointerId !== event.pointerId) return;
-            if (drag.moved) {
-              const rect = event.currentTarget.getBoundingClientRect();
-              const position = {
-                left: Math.max(8, Math.min(window.innerWidth - rect.width - 8, drag.left + event.clientX - drag.x)),
-                top: Math.max(8, Math.min(window.innerHeight - rect.height - 8, drag.top + event.clientY - drag.y)),
-              };
-              setAssistantPosition(position);
-              // يحفظ الموقع أثناء الجلسة؛ يعود بجانب زر المساعد عند إعادة فتح التطبيق
-              ignoreAssistantClick.current = true;
-            }
-            assistantDrag.current = null;
-          }}
-          onPointerCancel={() => { assistantDrag.current = null; }}
-          onClick={() => {
-            if (ignoreAssistantClick.current) {
-              ignoreAssistantClick.current = false;
-              return;
-            }
-            setSkovaCallOpen(true);
-          }}
-          className={`fixed z-30 inline-flex touch-none select-none items-center gap-2 rounded-full border border-emerald-300/20 bg-gradient-to-l from-[#102d2a] via-[#145447] to-[#123d4c] px-3 py-2 text-white shadow-xl shadow-emerald-950/30 transition hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-400 cursor-grab active:cursor-grabbing ${assistantPosition ? '' : 'bottom-24 right-36 md:bottom-6 md:right-36'}`}
-        >
-          <span className="relative grid h-7 w-7 place-items-center rounded-full border border-white/20 bg-white/10">
-            <Phone size={16} />
-            <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#16483e] bg-emerald-300" />
-          </span>
-          <span className="flex flex-col text-right leading-tight">
-            <span className="text-xs font-extrabold tracking-wide">مكالمة المعلم</span>
-            <span className="text-[9px] text-white/75">SKOVA الصوتي</span>
-          </span>
-      </button>
-      <a
-        href="#/assistant"
-        aria-label="فتح المساعد الدراسي النصي"
-        title="المساعد الدراسي — محادثة نصية مع SKOVA"
-        className="fixed bottom-24 right-4 z-30 inline-flex items-center gap-2 rounded-full border border-violet-300/20 bg-gradient-to-l from-[#21152f] via-[#392052] to-[#263653] px-3 py-2 text-white shadow-xl shadow-purple-950/30 transition hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-400 md:bottom-6 md:right-6"
-      >
-        <span className="grid h-7 w-7 place-items-center rounded-full border border-white/20 bg-white/10">
-          <Bot size={16} />
-        </span>
-        <span className="flex flex-col text-right leading-tight">
-          <span className="text-xs font-extrabold tracking-wide">المساعد</span>
-          <span className="text-[9px] text-white/75">محادثة نصية</span>
-        </span>
-      </a>
-      <VoiceTeacher open={skovaCallOpen} onClose={() => setSkovaCallOpen(false)} />
+      {route !== 'assistant' && route !== 'home' && (
+        <div className="avora-launcher fixed bottom-[calc(5.2rem+env(safe-area-inset-bottom))] right-4 z-30 flex flex-col items-end gap-2 md:bottom-6 md:right-6">
+          {avoraToolsOpen && (
+            <div id="avora-launcher-menu" className="avora-launcher-menu flex min-w-[13.5rem] flex-col gap-1.5 rounded-2xl border border-line bg-card/95 p-2 shadow-2xl backdrop-blur-xl" role="group" aria-label="أدوات AVORA">
+              <button
+                type="button"
+                onClick={() => { setAvoraToolsOpen(false); setAvoraCallOpen(true); }}
+                className="avora-launcher-option"
+              >
+                <span className="avora-launcher-option-icon"><Phone size={17} /></span>
+                <span><strong>مكالمة المعلم</strong><small>محادثة صوتية مباشرة</small></span>
+              </button>
+              <a
+                href="#/assistant"
+                onClick={() => setAvoraToolsOpen(false)}
+                className="avora-launcher-option"
+              >
+                <span className="avora-launcher-option-icon"><Bot size={17} /></span>
+                <span><strong>المساعد الدراسي</strong><small>محادثة وشرح وملفات</small></span>
+              </a>
+            </div>
+          )}
+          <button
+            type="button"
+            aria-label={avoraToolsOpen ? "إغلاق أدوات AVORA" : "فتح أدوات AVORA"}
+            aria-expanded={avoraToolsOpen}
+            aria-controls="avora-launcher-menu"
+            onClick={() => setAvoraToolsOpen((open) => !open)}
+            className="avora-launcher-trigger"
+          >
+            <span className="avora-launcher-trigger-icon">{avoraToolsOpen ? <X size={19} /> : <Bot size={20} />}</span>
+            <span>AVORA</span>
+            <ChevronDown size={15} className={avoraToolsOpen ? "rotate-180 transition-transform" : "transition-transform"} />
+          </button>
+        </div>
+      )}      <Suspense fallback={null}><VoiceTeacher open={avoraCallOpen} onClose={() => setAvoraCallOpen(false)} /></Suspense>
       {/* الشريط الجانبي (شاشات كبيرة) */}
       <aside className="app-sidebar sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
         <Brand />
@@ -342,7 +298,7 @@ export default function App() {
         </nav>
         <div className="mt-auto flex items-center gap-2 pt-3">
           {!online && <OfflineChip />}
-          <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} simpleMode={simpleMode} onToggleMode={toggleMode} onSearch={() => setSearchOpen(true)} />
+          <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} onSearch={() => setSearchOpen(true)} />
         </div>
       </aside>
 
@@ -352,7 +308,7 @@ export default function App() {
           <Brand />
           <div className="flex items-center gap-1">
             {!online && <OfflineChip />}
-            <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} simpleMode={simpleMode} onToggleMode={toggleMode} onSearch={() => setSearchOpen(true)} />
+            <HeaderButtons theme={theme} onToggle={() => void updateSettings({ theme: theme === 'dark' ? 'light' : 'dark' })} onSearch={() => setSearchOpen(true)} />
           </div>
         </header>
 
@@ -364,12 +320,12 @@ export default function App() {
               <button type="button" className="btn btn-ghost !px-2 !py-1 text-xs" onClick={() => { setHintVisible(false); try { localStorage.setItem('studyflow-hint-' + route, '1'); } catch { /* لا يؤثر على الاستخدام */ } }}>فهمت</button>
             </div>
           )}
-          <Page />
+          <Suspense fallback={<div className="grid min-h-[40vh] place-items-center text-muted" role="status">جارٍ تحميل الصفحة…</div>}>{route === 'assistant' ? <Assistant onCallOpen={() => setAvoraCallOpen(true)} /> : <Page />}</Suspense>
         </main>
 
         {/* شريط التنقل السفلي (جوال) */}
         <nav
-          className={`app-mobile-nav fixed inset-x-0 bottom-0 z-20 grid ${simpleMode ? "grid-cols-4" : "grid-cols-5"} border-t border-line/70 bg-base/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden`}
+          className="app-mobile-nav fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-line/70 bg-base/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
           aria-label="التنقل الرئيسي"
         >
           {visibleMobileNav.map(({ route: r, label, Icon }) => {
@@ -404,21 +360,23 @@ function OfflineChip() {
 
 function Brand() {
   return (
-    <a href="#/home" className="flex items-center gap-2.5">
-      <img src="/logo.png" alt="" width={36} height={36} className="h-9 w-9 rounded-xl object-cover" />
+    <a href="#/home" className="vayora-brand flex items-center gap-3" aria-label="VAYORA by AUREVON — الرئيسية">
+      <span className="vayora-brand-mark">
+        <img src="/icon.svg" alt="" width={38} height={38} className="h-9 w-9 object-contain" />
+      </span>
       <span className="flex flex-col leading-tight">
-        <span className="text-lg font-extrabold tracking-[0.08em]" dir="ltr">VAYORA</span>
+        <span className="vayora-brand-name" dir="ltr">VAYORA</span>
         <span className="text-[10px] text-muted">فايورا · منصة تعليمية ذكية</span>
+        <span className="vayora-brand-parent mt-1" dir="ltr"><span aria-hidden="true">◆</span> AUREVON TECHNOLOGY</span>
       </span>
     </a>
   );
 }
 
-function HeaderButtons({ theme, onToggle, simpleMode, onToggleMode, onSearch }: { theme: 'dark' | 'light'; onToggle: () => void; simpleMode: boolean; onToggleMode: () => void; onSearch: () => void }) {
+function HeaderButtons({ theme, onToggle, onSearch }: { theme: 'dark' | 'light'; onToggle: () => void; onSearch: () => void }) {
   return (
     <>
       <button type="button" onClick={onSearch} aria-label="البحث عن ميزة" title="البحث عن ميزة (Ctrl + K)" className="rounded-xl border border-line bg-card/60 p-2.5 text-muted transition hover:border-accent hover:text-main"><Search size={18} /></button>
-      <button type="button" onClick={onToggleMode} aria-label={simpleMode ? 'التبديل إلى الوضع المتقدم' : 'التبديل إلى الوضع البسيط'} title={simpleMode ? 'الوضع البسيط — اضغط لإظهار كل الأزرار' : 'الوضع المتقدم — اضغط لتبسيط الأزرار'} className={`rounded-xl border border-line bg-card/60 p-2.5 transition hover:border-accent hover:text-main ${simpleMode ? 'text-accent' : 'text-muted'}`}><SlidersHorizontal size={18} /></button>
       <button
         type="button"
         onClick={onToggle}

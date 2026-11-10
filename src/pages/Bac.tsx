@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import {
   Award,
   BookOpen,
+  Youtube,
   Calculator,
   CalendarCheck,
   CheckCircle2,
@@ -13,14 +14,15 @@ import {
   Timer as TimerIcon,
   Target,
 } from 'lucide-react';
-import type { ComponentType } from 'react';
+import type { LucideIcon } from 'lucide-react';
 import { useApp } from '../store';
 import { PageTitle } from '../components/ui';
 import { BRANCHES, BRANCH_LIST, GRADES, branchSubjects, missingBranchSubjects } from '../lib/bac';
 import type { Branch, Grade } from '../db';
 
-const FEATURES: { href: string; label: string; desc: string; Icon: ComponentType<{ size?: number; className?: string }> }[] = [
+const FEATURES: { href: string; label: string; desc: string; Icon: LucideIcon }[] = [
   { href: '#/library', label: 'مكتبة الكتب', desc: 'كتب PDF حسب المادة والوحدة والدرس', Icon: BookOpen },
+  { href: '#/youtube', label: 'فيديوهات YouTube', desc: 'شاهد الدروس واسأل AVORA عن محتواها', Icon: Youtube },
   { href: '#/quiz', label: 'بنك الأسئلة والاختبارات', desc: 'دورات سابقة واختبارات بتصحيح فوري', Icon: ListChecks },
   { href: '#/curriculum', label: 'خطة إنهاء المنهاج', desc: 'المنجز والمتبقي ونسبة كل مادة', Icon: CalendarCheck },
   { href: '#/review', label: 'المراجعة الذكية', desc: 'تذكير بالدروس بمواعيد متدرجة', Icon: Repeat },

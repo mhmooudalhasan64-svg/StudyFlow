@@ -2,10 +2,8 @@ name: Build Study Flow Android APK
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches: ["main"]
   push:
-    branches: ["main"]
+    branches: ["main", "feat/vayora-aurevon-skova-identity", "golden-vayora-1"]
     paths:
       - "src/**"
       - "public/**"
@@ -14,16 +12,34 @@ on:
       - "package.json"
       - "vite.config.ts"
       - "capacitor.config.json"
+      - "android/**"
+      - "native-audio-capture/**"
       - ".github/workflows/android-apk.yml"
+
+concurrency:
+  group: android-whisper-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build-android:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+
+      - name: Fetch and verify bundled Whisper model
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODEL_DIR="native-audio-capture/android/src/main/assets/models"
+          MODEL_PATH="$MODEL_DIR/ggml-base-q5_1.bin"
+          mkdir -p "$MODEL_DIR"
+          curl --fail --location --retry 3 --retry-delay 2 \
+            "https://huggingface.co/ggerganov/whisper.cpp/resolve/f281eb45af861ab5e5297d23694b7d46e090c02c/ggml-base-q5_1.bin" \
+            --output "$MODEL_PATH"
+          echo "422f1ae452ade6f30a004d7e5c6a43195e4433bc370bf23fac9cc591f01a8898  $MODEL_PATH" | sha256sum --check -
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -36,6 +52,11 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      - name: Set up Android SDK, NDK and CMake
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools platforms;android-35 build-tools;35.0.0 ndk;27.2.12479018 cmake;3.22.1"
+
       - name: Install web dependencies
         run: npm install --no-audit --no-fund
 
@@ -44,13 +65,20 @@ jobs:
 
       - name: Build web app for Android
         env:
-          VITE_API_BASE_URL: https://study-flow-mhm23.vercel.app
+          VITE_API_BASE_URL: https://studyflow-preview-preview.up.railway.app
         run: npm run build
 
-      - name: Create Android project and sync web assets
+      - name: Create or sync Android project
         run: |
-          npx cap add android
-          npx cap sync android
+          if [ -d android ]; then
+            npx cap sync android
+          else
+            npx cap add android
+            npx cap sync android
+          fi
+
+      - name: Verify native plugin is included in Android project
+        run: grep -q "vayora-native-audio-capture" android/app/capacitor.build.gradle
 
       - name: Build installable debug APK
         run: |
