@@ -928,7 +928,7 @@ html[data-theme="light"] body .product-main :is(p,.product-note){
 <a href="#about" data-i18n="nav_about">عن الشركة</a><a href="#capabilities" data-i18n="nav_work">مجالاتنا</a><a href="#product" data-i18n="nav_product">VAYORA</a><a href="#process" data-i18n="nav_process">منهج العمل</a><a href="#faq" data-i18n="nav_faq">الأسئلة</a><a href="#contact" data-i18n="nav_contact">تواصل معنا</a>
 </nav>
 <div class="nav-actions">
-<button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to light mode" title="Switch to light mode">☼</button>
+
 
 <button class="lang" id="language-toggle" type="button" aria-label="Switch language">EN</button>
 <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" data-i18n="menu">القائمة</button>
@@ -1050,23 +1050,9 @@ final_title:"Have a digital challenge? Start with the problem.",final_desc:"Brin
 }};
 let language="ar";
 
-const themeButton=document.getElementById("theme-toggle");
-const themeKey="aurevon-theme";
-const applyTheme=(next)=>{
- const theme=next==="light"?"light":"dark";
- document.documentElement.dataset.theme=theme;
- document.documentElement.style.colorScheme=theme;
- document.querySelector('meta[name="theme-color"]').content=theme==="light"?"#f2f5f0":"#07110f";
- themeButton.textContent=theme==="light"?"☾":"☼";
- const label=theme==="light"?"Switch to dark mode":"Switch to light mode";
- themeButton.setAttribute("aria-label",label);
- themeButton.setAttribute("title",label);
- try{localStorage.setItem(themeKey,theme);}catch(error){}
-};
-let savedTheme="dark";
-try{const storedTheme=localStorage.getItem(themeKey);if(storedTheme==="light"||storedTheme==="dark")savedTheme=storedTheme;}catch(error){}
-applyTheme(savedTheme);
-themeButton.addEventListener("click",()=>applyTheme(document.documentElement.dataset.theme==="dark"?"light":"dark"));
+// AUREVON uses the dark visual identity exclusively. Theme switching is intentionally disabled.
+document.documentElement.dataset.theme="dark";
+document.document.documentElement.style.colorScheme="dark";
 
 const langButton=document.getElementById("language-toggle");
 const applyLanguage=(next)=>{
