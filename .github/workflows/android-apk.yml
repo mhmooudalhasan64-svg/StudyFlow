@@ -68,16 +68,17 @@ jobs:
               raise SystemExit("Android app Gradle file was not generated.")
 
           content = gradle_file.read_text()
-          content, code_count = re.subn(r'(?m)(\\bversionCode\\s*=\\s*)\\d+', r'\\g<1>4', content)
-          if code_count == 0:
-              content, code_count = re.subn(r'(?m)(\\bversionCode\\s+)\\d+', r'\\g<1>4', content)
-          content, name_count = re.subn(r'(?m)(\\bversionName\\s*=\\s*)["\\'][^"\\']+["\\']', r'\\g<1>"1.0.2"', content)
-          if name_count == 0:
-              content, name_count = re.subn(r'(?m)(\\bversionName\\s+)["\\'][^"\\']+["\\']', r'\\g<1>"1.0.2"', content)
+          content, code_count = re.subn(r'(?m)(\\bversionCode\\s*(?:=\\s*)?)\\d+', r'\\g<1>4', content)
+          content, name_count = re.subn(r'(?m)(\\bversionName\\s*(?:=\\s*)?)[\\x22\\x27][^\\x22\\x27]+[\\x22\\x27]', r'\\g<1>"1.0.2"', content)
           if code_count != 1 or name_count != 1:
               raise SystemExit(f"Could not safely set Android version (versionCode matches={code_count}, versionName matches={name_count}).")
           gradle_file.write_text(content)
-          print(f"Updated {gradle_file}: versionCode=4, versionName=1.0.2")
+          verified = gradle_file.read_text()
+          if not re.search(r'\\bversionCode\\s*(?:=\\s*)?4\\b', verified):
+              raise SystemExit("Android versionCode verification failed.")
+          if not re.search(r'\\bversionName\\s*(?:=\\s*)?"1\\.0\\.2"', verified):
+              raise SystemExit("Android versionName verification failed.")
+          print(f"Verified {gradle_file}: versionCode=4, versionName=1.0.2")
           PY
           grep -E 'versionCode|versionName' android/app/build.gradle android/app/build.gradle.kts 2>/dev/null || true
 
