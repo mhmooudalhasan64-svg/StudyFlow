@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ComponentType } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState, type ComponentType, type LazyExoticComponent } from 'react';
 import {
   Bot,
   Phone,
@@ -15,36 +15,39 @@ import {
   X,
   SlidersHorizontal,
   HelpCircle,
+  type LucideIcon,
 } from 'lucide-react';
 import { useApp } from './store';
 import { useHashRoute, type Route } from './lib/route';
 import Dashboard from './pages/Dashboard';
 import About, { Intro } from './pages/About';
 import { AlarmRinger } from './components/Alarms';
-import VoiceTeacher from './components/VoiceTeacher';
 import { primeAudio } from './lib/sound';
-import Planner from './pages/Planner';
-import TimerPage from './pages/TimerPage';
-import Exams from './pages/Exams';
-import Quiz from './pages/Quiz';
-import Assistant from './pages/Assistant';
-import Stats from './pages/Stats';
-import SettingsPage from './pages/SettingsPage';
-import Bac from './pages/Bac';
-import Library from './pages/Library';
-import Curriculum from './pages/Curriculum';
-import Review from './pages/Review';
-import Cards from './pages/Cards';
-import Simulator from './pages/Simulator';
-import Calculator from './pages/Calculator';
-import Achievements from './pages/Achievements';
-import Reports from './pages/Reports';
-import More from './pages/More';
-import MindMap from './pages/MindMap';
-import Help from './pages/Help';
-import Today from './pages/Today';
 
-type NavItem = { route: Route; label: string; Icon: ComponentType<{ size?: number }> };
+// تحميل الصفحات عند فتحها فقط لتقليل حجم الحزمة الأولى واستهلاك الذاكرة.
+const VoiceTeacher = lazy(() => import('./components/VoiceTeacher'));
+const Planner = lazy(() => import('./pages/Planner'));
+const TimerPage = lazy(() => import('./pages/TimerPage'));
+const Exams = lazy(() => import('./pages/Exams'));
+const Quiz = lazy(() => import('./pages/Quiz'));
+const Assistant = lazy(() => import('./pages/Assistant'));
+const Stats = lazy(() => import('./pages/Stats'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const Bac = lazy(() => import('./pages/Bac'));
+const Library = lazy(() => import('./pages/Library'));
+const Curriculum = lazy(() => import('./pages/Curriculum'));
+const Review = lazy(() => import('./pages/Review'));
+const Cards = lazy(() => import('./pages/Cards'));
+const Simulator = lazy(() => import('./pages/Simulator'));
+const Calculator = lazy(() => import('./pages/Calculator'));
+const Achievements = lazy(() => import('./pages/Achievements'));
+const Reports = lazy(() => import('./pages/Reports'));
+const More = lazy(() => import('./pages/More'));
+const MindMap = lazy(() => import('./pages/MindMap'));
+const Help = lazy(() => import('./pages/Help'));
+const Today = lazy(() => import('./pages/Today'));
+
+type NavItem = { route: Route; label: string; Icon: LucideIcon };
 
 const PAGE_HINTS: Partial<Record<Route, string>> = {
   home: 'هذه الصفحة تجمع ملخص يومك. ابدأ من زر جلسة التركيز أو افتح لوحة يومي الدراسي.',
@@ -78,7 +81,7 @@ const SEARCH_PAGES: { route: Route; label: string; keywords: string }[] = [
   { route: 'stats', label: 'الإحصاءات', keywords: 'نقاط ضعف دقة تقدم' },
   { route: 'reports', label: 'التقارير', keywords: 'ملخص دراسة' },
   { route: 'achievements', label: 'الإنجازات', keywords: 'أوسمة تحفيز' },
-  { route: 'assistant', label: 'SKOVA AI', keywords: 'مساعد ذكي شرح سؤال' },
+  { route: 'assistant', label: 'المعلّم الذكي', keywords: 'مساعد ذكي شرح سؤال' },
   { route: 'settings', label: 'الإعدادات', keywords: 'صوت مظهر نسخ احتياطي مواد' },
   { route: 'help', label: 'شرح أزرار التطبيق', keywords: 'دليل مساعدة تعليمات' },
 ];
@@ -101,7 +104,9 @@ const MOBILE_NAV: NavItem[] = [
   { route: 'more', label: 'المزيد', Icon: MoreHorizontal },
 ];
 
-const PAGES: Record<Route, ComponentType> = {
+type PageComponent = ComponentType | LazyExoticComponent<ComponentType>;
+
+const PAGES: Record<Route, PageComponent> = {
   home: Dashboard,
   plan: Planner,
   timer: TimerPage,
@@ -154,7 +159,7 @@ export default function App() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [hintVisible, setHintVisible] = useState(false);
-  const [skovaCallOpen, setSkovaCallOpen] = useState(false);
+  const [voiceCallOpen, setVoiceCallOpen] = useState(false);
   const [assistantPosition, setAssistantPosition] = useState<{ left: number; top: number } | null>(null);
   const assistantDrag = useRef<{ pointerId: number; x: number; y: number; left: number; top: number; moved: boolean } | null>(null);
   const ignoreAssistantClick = useRef(false);
@@ -242,8 +247,8 @@ export default function App() {
       )}
       <button
           type="button"
-          aria-label="ابدأ مكالمة صوتية مع المعلم SKOVA، واسحب الزر لتغيير مكانه"
-          title="مكالمة المعلم الصوتية — اضغط للاتصال أو اسحب الزر لتحريكه"
+          aria-label="ابدأ مكالمة صوتية مع المعلّم الذكي، واسحب الزر لتغيير مكانه"
+          title="مكالمة المعلّم الصوتية — اضغط للاتصال أو اسحب الزر لتحريكه"
           style={assistantPosition ? { left: assistantPosition.left, top: assistantPosition.top } : undefined}
           onPointerDown={(event) => {
             if (event.button !== 0) return;
@@ -292,7 +297,7 @@ export default function App() {
               ignoreAssistantClick.current = false;
               return;
             }
-            setSkovaCallOpen(true);
+            setVoiceCallOpen(true);
           }}
           className={`fixed z-30 inline-flex touch-none select-none items-center gap-2 rounded-full border border-emerald-300/20 bg-gradient-to-l from-[#102d2a] via-[#145447] to-[#123d4c] px-3 py-2 text-white shadow-xl shadow-emerald-950/30 transition hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-400 cursor-grab active:cursor-grabbing ${assistantPosition ? '' : 'bottom-24 right-36 md:bottom-6 md:right-36'}`}
         >
@@ -302,13 +307,13 @@ export default function App() {
           </span>
           <span className="flex flex-col text-right leading-tight">
             <span className="text-xs font-extrabold tracking-wide">مكالمة المعلم</span>
-            <span className="text-[9px] text-white/75">SKOVA الصوتي</span>
+            <span className="text-[9px] text-white/75">المعلّم الصوتي</span>
           </span>
       </button>
       <a
         href="#/assistant"
         aria-label="فتح المساعد الدراسي النصي"
-        title="المساعد الدراسي — محادثة نصية مع SKOVA"
+        title="المساعد الدراسي — محادثة نصية مع فايورا"
         className="fixed bottom-24 right-4 z-30 inline-flex items-center gap-2 rounded-full border border-violet-300/20 bg-gradient-to-l from-[#21152f] via-[#392052] to-[#263653] px-3 py-2 text-white shadow-xl shadow-purple-950/30 transition hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-400 md:bottom-6 md:right-6"
       >
         <span className="grid h-7 w-7 place-items-center rounded-full border border-white/20 bg-white/10">
@@ -319,7 +324,7 @@ export default function App() {
           <span className="text-[9px] text-white/75">محادثة نصية</span>
         </span>
       </a>
-      <VoiceTeacher open={skovaCallOpen} onClose={() => setSkovaCallOpen(false)} />
+      <Suspense fallback={null}><VoiceTeacher open={voiceCallOpen} onClose={() => setVoiceCallOpen(false)} /></Suspense>
       {/* الشريط الجانبي (شاشات كبيرة) */}
       <aside className="app-sidebar sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
         <Brand />
@@ -364,7 +369,9 @@ export default function App() {
               <button type="button" className="btn btn-ghost !px-2 !py-1 text-xs" onClick={() => { setHintVisible(false); try { localStorage.setItem('studyflow-hint-' + route, '1'); } catch { /* لا يؤثر على الاستخدام */ } }}>فهمت</button>
             </div>
           )}
-          <Page />
+          <Suspense fallback={<div className="mx-auto grid min-h-48 max-w-2xl place-items-center text-sm text-muted" role="status" aria-live="polite">جارٍ تحميل الصفحة…</div>}>
+            <Page />
+          </Suspense>
         </main>
 
         {/* شريط التنقل السفلي (جوال) */}

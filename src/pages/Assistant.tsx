@@ -137,7 +137,7 @@ export default function Assistant() {
   return (
     <div className="mx-auto flex max-w-2xl flex-col">
       <PageTitle
-        title="SKOVA AI"
+        title="المعلّم الذكي"
         subtitle="خطة مراجعة تلقائية، وأسئلة عن دروسك"
         action={
           messages.length > 0 ? (
@@ -148,7 +148,7 @@ export default function Assistant() {
         }
       />
 
-      {sourcePage && <div className="mb-3 rounded-xl border border-accent/25 bg-accent/5 px-3 py-2 text-xs text-muted">سياق المساعدة: فتحت SKOVA AI من صفحة <strong className="text-main">{sourcePage}</strong>، لذلك ستكون الإجابات مرتبطة بها.</div>}
+      {sourcePage && <div className="mb-3 rounded-xl border border-accent/25 bg-accent/5 px-3 py-2 text-xs text-muted">سياق المساعدة: فتحت المعلّم الذكي من صفحة <strong className="text-main">{sourcePage}</strong>، لذلك ستكون الإجابات مرتبطة بها.</div>}
 
       <Advisor />
 
@@ -205,7 +205,7 @@ export default function Assistant() {
           <div className="space-y-3 py-4 text-center">
             <Bot className="mx-auto text-accent" size={36} />
             <p className="text-sm text-muted">
-              {attachment ? 'تم إرفاق الملف. اسأل عنه أو اختر مما يلي:' : 'مرحباً! أنا SKOVA AI، مساعدك الدراسي. جرّب أحد هذه الأسئلة:'}
+              {attachment ? 'تم إرفاق الملف. اسأل عنه أو اختر مما يلي:' : 'مرحباً! أنا المعلّم الذكي، مساعدك الدراسي. جرّب أحد هذه الأسئلة:'}
             </p>
             <div className="flex flex-col gap-2">
               {(attachment ? FILE_SUGGESTIONS : SUGGESTIONS).map((s) => (

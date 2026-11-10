@@ -1,0 +1,42 @@
+name: Quality Checks
+
+on:
+  pull_request:
+    branches: ["main"]
+  push:
+    branches: ["main"]
+    paths:
+      - "src/**"
+      - "api/**"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.ts"
+      - "tsconfig.json"
+      - ".github/workflows/quality-checks.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: TypeScript check
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Production web build
+        run: npm run build

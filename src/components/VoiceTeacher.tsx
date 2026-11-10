@@ -100,7 +100,7 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
     setActive(true);
     setError(null);
     setPhase('speaking');
-    speak('أنا المعلم الذكي SKOVA', {
+    speak('أنا المعلّم الذكي في فايورا', {
       onEnd: () => {
         if (activeRef.current) startListeningRef.current();
       },
@@ -118,14 +118,14 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
     if (previousStyleRef.current !== null) useChat.getState().setStyle(previousStyleRef.current);
   }, []);
 
-  const status = phase === 'listening' ? 'يستمع إليك الآن' : phase === 'thinking' ? 'يحضّر إجابة لك' : phase === 'speaking' ? 'يتحدث معك الآن' : 'محادثة صوتية مباشرة مع SKOVA';
+  const status = phase === 'listening' ? 'يستمع إليك الآن' : phase === 'thinking' ? 'يحضّر إجابة لك' : phase === 'speaking' ? 'يتحدث معك الآن' : 'محادثة صوتية مباشرة مع المعلّم الذكي';
 
   if (!open) return null;
 
   const latestMessages = messages.slice(-4);
 
   return (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-[#070910]/95 px-4 py-6 text-white backdrop-blur-xl" role="dialog" aria-modal="true" aria-label="مكالمة صوتية مع SKOVA AI">
+    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-[#070910]/95 px-4 py-6 text-white backdrop-blur-xl" role="dialog" aria-modal="true" aria-label="مكالمة صوتية مع المعلّم الذكي">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className={`absolute left-1/2 top-[28%] h-72 w-72 -translate-x-1/2 rounded-full blur-3xl transition-opacity duration-700 ${active ? 'bg-emerald-500/15 opacity-100' : 'bg-violet-500/15 opacity-70'}`} />
       </div>
@@ -133,8 +133,8 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
         <header className="flex w-full items-center justify-between">
           <button type="button" onClick={closeCall} aria-label="إغلاق شاشة المكالمة" className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-white/75 transition hover:bg-white/10">×</button>
           <div className="text-center">
-            <p className="text-sm font-bold tracking-wide">SKOVA AI</p>
-            <p className="mt-0.5 text-[11px] text-white/45">أنا المعلم الذكي SKOVA</p>
+            <p className="text-sm font-bold tracking-wide">المعلّم الذكي</p>
+            <p className="mt-0.5 text-[11px] text-white/45">أنا المعلّم الذكي في فايورا</p>
           </div>
           <span className="h-10 w-10" />
         </header>
@@ -148,7 +148,7 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
             </span>
           </div>
 
-          <h2 className="text-2xl font-bold">SKOVA AI</h2>
+          <h2 className="text-2xl font-bold">المعلّم الذكي</h2>
           <p className={`mt-3 rounded-full border px-4 py-2 text-sm ${active ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200' : 'border-white/10 bg-white/5 text-white/60'}`} role="status">
             {active ? status : 'جاهز لبدء المكالمة'}
           </p>
@@ -157,7 +157,7 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
             <div className="mt-7 max-h-36 w-full space-y-2 overflow-y-auto px-1">
               {latestMessages.map((message, index) => (
                 <p key={index} className={`rounded-2xl px-3 py-2 text-xs leading-relaxed ${message.role === 'user' ? 'bg-white/10 text-white/80' : 'bg-emerald-400/10 text-emerald-100'}`}>
-                  <span className="mb-1 block text-[10px] opacity-55">{message.role === 'user' ? 'أنت' : 'SKOVA'}</span>
+                  <span className="mb-1 block text-[10px] opacity-55">{message.role === 'user' ? 'أنت' : 'المعلّم'}</span>
                   {message.content}
                 </p>
               ))}

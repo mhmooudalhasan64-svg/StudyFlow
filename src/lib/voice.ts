@@ -20,8 +20,6 @@ export function availableArabicVoices(): SpeechSynthesisVoice[] {
 }
 export function cleanForSpeech(text: string): string {
   return text
-    // اسم العلامة يُنطق بالعربية ككلمة واحدة، مع إبقاء كتابته الأصلية في واجهة التطبيق.
-    .replace(/\bskova\b/gi, 'سكوفا')
     .replace(/[*#_`>~|]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()

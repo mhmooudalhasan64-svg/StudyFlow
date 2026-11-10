@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="VAYORA app icon">
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#101A3A"/>
+      <stop offset="1" stop-color="#202A55"/>
+    </linearGradient>
+    <linearGradient id="silver" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.55" stop-color="#C9D8F4"/>
+      <stop offset="1" stop-color="#8CA7D8"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#D8A94B"/>
+      <stop offset="0.5" stop-color="#FFE6A0"/>
+      <stop offset="1" stop-color="#C58A2C"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="42%" r="58%">
+      <stop offset="0" stop-color="#5269B5" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#101A3A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#background)"/>
+  <rect width="512" height="512" fill="url(#glow)"/>
+  <path d="M151 145 C185 211 220 281 256 344 C292 281 327 211 361 145"
+        fill="none" stroke="url(#silver)" stroke-width="39" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M256 344 C216 313 171 304 124 318 V381 C175 365 219 376 256 405 C293 376 337 365 388 381 V318 C341 304 296 313 256 344Z"
+        fill="#17264B" stroke="url(#gold)" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M256 350 V397" fill="none" stroke="url(#gold)" stroke-width="8" stroke-linecap="round"/>
+  <path d="M145 333 C183 326 218 338 256 366 M367 333 C329 326 294 338 256 366"
+        fill="none" stroke="#D9E5FA" stroke-opacity=".68" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="256" cy="112" r="8" fill="#F4D58A"/>
+</svg>
