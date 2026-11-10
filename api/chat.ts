@@ -169,6 +169,28 @@ ${att.text}
 <<<نهاية الملف>>>`;
 }
 
+const MINDMAP_PROMPT = `أنت خبير في تنظيم المعرفة التعليمية.
+حوّل المادة المرفقة أو النص المعطى إلى شجرة مفاهيم عربية دقيقة ومختصرة.
+أخرج JSON صالحاً فقط كمصفوفة، بلا Markdown أو نص إضافي.
+البنية: [{"title":"الفكرة الرئيسية","children":[{"title":"مفهوم فرعي","children":[{"title":"تفصيل موجز"}]}]}]
+- أنشئ من 3 إلى 8 فروع رئيسية، ولكل فرع 1 إلى 6 مفاهيم فرعية.
+- استخدم تفريعات إضافية عند الحاجة فقط، ولا تتجاوز مستويين من children.
+- حافظ على المصطلحات العلمية والأسماء والتواريخ كما وردت في المصدر.
+- لا تخترع معلومات غير موجودة في المصدر، ولا تكرر الفكرة بصيغ مختلفة.
+- اجعل العناوين قصيرة ومناسبة للمراجعة السريعة.`;
+
+function mindMapRequest(body: unknown, att: Attachment | null): { system: string; messages: Msg[] } | null {
+  if (typeof body !== 'object' || body === null) return null;
+  const b = body as { mode?: unknown; topic?: unknown; sourceText?: unknown };
+  if (b.mode !== 'mindmap') return null;
+  const source = typeof b.sourceText === 'string' ? b.sourceText.trim().slice(0, MAX_ATTACH_CHARS) : '';
+  if (!source && !att) return null;
+  return {
+    system: `${MINDMAP_PROMPT}${att ? `\\n\\n${fileBlock(att)}` : ''}`,
+    messages: [{ role: 'user', content: `أنشئ خريطة مفاهيم لموضوع: ${typeof b.topic === 'string' ? b.topic.slice(0, 160) : 'الدرس'}. اعتمد على المصدر فقط.\\n${source}` }],
+  };
+}
+
 const QUIZ_PROMPT = `أنت منشئ أسئلة اختيار من متعدد لطلاب البكالوريا.
 أخرج مصفوفة JSON فقط، دون أي نص قبلها أو بعدها ودون علامات markdown.
 كل عنصر بالشكل: {"text":"نص السؤال","options":["...","...","...","..."],"answerIndex":0,"explanation":"تفسير مختصر للإجابة الصحيحة في جملة أو جملتين"}
