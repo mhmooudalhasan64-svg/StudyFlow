@@ -7,6 +7,7 @@ import { askVideo, requestQuiz } from '../lib/chatStore';
 import { parseGeneratedQuiz, type ExportedQuestion } from '../lib/questionsIO';
 import { listen } from '../lib/voice';
 import { NativeAudioCapture } from '@vayora/native-audio-capture';
+import { db } from '../db';
 
 function youtubeId(value: string): string | null {
   try {
@@ -44,6 +45,40 @@ export default function YouTubeStudy() {
 
   const videoId = useMemo(() => youtubeId(url), [url]);
   const videoUrl = videoId ? `https://www.youtube.com/watch?v=${videoId}` : '';
+
+  useEffect(() => {
+    if (!videoId) return;
+    let active = true;
+    void db.videoStudy.get(videoId).then(cached => {
+      if (!active || !cached) return;
+      setTranscript(cached.transcript);
+      setAnswer(cached.summary);
+    }).catch(() => undefined);
+    return () => { active = false; };
+  }, [videoId]);
+
+  useEffect(() => {
+    if (!videoId || transcript.trim().length < 20) return;
+    const timer = window.setTimeout(() => {
+      void db.videoStudy.get(videoId).then(cached => db.videoStudy.put({
+        videoId,
+        transcript,
+        summary: cached?.summary ?? answer,
+        updatedAt: Date.now(),
+      })).catch(() => undefined);
+    }, 500);
+    return () => window.clearTimeout(timer);
+  }, [videoId, transcript]);
+
+  useEffect(() => {
+    if (!videoId || !answer.trim()) return;
+    void db.videoStudy.get(videoId).then(cached => db.videoStudy.put({
+      videoId,
+      transcript: cached?.transcript ?? transcript,
+      summary: answer,
+      updatedAt: Date.now(),
+    })).catch(() => undefined);
+  }, [videoId, answer]);
 
   useEffect(() => () => {
     activeRef.current = false;
