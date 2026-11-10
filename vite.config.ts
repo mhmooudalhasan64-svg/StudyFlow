@@ -9,7 +9,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png', 'icon.svg'],
       manifest: {
-        name: 'VAYORA — Phoenix Edition',
+        name: 'VAYORA 1.0.0 — Stable Release',
         short_name: 'VAYORA',
         description: 'VAYORA — An intelligent, integrated learning platform.',
         lang: 'en',
