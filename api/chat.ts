@@ -429,7 +429,7 @@ async function handlePost(request: Request): Promise<Response> {
   if ('response' in parsed) return parsed.response;
   const body = parsed.body;
   const attachment = sanitizeAttachment(body);
-  const quiz = quizRequest(body, attachment);
+  const quiz = mindMapRequest(body, attachment) ?? quizRequest(body, attachment);
   if (quiz === 'invalid') return json({ error: 'اكتب موضوع الاختبار أو أرفق ملفاً.' }, 400);
   const messages = quiz ? quiz.messages : sanitize(body);
   if (!messages) return json({ error: 'رسائل غير صالحة' }, 400);
