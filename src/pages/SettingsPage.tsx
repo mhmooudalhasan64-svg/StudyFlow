@@ -133,7 +133,15 @@ export default function SettingsPage() {
                 </select>
               </label>
             </div>
-            <button type="button" className="btn btn-ghost w-full" onClick={() => speak('مرحباً! هذا اختبار للصوت البشري في منصة فايورا.', {}, { gender: settings.voiceGender ?? 'any', style: settings.voiceStyle ?? 'soft' })}>
+            <label className="block space-y-1 text-xs text-muted">
+              <span>سرعة القراءة</span>
+              <select className="input" value={settings.voiceRate ?? 1} onChange={(e) => void update({ voiceRate: Number(e.target.value) as 1 | 1.25 | 1.5 })}>
+                <option value={1}>عادية (1x)</option>
+                <option value={1.25}>سريعة (1.25x)</option>
+                <option value={1.5}>سريعة جداً (1.5x)</option>
+              </select>
+            </label>
+            <button type="button" className="btn btn-ghost w-full" onClick={() => speak('مرحباً! هذا اختبار للصوت البشري في منصة فايورا.', {}, { gender: settings.voiceGender ?? 'any', style: settings.voiceStyle ?? 'soft', rate: settings.voiceRate ?? 1 })}>
               <Volume2 size={16} /> تجربة الصوت المختار
             </button>
             <p className="text-[11px] leading-relaxed text-muted">تختلف الأصوات المتاحة حسب الجهاز والمتصفح. قد لا يتوفر صوت عربي ذكر أو أنثى على كل جهاز؛ عندها يُستخدم أقرب صوت عربي متاح.</p>
