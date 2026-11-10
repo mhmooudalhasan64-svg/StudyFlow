@@ -868,6 +868,51 @@ html[data-theme="light"] .product-showcase .showcase-live{color:#75684f;border-c
 html[data-theme="light"] .product-showcase .showcase-caption,
 html[data-theme="light"] .product-showcase .preview-bottom{opacity:1}
 
+
+
+/* Definitive light-theme text contrast override.
+   Legacy dark-theme declarations used fixed white/near-white colors, so
+   explicitly remap visible typography after every previous theme layer. */
+html[data-theme="light"] body :is(h1,h2,h3,h4,h5,h6,p,span,b,strong,small,em,i,label,summary,li,a,button,figcaption,blockquote){
+  color:#29271f!important;
+}
+html[data-theme="light"] body :is(.shine){
+  background:linear-gradient(100deg,#6f5425 0%,#9a762f 48%,#4d4029 100%)!important;
+  background-clip:text!important;
+  -webkit-background-clip:text!important;
+  color:transparent!important;
+}
+html[data-theme="light"] body :is(.primary,.consent-accept,#back-to-top){
+  color:#fff!important;
+}
+html[data-theme="light"] body :is(.secondary,.lang,.menu-toggle,.theme-toggle){
+  color:#514324!important;
+}
+html[data-theme="light"] body :is(.panel,.capability,.product-side,.step,.principle,details,.product-showcase,.study-preview,.preview-stats>div,.final-cta,.inquiry-shell,.signature-inner){
+  color:#29271f!important;
+}
+html[data-theme="light"] body :is(.panel,.capability,.product-side,.step,.principle,details,.product-showcase,.study-preview,.preview-stats>div,.final-cta,.inquiry-shell){
+  border-color:#a58a55!important;
+}
+html[data-theme="light"] body :is(.panel,.capability,.product-side,.step,.principle,details,.product-showcase,.study-preview,.preview-stats>div,.final-cta,.inquiry-shell){
+  background-color:#fffdf7!important;
+}
+html[data-theme="light"] body :is(.lead,.section-head p,.panel p,.capability p,.product-main p,.product-side p,.step p,.principle span,details p,.preview-greeting small,.preview-stats small,.preview-progress-head,.preview-bottom,.showcase-caption,.inquiry-intro>p,.inquiry-assurance){
+  color:#665f50!important;
+}
+html[data-theme="light"] body :is(.preview-brand,.preview-greeting strong,.preview-stats b,.preview-progress-head b,.showcase-heading h3,.product-name,.final-cta h2,.panel h3,.capability h3,.product-side h3){
+  color:#49391c!important;
+}
+html[data-theme="light"] body :is(.node,.core,.cap-icon) svg :is(path,line,polyline,polygon,circle,rect){
+  stroke:#765c2a!important;
+}
+html[data-theme="light"] body .core svg path{
+  stroke:#765c2a!important;
+}
+html[data-theme="light"] body .product-main :is(p,.product-note){
+  color:#5e5139!important;
+}
+
 </style>
 </head>
 <body>
