@@ -21,28 +21,28 @@ function BrandHero() {
       <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold text-sky-100">
         <Sparkles size={14} /> تعلّم بذكاء. تطوّر بثقة.
       </div>
-      <p className="mt-5 text-[10px] font-bold tracking-[0.2em] text-sky-100/80" dir="ltr">AN AUREVON COMPANY</p>
+      <p className="mt-5 text-[10px] font-bold tracking-[0.2em] text-sky-100/80" dir="ltr">AN AUREVON PRODUCT</p>
     </section>
   );
 }
 
-function PartnershipIdentity() {
+function ProductIdentity() {
   return (
     <section className="aurevon-ecosystem relative isolate space-y-6 overflow-hidden rounded-3xl border p-5 text-white shadow-2xl sm:p-7">
       <div className="pointer-events-none absolute -left-20 -top-24 h-64 w-64 rounded-full bg-sky-400/10 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-24 -right-16 h-64 w-64 rounded-full bg-violet-400/10 blur-3xl" />
       <div className="relative text-center">
-        <p className="text-[10px] font-black tracking-[0.28em] text-sky-200/80" dir="ltr">THE AUREVON ECOSYSTEM</p>
-        <h2 className="mt-2 text-2xl font-black sm:text-3xl">منظومة واحدة. ثلاث هويات ومحرك تكيفي. أثر تعليمي أكبر.</h2>
-        <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-slate-300">تتكامل الخبرة التقنية مع تجربة التعلم والذكاء الاصطناعي ضمن منظومة مترابطة؛ لكل علامة دور واضح، ولكل دور قيمة يلمسها المستخدم.</p>
+        <p className="text-[10px] font-black tracking-[0.28em] text-sky-200/80" dir="ltr">AUREVON · PRODUCT FAMILY</p>
+        <h2 className="mt-2 text-2xl font-black sm:text-3xl">AUREVON تنتج VAYORA وAVORA</h2>
+        <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-slate-300">AUREVON هي الجهة المنتجة لكلٍّ من VAYORA وAVORA. فايورا هي المنصة التعليمية، وأفورا هو المساعد الذكي والذكاء الاصطناعي المخصص للعمل داخلها.</p>
       </div>
 
       <div className="relative grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <article className="rounded-2xl border border-white/10 bg-white/[0.055] p-4 text-center backdrop-blur-sm">
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-slate-300/20 bg-slate-200/10 text-slate-100 shadow-lg"><Building2 size={26} /></span>
           <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">AUREVON</p>
-          <p className="mt-1 text-sm font-bold text-slate-200">أوريفون · الشركة الأم</p>
-          <p className="mt-3 text-xs leading-6 text-slate-300">المظلّة التقنية والاستراتيجية التي تقود الرؤية، وتطوير المنتجات، وتكامل التجارب الرقمية.</p>
+          <p className="mt-1 text-sm font-bold text-slate-200">أوريفون · الشركة المنتجة</p>
+          <p className="mt-3 text-xs leading-6 text-slate-300">الجهة المنتجة والمطوّرة لمنتجاتها الرقمية، ومنها VAYORA وAVORA.</p>
           <span className="mt-4 inline-flex rounded-full border border-slate-300/20 bg-white/5 px-3 py-1 text-[10px] font-bold text-slate-200">الرؤية والتطوير</span>
         </article>
         <article className="rounded-2xl border border-sky-300/30 bg-gradient-to-b from-sky-400/15 to-sky-950/20 p-4 text-center shadow-xl shadow-sky-950/20">
@@ -55,21 +55,21 @@ function PartnershipIdentity() {
         <article className="rounded-2xl border border-violet-300/25 bg-gradient-to-b from-violet-400/15 to-violet-950/20 p-4 text-center">
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-violet-200/25 bg-violet-100/10 shadow-lg"><img src="/icon.svg" alt="رمز AVORA" className="h-10 w-10 rounded-xl object-cover" /></span>
           <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">AVORA</p>
-          <p className="mt-1 text-sm font-bold text-violet-100">أفورا · الذكاء التعليمي</p>
-          <p className="mt-3 text-xs leading-6 text-slate-200">المساعد الذكي المستقل داخل VAYORA: يشرح الدروس، يجيب عن الأسئلة، ويدعم التفاعل النصي والصوتي.</p>
+          <p className="mt-1 text-sm font-bold text-violet-100">أفورا · المساعد الذكي لفايورا</p>
+          <p className="mt-3 text-xs leading-6 text-slate-200">الذكاء الاصطناعي المخصص لمنصة VAYORA؛ يساعد الطالب على فهم الدروس، والإجابة عن الأسئلة، والتفاعل النصي والصوتي ضمن تجربته التعليمية.</p>
           <span className="mt-4 inline-flex rounded-full border border-violet-200/25 bg-violet-100/10 px-3 py-1 text-[10px] font-bold text-violet-100">المساعدة الذكية</span>
         </article>
       </div>
 
       <div className="relative rounded-2xl border border-white/10 bg-black/15 p-4 sm:p-5">
-        <div className="mb-4 flex items-center justify-center gap-2 text-xs font-bold text-sky-100"><Layers3 size={15} /> كيف تتكامل المنظومة؟</div>
+        <div className="mb-4 flex items-center justify-center gap-2 text-xs font-bold text-sky-100"><Layers3 size={15} /> كيف ترتبط المنتجات؟</div>
         <div className="grid gap-2 sm:grid-cols-3">
-          <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-slate-100">01 · AUREVON</p><p className="mt-1 text-[11px] leading-5 text-slate-300">تحدد الرؤية وتبني الأساس التقني</p></div>
-          <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-sky-100">02 · VAYORA</p><p className="mt-1 text-[11px] leading-5 text-slate-300">تحوّل التقنية إلى رحلة تعلم منظمة</p></div>
-          <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-violet-100">03 · AVORA</p><p className="mt-1 text-[11px] leading-5 text-slate-300">تضيف التفاعل والمساندة الذكية</p></div>
+          <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-slate-100">01 · AUREVON</p><p className="mt-1 text-[11px] leading-5 text-slate-300">تنتج وتطوّر المنتجات</p></div>
+          <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-sky-100">02 · VAYORA</p><p className="mt-1 text-[11px] leading-5 text-slate-300">المنصة التعليمية المتكاملة</p></div>
+          <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-violet-100">03 · AVORA</p><p className="mt-1 text-[11px] leading-5 text-slate-300">المساعد الذكي المخصص لفايورا</p></div>
         </div>
-        <p className="mt-4 text-center text-sm font-extrabold tracking-wide">AUREVON تقود · VAYORA تجمع · AVORA تشرح</p>
-        <p className="mt-1 text-center text-[10px] text-slate-400">ثلاث هويات متكاملة، وتجربة تعليمية متناسقة للمستخدم.</p>
+        <p className="mt-4 text-center text-sm font-extrabold tracking-wide">AUREVON تنتج · VAYORA تعلّم · AVORA تساعد</p>
+        <p className="mt-1 text-center text-[10px] text-slate-400">منتجان من AUREVON؛ وتعمل AVORA بوصفها المساعد الذكي المخصص داخل VAYORA.</p>
       </div>
 
       <div className="relative grid gap-3 sm:grid-cols-2">
@@ -94,7 +94,7 @@ export default function About() {
       <PageTitle title="عن VAYORA" subtitle="تعرّف على المنصة والمنظومة التي تقف خلفها" />
       <div className="card space-y-6">
         <BrandHero />
-        <PartnershipIdentity />
+        <ProductIdentity />
         <section className="grid gap-3 sm:grid-cols-3">
           {pillars.map(({ Icon, title, text }) => (
             <article key={title} className="rounded-2xl border border-line/70 bg-card/70 p-4 text-center">
@@ -109,7 +109,7 @@ export default function About() {
           <h2 className="mt-3 text-lg font-extrabold">مساحة واحدة لرحلتك التعليمية</h2>
           <p className="mt-2 text-sm leading-7 text-muted">من تنظيم الوقت إلى فهم الدروس، ومن التدريب إلى قياس التقدم؛ صُممت VAYORA لتجمع احتياجات التعلم اليومية ضمن تجربة سهلة ومتناسقة.</p>
         </section>
-        <p className="text-center text-xs font-semibold text-muted">AUREVON × VAYORA · Powered by AVORA</p>
+        <p className="text-center text-xs font-semibold text-muted">AUREVON · PRODUCER OF VAYORA & AVORA</p>
       </div>
     </div>
   );
