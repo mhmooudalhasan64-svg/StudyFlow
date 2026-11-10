@@ -10,7 +10,7 @@ interface Recognition {
 }
 export type VoiceGender = 'any' | 'female' | 'male';
 export type VoiceStyle = 'soft' | 'strong' | 'energetic';
-export interface VoiceOptions { gender?: VoiceGender; style?: VoiceStyle }
+export interface VoiceOptions { gender?: VoiceGender; style?: VoiceStyle; rate?: 1 | 1.25 | 1.5 }
 
 const isNative = (): boolean => Capacitor.isNativePlatform();
 let playbackId = 0;
@@ -119,7 +119,8 @@ export function speak(text: string, cb: { onEnd?: () => void; onError?: (msg: st
   if (!chunks.length) { cb.onEnd?.(); return; }
   const style = options.style ?? 'soft';
   const id = ++playbackId;
-  const rate = style === 'energetic' ? 1.02 : style === 'strong' ? 0.96 : 0.92;
+  const baseRate = style === 'energetic' ? 1.02 : style === 'strong' ? 0.96 : 0.92;
+  const rate = Math.min(1.5, Math.max(0.75, baseRate * (options.rate ?? 1)));
   const pitch = style === 'energetic' ? 1.04 : style === 'strong' ? 0.98 : 1.02;
 
   const speakWithDeviceVoice = () => {
