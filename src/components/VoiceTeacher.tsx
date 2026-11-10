@@ -134,7 +134,7 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
           <button type="button" onClick={closeCall} aria-label="إغلاق شاشة المكالمة" className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-white/75 transition hover:bg-white/10">×</button>
           <div className="text-center">
             <p className="text-sm font-bold tracking-wide">المعلّم الذكي</p>
-            <p className="mt-0.5 text-[11px] text-white/45">أنا المعلم الذكي SKOVA</p>
+            <p className="mt-0.5 text-[11px] text-white/45">أنا المعلّم الذكي في فايورا</p>
           </div>
           <span className="h-10 w-10" />
         </header>
@@ -148,7 +148,7 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
             </span>
           </div>
 
-          <h2 className="text-2xl font-bold">SKOVA AI</h2>
+          <h2 className="text-2xl font-bold">المعلّم الذكي</h2>
           <p className={`mt-3 rounded-full border px-4 py-2 text-sm ${active ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200' : 'border-white/10 bg-white/5 text-white/60'}`} role="status">
             {active ? status : 'جاهز لبدء المكالمة'}
           </p>
