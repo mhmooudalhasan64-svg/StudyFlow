@@ -74,6 +74,8 @@ export interface Settings {
   /** تفضيلات الصوت البشري */
   voiceGender?: 'any' | 'female' | 'male';
   voiceStyle?: 'soft' | 'strong' | 'energetic';
+  /** سرعة قراءة المساعد الصوتي */
+  voiceRate?: 1 | 1.25 | 1.5;
   /** فرع البكالوريا المختار */
   branch: Branch;
   grade: Grade;
