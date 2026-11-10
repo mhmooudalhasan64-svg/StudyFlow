@@ -31,6 +31,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
   const [handsFree, setHandsFree] = useState(false);
   const handsFreeRef = useRef(false);
   const handsFreeDraftRef = useRef('');
+  const lastHandsFreeSpokenRef = useRef(-1);
   const [speakingIdx, setSpeakingIdx] = useState<number | null>(null);
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const stopListenRef = useRef<(() => void) | null>(null);
@@ -90,7 +91,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
         const spoken = handsFreeDraftRef.current.trim();
         handsFreeDraftRef.current = '';
         if (spoken && handsFreeRef.current) void contextualSend(spoken);
-        if (handsFreeRef.current) window.setTimeout(() => startHandsFreeListening(), 450);
+        else if (handsFreeRef.current) window.setTimeout(() => startHandsFreeListening(), 450);
       },
       onError: (message) => {
         setVoiceError(message);
@@ -112,6 +113,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
     }
     setVoiceError(null);
     handsFreeRef.current = true;
+    lastHandsFreeSpokenRef.current = messages.length - 1;
     setHandsFree(true);
     startHandsFreeListening();
   };
@@ -162,6 +164,21 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
       setReading(false);
     }
   };
+
+  useEffect(() => {
+    const index = messages.length - 1;
+    const latest = messages[index];
+    if (!handsFree || loading || !latest || latest.role !== 'assistant' || index <= lastHandsFreeSpokenRef.current) return;
+    lastHandsFreeSpokenRef.current = index;
+    speak(latest.content, {
+      onEnd: () => { if (handsFreeRef.current) startHandsFreeListening(); },
+      onError: (message) => {
+        setVoiceError(message);
+        handsFreeRef.current = false;
+        setHandsFree(false);
+      },
+    }, { gender: app.settings.voiceGender ?? 'any', style: app.settings.voiceStyle ?? 'soft', rate: app.settings.voiceRate ?? 1 });
+  }, [messages, handsFree, loading, app.settings.voiceGender, app.settings.voiceStyle, app.settings.voiceRate]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
