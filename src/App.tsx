@@ -296,7 +296,7 @@ export default function App() {
               ignoreAssistantClick.current = false;
               return;
             }
-            setSkovaCallOpen(true);
+            setVoiceCallOpen(true);
           }}
           className={`fixed z-30 inline-flex touch-none select-none items-center gap-2 rounded-full border border-emerald-300/20 bg-gradient-to-l from-[#102d2a] via-[#145447] to-[#123d4c] px-3 py-2 text-white shadow-xl shadow-emerald-950/30 transition hover:shadow-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-400 cursor-grab active:cursor-grabbing ${assistantPosition ? '' : 'bottom-24 right-36 md:bottom-6 md:right-36'}`}
         >
@@ -323,7 +323,7 @@ export default function App() {
           <span className="text-[9px] text-white/75">محادثة نصية</span>
         </span>
       </a>
-      <Suspense fallback={null}><VoiceTeacher open={skovaCallOpen} onClose={() => setSkovaCallOpen(false)} /></Suspense>
+      <Suspense fallback={null}><VoiceTeacher open={voiceCallOpen} onClose={() => setVoiceCallOpen(false)} /></Suspense>
       {/* الشريط الجانبي (شاشات كبيرة) */}
       <aside className="app-sidebar sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
         <Brand />
