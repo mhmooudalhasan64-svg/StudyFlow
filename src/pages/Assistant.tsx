@@ -137,7 +137,7 @@ export default function Assistant() {
   return (
     <div className="mx-auto flex max-w-2xl flex-col">
       <PageTitle
-        title="SKOVA AI"
+        title="المعلّم الذكي"
         subtitle="خطة مراجعة تلقائية، وأسئلة عن دروسك"
         action={
           messages.length > 0 ? (
