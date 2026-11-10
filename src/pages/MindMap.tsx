@@ -116,12 +116,12 @@ export default function MindMap() {
   };
 
   const generateMap = async () => {
-    const source = sourceText.trim() || subjectLessons.map((lesson) => `-${lesson.unit}: ${lesson.title}`).join('\\n');
+    const source = sourceText.trim() || subjectLessons.map((lesson) => `-${lesson.unit}: ${lesson.title}`).join('\n');
     if (!source.trim() && !attachment) { setMapError('أضف نص الدرس أو أرفق ملفاً من صفحة المساعد الذكي.'); return; }
     setMapBusy(true); setMapError('');
     try {
       const raw = await requestMindMap({ topic: subject?.name ?? 'درس دراسي', source: source || undefined, attachment: attachment ? { name: attachment.name, text: attachment.text } : undefined });
-      const clean = raw.replace(/^\\uFEFF/, '').replace(/^\\s*```(?:json)?\\s*/i, '').replace(/\\s*```\\s*$/, '').trim();
+      const clean = raw.replace(/^\uFEFF/, '').replace(/^\s*```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
       const parsed: unknown = JSON.parse(clean);
       if (!Array.isArray(parsed)) throw new Error('تعذّر قراءة الخريطة التي أنشأها المعلّم.');
       const valid = parsed.slice(0, 8).filter((node): node is { title: string; children: Array<{ title: string; children?: Array<{ title: string }> }> } => !!node && typeof node === 'object' && typeof (node as { title?: unknown }).title === 'string' && Array.isArray((node as { children?: unknown }).children));
