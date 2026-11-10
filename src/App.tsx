@@ -46,6 +46,7 @@ const More = lazy(() => import('./pages/More'));
 const MindMap = lazy(() => import('./pages/MindMap'));
 const Help = lazy(() => import('./pages/Help'));
 const Today = lazy(() => import('./pages/Today'));
+const PronunciationCoach = lazy(() => import('./pages/PronunciationCoach'));
 
 type NavItem = { route: Route; label: string; Icon: LucideIcon };
 
@@ -62,6 +63,7 @@ const PAGE_HINTS: Partial<Record<Route, string>> = {
   assistant: 'اكتب سؤالك أو أرفق ملفاً. إذا فتحت المساعد من صفحة أخرى فسيعرف سياقها.',
   youtube: 'أدخل رابط فيديو، ثم أضف نص الترجمة لتسأل AVORA عن محتواه.',
   today: 'هذه لوحة مختصرة تجمع مهامك ومراجعاتك ووقت تركيزك لهذا اليوم.',
+  pronunciation: 'تدرّب على مخارج الحروف العربية، واستمع إلى النماذج وكرّر بصوتك.',
 };
 
 const SEARCH_PAGES: { route: Route; label: string; keywords: string }[] = [
@@ -86,6 +88,7 @@ const SEARCH_PAGES: { route: Route; label: string; keywords: string }[] = [
   { route: 'youtube', label: 'فيديوهات YouTube', keywords: 'يوتيوب فيديو ترجمة تفريغ تنزيل تحليل شرح' },
   { route: 'settings', label: 'الإعدادات', keywords: 'صوت مظهر نسخ احتياطي مواد' },
   { route: 'help', label: 'شرح أزرار التطبيق', keywords: 'دليل مساعدة تعليمات' },
+  { route: 'pronunciation', label: 'مدرّب مخارج الحروف', keywords: 'النطق مخارج الحروف تدريب صوت قراءة فصحى' },
 ];
 
 /** التنقل المختصر؛ جميع الصفحات متاحة من «كل الميزات» */
@@ -130,6 +133,7 @@ const PAGES: Record<Route, ComponentType<any>> = {
   about: About,
   help: Help,
   today: Today,
+  pronunciation: PronunciationCoach,
 };
 
 function useOnline(): boolean {
