@@ -3,7 +3,8 @@ import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
 import { Download, ExternalLink, Youtube, Compass, MessageCircle, Mic, MicOff, Send, Loader2 } from 'lucide-react';
 import { PageTitle } from '../components/ui';
-import { askVideo } from '../lib/chatStore';
+import { askVideo, requestQuiz } from '../lib/chatStore';
+import { parseGeneratedQuiz, type ExportedQuestion } from '../lib/questionsIO';
 import { listen } from '../lib/voice';
 import { NativeAudioCapture } from '@vayora/native-audio-capture';
 
@@ -31,6 +32,10 @@ export default function YouTubeStudy() {
   const [busy, setBusy] = useState(false);
   const [answer, setAnswer] = useState('');
   const [error, setError] = useState('');
+  const [quizBusy, setQuizBusy] = useState(false);
+  const [quizError, setQuizError] = useState('');
+  const [quickQuiz, setQuickQuiz] = useState<ExportedQuestion[]>([]);
+  const [quickAnswers, setQuickAnswers] = useState<Record<number, number>>({});
   const activeRef = useRef(false);
   const stopRef = useRef<(() => void) | null>(null);
   const draftRef = useRef('');
@@ -161,6 +166,22 @@ export default function YouTubeStudy() {
     listenAgain();
   };
 
+  const generateQuickQuiz = async () => {
+    if (transcript.trim().length < 40 || quizBusy) return;
+    setQuizBusy(true); setQuizError(''); setQuickQuiz([]); setQuickAnswers({});
+    try {
+      const raw = await requestQuiz({
+        topic: 'اختبار استيعاب قصير من تفريغ هذا الدرس',
+        count: 3,
+        source: { name: `تفريغ فيديو ${videoId ?? ''}`, text: transcript },
+      });
+      const parsed = parseGeneratedQuiz(raw, 'محتوى الفيديو').slice(0, 3);
+      setQuickQuiz(parsed);
+    } catch (err) {
+      setQuizError(err instanceof Error ? err.message : 'تعذّر إنشاء الاختبار السريع.');
+    } finally { setQuizBusy(false); }
+  };
+
   const submitQuestion = async () => {
     if (!question.trim() || transcript.trim().length < 20 || busy) return;
     setBusy(true);
@@ -257,6 +278,32 @@ export default function YouTubeStudy() {
             <span className="text-muted">{transcript.length}/8000</span>
           </div>
           <p className="text-sm leading-6 whitespace-pre-wrap text-muted">{transcript || 'لم يُلتقط أي كلام بعد.'}</p>
+        </div>
+        <div className="rounded-xl border border-accent2/30 bg-accent2/5 p-3 space-y-3">
+          <div className="flex items-center gap-2"><MessageCircle size={17} className="text-accent" /><h3 className="font-bold">اختبار استيعاب سريع</h3></div>
+          <p className="text-xs leading-5 text-muted">أنشئ ثلاثة أسئلة قصيرة من التفريغ الحالي، ثم اختر إجابتك وشاهد التفسير.</p>
+          <button type="button" className="btn btn-ghost w-full" onClick={() => void generateQuickQuiz()} disabled={quizBusy || transcript.trim().length < 40 || capturing}>
+            {quizBusy ? <><Loader2 size={16} className="animate-spin" /> جارٍ إعداد الأسئلة...</> : 'إنشاء اختبار من التفريغ'}
+          </button>
+          {quizError && <p role="alert" className="text-sm text-bad">{quizError}</p>}
+          {quickQuiz.map((item, index) => {
+            const selected = quickAnswers[index];
+            return <article key={index} className="rounded-lg border border-line bg-card p-3 space-y-2">
+              <p className="text-sm font-semibold">{index + 1}. {item.text}</p>
+              <div className="grid gap-2">
+                {item.options.map((option, optionIndex) => {
+                  const answered = selected !== undefined;
+                  const correct = optionIndex === item.answerIndex;
+                  const chosen = selected === optionIndex;
+                  return <button key={optionIndex} type="button" disabled={answered} onClick={() => setQuickAnswers((current) => ({ ...current, [index]: optionIndex }))} className={`rounded-lg border px-3 py-2 text-right text-sm ${answered && correct ? 'border-ok bg-ok/10' : chosen ? 'border-bad bg-bad/10' : 'border-line bg-base/40'}`}>
+                    {option}
+                  </button>;
+                })}
+              </div>
+              {selected !== undefined && <p className="text-xs leading-5 text-muted">{selected === item.answerIndex ? 'إجابة صحيحة. ' : 'الإجابة الصحيحة: ' + item.options[item.answerIndex] + '. '}{item.explanation}</p>}
+            </article>;
+          })}
+          {quickQuiz.length > 0 && Object.keys(quickAnswers).length === quickQuiz.length && <p className="text-sm font-bold">نتيجتك: {quickQuiz.filter((item, index) => quickAnswers[index] === item.answerIndex).length} من {quickQuiz.length}</p>}
         </div>
         <label className="label" htmlFor="avora-video-question">سؤالك عن الفيديو</label>
         <input id="avora-video-question" className="input" value={question}
