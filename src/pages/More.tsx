@@ -2,7 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 import {
   Award, BarChart3, BookOpen, Bot, Calculator, CalendarClock, CalendarCheck,
   FileBarChart, GitBranch, Layers, ListChecks, Repeat, Info,
-  Settings as SettingsIcon, Timer as TimerIcon, CircleHelp, Youtube,
+  Settings as SettingsIcon, Timer as TimerIcon, CircleHelp, Youtube, AudioLines,
 } from 'lucide-react';
 import { PageTitle } from '../components/ui';
 
@@ -18,6 +18,13 @@ const GROUPS: { title: string; description: string; items: Item[] }[] = [
       { href: '#/mindmap', label: 'الخرائط الذهنية التفاعلية', Icon: GitBranch, tone: 'violet' },
       { href: '#/review', label: 'المراجعة الذكية', Icon: Repeat, tone: 'teal' },
       { href: '#/cards', label: 'البطاقات التعليمية', Icon: Layers, tone: 'indigo' },
+    ],
+  },
+  {
+    title: 'تدريب النطق',
+    description: 'تعلّم مخارج الحروف العربية واستمع إلى نماذج صوتية ثم تدرّب بصوتك.',
+    items: [
+      { href: '#/pronunciation', label: 'مدرّب مخارج الحروف', Icon: AudioLines, tone: 'violet' },
     ],
   },
   {
