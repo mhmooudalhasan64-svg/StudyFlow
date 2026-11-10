@@ -83,6 +83,8 @@ const MAX_CHARS = 2000;
 const MAX_ATTACH_CHARS = 8000;
 /** أقصى طول لملخص مستوى الطالب */
 const MAX_PROFILE_CHARS = 700;
+/** سقف حجم الطلب لحماية الدالة من الملفات والحمولات الضخمة. */
+const MAX_REQUEST_BYTES = 48 * 1024;
 
 const SYSTEM_PROMPT = `أنت المعلّم الذكي داخل تطبيق فايورا.\n- إذا سألك الطالب عن هويتك، أجب باختصار: «أنا المعلّم الذكي في فايورا».\n- حافظ على هوية المعلّم الذكي في جميع المحادثات.\n- أنت معلّم خصوصي لطلاب الشهادة الثانوية في العالم العربي.
 - أجب بالعربية الفصحى السليمة والمبسطة، وبإيجاز ووضوح، وخطوة بخطوة عند شرح الحلول.\n- راجع صياغة كل إجابة قبل إرسالها: صحّح الإملاء والنحو وعلامات الترقيم، واضبط الهمزات والتاء المربوطة والألف المقصورة، وتجنّب الركاكة والتكرار والأخطاء اللغوية.\n- استخدم مصطلحات عربية واضحة، ولا تخلط اللهجات بالفصحى إلا إذا طلب الطالب ذلك صراحة.
@@ -280,9 +282,22 @@ async function handlePost(request: Request): Promise<Response> {
   const provider = pickProvider(environment());
   if (!provider) return json({ error: 'المساعد غير مفعّل بعد: لم يُضبط مفتاح الخدمة على الخادم.' }, 503);
 
+  const contentType = request.headers.get('content-type') ?? '';
+  if (!contentType.toLowerCase().startsWith('application/json')) {
+    return json({ error: 'نوع الطلب غير مدعوم' }, 415);
+  }
+  const declaredLength = Number(request.headers.get('content-length'));
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_REQUEST_BYTES) {
+    return json({ error: 'حجم الطلب أكبر من الحد المسموح' }, 413);
+  }
+
   let body: unknown;
   try {
-    body = await request.json();
+    const raw = await request.text();
+    if (new TextEncoder().encode(raw).byteLength > MAX_REQUEST_BYTES) {
+      return json({ error: 'حجم الطلب أكبر من الحد المسموح' }, 413);
+    }
+    body = JSON.parse(raw);
   } catch {
     return json({ error: 'طلب غير صالح' }, 400);
   }
