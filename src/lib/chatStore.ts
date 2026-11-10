@@ -225,3 +225,26 @@ export async function requestQuiz(args: {
   if (!res.ok || !data.reply) throw new Error(data.error ?? 'حدث خطأ، حاول مرة أخرى');
   return data.reply;
 }
+
+/** إنشاء شجرة مفاهيم من نص الدرس أو الملف المرفق. */
+export async function requestMindMap(args: {
+  topic: string;
+  source?: string;
+  attachment?: { name: string; text: string };
+}): Promise<string> {
+  const att = args.attachment;
+  let res: Response;
+  try {
+    res = await postChat({
+      mode: 'mindmap',
+      topic: args.topic.slice(0, 160),
+      ...(args.source ? { sourceText: args.source.slice(0, 8000) } : {}),
+      ...(att ? { attachment: { name: att.name, text: att.text } } : {}),
+    });
+  } catch {
+    throw new Error('لا يوجد اتصال بالإنترنت. إنشاء الخريطة يحتاج إلى اتصال.');
+  }
+  const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
+  if (!res.ok || !data.reply) throw new Error(data.error ?? 'تعذّر إنشاء الخريطة الذهنية.');
+  return data.reply;
+}
