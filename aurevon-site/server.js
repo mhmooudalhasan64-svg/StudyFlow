@@ -3,7 +3,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 const root = path.join(__dirname, "public");
 const types = { ".html":"text/html; charset=utf-8", ".svg":"image/svg+xml", ".txt":"text/plain; charset=utf-8" };
-http.createServer((req,res) => {
+const port = Number(process.env.PORT) || 3000;
+const server = http.createServer((req,res) => {
   const pathname = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
   // Some mobile clients still request legacy favicon filenames; serve the existing SVG mark.
   const normalizedPath = pathname === "/favicon.ico" || pathname === "/favicon.png" ? "/favicon.svg" : pathname;
@@ -20,4 +21,6 @@ http.createServer((req,res) => {
     res.writeHead(200,{"Content-Type":types[path.extname(file)] || "application/octet-stream","Cache-Control":"public, max-age=3600"});
     res.end(data);
   });
-}).listen(process.env.PORT || 3000, "0.0.0.0");
+});
+server.on("error", (error) => { console.error("[AUREVON] HTTP server error:", error); process.exit(1); });
+server.listen(port, "0.0.0.0", () => { console.log(`[AUREVON] HTTP server listening on 0.0.0.0:${port}`); });
