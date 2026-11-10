@@ -186,8 +186,8 @@ function mindMapRequest(body: unknown, att: Attachment | null): { system: string
   const source = typeof b.sourceText === 'string' ? b.sourceText.trim().slice(0, MAX_ATTACH_CHARS) : '';
   if (!source && !att) return null;
   return {
-    system: `${MINDMAP_PROMPT}${att ? `\\n\\n${fileBlock(att)}` : ''}`,
-    messages: [{ role: 'user', content: `أنشئ خريطة مفاهيم لموضوع: ${typeof b.topic === 'string' ? b.topic.slice(0, 160) : 'الدرس'}. اعتمد على المصدر فقط.\\n${source}` }],
+    system: `${MINDMAP_PROMPT}${att ? `\n\n${fileBlock(att)}` : ''}`,
+    messages: [{ role: 'user', content: `أنشئ خريطة مفاهيم لموضوع: ${typeof b.topic === 'string' ? b.topic.slice(0, 160) : 'الدرس'}. اعتمد على المصدر فقط.\n${source}` }],
   };
 }
 
