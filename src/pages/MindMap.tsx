@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
-import { BookOpen, CheckCircle2, ChevronDown, ChevronLeft, Circle, Download, Layers3 } from 'lucide-react';
+import { BookOpen, CheckCircle2, ChevronDown, ChevronLeft, Circle, Download, Layers3, Loader2, Sparkles } from 'lucide-react';
 import { useApp } from '../store';
 import { Empty, PageTitle } from '../components/ui';
+import { requestMindMap, useChat } from '../lib/chatStore';
 
 export default function MindMap() {
   const subjects = useApp((s) => s.subjects);
@@ -10,6 +11,12 @@ export default function MindMap() {
   const [subjectId, setSubjectId] = useState<number | null>(null);
   const [collapsed, setCollapsed] = useState<string[]>([]);
   const [exportError, setExportError] = useState<string | null>(null);
+  const attachment = useChat((s) => s.attachment);
+  const [sourceText, setSourceText] = useState('');
+  const [generatedMap, setGeneratedMap] = useState<Array<{ title: string; children: Array<{ title: string; children?: Array<{ title: string }> }> }> | null>(null);
+  const [mapBusy, setMapBusy] = useState(false);
+  const [mapError, setMapError] = useState('');
+  const [mapCollapsed, setMapCollapsed] = useState<string[]>([]);
 
   const selectedId = subjectId ?? subjects[0]?.id ?? null;
   const subject = subjects.find((item) => item.id === selectedId);
@@ -108,6 +115,22 @@ export default function MindMap() {
     printWindow.focus();
   };
 
+  const generateMap = async () => {
+    const source = sourceText.trim() || subjectLessons.map((lesson) => `-${lesson.unit}: ${lesson.title}`).join('\\n');
+    if (!source.trim() && !attachment) { setMapError('أضف نص الدرس أو أرفق ملفاً من صفحة المساعد الذكي.'); return; }
+    setMapBusy(true); setMapError('');
+    try {
+      const raw = await requestMindMap({ topic: subject?.name ?? 'درس دراسي', source: source || undefined, attachment: attachment ? { name: attachment.name, text: attachment.text } : undefined });
+      const clean = raw.replace(/^\\uFEFF/, '').replace(/^\\s*```(?:json)?\\s*/i, '').replace(/\\s*```\\s*$/, '').trim();
+      const parsed: unknown = JSON.parse(clean);
+      if (!Array.isArray(parsed)) throw new Error('تعذّر قراءة الخريطة التي أنشأها المعلّم.');
+      const valid = parsed.slice(0, 8).filter((node): node is { title: string; children: Array<{ title: string; children?: Array<{ title: string }> }> } => !!node && typeof node === 'object' && typeof (node as { title?: unknown }).title === 'string' && Array.isArray((node as { children?: unknown }).children));
+      if (!valid.length) throw new Error('لم تُنشأ فروع صالحة. جرّب نصاً أوضح.');
+      setGeneratedMap(valid); setMapCollapsed([]);
+    } catch (error) { setMapError(error instanceof Error ? error.message : 'تعذّر إنشاء الخريطة.'); }
+    finally { setMapBusy(false); }
+  };
+
   const toggleGroup = (name: string) => {
     setCollapsed((current) =>
       current.includes(name) ? current.filter((item) => item !== name) : [...current, name],
@@ -158,6 +181,29 @@ export default function MindMap() {
             </div>
           </div>
         )}
+      </section>
+
+      <section className="card space-y-3">
+        <div className="flex items-center gap-2"><Sparkles size={18} className="text-accent2" /><h2 className="font-bold">إنشاء خريطة ذهنية بالذكاء الاصطناعي</h2></div>
+        <p className="text-xs leading-6 text-muted">حوّل نص درس أو محتوى ملف أرفقته في المساعد الذكي إلى شجرة مفاهيم قابلة للطي. {attachment ? `الملف المتاح: ${attachment.name}` : 'يمكنك أيضاً إدخال النص مباشرة.'}</p>
+        <textarea className="input min-h-28" value={sourceText} onChange={(event) => setSourceText(event.target.value)} placeholder="الصق نص الدرس أو تفريغ فيديو YouTube هنا (اختياري إذا كان لديك ملف مرفق أو دروس مسجلة)." />
+        {mapError && <p role="alert" className="text-sm text-bad">{mapError}</p>}
+        <button type="button" className="btn btn-primary w-full" onClick={() => void generateMap()} disabled={mapBusy || (!sourceText.trim() && !attachment && subjectLessons.length === 0)}>
+          {mapBusy ? <><Loader2 size={16} className="animate-spin" /> جارٍ بناء الخريطة...</> : <><Sparkles size={16} /> إنشاء الخريطة الذهنية</>}
+        </button>
+        {generatedMap && <div className="space-y-3 rounded-xl border border-line p-3">
+          <h3 className="font-bold">الخريطة المنشأة</h3>
+          {generatedMap.map((node, index) => {
+            const key = `${index}-${node.title}`;
+            const closed = mapCollapsed.includes(key);
+            return <article key={key} className="rounded-lg bg-base/50 p-3">
+              <button type="button" className="flex w-full items-center justify-between gap-2 text-right font-semibold" aria-expanded={!closed} onClick={() => setMapCollapsed((items) => closed ? items.filter((item) => item !== key) : [...items, key])}>
+                <span>{index + 1}. {node.title}</span>{closed ? <ChevronLeft size={16} /> : <ChevronDown size={16} />}
+              </button>
+              {!closed && <ul className="mt-2 space-y-2 pr-4 text-sm">{node.children.slice(0, 8).map((child, childIndex) => <li key={childIndex} className="border-r-2 border-accent2/40 pr-3"><strong>{child.title}</strong>{child.children?.length ? <ul className="mt-1 space-y-1 pr-3 text-muted">{child.children.slice(0, 6).map((leaf, leafIndex) => <li key={leafIndex}>• {leaf.title}</li>)}</ul> : null}</li>)}</ul>}
+            </article>;
+          })}
+        </div>}
       </section>
 
       {!subject ? (
