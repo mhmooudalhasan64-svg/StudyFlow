@@ -28,6 +28,9 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
   const app = useApp();
   const profile = useMemo(() => buildLearnerProfile(contextFrom(app, toDateKey())), [app]);
   const [listening, setListening] = useState(false);
+  const [handsFree, setHandsFree] = useState(false);
+  const handsFreeRef = useRef(false);
+  const handsFreeDraftRef = useRef('');
   const [speakingIdx, setSpeakingIdx] = useState<number | null>(null);
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const stopListenRef = useRef<(() => void) | null>(null);
@@ -60,6 +63,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
   useEffect(
     () => () => {
       stopSpeaking();
+      handsFreeRef.current = false;
       stopListenRef.current?.();
     },
     [],
@@ -73,6 +77,43 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
     } catch {
       /* النسخ غير متاح في هذا المتصفح */
     }
+  };
+
+  const startHandsFreeListening = () => {
+    if (!handsFreeRef.current) return;
+    handsFreeDraftRef.current = '';
+    setListening(true);
+    stopListenRef.current = listen({
+      onText: (spoken) => { handsFreeDraftRef.current = spoken; },
+      onEnd: () => {
+        setListening(false);
+        const spoken = handsFreeDraftRef.current.trim();
+        handsFreeDraftRef.current = '';
+        if (spoken && handsFreeRef.current) void contextualSend(spoken);
+        if (handsFreeRef.current) window.setTimeout(() => startHandsFreeListening(), 450);
+      },
+      onError: (message) => {
+        setVoiceError(message);
+        handsFreeRef.current = false;
+        setHandsFree(false);
+        setListening(false);
+      },
+    });
+  };
+
+  const toggleHandsFree = () => {
+    if (handsFreeRef.current) {
+      handsFreeRef.current = false;
+      setHandsFree(false);
+      setListening(false);
+      stopListenRef.current?.();
+      stopListenRef.current = null;
+      return;
+    }
+    setVoiceError(null);
+    handsFreeRef.current = true;
+    setHandsFree(true);
+    startHandsFreeListening();
   };
 
   const toggleMic = () => {
@@ -350,6 +391,19 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
         >
           <Paperclip size={18} />
         </button>
+        {canListen() && (
+          <button
+            type="button"
+            className={`btn shrink-0 !px-3 ${handsFree ? 'btn-primary' : 'btn-ghost'}`}
+            aria-pressed={handsFree}
+            aria-label={handsFree ? 'إيقاف المحادثة الصوتية المستمرة' : 'بدء المحادثة الصوتية المستمرة'}
+            title={handsFree ? 'إيقاف المحادثة المستمرة' : 'محادثة صوتية دون ضغط متكرر'}
+            disabled={loading}
+            onClick={toggleHandsFree}
+          >
+            <Phone size={18} />
+          </button>
+        )}
         {canListen() && (
           <button
             type="button"
