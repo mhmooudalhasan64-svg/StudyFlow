@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ComponentType } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState, type ComponentType, type LazyExoticComponent } from 'react';
 import {
   Bot,
   Phone,
@@ -21,28 +21,30 @@ import { useHashRoute, type Route } from './lib/route';
 import Dashboard from './pages/Dashboard';
 import About, { Intro } from './pages/About';
 import { AlarmRinger } from './components/Alarms';
-import VoiceTeacher from './components/VoiceTeacher';
 import { primeAudio } from './lib/sound';
-import Planner from './pages/Planner';
-import TimerPage from './pages/TimerPage';
-import Exams from './pages/Exams';
-import Quiz from './pages/Quiz';
-import Assistant from './pages/Assistant';
-import Stats from './pages/Stats';
-import SettingsPage from './pages/SettingsPage';
-import Bac from './pages/Bac';
-import Library from './pages/Library';
-import Curriculum from './pages/Curriculum';
-import Review from './pages/Review';
-import Cards from './pages/Cards';
-import Simulator from './pages/Simulator';
-import Calculator from './pages/Calculator';
-import Achievements from './pages/Achievements';
-import Reports from './pages/Reports';
-import More from './pages/More';
-import MindMap from './pages/MindMap';
-import Help from './pages/Help';
-import Today from './pages/Today';
+
+// تحميل الصفحات عند فتحها فقط لتقليل حجم الحزمة الأولى واستهلاك الذاكرة.
+const VoiceTeacher = lazy(() => import('./components/VoiceTeacher'));
+const Planner = lazy(() => import('./pages/Planner'));
+const TimerPage = lazy(() => import('./pages/TimerPage'));
+const Exams = lazy(() => import('./pages/Exams'));
+const Quiz = lazy(() => import('./pages/Quiz'));
+const Assistant = lazy(() => import('./pages/Assistant'));
+const Stats = lazy(() => import('./pages/Stats'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const Bac = lazy(() => import('./pages/Bac'));
+const Library = lazy(() => import('./pages/Library'));
+const Curriculum = lazy(() => import('./pages/Curriculum'));
+const Review = lazy(() => import('./pages/Review'));
+const Cards = lazy(() => import('./pages/Cards'));
+const Simulator = lazy(() => import('./pages/Simulator'));
+const Calculator = lazy(() => import('./pages/Calculator'));
+const Achievements = lazy(() => import('./pages/Achievements'));
+const Reports = lazy(() => import('./pages/Reports'));
+const More = lazy(() => import('./pages/More'));
+const MindMap = lazy(() => import('./pages/MindMap'));
+const Help = lazy(() => import('./pages/Help'));
+const Today = lazy(() => import('./pages/Today'));
 
 type NavItem = { route: Route; label: string; Icon: ComponentType<{ size?: number }> };
 
@@ -101,7 +103,9 @@ const MOBILE_NAV: NavItem[] = [
   { route: 'more', label: 'المزيد', Icon: MoreHorizontal },
 ];
 
-const PAGES: Record<Route, ComponentType> = {
+type PageComponent = ComponentType | LazyExoticComponent<ComponentType>;
+
+const PAGES: Record<Route, PageComponent> = {
   home: Dashboard,
   plan: Planner,
   timer: TimerPage,
@@ -319,7 +323,7 @@ export default function App() {
           <span className="text-[9px] text-white/75">محادثة نصية</span>
         </span>
       </a>
-      <VoiceTeacher open={skovaCallOpen} onClose={() => setSkovaCallOpen(false)} />
+      <Suspense fallback={null}><VoiceTeacher open={skovaCallOpen} onClose={() => setSkovaCallOpen(false)} /></Suspense>
       {/* الشريط الجانبي (شاشات كبيرة) */}
       <aside className="app-sidebar sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
         <Brand />
@@ -364,7 +368,9 @@ export default function App() {
               <button type="button" className="btn btn-ghost !px-2 !py-1 text-xs" onClick={() => { setHintVisible(false); try { localStorage.setItem('studyflow-hint-' + route, '1'); } catch { /* لا يؤثر على الاستخدام */ } }}>فهمت</button>
             </div>
           )}
-          <Page />
+          <Suspense fallback={<div className="mx-auto grid min-h-48 max-w-2xl place-items-center text-sm text-muted" role="status" aria-live="polite">جارٍ تحميل الصفحة…</div>}>
+            <Page />
+          </Suspense>
         </main>
 
         {/* شريط التنقل السفلي (جوال) */}
