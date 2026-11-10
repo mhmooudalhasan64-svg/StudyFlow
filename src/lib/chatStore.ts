@@ -26,7 +26,7 @@ function postChat(body: unknown): Promise<Response> {
   });
 }
 
-export type ChatStyle = 'normal' | 'explain' | 'steps' | 'summary' | 'coach' | 'diagnose' | 'exam_coach' | 'mastery' | 'voice_teacher';
+export type ChatStyle = 'normal' | 'explain' | 'steps' | 'summary' | 'coach' | 'diagnose' | 'exam_coach' | 'mastery' | 'problem_solver' | 'voice_teacher';
 
 interface ChatState {
   /** المادة الحالية (تُرسل ليبقى الشرح ضمنها) */
