@@ -43,10 +43,10 @@ const GROUPS: { title: string; description: string; items: Item[] }[] = [
     title: 'المساعدة والتطبيق',
     description: 'المساعد الذكي والإعدادات ومعلومات التطبيق.',
     items: [
-      { href: '#/assistant', label: 'SKOVA AI', Icon: Bot },
+      { href: '#/assistant', label: 'المعلّم الذكي', Icon: Bot },
       { href: '#/settings', label: 'الإعدادات', Icon: SettingsIcon },
       { href: '#/help', label: 'شرح أزرار التطبيق', Icon: CircleHelp },
-      { href: '#/about', label: 'عن التطبيق (متجر سكوڤا)', Icon: Info },
+      { href: '#/about', label: 'عن فايورا', Icon: Info },
     ],
   },
 ];
