@@ -257,9 +257,11 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
           <option value="diagnose">شخّص نقطة ضعفي أولاً</option>
           <option value="exam_coach">مدرّب الامتحان</option>
           <option value="mastery">مسار الإتقان التفاعلي</option>
+          <option value="problem_solver">مساعد حل المسائل خطوة بخطوة</option>
           <option value="voice_teacher">المدرّس الصوتي</option>
         </select>
         {style === 'mastery' && <p className="rounded-xl border border-accent/20 bg-accent/5 px-3 py-2 text-xs leading-6 text-muted">سيعمل AVORA معك بهدف واحد في كل مرة: تشخيص سريع، شرح متدرّج، تدريب، ثم تحقق من الإتقان قبل الانتقال.</p>}
+        {style === 'problem_solver' && <p className="rounded-xl border border-accent/20 bg-accent/5 px-3 py-2 text-xs leading-6 text-muted">حلّ منظم: تحديد المعطيات والمطلوب، اختيار القانون، التعويض والحساب بالوحدات، ثم التحقق من النتيجة. اكتب المسألة كاملة وحدد المادة، وإذا أردت تلميحاً دون الحل الكامل فاذكر ذلك.</p>}
       </div>
 
       <div className="card mb-3 min-h-[40vh] space-y-3" aria-live="polite">
