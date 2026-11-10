@@ -912,6 +912,20 @@ html[data-theme="light"] body .product-main :is(p,.product-note){
   color:#5e5139!important;
 }
 
+
+/* AUREVON premium hero refinement */
+:root{--av-gold:#c7a45a;--av-gold-light:#e5cb8a;--av-ink:#050505;--av-panel:#0b0b0b}
+.hero,.hero-section,[data-section="hero"]{isolation:isolate;position:relative;overflow:hidden;background-color:var(--av-ink)!important;color:#f5f1e8}
+.hero::before,.hero-section::before,[data-section="hero"]::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(to right,rgba(199,164,90,.055) 1px,transparent 1px),linear-gradient(to bottom,rgba(199,164,90,.055) 1px,transparent 1px);background-size:4rem 4rem;mask-image:radial-gradient(ellipse 72% 65% at 50% 45%,#000 35%,transparent 100%)}
+.hero::after,.hero-section::after,[data-section="hero"]::after{content:"";position:absolute;z-index:-1;pointer-events:none;width:min(72vw,680px);height:min(72vw,680px);top:-18%;left:50%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle,rgba(199,164,90,.12),rgba(199,164,90,.035) 42%,transparent 72%);filter:blur(24px)}
+.hero h1,.hero-section h1,[data-section="hero"] h1{color:#f4f0e7}
+.hero h1 span,.hero-section h1 span,[data-section="hero"] h1 span,.hero .shine,.hero-section .shine{background:linear-gradient(100deg,#9d7939 0%,#e6ce91 48%,#b18c4b 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p,.hero-section p,[data-section="hero"] p{color:#aaa59a}
+.hero a[href="#products"],.hero-section a[href="#products"],[data-section="hero"] a[href="#products"]{background:linear-gradient(110deg,#9c783a,#d8bd7d 52%,#a98545)!important;color:#080706!important;box-shadow:0 12px 38px rgba(199,164,90,.16)!important}
+.hero a[href="#contact"],.hero-section a[href="#contact"],[data-section="hero"] a[href="#contact"]{background:rgba(16,16,16,.86)!important;border-color:rgba(199,164,90,.3)!important;color:#e8dfcb!important}
+.hero svg,.hero-section svg,[data-section="hero"] svg{color:#d2b574}
+@media(prefers-reduced-motion:reduce){.hero *, .hero-section *,[data-section="hero"] *{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
 </style>
 </head>
 <body>
