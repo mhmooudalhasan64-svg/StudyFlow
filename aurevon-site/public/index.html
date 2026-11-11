@@ -1118,6 +1118,15 @@ html{scroll-padding-bottom:100px}
 .method{font:800 9px ui-monospace,monospace;letter-spacing:.08em;border-radius:6px;padding:4px 6px;background:#d8e5dc18;color:#b9d8c4}
 .api-code{direction:ltr;text-align:left;overflow:auto;border:1px solid #cbd2d82c;border-radius:13px;background:#080a0d;padding:16px;color:#cbd5db;font:11px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre}
 .api-note{font-size:11px;line-height:1.9;color:#9fa8ae;margin:12px 0 0}
+.api-console{min-width:0;display:grid;gap:12px}
+.api-request-head,.api-result-head{display:flex;align-items:center;justify-content:space-between;gap:12px;color:#dce1e4;font-size:12px;font-weight:800}
+.api-status{font-size:10px;color:#aeb8be;border:1px solid #cbd2d82c;border-radius:999px;padding:5px 9px;font-weight:700}
+.api-status.is-success{color:#9bd8b0;border-color:#73c98c55;background:#73c98c12}
+.api-status.is-error{color:#f0b0a8;border-color:#e98b8055;background:#e98b8012}
+.api-meta{font-size:10px;color:#a5afb5;direction:ltr;text-align:left;overflow-wrap:anywhere}
+.api-response{min-height:150px;max-height:420px;white-space:pre-wrap;overflow:auto;overflow-wrap:anywhere}
+@media(max-width:760px){.api-request-head,.api-result-head{align-items:flex-start;flex-wrap:wrap}.api-request-head .demo-action{width:auto}}
+
 .offline-notice{position:fixed;z-index:50;top:12px;left:50%;transform:translate(-50%,-150%);transition:transform .3s ease;max-width:calc(100% - 24px);border:1px solid #e2b96b66;border-radius:12px;background:#211b10;color:#f1d9aa;padding:10px 15px;font-size:12px;box-shadow:0 12px 35px #0009;text-align:center}
 .offline-notice.visible{transform:translate(-50%,0)}
 .mobile-dock{display:none}
@@ -1397,21 +1406,23 @@ html:not([lang="en"]) .lang-en{display:none!important}
 </section>
 <section class="premium-section" id="developers" aria-labelledby="developers-title">
  <div class="wrap">
-  <div class="premium-head"><div><div class="kicker">DEVELOPER PORTAL</div><h2 id="developers-title"><span class="lang-ar">بوابة المطورين</span><span class="lang-en">Developer Portal</span></h2><p><span class="lang-ar">استعراض تعليمي لبنية طلب API وكيفية توثيقها. الأمثلة أدناه نماذج توضيحية وليست نقاط اتصال منشورة أو مفاتيح صالحة.</span><span class="lang-en">A documentation preview showing how API requests could be described. These are illustrative examples, not deployed endpoints or active credentials.</span></p></div><span class="demo-tag">DOCUMENTATION PREVIEW</span></div>
+  <div class="premium-head"><div><div class="kicker">LIVE API PLAYGROUND</div><h2 id="developers-title"><span class="lang-ar">بوابة المطورين</span><span class="lang-en">Developer Portal</span></h2><p><span class="lang-ar">اختبر نقاط الاتصال المنشورة فعلياً على خادم AUREVON، وشاهد رمز HTTP ونوع المحتوى والاستجابة الخام. لا تُعرض الأمثلة غير المنشورة كواجهات حية.</span><span class="lang-en">Test endpoints actually deployed on the AUREVON server and inspect the HTTP status, content type and raw response. Undeployed examples are never presented as live APIs.</span></p></div><span class="demo-tag">LIVE SERVER REQUESTS</span></div>
   <div class="premium-shell">
    <div class="developer-grid">
-    <div class="api-list" role="group" aria-label="API examples">
-     <button class="api-choice" type="button" data-api="health" aria-pressed="true"><span class="method">GET</span><span>/v1/status</span></button>
-     <button class="api-choice" type="button" data-api="projects" aria-pressed="false"><span class="method">POST</span><span>/v1/projects</span></button>
-     <button class="api-choice" type="button" data-api="assistant" aria-pressed="false"><span class="method">POST</span><span>/v1/assistant/preview</span></button>
+    <div class="api-list" role="group" aria-label="Available live API endpoints">
+     <button class="api-choice" type="button" data-api="health" aria-pressed="true"><span class="method">GET</span><span>/api/system/health</span></button>
      <button class="api-choice" type="button" data-api="og" aria-pressed="false"><span class="method">GET</span><span>/api/og-image</span></button>
      <button class="api-choice" type="button" data-api="share" aria-pressed="false"><span class="method">GET</span><span>/api/share</span></button>
     </div>
-    <div><pre class="api-code" id="api-code" aria-live="polite">curl -X GET "https://api.example.com/v1/status" \
-  -H "Accept: application/json"
-
-// Illustrative contract only.
-// No live API is connected.</pre><p class="api-note"><span class="lang-ar">ملاحظة: لا تستخدم api.example.com للإنتاج. عند توفير backend فعلي، يمكن استبدال هذه النماذج بتوثيق حي ومصادقة آمنة.</span><span class="lang-en">Note: api.example.com is a placeholder. Once a real backend is available, these examples can be replaced with live documentation and secure authentication.</span></p></div>
+    <div class="api-console">
+     <div class="api-request-head"><span class="lang-ar">معاينة الطلب</span><span class="lang-en">Request preview</span><button class="demo-action" id="api-run" type="button"><span class="lang-ar">إرسال الطلب ↗</span><span class="lang-en">Send request ↗</span></button></div>
+     <pre class="api-code" id="api-code" aria-live="polite">GET /api/system/health
+Accept: application/json</pre>
+     <div class="api-result-head"><strong><span class="lang-ar">نتيجة الاستجابة</span><span class="lang-en">Response output</span></strong><span id="api-status" class="api-status" role="status" aria-live="polite"><span class="lang-ar">جاهز للاختبار</span><span class="lang-en">Ready to test</span></span></div>
+     <div class="api-meta" id="api-meta"><span class="lang-ar">لم يتم إرسال أي طلب بعد.</span><span class="lang-en">No request has been sent yet.</span></div>
+     <pre class="api-code api-response" id="api-response" aria-live="polite">// اضغط «إرسال الطلب» لتنفيذ طلب حقيقي إلى خادم AUREVON.</pre>
+     <p class="api-note"><span class="lang-ar">تنبيه: هذه النقاط الثلاث تعمل على خادم الموقع. لا يوجد حالياً endpoint منشور لتحليل AVORA أو إصدار مفاتيح API للمطورين؛ لذلك لم ندرجها كخدمات حية.</span><span class="lang-en">Note: These three endpoints run on the website server. There is currently no deployed AVORA analysis endpoint or developer API-key issuer, so neither is listed as live.</span></p>
+    </div>
    </div>
   </div>
  </div>
