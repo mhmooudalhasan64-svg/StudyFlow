@@ -20,9 +20,8 @@ import type { LucideIcon } from 'lucide-react';
 import { useApp } from './store';
 import { useHashRoute, type Route } from './lib/route';
 import Dashboard from './pages/Dashboard';
-import About, { Intro } from './pages/About';
+import About from './pages/About';
 import { AlarmRinger } from './components/Alarms';
-import { primeAudio } from './lib/sound';
 
 const VoiceTeacher = lazy(() => import('./components/VoiceTeacher'));
 const Planner = lazy(() => import('./pages/Planner'));
@@ -157,7 +156,6 @@ export default function App() {
   const tick = useApp((s) => s.tick);
   const theme = useApp((s) => s.settings.theme);
   const updateSettings = useApp((s) => s.updateSettings);
-  const [introDone, setIntroDone] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [hintVisible, setHintVisible] = useState(false);
@@ -214,17 +212,6 @@ export default function App() {
   }
 
   const Page = PAGES[route];
-
-  if (!introDone) {
-    return (
-      <Intro
-        onStart={() => {
-          primeAudio();
-          setIntroDone(true);
-        }}
-      />
-    );
-  }
 
   return (
     <div className="app-shell mx-auto flex min-h-screen max-w-6xl flex-col md:flex-row">
