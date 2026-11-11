@@ -1,6 +1,17 @@
 /* Deferred AUREVON feature bundle. Loaded after the primary page becomes idle. */
 export function initAurevonEnhancements(){
 /* AUREVON progressive enhancements: local playground, docs preview, offline state and subtle depth. */
+const reducedMotion=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if(!reducedMotion&&"IntersectionObserver" in window){
+ document.body.classList.add("motion-ready");
+ const revealTargets=document.querySelectorAll(".section-head,.panel,.capability,.step,.principle");
+ const revealObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{
+  if(entry.isIntersecting){entry.target.classList.add("is-visible");revealObserver.unobserve(entry.target);}
+ }),{threshold:.12,rootMargin:"0px 0px -35px 0px"});
+ revealTargets.forEach(target=>revealObserver.observe(target));
+}else{
+ document.querySelectorAll(".section-head,.panel,.capability,.step,.principle").forEach(target=>target.classList.add("is-visible"));
+}
 const labType=document.getElementById("lab-type");
 const labBrief=document.getElementById("lab-brief");
 const labResult=document.getElementById("lab-result");
