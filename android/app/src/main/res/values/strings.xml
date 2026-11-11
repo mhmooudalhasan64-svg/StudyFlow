@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">VAYORA</string>
-    <string name="title_activity_main">VAYORA</string>
+    <string name="app_name">VAYORA — Aureon Edition</string>
+    <string name="title_activity_main">VAYORA — Aureon Edition</string>
     <string name="package_name">com.mhmooud.studyflow</string>
     <string name="custom_url_scheme">com.mhmooud.studyflow</string>
 </resources>
