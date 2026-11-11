@@ -67,7 +67,7 @@ export default function Dashboard() {
   return (
     <div className="mx-auto max-w-4xl space-y-5">
       <div className="flex items-center justify-between gap-3">
-        <PageTitle title="أهلًا بعودتك 👋" subtitle="كل جلسة تركيز تقرّبك من هدفك." />
+        <PageTitle title="مساحة إنجازك" subtitle="خطّط، ركّز، وتابع تقدّمك في مكان واحد." />
         <span className="hidden items-center gap-1.5 rounded-full border border-accent/25 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent sm:inline-flex">
           ✦ مساحة إنجازك
         </span>
@@ -244,12 +244,12 @@ export default function Dashboard() {
           </p>
         </div>
       </a>
-      <a href="#/about" className="group relative block overflow-hidden rounded-3xl border border-sky-400/20 bg-gradient-to-br from-[#0B172A] via-[#142945] to-[#25254B] p-5 text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:border-sky-300/40 sm:p-6" aria-label="اكتشف منظومة AUREVON وVAYORA وAVORA">
-        <div className="pointer-events-none absolute -left-12 -top-16 h-40 w-40 rounded-full bg-sky-400/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-16 -right-10 h-40 w-40 rounded-full bg-violet-400/10 blur-3xl" />
+      <a href="#/about" className="group relative block overflow-hidden rounded-3xl border border-accent/25 bg-gradient-to-br from-[#101b2b] via-[#17283d] to-[#26364b] p-5 text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:border-amber-200/45 sm:p-6" aria-label="اكتشف منظومة AUREVON وVAYORA وAVORA">
+        <div className="pointer-events-none absolute -left-12 -top-16 h-40 w-40 rounded-full bg-amber-300/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-16 -right-10 h-40 w-40 rounded-full bg-slate-300/10 blur-3xl" />
         <div className="relative">
           <div className="text-center">
-            <p className="text-[9px] font-black tracking-[0.28em] text-sky-200/75" dir="ltr">THE AUREVON ECOSYSTEM</p>
+            <p className="text-[9px] font-black tracking-[0.28em] text-amber-200/80" dir="ltr">THE AUREVON ECOSYSTEM</p>
             <h2 className="mt-2 text-lg font-black sm:text-xl">منظومة تعليمية بتكامل أذكى</h2>
             <p className="mt-1 text-xs text-slate-300">شركة تقود، منصة تجمع، وذكاء يساند رحلتك.</p>
           </div>
@@ -259,21 +259,21 @@ export default function Dashboard() {
               <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">AUREVON</p>
               <p className="mt-1 text-[9px] text-slate-300 sm:text-[10px]">الرؤية والتطوير</p>
             </div>
-            <div className="rounded-2xl border border-sky-300/25 bg-sky-300/10 px-1.5 py-3 text-center sm:px-3">
-              <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-sky-100/20 bg-white/10"><img src="/icon.svg" alt="" className="h-6 w-6" /></span>
+            <div className="rounded-2xl border border-amber-200/25 bg-amber-200/10 px-1.5 py-3 text-center sm:px-3">
+              <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-amber-100/20 bg-white/10"><img src="/icon.svg" alt="" className="h-6 w-6" /></span>
               <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">VAYORA</p>
-              <p className="mt-1 text-[9px] text-sky-100 sm:text-[10px]">تجربة التعلم</p>
+              <p className="mt-1 text-[9px] text-amber-100 sm:text-[10px]">تجربة التعلم</p>
             </div>
-            <div className="rounded-2xl border border-violet-300/20 bg-violet-300/10 px-1.5 py-3 text-center sm:px-3">
-              <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-violet-100/20 bg-white/10"><Bot size={18} className="text-violet-100" /></span>
+            <div className="rounded-2xl border border-slate-300/20 bg-slate-300/10 px-1.5 py-3 text-center sm:px-3">
+              <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-slate-100/20 bg-white/10"><Bot size={18} className="text-amber-100" /></span>
               <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">AVORA</p>
-              <p className="mt-1 text-[9px] text-violet-100 sm:text-[10px]">المساعدة الذكية</p>
+              <p className="mt-1 text-[9px] text-amber-100 sm:text-[10px]">المساعدة الذكية</p>
             </div>
           </div>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-white/10 pt-3 text-[10px] font-semibold text-slate-200 sm:text-xs">
             <span>AUREVON تقود</span><span className="text-slate-500">·</span><span>VAYORA تجمع</span><span className="text-slate-500">·</span><span>AVORA تساعد</span>
           </div>
-          <p className="mt-2 text-center text-[10px] font-bold text-sky-200 transition group-hover:text-white">اكتشف كيف تعمل المنظومة معاً ←</p>
+          <p className="mt-2 text-center text-[10px] font-bold text-amber-200 transition group-hover:text-white">اكتشف كيف تعمل المنظومة معاً ←</p>
         </div>
       </a>
         </div>

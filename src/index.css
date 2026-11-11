@@ -674,3 +674,114 @@ aside nav a[aria-current='page'] {
   .vayora-brand-mark { width: 2.55rem; height: 2.55rem; border-radius: .9rem; }
   .vayora-brand-name { font-size: 1rem; }
 }
+
+
+/* ── VAYORA premium interface refinement ── */
+:root {
+  --base: 247 247 249;
+  --card: 255 255 255;
+  --main: 22 29 41;
+  --muted: 105 114 128;
+  --line: 222 225 231;
+  --accent: 157 116 49;
+  --accent2: 194 153 78;
+  --accent3: 226 201 151;
+}
+.dark {
+  --base: 9 14 23;
+  --card: 17 25 37;
+  --main: 240 243 248;
+  --muted: 161 171 185;
+  --line: 48 61 78;
+  --accent: 199 158 83;
+  --accent2: 224 190 119;
+  --accent3: 241 218 164;
+}
+body {
+  background-image:
+    radial-gradient(58rem 34rem at 100% -12%, rgb(194 153 78 / .11), transparent 58%),
+    radial-gradient(48rem 30rem at 0% 100%, rgb(36 58 84 / .07), transparent 60%);
+}
+.dark body {
+  background-image:
+    radial-gradient(58rem 34rem at 100% -12%, rgb(199 158 83 / .12), transparent 58%),
+    radial-gradient(48rem 30rem at 0% 100%, rgb(36 58 84 / .2), transparent 60%);
+}
+.app-sidebar {
+  background: linear-gradient(180deg, rgb(var(--card) / .98), rgb(var(--base) / .94));
+  border-inline-end-color: rgb(var(--accent2) / .22);
+}
+.app-sidebar nav a {
+  min-height: 3rem;
+  border-radius: 1rem;
+}
+.app-mobile-header, .app-mobile-nav {
+  background: rgb(var(--card) / .94);
+  border-color: rgb(var(--accent2) / .2);
+  backdrop-filter: blur(22px);
+}
+.app-mobile-nav {
+  box-shadow: 0 -12px 34px rgb(8 15 25 / .09);
+}
+.vayora-brand-mark {
+  border-color: rgb(var(--accent2) / .55);
+  background: linear-gradient(145deg, #111d2e, #24364d);
+  box-shadow: 0 7px 20px rgb(9 16 27 / .22), inset 0 1px 0 rgb(255 255 255 / .2);
+}
+.vayora-brand-name { letter-spacing: .16em; }
+.dashboard-hero {
+  border-color: rgb(var(--accent2) / .34);
+  background:
+    radial-gradient(ellipse at 8% 8%, rgb(var(--accent2) / .2), transparent 48%),
+    radial-gradient(ellipse at 94% 90%, rgb(42 65 91 / .13), transparent 42%),
+    linear-gradient(135deg, rgb(var(--card) / .99), rgb(var(--card) / .88));
+  box-shadow: 0 22px 54px rgb(22 35 52 / .09), inset 0 1px 0 rgb(255 255 255 / .55);
+}
+.dark .dashboard-hero {
+  background:
+    radial-gradient(ellipse at 8% 8%, rgb(var(--accent2) / .18), transparent 48%),
+    radial-gradient(ellipse at 94% 90%, rgb(42 65 91 / .32), transparent 42%),
+    linear-gradient(135deg, #111d2e, #121a28);
+  box-shadow: 0 24px 58px rgb(0 0 0 / .22), inset 0 1px 0 rgb(255 255 255 / .06);
+}
+.dashboard-stat {
+  border-color: rgb(var(--line) / .88);
+  border-radius: 1.35rem;
+  background: linear-gradient(145deg, rgb(var(--card) / .98), rgb(var(--card) / .82));
+}
+.dashboard-stat-icon {
+  border-color: rgb(var(--accent2) / .32);
+  background: linear-gradient(145deg, rgb(var(--accent3) / .23), rgb(var(--accent) / .08));
+  color: rgb(var(--accent));
+}
+.card {
+  border-radius: 1.35rem;
+  box-shadow: 0 10px 30px rgb(14 25 40 / .045), inset 0 1px 0 rgb(255 255 255 / .16);
+}
+.dark .card {
+  box-shadow: 0 12px 32px rgb(0 0 0 / .18), inset 0 1px 0 rgb(255 255 255 / .035);
+}
+.btn-primary {
+  border: 1px solid rgb(var(--accent2) / .65);
+  background: linear-gradient(125deg, #a97c3e, #e0c38a);
+  color: #171d27;
+  box-shadow: 0 8px 20px rgb(151 111 48 / .2);
+}
+.btn-primary:hover { background: linear-gradient(125deg, #bd9252, #edd6a4); }
+.feature-icon {
+  --feature-rgb: 194 153 78 !important;
+  border-color: rgb(var(--accent2) / .3);
+  color: rgb(var(--accent)) !important;
+  background: linear-gradient(145deg, rgb(var(--accent3) / .2), rgb(var(--accent) / .06));
+}
+.dark .feature-icon { color: rgb(var(--accent3)) !important; }
+.dashboard-hero .text-accent { color: rgb(var(--accent)) !important; }
+.dark .dashboard-hero .text-accent { color: rgb(var(--accent3)) !important; }
+@media (max-width: 767px) {
+  .app-main { padding-inline: 1rem; }
+  .dashboard-hero { border-radius: 1.55rem; }
+  .dashboard-stat { padding: .9rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-main, .dashboard-stat, .card { animation: none; transition: none; }
+}
