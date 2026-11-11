@@ -1259,6 +1259,15 @@ html:not([lang="en"]) .lang-en{display:none!important}
 @media(max-width:760px){.vayora-stats{grid-template-columns:1fr 1fr}.vayora-stat:last-child{grid-column:1/-1}.vayora-work-grid{grid-template-columns:1fr}.vayora-card{padding:15px}.vayora-demo-top{align-items:flex-start;flex-direction:column}.vayora-timer{font-size:57px}.vayora-add-task input,.avora-form input{font-size:10px}.avora-card-head{flex-direction:column}}
 @media(prefers-reduced-motion:reduce){.vayora-progress-track i{transition:none}}
 
+
+/* Pointer-following glow for existing AUREVON feature and service cards. */
+@media (hover:hover) and (pointer:fine){
+ .capability,.panel,.principle,.step{position:relative;isolation:isolate;overflow:hidden;--glow-x:50%;--glow-y:50%;--glow-opacity:0}
+ .capability::before,.panel::before,.principle::before,.step::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:inherit;opacity:var(--glow-opacity);background:radial-gradient(380px circle at var(--glow-x) var(--glow-y),rgba(105,170,255,.16),rgba(105,170,255,.055) 38%,transparent 76%);transition:opacity .24s ease}
+ .capability>* ,.panel>* ,.principle>* ,.step>*{position:relative;z-index:1}
+ .capability,.panel,.principle,.step{transition:transform .28s ease,border-color .28s ease,box-shadow .28s ease}
+}
+@media(prefers-reduced-motion:reduce){.capability::before,.panel::before,.principle::before,.step::before{transition:none!important}}
 </style>
 </head>
 <body>
