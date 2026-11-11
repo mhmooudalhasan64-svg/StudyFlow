@@ -2,7 +2,7 @@ const http = require("node:http");
 const fs = require("node:fs");
 const path = require("node:path");
 const root = path.join(__dirname, "public");
-const types = { ".html":"text/html; charset=utf-8", ".svg":"image/svg+xml; charset=utf-8", ".txt":"text/plain; charset=utf-8", ".js":"text/javascript; charset=utf-8", ".css":"text/css; charset=utf-8" };
+const types = { ".html":"text/html; charset=utf-8", ".svg":"image/svg+xml; charset=utf-8", ".txt":"text/plain; charset=utf-8", ".js":"text/javascript; charset=utf-8", ".css":"text/css; charset=utf-8", ".webmanifest":"application/manifest+json; charset=utf-8" };
 const port = Number(process.env.PORT) || 3000;
 const escapeXml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;", "'":"&apos;" }[char]));
 const cleanText = (value, fallback, max) => String(value || fallback).replace(/[\u0000-\u001f\u007f]/g, " ").trim().slice(0, max) || fallback;
