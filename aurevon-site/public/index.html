@@ -1129,6 +1129,19 @@ html{scroll-padding-bottom:100px}
 html[lang="en"] .lang-ar{display:none!important}
 html:not([lang="en"]) .lang-en{display:none!important}
 
+
+/* Refined depth and scroll motion */
+.hero .visual{perspective:1200px;transform-style:preserve-3d}
+.hero .orbit{transform-style:preserve-3d;will-change:transform}
+.hero .orbit-ring{transform:translateZ(12px)}
+.hero .core{transform:translateZ(42px) rotate(-8deg)}
+.hero .node{transform:translateZ(28px)}
+.hero .orbit:before{transform:translateZ(5px) rotate(-24deg) scaleX(.78)}
+.hero .orbit:after{transform:translateZ(18px) rotate(35deg) scaleX(.78)}
+.motion-ready .section-head,.motion-ready .panel,.motion-ready .capability,.motion-ready .step,.motion-ready .principle{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.2,1)}
+.motion-ready .is-visible{opacity:1;transform:translateY(0)}
+@media(prefers-reduced-motion:reduce){.motion-ready .section-head,.motion-ready .panel,.motion-ready .capability,.motion-ready .step,.motion-ready .principle{opacity:1;transform:none;transition:none}}
+
 </style>
 </head>
 <body>
