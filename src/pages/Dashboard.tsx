@@ -267,7 +267,7 @@ export default function Dashboard() {
             <div className="rounded-2xl border border-slate-300/20 bg-slate-300/10 px-1.5 py-3 text-center sm:px-3">
               <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-slate-100/20 bg-white/10"><Bot size={18} className="text-amber-100" /></span>
               <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">AVORA</p>
-              <p className="mt-1 text-[9px] text-violet-100 sm:text-[10px]">المساعدة الذكية</p>
+              <p className="mt-1 text-[9px] text-amber-100 sm:text-[10px]">المساعدة الذكية</p>
             </div>
           </div>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-white/10 pt-3 text-[10px] font-semibold text-slate-200 sm:text-xs">
