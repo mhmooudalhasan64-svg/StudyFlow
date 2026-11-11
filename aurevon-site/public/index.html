@@ -1196,6 +1196,60 @@ html:not([lang="en"]) .lang-en{display:none!important}
 .phone-watermark{position:absolute;z-index:0;inset-inline-end:38%;top:50%;transform:translateY(-55%);font:900 clamp(120px,22vw,230px)/1 Georgia,serif;color:#ffffff05;pointer-events:none;user-select:none}
 @media(max-width:760px){.phone-showcase{align-items:stretch;flex-direction:column;gap:19px}.phone-number{font-size:clamp(24px,7vw,36px);gap:7px}.phone-actions{justify-content:flex-start;max-width:none}.phone-actions .btn{flex:1;min-width:0}.phone-copy{flex:1}.phone-copy-status{text-align:start}.phone-watermark{inset-inline-end:7%;top:35%}}
 
+
+/* VAYORA interactive study-space demo */
+.vayora-demo{display:grid;gap:20px}
+.vayora-demo-top,.vayora-card-head,.vayora-progress-head{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.vayora-demo-top h3{font-size:23px;margin:4px 0 0}
+.vayora-overline{font-size:9px;letter-spacing:.16em;color:#aab4bb;font-weight:800;direction:ltr;display:block}
+.vayora-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.vayora-stat{padding:17px;border:1px solid #cbd2d82c;border-radius:15px;background:linear-gradient(145deg,#ffffff0a,#ffffff03)}
+.vayora-stat>span{display:block;color:#b9c1c6;font-size:11px}
+.vayora-stat>b{display:block;font:800 29px/1.35 ui-sans-serif,system-ui,sans-serif;color:#eef1f2;direction:ltr;text-align:start;margin:5px 0}
+.vayora-stat>b i{font-size:13px;color:#aab4bb;font-style:normal}
+.vayora-stat small{color:#8f9aa1;font-size:9px}
+.vayora-progress{padding:4px 1px}
+.vayora-progress-head{font-size:11px;color:#c9d0d4;margin-bottom:9px}
+.vayora-progress-head strong{font:800 12px ui-monospace,monospace;direction:ltr}
+.vayora-progress-track{height:8px;border-radius:99px;background:#ffffff12;overflow:hidden}
+.vayora-progress-track i{display:block;width:0;height:100%;border-radius:99px;background:linear-gradient(90deg,#89949d,#e0e4e6);transition:width .35s ease}
+.vayora-work-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+.vayora-card{border:1px solid #cbd2d832;border-radius:17px;background:#ffffff05;padding:20px;min-width:0}
+.vayora-card-head{align-items:flex-start;margin-bottom:16px}
+.vayora-card-head h4{font-size:17px;margin:4px 0 0}
+.vayora-card-head p{font-size:10px;line-height:1.8;color:#9fa9af;margin:6px 0 0;max-width:620px}
+.vayora-count{border:1px solid #cbd2d832;border-radius:9px;padding:5px 9px;color:#cbd3d8;font:700 10px ui-monospace,monospace;white-space:nowrap}
+.vayora-add-task,.avora-form{display:flex;gap:8px;margin-bottom:13px}
+.vayora-add-task input,.avora-form input{flex:1;min-width:0;border:1px solid #cbd2d83d;border-radius:10px;background:#0d1013;color:#f0f2f3;padding:11px 12px;font:inherit;font-size:11px}
+.vayora-add-task input:focus,.avora-form input:focus{outline:2px solid #cbd5dc88;outline-offset:2px}
+.vayora-task-list{display:grid;gap:7px;list-style:none;margin:0;padding:0}
+.vayora-task{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid #cbd2d81d;border-radius:10px;background:#ffffff04}
+.vayora-task input{width:16px;height:16px;accent-color:#cbd5dc;flex:0 0 auto}
+.vayora-task span{flex:1;min-width:0;color:#e0e4e6;font-size:11px;overflow-wrap:anywhere}
+.vayora-task.is-done span{text-decoration:line-through;color:#828c92}
+.vayora-task button{border:0;background:transparent;color:#87929a;font-size:16px;cursor:pointer;padding:2px 6px}
+.vayora-task button:hover{color:#fff}
+.vayora-empty{font-size:11px;color:#929da4;text-align:center;padding:18px 5px;margin:0}
+.focus-card{display:flex;flex-direction:column;align-items:stretch}
+.vayora-timer{font:800 clamp(48px,7vw,65px)/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:-.06em;text-align:center;color:#f0f2f3;margin:12px 0 0;direction:ltr}
+.vayora-timer-caption{text-align:center;color:#9da7ad;font-size:10px;margin:4px 0 15px}
+.vayora-timer-modes,.vayora-timer-actions{display:flex;justify-content:center;gap:8px}
+.vayora-timer-modes{margin-bottom:13px}
+.vayora-timer-modes button,.vayora-secondary{border:1px solid #cbd2d83a;border-radius:9px;background:#ffffff06;color:#cbd2d8;padding:8px 12px;font-size:10px;cursor:pointer}
+.vayora-timer-modes button[aria-pressed=true]{background:#dce1e4;color:#101316;border-color:#dce1e4}
+.vayora-timer-modes button span{opacity:.75}
+.vayora-timer-actions .demo-action{min-width:105px}
+.vayora-timer-note{text-align:center;color:#859198;font-size:9px;line-height:1.8;margin:13px 0 0}
+.avora-card{margin-top:0}
+.avora-status{display:flex;align-items:center;gap:6px;color:#aab5bb;font-size:9px;white-space:nowrap}
+.avora-status i{width:6px;height:6px;border-radius:50%;background:#c6a96b;box-shadow:0 0 10px #c6a96b66}
+.avora-form{max-width:720px;margin-top:15px}
+.avora-response{border:1px solid #cbd2d824;border-radius:11px;background:#080b0e;padding:13px;color:#cbd3d8;font-size:11px;line-height:2;min-height:48px;white-space:pre-wrap}
+.vayora-demo-disclaimer{color:#879198;font-size:9px;line-height:1.8;margin:0}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:760px){.vayora-stats{grid-template-columns:1fr 1fr}.vayora-stat:last-child{grid-column:1/-1}.vayora-work-grid{grid-template-columns:1fr}.vayora-card{padding:15px}.vayora-demo-top{align-items:flex-start;flex-direction:column}.vayora-timer{font-size:57px}.vayora-add-task input,.avora-form input{font-size:10px}.avora-card-head{flex-direction:column}}
+@media(prefers-reduced-motion:reduce){.vayora-progress-track i{transition:none}}
+
 </style>
 </head>
 <body>
@@ -1307,18 +1361,37 @@ html:not([lang="en"]) .lang-en{display:none!important}
 
 <section class="premium-section" id="playground" aria-labelledby="playground-title">
  <div class="wrap">
-  <div class="premium-head"><div><div class="kicker">INTERACTIVE PLAYGROUND</div><h2 id="playground-title"><span class="lang-ar">مختبر أوريفون التفاعلي</span><span class="lang-en">AUREVON Interactive Lab</span></h2><p><span class="lang-ar">جرّب نموذجاً مبسطاً لطريقة تحويل الفكرة إلى متطلبات واضحة. هذه تجربة محلية توضيحية وليست اتصالاً بخدمة ذكاء اصطناعي.</span><span class="lang-en">Explore a lightweight example of turning an idea into a clear brief. This is a local demo, not a live AI service.</span></p></div><span class="demo-tag">LOCAL DEMO · NO API</span></div>
-  <div class="premium-shell">
-   <div class="playground-grid">
-    <div class="play-controls">
-     <label for="lab-type"><span class="lang-ar">نوع المشروع</span><span class="lang-en">Project type</span></label>
-     <select id="lab-type"><option value="platform">منصة رقمية / Digital platform</option><option value="website">موقع إلكتروني / Website</option><option value="learning">منتج تعليمي / Learning product</option><option value="automation">أتمتة / Automation</option></select>
-     <label for="lab-brief"><span class="lang-ar">صف فكرتك باختصار</span><span class="lang-en">Describe your idea</span></label>
-     <textarea id="lab-brief" maxlength="500" placeholder="مثال: منصة لتنظيم الدراسة ومتابعة التقدم..."></textarea>
-     <button class="demo-action" id="lab-generate" type="button"><span class="lang-ar">إنشاء ملخص توضيحي</span><span class="lang-en">Generate demo brief</span></button>
-    </div>
-    <div class="play-output" aria-live="polite"><div><div class="output-label">PROJECT SNAPSHOT</div><div class="output-result" id="lab-result"><span class="lang-ar">ستظهر هنا صياغة أولية لمتطلبات فكرتك بعد الضغط على الزر.</span><span class="lang-en">A structured first-pass brief will appear here when you run the demo.</span></div></div><div class="output-foot"><span id="lab-status">READY · LOCAL PREVIEW</span><button class="demo-action" id="lab-copy" type="button"><span class="lang-ar">نسخ الملخص</span><span class="lang-en">Copy brief</span></button></div></div>
+  <div class="premium-head"><div><div class="kicker">VAYORA · INTERACTIVE STUDY SPACE</div><h2 id="playground-title"><span class="lang-ar">جرّب مساحة VAYORA الدراسية</span><span class="lang-en">Explore the VAYORA study space</span></h2><p><span class="lang-ar">نموذج تفاعلي لتخطيط الدراسة وإدارة جلسات التركيز ومتابعة الإنجاز. تُحفظ المهام محلياً على هذا المتصفح.</span><span class="lang-en">An interactive preview for planning study, managing focus sessions, and tracking progress. Tasks are saved locally in this browser.</span></p></div><span class="demo-tag">INTERACTIVE · LOCAL DEMO</span></div>
+  <div class="premium-shell vayora-demo" id="vayora-demo">
+   <div class="vayora-demo-top"><div><span class="vayora-overline">YOUR LEARNING WORKSPACE</span><h3><span class="lang-ar">مساحة التعلّم</span><span class="lang-en">Learning workspace</span></h3></div><span class="demo-tag"><span class="lang-ar">بيانات تجريبية</span><span class="lang-en">Demo data</span></span></div>
+   <div class="vayora-stats" aria-live="polite">
+    <div class="vayora-stat"><span class="lang-ar">المهام المكتملة</span><span class="lang-en">Completed tasks</span><b id="vayora-done">0</b><small><span class="lang-ar">من إجمالي المهام</span><span class="lang-en">of all tasks</span></small></div>
+    <div class="vayora-stat"><span class="lang-ar">المهام المتبقية</span><span class="lang-en">Tasks remaining</span><b id="vayora-left">0</b><small><span class="lang-ar">بانتظار الإنجاز</span><span class="lang-en">Ready when you are</span></small></div>
+    <div class="vayora-stat"><span class="lang-ar">وقت التركيز</span><span class="lang-en">Focus time</span><b id="vayora-minutes">0 <i>m</i></b><small><span class="lang-ar">دقائق مكتملة في هذه الجلسة</span><span class="lang-en">Minutes completed this session</span></small></div>
    </div>
+   <div class="vayora-progress"><div class="vayora-progress-head"><b><span class="lang-ar">تقدّم خطة اليوم</span><span class="lang-en">Today's progress</span></b><strong id="vayora-progress-label">0%</strong></div><div class="vayora-progress-track"><i id="vayora-progress-bar"></i></div></div>
+   <div class="vayora-work-grid">
+    <section class="vayora-card" aria-labelledby="vayora-tasks-title">
+     <div class="vayora-card-head"><div><span class="vayora-overline">PLAN · DO · REVIEW</span><h4 id="vayora-tasks-title"><span class="lang-ar">قائمة المهام</span><span class="lang-en">Study tasks</span></h4></div><span class="vayora-count" id="vayora-task-count">0</span></div>
+     <form id="vayora-task-form" class="vayora-add-task"><label class="sr-only" for="vayora-task-input"><span class="lang-ar">مهمة جديدة</span><span class="lang-en">New task</span></label><input id="vayora-task-input" maxlength="90" required placeholder="أضف مهمة دراسية..."><button class="demo-action" type="submit"><span class="lang-ar">إضافة +</span><span class="lang-en">Add +</span></button></form>
+     <ul class="vayora-task-list" id="vayora-task-list" aria-live="polite"></ul>
+     <p class="vayora-empty" id="vayora-empty"><span class="lang-ar">لا توجد مهام بعد. أضف أول مهمة لتبدأ.</span><span class="lang-en">No tasks yet. Add your first task to begin.</span></p>
+    </section>
+    <section class="vayora-card focus-card" aria-labelledby="vayora-focus-title">
+     <div class="vayora-card-head"><div><span class="vayora-overline">POMODORO TIMER</span><h4 id="vayora-focus-title"><span class="lang-ar">جلسة التركيز</span><span class="lang-en">Focus session</span></h4></div><span class="vayora-count"><span class="lang-ar">تركيز</span><span class="lang-en">Focus</span></span></div>
+     <div class="vayora-timer" id="vayora-timer" role="timer" aria-live="off">25:00</div>
+     <p class="vayora-timer-caption" id="vayora-timer-caption"><span class="lang-ar">جلسة تركيز · 25 دقيقة</span><span class="lang-en">Focus session · 25 minutes</span></p>
+     <div class="vayora-timer-modes" role="group" aria-label="Timer duration"><button type="button" data-vayora-minutes="25" aria-pressed="true">25 <span>min</span></button><button type="button" data-vayora-minutes="50" aria-pressed="false">50 <span>min</span></button></div>
+     <div class="vayora-timer-actions"><button class="demo-action" id="vayora-timer-start" type="button"><span class="lang-ar">ابدأ</span><span class="lang-en">Start</span></button><button class="vayora-secondary" id="vayora-timer-reset" type="button"><span class="lang-ar">إعادة ضبط</span><span class="lang-en">Reset</span></button></div>
+     <p class="vayora-timer-note"><span class="lang-ar">يُحتسب وقت التركيز عند إكمال المؤقّت فقط.</span><span class="lang-en">Focus time is counted only when the timer completes.</span></p>
+    </section>
+   </div>
+   <section class="vayora-card avora-card" aria-labelledby="vayora-avora-title">
+    <div class="vayora-card-head"><div><span class="vayora-overline">AVORA · LEARNING ASSISTANT PREVIEW</span><h4 id="vayora-avora-title"><span class="lang-ar">المساعد التعليمي AVORA</span><span class="lang-en">AVORA learning assistant</span></h4><p><span class="lang-ar">جرّب مثالاً على توجيه دراسي. هذه إجابات محلية معدّة مسبقاً وليست اتصالاً بنموذج ذكاء اصطناعي.</span><span class="lang-en">Try a sample study prompt. Responses are predefined locally and are not connected to an AI model.</span></p></div><span class="avora-status"><i></i><span class="lang-ar">معاينة محلية</span><span class="lang-en">Local preview</span></span></div>
+    <form id="vayora-avora-form" class="avora-form"><label class="sr-only" for="vayora-avora-input"><span class="lang-ar">اكتب سؤالك الدراسي</span><span class="lang-en">Enter a study question</span></label><input id="vayora-avora-input" maxlength="240" placeholder="مثلاً: كيف أقسم ساعة للمراجعة؟" required><button class="demo-action" type="submit"><span class="lang-ar">جرّب</span><span class="lang-en">Try</span></button></form>
+    <div class="avora-response" id="vayora-avora-response" aria-live="polite"><span class="lang-ar">اكتب سؤالاً قصيراً لتظهر لك استجابة توضيحية.</span><span class="lang-en">Enter a short question to see a sample response.</span></div>
+   </section>
+   <p class="vayora-demo-disclaimer"><span class="lang-ar">تنبيه: هذه بيئة عرض تجريبية مستقلة عن حسابات VAYORA وخدماتها الفعلية. لا ترسل معلومات شخصية.</span><span class="lang-en">Note: This is a standalone product demo, separate from VAYORA accounts and live services. Do not enter personal information.</span></p>
   </div>
  </div>
 </section>
