@@ -76,6 +76,81 @@ if(heroVisual&&window.matchMedia("(pointer:fine)").matches&&!window.matchMedia("
  });
  heroVisual.addEventListener("pointerleave",()=>{heroVisual.style.setProperty("--hero-tilt-x","0deg");heroVisual.style.setProperty("--hero-tilt-y","0deg");});
 }
+
+/* VAYORA interactive study demo: local tasks, Pomodoro timer, and clearly-labeled AVORA mock. */
+const demo=document.getElementById("vayora-demo");
+if(demo){
+ const taskList=document.getElementById("vayora-task-list");
+ const taskForm=document.getElementById("vayora-task-form");
+ const taskInput=document.getElementById("vayora-task-input");
+ const empty=document.getElementById("vayora-empty");
+ const lang=()=>document.documentElement.lang==="en"?"en":"ar";
+ const copyText=(ar,en)=>lang()==="en"?en:ar;
+ const storageKey="aurevon-vayora-demo-tasks-v1";
+ let tasks=[];
+ try{const saved=JSON.parse(localStorage.getItem(storageKey)||"null");if(Array.isArray(saved))tasks=saved.filter(t=>t&&typeof t.text==="string").slice(0,40).map(t=>({id:String(t.id),text:t.text.slice(0,90),done:Boolean(t.done)}));}catch{}
+ const persist=()=>{try{localStorage.setItem(storageKey,JSON.stringify(tasks));}catch{}};
+ const renderTasks=()=>{
+  taskList.replaceChildren();
+  tasks.forEach(task=>{
+   const li=document.createElement("li");li.className="vayora-task"+(task.done?" is-done":"");
+   const check=document.createElement("input");check.type="checkbox";check.checked=task.done;check.setAttribute("aria-label",copyText("وضع علامة إنجاز","Mark task complete"));
+   check.addEventListener("change",()=>{task.done=check.checked;persist();renderTasks();});
+   const label=document.createElement("span");label.textContent=task.text;
+   const remove=document.createElement("button");remove.type="button";remove.textContent="×";remove.setAttribute("aria-label",copyText("حذف المهمة","Delete task"));
+   remove.addEventListener("click",()=>{tasks=tasks.filter(item=>item.id!==task.id);persist();renderTasks();});
+   li.append(check,label,remove);taskList.append(li);
+  });
+  const done=tasks.filter(t=>t.done).length,left=tasks.length-done;
+  document.getElementById("vayora-done").textContent=done;
+  document.getElementById("vayora-left").textContent=left;
+  document.getElementById("vayora-task-count").textContent=tasks.length;
+  document.getElementById("vayora-progress-label").textContent=(tasks.length?Math.round(done/tasks.length*100):0)+"%";
+  document.getElementById("vayora-progress-bar").style.width=(tasks.length?done/tasks.length*100:0)+"%";
+  empty.hidden=tasks.length>0;
+ };
+ taskForm.addEventListener("submit",event=>{
+  event.preventDefault();const text=taskInput.value.trim();if(!text)return;
+  if(tasks.length>=40){empty.textContent=copyText("وصلت إلى الحد الأقصى: 40 مهمة في هذه المعاينة.","Demo limit reached: 40 tasks.");empty.hidden=false;return;}
+  tasks.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),text,done:false});persist();renderTasks();taskInput.value="";taskInput.focus();
+ });
+ if(!tasks.length)tasks=[
+  {id:"demo-1",text:copyText("مراجعة درس اليوم","Review today's lesson"),done:false},
+  {id:"demo-2",text:copyText("حل خمسة أسئلة تدريبية","Solve five practice questions"),done:false},
+  {id:"demo-3",text:copyText("تلخيص النقاط الأساسية","Summarize key points"),done:true}
+ ];
+ renderTasks();
+ let duration=25*60,remaining=duration,interval=null,completedMinutes=0;
+ const timer=document.getElementById("vayora-timer"),start=document.getElementById("vayora-timer-start"),reset=document.getElementById("vayora-timer-reset");
+ const minutes=document.getElementById("vayora-minutes"),caption=document.getElementById("vayora-timer-caption");
+ const renderTimer=()=>{timer.textContent=String(Math.floor(remaining/60)).padStart(2,"0")+":"+String(remaining%60).padStart(2,"0");minutes.innerHTML=completedMinutes+' <i>m</i>';};
+ const stopTimer=()=>{if(interval!==null){clearInterval(interval);interval=null;}};
+ const resetTimer=()=>{stopTimer();remaining=duration;start.innerHTML=copyText('<span class="lang-ar">ابدأ</span>','<span class="lang-en">Start</span>');start.textContent=copyText("ابدأ","Start");renderTimer();};
+ const modeButtons=[...demo.querySelectorAll("[data-vayora-minutes]")];
+ modeButtons.forEach(button=>button.addEventListener("click",()=>{stopTimer();duration=Number(button.dataset.vayoraMinutes)*60;remaining=duration;modeButtons.forEach(item=>item.setAttribute("aria-pressed",String(item===button)));start.textContent=copyText("ابدأ","Start");caption.textContent=copyText("جلسة تركيز · "+(duration/60)+" دقيقة","Focus session · "+(duration/60)+" minutes");renderTimer();}));
+ start.addEventListener("click",()=>{
+  if(interval!==null){stopTimer();start.textContent=copyText("متابعة","Resume");return;}
+  if(remaining<=0)remaining=duration;
+  start.textContent=copyText("إيقاف مؤقت","Pause");
+  interval=setInterval(()=>{
+   remaining--;renderTimer();
+   if(remaining<=0){stopTimer();completedMinutes+=duration/60;remaining=0;renderTimer();start.textContent=copyText("ابدأ مجدداً","Start again");caption.textContent=copyText("أحسنت! اكتملت جلسة التركيز.","Well done! Focus session completed.");}
+  },1000);
+ });
+ reset.addEventListener("click",()=>{resetTimer();caption.textContent=copyText("جلسة تركيز · "+(duration/60)+" دقيقة","Focus session · "+(duration/60)+" minutes");});
+ renderTimer();
+ const avoraForm=document.getElementById("vayora-avora-form"),avoraInput=document.getElementById("vayora-avora-input"),avoraResponse=document.getElementById("vayora-avora-response");
+ avoraForm.addEventListener("submit",event=>{
+  event.preventDefault();const prompt=avoraInput.value.trim();if(!prompt)return;
+  const normalized=prompt.toLowerCase();
+  let answer;
+  if(/وقت|ساعة|مراجعة|schedule|time|hour|revise/.test(normalized))answer=copyText("قسّم وقتك إلى ثلاث مراحل: 5 دقائق لتحديد المطلوب، 40 دقيقة دراسة مركّزة، و15 دقيقة لاسترجاع المعلومات وحل سؤالين. خذ استراحة قصيرة بعدها.","Split your time into three parts: 5 minutes to define the goal, 40 minutes of focused study, and 15 minutes for recall and two practice questions. Then take a short break.");
+  else if(/حفظ|ذاكر|تذكر|memor|remember|study/.test(normalized))answer=copyText("اقرأ جزءاً صغيراً، أغلق المصدر، ثم اشرح الفكرة من ذاكرتك. راجع ما نسيته بعد 10 دقائق، ثم في اليوم التالي. الاسترجاع النشط أفضل من إعادة القراءة وحدها.","Study a small section, close the source, and explain it from memory. Revisit what you missed after 10 minutes and again the next day. Active recall is more useful than rereading alone.");
+  else answer=copyText("ابدأ بتحديد نتيجة واحدة قابلة للقياس، ثم قسّمها إلى خطوات صغيرة. نفّذ خطوة لمدة 25 دقيقة، واختبر فهمك في النهاية بسؤال أو تلخيص قصير.","Choose one measurable outcome, break it into small steps, and work on one step for 25 minutes. Finish by checking your understanding with a question or a short summary.");
+  avoraResponse.textContent=answer;
+ });
+}
+
 }
 
 
