@@ -31,6 +31,7 @@ function renderHtml(data, req, parsedUrl) {
   replaceMeta(/<meta property="og:title"[^>]*>/, '<meta property="og:title" content="' + escapeXml(title) + '">');
   replaceMeta(/<meta property="og:description"[^>]*>/, '<meta property="og:description" content="' + escapeXml(description) + '">');
   replaceMeta(/<meta property="og:url"[^>]*>/, '<meta property="og:url" content="' + escapeXml(origin + parsedUrl.pathname) + '">');
+  html = html.replace(/<link rel="canonical"[^>]*>/, '<link rel="canonical" href="' + escapeXml(origin + parsedUrl.pathname) + '">');
   replaceMeta(/<meta name="twitter:card"[^>]*>/, '<meta name="twitter:card" content="summary_large_image">');
   html = html.replace("</head>", '<meta property="og:image" content="' + escapeXml(imageUrl) + '"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:image" content="' + escapeXml(imageUrl) + '"></head>');
   return html;
