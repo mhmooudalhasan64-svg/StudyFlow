@@ -1149,6 +1149,30 @@ html:not([lang="en"]) .lang-en{display:none!important}
 .motion-ready .is-visible{opacity:1;transform:translateY(0)}
 @media(prefers-reduced-motion:reduce){.motion-ready .section-head,.motion-ready .panel,.motion-ready .capability,.motion-ready .step,.motion-ready .principle{opacity:1;transform:none;transition:none}}
 
+
+/* Interactive AUREVON hero console — framework-free adaptation */
+.hero-console{position:relative;z-index:3;width:min(100%,430px);margin-top:-2px;border:1px solid #cbd2d83b;border-radius:18px;overflow:hidden;background:#101317eF;box-shadow:0 22px 65px #0009;backdrop-filter:blur(18px);direction:rtl}
+.hero-console-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;background:#090b0ed9;border-bottom:1px solid #cbd2d82b}
+.hero-console-dots{display:flex;gap:5px;direction:ltr}.hero-console-dots i{width:8px;height:8px;border-radius:50%;background:#858d94}.hero-console-dots i:first-child{background:#d6a0a0}.hero-console-dots i:nth-child(2){background:#d6c49a}.hero-console-dots i:last-child{background:#9ebda9}
+.hero-console-tabs{display:flex;gap:4px;padding:3px;border:1px solid #cbd2d82a;border-radius:10px;background:#ffffff06}
+.hero-console-tabs button{border:0;border-radius:7px;background:transparent;color:#aeb5ba;padding:7px 9px;font-size:10px;font-weight:800;cursor:pointer;transition:background .2s ease,color .2s ease}
+.hero-console-tabs button[aria-pressed="true"]{background:linear-gradient(120deg,#dce1e4,#7e8992);color:#101317}
+.hero-console-tabs button:focus-visible{outline:2px solid #dce1e4;outline-offset:2px}
+.hero-console-body{min-height:150px;padding:18px 19px;font-size:12px}
+.hero-console-panel[hidden]{display:none}
+.hero-console-panel h3{font-size:14px;color:#f0f2f3;margin:0 0 8px}
+.hero-console-panel p{font-family:inherit;color:#aeb5ba;font-size:11px;line-height:1.9;margin:0}
+.hero-console-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}
+.hero-console-metric{padding:10px;border:1px solid #cbd2d824;border-radius:10px;background:#080a0d}
+.hero-console-metric b{display:block;color:#cbd3d8;font-size:9px;letter-spacing:.08em;direction:ltr;text-align:right}
+.hero-console-metric span{display:block;color:#e1e4e6;font-size:10px;margin-top:3px}
+.hero-console-code{direction:ltr;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere;padding:11px;border-radius:9px;border:1px solid #cbd2d824;background:#080a0d;color:#cbd5dc;font:10px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace;margin:10px 0}
+.hero-console-note{display:flex;align-items:center;gap:7px;color:#9ca6ad;font-size:9px;margin-top:9px}
+.hero-console-note:before{content:"";width:6px;height:6px;border-radius:50%;background:#9fb5a5;flex:0 0 auto}
+.hero-console-link{display:inline-flex;margin-top:9px;color:#e2e6e8;text-decoration:underline;text-underline-offset:3px;font-size:10px}
+@media(max-width:760px){.hero-console{margin-top:8px}.hero-console-body{min-height:140px;padding:15px}.hero-console-tabs button{padding:7px 7px;font-size:9px}}
+@media(prefers-reduced-motion:reduce){.hero-console-tabs button{transition:none}}
+
 </style>
 </head>
 <body>
@@ -1186,6 +1210,36 @@ html:not([lang="en"]) .lang-en{display:none!important}
 </div>
 <div class="visual" role="img" aria-label="AUREVON abstract brand symbol">
 <div class="orbit"><div class="orbit-ring"></div><div class="core"><svg viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 9 88 31v38L50 91 12 69V31Z" stroke="#dedede" stroke-width="2.4"/><path d="m28 66 22-39 22 39M37 51h26" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="node n1"><b>VISION</b><span data-i18n="node_vision">رؤية تصنع الاتجاه</span></div><div class="node n2"><b>ENGINEERING</b><span data-i18n="node_engineering">هندسة تصنع الحلول</span></div><div class="node n3"><b>EXPERIENCE</b><span data-i18n="node_experience">تجربة تتمحور حول الإنسان</span></div></div>
+<div class="hero-console" aria-label="AUREVON interactive preview">
+ <div class="hero-console-head">
+  <div class="hero-console-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="hero-console-tabs" role="group" aria-label="Interactive preview tabs">
+   <button type="button" data-hero-tab="overview" aria-pressed="true" data-i18n="console_tab_overview">نظرة عامة</button>
+   <button type="button" data-hero-tab="api" aria-pressed="false" data-i18n="console_tab_api">واجهة API</button>
+   <button type="button" data-hero-tab="ai" aria-pressed="false" data-i18n="console_tab_ai">المساعد الذكي</button>
+  </div>
+ </div>
+ <div class="hero-console-body">
+  <section class="hero-console-panel" data-hero-panel="overview">
+   <h3 data-i18n="console_overview_title">منظومة VAYORA التعليمية</h3>
+   <p data-i18n="console_overview_desc">مساحة مترابطة لتنظيم الدراسة، وجلسات التركيز، والاختبارات، ومراجعة الأخطاء.</p>
+   <div class="hero-console-metrics">
+    <div class="hero-console-metric"><b>PRODUCT</b><span data-i18n="console_product_value">أدوات تعليمية مترابطة</span></div>
+    <div class="hero-console-metric"><b>APPROACH</b><span data-i18n="console_approach_value">تصميم قابل للتطوير</span></div>
+   </div>
+  </section>
+  <section class="hero-console-panel" data-hero-panel="api" hidden>
+   <h3 data-i18n="console_api_title">نقطة API متاحة على الموقع</h3>
+   <p data-i18n="console_api_desc">يمكن توليد صورة مشاركة ديناميكية عبر المسار الفعلي التالي:</p>
+   <pre class="hero-console-code">GET /api/og-image?title=AUREVON&amp;description=Digital%20products</pre>
+   <a class="hero-console-link" href="/api/og-image?title=AUREVON%20TECH&amp;description=Digital%20products%20and%20intelligent%20experiences" target="_blank" rel="noopener" data-i18n="console_api_link">اختبر نقطة API ↗</a>
+  </section>
+  <section class="hero-console-panel" data-hero-panel="ai" hidden>
+   <h3 data-i18n="console_ai_title">معاينة تجربة المساعد الذكي</h3>
+   <p data-i18n="console_ai_desc">هذا نموذج واجهة توضيحي فقط. لم يتم ربطه بخدمة ذكاء اصطناعي أو معالجة صوت مباشرة.</p>
+   <div class="hero-console-note" data-i18n="console_ai_note">معاينة تصميمية · لا ترسل بيانات</div>
+  </section>
+ </div>
 </div>
 </div>
 <a class="hero-scroll-cue" href="#about"><span data-i18n="scroll_hint">اكتشف المزيد</span><i aria-hidden="true"></i></a>
@@ -1311,7 +1365,7 @@ html:not([lang="en"]) .lang-en{display:none!important}
 const translations = {
 ar:{
 skip:"تجاوز إلى المحتوى",nav_about:"من نحن",nav_work:"خبراتنا",nav_product:"VAYORA",nav_process:"كيف نعمل",nav_faq:"الأسئلة الشائعة",nav_contact:"تواصل معنا",contact_kicker:"تواصل مع أوريفون",contact_title:"لنبنِ شيئاً يستحق أن يُرى.",contact_desc:"هل لديك فكرة أو تحدٍ تريد تحويله إلى حل رقمي؟ تواصل مع فريق أوريفون لبدء حوار واضح حول احتياجك والخطوة التالية.",contact_note:"تواصل مباشر مع فريق AUREVON TECH",contact_whatsapp:"ابدأ محادثة عبر واتساب ↗",contact_call:"اتصل بفريقنا",contact_form_kicker:"PROJECT INTAKE",contact_form_title:"ابدأ طلب مشروعك",contact_form_desc:"أجب عن الحقول الأساسية، وسنجهّز رسالة واضحة لفريق أوريفون عبر واتساب.",contact_privacy:"لن تُرسل أي بيانات تلقائياً؛ ستراجع الرسالة وتؤكد إرسالها داخل واتساب.",contact_service_label:"ما الذي تريد تطويره؟",contact_service_website:"موقع إلكتروني احترافي",contact_service_platform:"منصة أو تطبيق ويب",contact_service_ai:"دمج الذكاء الاصطناعي",contact_service_learning:"منتج أو نظام تعليمي",contact_service_other:"استشارة أو فكرة أخرى",contact_project_label:"حالة المشروع",contact_project_new:"مشروع جديد",contact_project_improve:"تطوير مشروع قائم",contact_project_consult:"استشارة وتحديد المتطلبات",contact_timeline_label:"الإطار الزمني",contact_timeline_urgent:"في أقرب وقت",contact_timeline_month:"خلال 2–4 أسابيع",contact_timeline_flexible:"مرن، حسب خطة العمل",contact_details_label:"ملخص الفكرة (اختياري)",contact_details_placeholder:"اكتب ما تريد تحقيقه أو المشكلة التي تريد حلها...",contact_submit:"إرسال ملخص المشروع عبر واتساب ↗",consent_title:"إعدادات الخصوصية",consent_desc:"نستخدم تحليلات الزيارة لفهم أداء الموقع وتحسينه. لن يتم تفعيل تحليلات HubSpot إلا بعد موافقتك.",consent_reject:"رفض التحليلات",consent_accept:"السماح بالتحليلات",nav_cta:"اكتشف VAYORA ↗",menu:"القائمة",
-hero_kicker:"AUREVON TECH · DIGITAL PRODUCTS & INTELLIGENCE",scroll_hint:"اكتشف ما نبنيه",hero_title:'من الفكرة الأولى<br><span class="shine">إلى منتج يُعتمد عليه.</span>',hero_lead:"نصمّم ونبني منتجات رقمية تبدأ من مشكلة واضحة وتنتهي بتجربة يمكن استخدامها والاعتماد عليها. في أوريفون، تتكامل الرؤية مع التصميم والهندسة؛ لتكون التقنية مفيدة، لا مجرد واجهة لامعة.",hero_primary:"اكتشف VAYORA ↗",hero_secondary:"اكتشف رؤيتنا",node_vision:"نحدد المشكلة قبل الحل",node_engineering:"نبني أساساً قابلاً للتطوير",node_experience:"نصمم لما يحتاجه المستخدم",strip_products:"DIGITAL PRODUCTS",strip_products_sub:"منتجات رقمية مصممة للاستخدام",strip_learning:"LEARNING SYSTEMS",strip_learning_sub:"تجارب ترتقي بالتعلّم",strip_intelligence:"APPLIED INTELLIGENCE",strip_intelligence_sub:"ذكاء يخدم هدفاً واضحاً",
+hero_kicker:"AUREVON TECH · DIGITAL PRODUCTS & INTELLIGENCE",console_tab_overview:"Overview",console_tab_api:"Live API",console_tab_ai:"AI preview",console_overview_title:"VAYORA learning ecosystem",console_overview_desc:"A connected space for study planning, focus sessions, assessments, and mistake review.",console_product_value:"Connected learning tools",console_approach_value:"Designed to evolve",console_api_title:"An endpoint available on this site",console_api_desc:"Generate a dynamic share image using this live route:",console_api_link:"Test the API endpoint ↗",console_ai_title:"AI assistant experience preview",console_ai_desc:"This is a UI concept only. It is not connected to an AI service or live speech processing.",console_ai_note:"Design preview · Do not submit data",console_tab_overview:"نظرة عامة",console_tab_api:"واجهة API",console_tab_ai:"المساعد الذكي",console_overview_title:"منظومة VAYORA التعليمية",console_overview_desc:"مساحة مترابطة لتنظيم الدراسة، وجلسات التركيز، والاختبارات، ومراجعة الأخطاء.",console_product_value:"أدوات تعليمية مترابطة",console_approach_value:"تصميم قابل للتطوير",console_api_title:"نقطة API متاحة على الموقع",console_api_desc:"يمكن توليد صورة مشاركة ديناميكية عبر المسار الفعلي التالي:",console_api_link:"اختبر نقطة API ↗",console_ai_title:"معاينة تجربة المساعد الذكي",console_ai_desc:"هذا نموذج واجهة توضيحي فقط. لم يتم ربطه بخدمة ذكاء اصطناعي أو معالجة صوت مباشرة.",console_ai_note:"معاينة تصميمية · لا ترسل بيانات",scroll_hint:"اكتشف ما نبنيه",hero_title:'من الفكرة الأولى<br><span class="shine">إلى منتج يُعتمد عليه.</span>',hero_lead:"نصمّم ونبني منتجات رقمية تبدأ من مشكلة واضحة وتنتهي بتجربة يمكن استخدامها والاعتماد عليها. في أوريفون، تتكامل الرؤية مع التصميم والهندسة؛ لتكون التقنية مفيدة، لا مجرد واجهة لامعة.",hero_primary:"اكتشف VAYORA ↗",hero_secondary:"اكتشف رؤيتنا",node_vision:"نحدد المشكلة قبل الحل",node_engineering:"نبني أساساً قابلاً للتطوير",node_experience:"نصمم لما يحتاجه المستخدم",strip_products:"DIGITAL PRODUCTS",strip_products_sub:"منتجات رقمية مصممة للاستخدام",strip_learning:"LEARNING SYSTEMS",strip_learning_sub:"تجارب ترتقي بالتعلّم",strip_intelligence:"APPLIED INTELLIGENCE",strip_intelligence_sub:"ذكاء يخدم هدفاً واضحاً",
 about_kicker:"من نحن · ABOUT AUREVON",about_title:"لا نضيف تقنية إلى العالم. نبني ما يحتاجه فعلاً.",about_desc:"AUREVON TECH تعمل على تحويل الاحتياجات الواضحة إلى منتجات رقمية قابلة للاستخدام والتطوير. نبدأ بفهم المستخدم والمشكلة، ثم نحدد الحل المناسب ونبنيه بعناية؛ من بنية المنتج إلى أدق تفاصيل التجربة.",about_card1_title:"المشكلة أولاً، لا الأداة",about_card1_desc:"نحدد من سيستخدم المنتج، وما الذي يحاول إنجازه، وأين تكمن الصعوبة. بعدها فقط نقرر ما الذي يستحق البناء.",about_card2_title:"منظومة واحدة، لا أجزاء متفرقة",about_card2_desc:"نوازن بين وضوح الواجهة، وسلامة البنية التقنية، وسرعة الأداء؛ لأن جودة المنتج تظهر في تكامل هذه العناصر.",
 cap_kicker:"ما نطوّره · OUR CAPABILITIES",cap_title:"من التخطيط إلى تجربة تعمل كما ينبغي.",cap_desc:"نعمل عبر ثلاث دوائر متكاملة: هندسة المنتج، وتجربة التعلّم، والذكاء الاصطناعي التطبيقي. نختار من كل مجال ما يخدم وظيفة المنتج ونتيجته.",cap1_title:"بناء المنتجات الرقمية",cap1_desc:"مواقع ومنصات بهيكل واضح، وتصفح مفهوم، وأساس تقني يسهل صيانته وتطويره مع نمو الحاجة.",cap2_title:"أنظمة وتجارب التعلّم",cap2_desc:"أدوات تساعد المتعلّم على تنظيم وقته، والتدرّب، ومراجعة أخطائه، وفهم تقدّمه خطوة بخطوة.",cap3_title:"ذكاء اصطناعي له وظيفة",cap3_desc:"نستخدمه عندما يقدّم مساعدة فعلية: يشرح، أو ينظّم، أو يحلّل، أو يختصر مهمة؛ لا لمجرد وضع كلمة AI على المنتج.",
 product_kicker:"منتجنا الرئيسي · FLAGSHIP PRODUCT",product_title:"VAYORA — أدوات الدراسة في مساحة واحدة.",product_desc:"منصة تجمع أدوات يحتاجها الطالب قبل الدراسة وأثناءها وبعدها.",product_body:"خطّط لمهامك، ابدأ جلسة تركيز، اختبر فهمك، وارجع إلى أخطائك لتعرف ما يحتاج إلى مراجعة. صُممت VAYORA لتربط هذه الخطوات في مسار واحد بدلاً من التنقل بين أدوات متفرقة.",product_button:"اكتشف VAYORA ↗",product_note:"متاحة عبر الويب، ويستمر تطويرها وتحسينها بناءً على الاختبار وتجربة الاستخدام.",product_side_kicker:"A STUDY SPACE, REIMAGINED",product_side_title:"كل خطوة دراسية في مكانها.",product_side_desc:"واجهة توضيحية تعكس فلسفة VAYORA: أدوات مترابطة ومسار دراسة أوضح.",showcase_label:"تصوّر للواجهة",preview_greeting:"مساحة التعلّم الخاصة بك",preview_title:"خطوتك التالية تبدأ هنا.",preview_tasks:"مهام اليوم",preview_tasks_note:"خطة واضحة",preview_focus:"جلسة التركيز",preview_focus_note:"وقت مخصص",preview_progress:"تقدّمك اليوم",preview_footer:"خطّط · ركّز · راجع · تقدّم",
