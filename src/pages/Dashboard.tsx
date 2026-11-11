@@ -244,7 +244,7 @@ export default function Dashboard() {
           </p>
         </div>
       </a>
-      <a href="#/about" className="group relative block overflow-hidden rounded-3xl border border-accent/25 bg-gradient-to-br from-[#101b2b] via-[#17283d] to-[#26364b] p-5 text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:border-sky-300/40 sm:p-6" aria-label="اكتشف منظومة AUREVON وVAYORA وAVORA">
+      <a href="#/about" className="group relative block overflow-hidden rounded-3xl border border-accent/25 bg-gradient-to-br from-[#101b2b] via-[#17283d] to-[#26364b] p-5 text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:border-amber-200/45 sm:p-6" aria-label="اكتشف منظومة AUREVON وVAYORA وAVORA">
         <div className="pointer-events-none absolute -left-12 -top-16 h-40 w-40 rounded-full bg-amber-300/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-16 -right-10 h-40 w-40 rounded-full bg-slate-300/10 blur-3xl" />
         <div className="relative">
