@@ -1268,6 +1268,73 @@ html:not([lang="en"]) .lang-en{display:none!important}
  .capability,.panel,.principle,.step{transition:transform .28s ease,border-color .28s ease,box-shadow .28s ease}
 }
 @media(prefers-reduced-motion:reduce){.capability::before,.panel::before,.principle::before,.step::before{transition:none!important}}
+
+/* AUREVON performance controls, OLED palette, live metrics and utility surfaces. */
+.aurevon-tool-toggle{display:inline-flex;align-items:center;gap:5px;min-height:40px;padding:7px 9px;border:1px solid var(--line);border-radius:11px;background:#ffffff08;color:var(--text);font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap}
+.aurevon-tool-toggle[aria-pressed="true"]{border-color:#a8c7df99;background:#8ab4d51c}
+.aurevon-metric-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.aurevon-metric-card{padding:23px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,#ffffff0b,#ffffff03);display:flex;flex-direction:column;gap:9px;min-width:0}
+.aurevon-metric-label{font-size:12px;color:var(--muted)}
+.aurevon-metric-card strong{font-size:clamp(25px,4vw,38px);line-height:1.2;letter-spacing:-.04em}
+.aurevon-metric-card small,.aurevon-metric-foot{font-size:11px;color:var(--muted)}
+.aurevon-metric-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}
+.aurevon-inline-button{border:1px solid var(--line);border-radius:9px;padding:8px 12px;background:#ffffff09;color:var(--text);cursor:pointer}
+.aurevon-ecosystem{position:relative;display:grid;justify-items:center;gap:24px;padding:32px 20px;border:1px solid var(--line);border-radius:24px;background:radial-gradient(ellipse at 50% 0%,#8ab4d514,transparent 48%),#ffffff04;overflow:hidden}
+.aurevon-eco-core{display:grid;justify-items:center;gap:6px;padding:18px 28px;border:1px solid #9db8cc55;border-radius:17px;background:#111820;box-shadow:0 12px 38px #0005;z-index:1}
+.aurevon-eco-symbol{display:grid;place-items:center;width:42px;height:42px;border:1px solid #c5d2dc80;border-radius:13px;font-size:22px;font-weight:900}
+.aurevon-eco-core b,.aurevon-eco-nodes b{font-size:12px;letter-spacing:.08em}
+.aurevon-eco-core small,.aurevon-eco-nodes small{font-size:11px;color:#aab5bd}
+.aurevon-eco-links{height:32px;width:76%;display:flex;justify-content:space-around;position:relative}
+.aurevon-eco-links:before{content:"";position:absolute;top:0;left:12.5%;right:12.5%;height:1px;background:linear-gradient(90deg,transparent,#8eb4d5aa,transparent)}
+.aurevon-eco-links i{width:1px;height:32px;background:#8eb4d577;display:block}
+.aurevon-eco-nodes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;width:100%}
+.aurevon-eco-nodes article{display:grid;justify-items:center;text-align:center;gap:8px;padding:19px 10px;border:1px solid var(--line);border-radius:15px;background:#ffffff08;min-width:0}
+.aurevon-eco-nodes article>span{font-size:10px;color:#9db8cc}
+.aurevon-eco-nodes em{font-style:normal;font-size:10px;color:#b4c4cf;border:1px solid #9db8cc44;border-radius:30px;padding:4px 8px}
+.aurevon-eco-nodes .eco-live{color:#9ed6b0;border-color:#78b58a55}
+.aurevon-estimator{display:grid;grid-template-columns:.8fr 1.2fr;gap:20px}
+.aurevon-estimator-form,.aurevon-estimator-output{padding:23px;border:1px solid var(--line);border-radius:19px;background:#ffffff06}
+.aurevon-estimator-form{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:start}
+.aurevon-estimator-form label{display:grid;gap:7px;font-size:11px;color:var(--muted)}
+.aurevon-estimator-form select,.aurevon-estimator-form input{width:100%;min-height:44px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#101419;color:var(--text);font:inherit}
+.aurevon-estimator-wide,.aurevon-estimator-submit{grid-column:1/-1}
+.aurevon-estimator-submit{width:100%;cursor:pointer}
+.aurevon-estimator-output{min-height:190px}
+.aurevon-estimator-output h3{font-size:19px;margin:10px 0}
+.aurevon-estimator-output p,.aurevon-estimator-output li{font-size:12px;line-height:1.9;color:var(--muted)}
+.aurevon-estimate-range{font-size:clamp(27px,4vw,38px);font-weight:900;letter-spacing:-.04em;color:var(--text)}
+.aurevon-disclaimer{font-size:11px;line-height:1.9;color:var(--muted);margin:13px 2px 0}
+.aurevon-release-list{display:grid;gap:10px}
+.aurevon-release-list article{display:grid;grid-template-columns:130px 1fr auto;align-items:center;gap:18px;padding:19px;border:1px solid var(--line);border-radius:15px;background:#ffffff05}
+.aurevon-release-tag,.aurevon-release-state{font-size:9px;font-weight:900;letter-spacing:.08em;color:#a9bfd0}
+.aurevon-release-list h3{font-size:14px;margin:0 0 4px}
+.aurevon-release-list p{font-size:11px;color:var(--muted);line-height:1.8;margin:0}
+.aurevon-release-state{border:1px solid var(--line);border-radius:30px;padding:5px 9px;white-space:nowrap}
+#aurevon-command-backdrop{position:fixed;inset:0;z-index:1000;background:#000a;backdrop-filter:blur(9px);display:none;align-items:flex-start;justify-content:center;padding:13vh 18px 20px}
+#aurevon-command-backdrop.open{display:flex}
+.aurevon-command-box{width:min(560px,100%);border:1px solid #aabaca55;border-radius:18px;background:#11161c;box-shadow:0 28px 90px #000b;overflow:hidden}
+.aurevon-command-search{width:100%;padding:18px 20px;background:transparent;border:0;border-bottom:1px solid #ffffff20;color:#fff;font:inherit;outline:none}
+.aurevon-command-list{max-height: min(55vh,440px);overflow:auto;padding:8px}
+.aurevon-command-item{width:100%;display:flex;justify-content:space-between;gap:12px;text-align:start;padding:12px 13px;border:0;border-radius:10px;background:transparent;color:#e9eef2;cursor:pointer;font:inherit;font-size:13px}
+.aurevon-command-item:hover,.aurevon-command-item:focus{background:#ffffff12;outline:none}
+.aurevon-command-item small{color:#9eabb6;font-size:10px}
+#aurevon-toast-region{position:fixed;z-index:1100;inset-inline-end:18px;bottom:18px;display:grid;gap:9px;width:min(360px,calc(100vw - 36px));pointer-events:none}
+.aurevon-toast{padding:13px 16px;border:1px solid #a9bdce55;border-radius:13px;background:#111820ed;color:#edf3f7;box-shadow:0 14px 40px #0007;font-size:12px;line-height:1.7;animation:aurevon-toast-in .22s ease both}
+@keyframes aurevon-toast-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+html[data-oled="true"],html[data-oled="true"] body{background:#000!important}
+html[data-oled="true"] body:before,html[data-oled="true"] body:after{opacity:0!important}
+html[data-oled="true"] header,html[data-oled="true"] .panel,html[data-oled="true"] .capability,html[data-oled="true"] .principle,html[data-oled="true"] .step,html[data-oled="true"] .product-main,html[data-oled="true"] .product-side,html[data-oled="true"] .premium-shell,html[data-oled="true"] .aurevon-metric-card,html[data-oled="true"] .aurevon-ecosystem,html[data-oled="true"] .aurevon-estimator-form,html[data-oled="true"] .aurevon-estimator-output{background:#000!important}
+html[data-oled="true"] *{scrollbar-color:#454545 #000}
+html.aurevon-performance{scroll-behavior:auto}
+html.aurevon-performance *,html.aurevon-performance *:before,html.aurevon-performance *:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+html.aurevon-performance body{background:#090a0c!important}
+html.aurevon-performance body:before,html.aurevon-performance .orbit,html.aurevon-performance .orbit-ring{display:none!important}
+html.aurevon-performance header,html.aurevon-performance .panel,html.aurevon-performance .capability,html.aurevon-performance .product-side,html.aurevon-performance .premium-shell{backdrop-filter:none!important;box-shadow:none!important}
+html.aurevon-performance .capability:before,html.aurevon-performance .panel:before,html.aurevon-performance .principle:before,html.aurevon-performance .step:before{display:none!important}
+@media(max-width:900px){.aurevon-estimator{grid-template-columns:1fr}.aurevon-eco-nodes{grid-template-columns:repeat(2,minmax(0,1fr))}.aurevon-eco-links{width:55%}}
+@media(max-width:650px){.aurevon-tool-toggle{min-height:36px;padding:6px;font-size:9px}.aurevon-tool-toggle>span:not(:first-child){display:none}.aurevon-metric-grid{grid-template-columns:1fr}.aurevon-metric-card{padding:18px}.aurevon-release-list article{grid-template-columns:1fr auto;gap:9px}.aurevon-release-tag{grid-column:1/-1}.aurevon-release-list h3{font-size:13px}.aurevon-estimator-form{grid-template-columns:1fr}.aurevon-estimator-wide,.aurevon-estimator-submit{grid-column:auto}.aurevon-eco-nodes{grid-template-columns:1fr 1fr}.aurevon-eco-nodes article{padding:15px 7px}.aurevon-eco-nodes b{font-size:10px}#aurevon-toast-region{inset-inline:12px;bottom:12px;width:auto}}
+@media(prefers-reduced-motion:reduce){.aurevon-toast{animation:none}}
+
 </style>
 </head>
 <body>
@@ -1283,8 +1350,8 @@ html:not([lang="en"]) .lang-en{display:none!important}
 <a href="#about" data-i18n="nav_about">عن الشركة</a><a href="#capabilities" data-i18n="nav_work">مجالاتنا</a><a href="#product" data-i18n="nav_product">VAYORA</a><a href="#process" data-i18n="nav_process">منهج العمل</a><a href="#faq" data-i18n="nav_faq">الأسئلة</a><a href="#contact" data-i18n="nav_contact">تواصل معنا</a>
 </nav>
 <div class="nav-actions">
-
-
+<button class="aurevon-tool-toggle" id="performance-toggle" type="button" aria-pressed="false" title="Performance mode"><span aria-hidden="true">◌</span><span class="lang-ar">الأداء</span><span class="lang-en">Speed</span></button>
+<button class="aurevon-tool-toggle" id="oled-toggle" type="button" aria-pressed="false" title="OLED true black mode"><span aria-hidden="true">◐</span><span class="lang-ar">OLED</span><span class="lang-en">OLED</span></button>
 <button class="lang" id="language-toggle" type="button" aria-label="Switch language">EN</button>
 <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" data-i18n="menu">القائمة</button>
 <a class="btn primary nav-cta" href="#product" data-i18n="nav_cta">اكتشف VAYORA ↗</a>
@@ -1462,6 +1529,58 @@ Accept: application/json</pre>
 <details><summary data-i18n="faq4_q">كيف تطوّر أوريفون منتجاتها؟</summary><p data-i18n="faq4_a">نعتمد مراحل تبدأ بفهم الاحتياج، ثم التصميم والتنفيذ والاختبار والتحسين المستمر.</p></details>
 </div>
 </div></section>
+
+<section class="premium-section aurevon-metrics-section" id="live-metrics" aria-labelledby="aurevon-metrics-title">
+ <div class="wrap">
+  <div class="premium-head"><div><div class="kicker">OBSERVABILITY · LIVE CHECK</div><h2 id="aurevon-metrics-title"><span class="lang-ar">مؤشرات موثوقية قابلة للتحقق</span><span class="lang-en">Verifiable service metrics</span></h2><p><span class="lang-ar">قراءة مباشرة من خادم الموقع. زمن الاستجابة هنا هو زمن الطلب من متصفحك، وليس ضماناً ثابتاً للأداء.</span><span class="lang-en">A live reading from the website server. Response time is measured from your browser and is not a fixed performance guarantee.</span></p></div><span class="demo-tag" id="aurevon-health-label" role="status">CHECKING · /api/system/health</span></div>
+  <div class="aurevon-metric-grid">
+   <article class="aurevon-metric-card"><span class="aurevon-metric-label"><span class="lang-ar">حالة الخادم</span><span class="lang-en">Server status</span></span><strong id="aurevon-metric-status">—</strong><small><span class="lang-ar">فحص نقطة الصحة الفعلية</span><span class="lang-en">Actual health endpoint check</span></small></article>
+   <article class="aurevon-metric-card"><span class="aurevon-metric-label"><span class="lang-ar">زمن الاستجابة</span><span class="lang-en">Round-trip time</span></span><strong id="aurevon-metric-rtt">—</strong><small><span class="lang-ar">قياس متصفحك بالمللي ثانية</span><span class="lang-en">Measured by your browser in milliseconds</span></small></article>
+   <article class="aurevon-metric-card"><span class="aurevon-metric-label"><span class="lang-ar">مدة تشغيل العملية</span><span class="lang-en">Process uptime</span></span><strong id="aurevon-metric-uptime">—</strong><small><span class="lang-ar">من وقت تشغيل عملية Node الحالية</span><span class="lang-en">Current Node process uptime</span></small></article>
+  </div>
+  <div class="aurevon-metric-foot"><span id="aurevon-metric-checked"><span class="lang-ar">لم يكتمل الفحص بعد.</span><span class="lang-en">The first check has not completed.</span></span><button type="button" class="aurevon-inline-button" id="aurevon-metric-refresh"><span class="lang-ar">إعادة الفحص ↻</span><span class="lang-en">Check again ↻</span></button></div>
+ </div>
+</section>
+<section class="premium-section" id="ecosystem" aria-labelledby="ecosystem-title">
+ <div class="wrap">
+  <div class="premium-head"><div><div class="kicker">CONNECTED PRODUCT VISION</div><h2 id="ecosystem-title"><span class="lang-ar">تصوّر المنظومة المترابطة</span><span class="lang-en">Unified ecosystem concept</span></h2><p><span class="lang-ar">خريطة مفاهيمية توضّح كيف يمكن أن تتكامل الهوية وتجربة الويب والتطبيق والخدمات الذكية. هذا تصور معماري، وليس ادعاءً بأن جميع الاتصالات منشورة حالياً.</span><span class="lang-en">A conceptual map of how identity, web, mobile and intelligent services could connect. This is an architecture concept, not a claim that every integration is live.</span></p></div><span class="demo-tag">CONCEPT · NOT ALL LINKS LIVE</span></div>
+  <div class="aurevon-ecosystem" role="img" aria-label="Conceptual architecture linking account, web platform, mobile app, voice services and AI assistant">
+   <div class="aurevon-eco-core"><span class="aurevon-eco-symbol">A</span><b>AUREVON IDENTITY</b><small><span class="lang-ar">هوية وتجربة موحّدة · تصور مستقبلي</span><span class="lang-en">Unified identity · future concept</span></small></div>
+   <div class="aurevon-eco-links" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+   <div class="aurevon-eco-nodes">
+    <article><span>01</span><b>WEB PLATFORM</b><small><span class="lang-ar">تجربة الويب</span><span class="lang-en">Web experience</span></small><em class="eco-live"><span class="lang-ar">الموقع متاح</span><span class="lang-en">Website available</span></em></article>
+    <article><span>02</span><b>MOBILE APP</b><small><span class="lang-ar">تطبيق الهاتف</span><span class="lang-en">Mobile application</span></small><em><span class="lang-ar">مسار منتج</span><span class="lang-en">Product track</span></em></article>
+    <article><span>03</span><b>VOICE SERVICES</b><small><span class="lang-ar">الخدمات الصوتية</span><span class="lang-en">Voice experiences</span></small><em><span class="lang-ar">تكامل مقترح</span><span class="lang-en">Proposed integration</span></em></article>
+    <article><span>04</span><b>AVORA AI</b><small><span class="lang-ar">المساعد الذكي</span><span class="lang-en">AI assistant</span></small><em><span class="lang-ar">معاينة محلية حالياً</span><span class="lang-en">Local preview currently</span></em></article>
+   </div>
+  </div>
+ </div>
+</section>
+<section class="premium-section" id="project-estimator" aria-labelledby="estimator-title">
+ <div class="wrap">
+  <div class="premium-head"><div><div class="kicker">PROJECT SCOPE PLANNER</div><h2 id="estimator-title"><span class="lang-ar">مقدّر نطاق المشروع</span><span class="lang-en">Project scope estimator</span></h2><p><span class="lang-ar">كوّن تصوراً أولياً للمنتج والشاشات والتكاملات، واحصل على ملخص تنفيذي ونطاق زمني إرشادي.</span><span class="lang-en">Shape an initial product scope and receive an executive brief with an indicative timeline range.</span></p></div><span class="demo-tag">LOCAL ESTIMATE · NOT AI OR A QUOTE</span></div>
+  <div class="aurevon-estimator">
+   <form id="aurevon-estimator-form" class="aurevon-estimator-form">
+    <label><span class="lang-ar">نوع المشروع</span><span class="lang-en">Project type</span><select id="aurevon-estimator-type"><option value="website">Website</option><option value="webapp">Web application</option><option value="mobile">Mobile application</option><option value="platform">Integrated platform</option></select></label>
+    <label><span class="lang-ar">عدد الشاشات أو الصفحات</span><span class="lang-en">Screens or pages</span><input id="aurevon-estimator-screens" type="number" min="1" max="100" value="8" inputmode="numeric" required></label>
+    <label class="aurevon-estimator-wide"><span class="lang-ar">مستوى تكامل الذكاء الاصطناعي</span><span class="lang-en">AI integration scope</span><select id="aurevon-estimator-ai"><option value="none">None / لا يوجد</option><option value="basic">Basic / أساسي</option><option value="advanced">Advanced / متقدم</option></select></label>
+    <button class="btn primary aurevon-estimator-submit" type="submit"><span class="lang-ar">إنشاء الملخص ↗</span><span class="lang-en">Generate brief ↗</span></button>
+   </form>
+   <div class="aurevon-estimator-output" id="aurevon-estimator-output" aria-live="polite"><div class="kicker">EXECUTIVE SUMMARY</div><p><span class="lang-ar">اختر مواصفات مشروعك لإنشاء تقدير تخطيطي أولي.</span><span class="lang-en">Choose your project scope to generate an initial planning estimate.</span></p></div>
+  </div>
+  <p class="aurevon-disclaimer"><span class="lang-ar">التقدير محلي قائم على قواعد تقريبية، وليس ناتج نموذج ذكاء اصطناعي أو سعراً نهائياً. الجدول الفعلي يتغير حسب المتطلبات والتصميم والمراجعات والتكاملات.</span><span class="lang-en">This is a local rule-based estimate, not AI output or a final quote. Actual delivery depends on requirements, design, reviews and integrations.</span></p>
+ </div>
+</section>
+<section class="premium-section" id="newsroom" aria-labelledby="newsroom-title">
+ <div class="wrap">
+  <div class="premium-head"><div><div class="kicker">AUREVON · PRODUCT NOTES</div><h2 id="newsroom-title"><span class="lang-ar">مركز التحديثات</span><span class="lang-en">Newsroom & release notes</span></h2><p><span class="lang-ar">سجل موجز للوظائف والتحسينات الموجودة في الموقع حالياً، دون ادعاء جدول نشر أسبوعي غير موثق.</span><span class="lang-en">A concise record of capabilities currently present on the site, without claiming an undocumented weekly release schedule.</span></p></div><span class="demo-tag">SITE CHANGELOG</span></div>
+  <div class="aurevon-release-list">
+   <article><span class="aurevon-release-tag">PLATFORM</span><div><h3><span class="lang-ar">بوابة المطورين ونقاط الاتصال</span><span class="lang-en">Developer portal and endpoints</span></h3><p><span class="lang-ar">اختبار فعلي لنقطة فحص صحة الخادم ومسارات مشاركة الموقع والصورة الاجتماعية.</span><span class="lang-en">Live checks for server health and the site's share and social-image routes.</span></p></div><span class="aurevon-release-state">AVAILABLE</span></article>
+   <article><span class="aurevon-release-tag">PRODUCT</span><div><h3><span class="lang-ar">مساحة الدراسة التفاعلية</span><span class="lang-en">Interactive study workspace</span></h3><p><span class="lang-ar">مهام محلية ومؤقّت تركيز ومعاينة تعليمية توضيحية.</span><span class="lang-en">Local tasks, a focus timer and a clearly-labeled learning preview.</span></p></div><span class="aurevon-release-state">AVAILABLE</span></article>
+   <article><span class="aurevon-release-tag">EXPERIENCE</span><div><h3><span class="lang-ar">تحسينات الأداء وإمكانية الوصول</span><span class="lang-en">Performance and accessibility</span></h3><p><span class="lang-ar">تحسينات تدريجية للتنقل والاختصارات وتقليل الحركة ووضع الأداء.</span><span class="lang-en">Progressive improvements to navigation, shortcuts, reduced motion and performance mode.</span></p></div><span class="aurevon-release-state">IN THIS UPDATE</span></article>
+  </div>
+ </div>
+</section>
 <section class="section" id="contact"><div class="wrap"><div class="section-head"><div class="kicker" data-i18n="contact_kicker">CONTACT AUREVON</div><h2 data-i18n="contact_title">لنبدأ محادثة.</h2><p data-i18n="contact_desc">للاستفسارات والتواصل مع فريق أوريفون، يمكنك الاتصال مباشرة أو مراسلتنا عبر واتساب.</p></div><div class="final-cta contact-direct phone-showcase">
  <div class="phone-showcase-copy">
   <span class="phone-eyebrow" data-i18n="phone_eyebrow">خط التواصل المباشر</span>
@@ -1668,6 +1787,12 @@ else window.addEventListener("load",()=>window.setTimeout(loadAurevonEnhancement
 
 })();
 </script>
+
+
+<div id="aurevon-command-backdrop" role="dialog" aria-modal="true" aria-label="Quick navigation">
+ <div class="aurevon-command-box"><input class="aurevon-command-search" id="aurevon-command-search" type="search" autocomplete="off" placeholder="ابحث عن قسم أو إجراء…"><div class="aurevon-command-list" id="aurevon-command-list"></div></div>
+</div>
+<div id="aurevon-toast-region" aria-live="polite" aria-atomic="false"></div>
 
 <script>
 /* Installable shell: register the lightweight offline cache. */
