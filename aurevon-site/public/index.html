@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#090a0c">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="color-scheme" content="dark">
 <meta name="description" content="AUREVON TECH تطوّر منتجات رقمية وتجارب تعليمية ذكية عبر الاستراتيجية والتصميم والهندسة، وتقدّم VAYORA كمنصتها التعليمية.">
 <meta name="author" content="AUREVON TECH">
@@ -1480,5 +1483,11 @@ else window.addEventListener("load",()=>window.setTimeout(loadAurevonEnhancement
 })();
 </script>
 
+<script>
+/* Installable shell: register the lightweight offline cache. */
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+ window.addEventListener("load",()=>navigator.serviceWorker.register("/sw.js",{scope:"/"}).catch(error=>console.warn("[AUREVON] Offline shell registration failed",error)),{once:true});
+}
+</script>
 </body>
 </html>
