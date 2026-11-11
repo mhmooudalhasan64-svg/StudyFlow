@@ -204,6 +204,28 @@ if(demo){
 }
 
 
+/* Subtle pointer-following glow: CSS variables only, no framework or animation library. */
+const glowCards=document.querySelectorAll(".capability,.panel,.principle,.step");
+if(glowCards.length&&window.matchMedia("(hover:hover) and (pointer:fine)").matches&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+ glowCards.forEach(card=>{
+  card.addEventListener("pointerenter",event=>{
+   if(event.pointerType!=="mouse"&&event.pointerType!=="pen")return;
+   card.style.setProperty("--glow-opacity","1");
+  });
+  card.addEventListener("pointermove",event=>{
+   if(event.pointerType!=="mouse"&&event.pointerType!=="pen")return;
+   const rect=card.getBoundingClientRect();
+   card.style.setProperty("--glow-x",(event.clientX-rect.left)+"px");
+   card.style.setProperty("--glow-y",(event.clientY-rect.top)+"px");
+  },{passive:true});
+  card.addEventListener("pointerleave",()=>{
+   card.style.setProperty("--glow-opacity","0");
+   card.style.setProperty("--glow-x","50%");
+   card.style.setProperty("--glow-y","50%");
+  });
+ });
+}
+
 /* Copy the official AUREVON contact number on request. */
 document.querySelectorAll("[data-copy-phone]").forEach(button=>{
  button.addEventListener("click",async()=>{
