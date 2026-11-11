@@ -4,6 +4,7 @@ const path = require("node:path");
 const root = path.join(__dirname, "public");
 const types = { ".html":"text/html; charset=utf-8", ".svg":"image/svg+xml; charset=utf-8", ".txt":"text/plain; charset=utf-8", ".js":"text/javascript; charset=utf-8", ".css":"text/css; charset=utf-8", ".webmanifest":"application/manifest+json; charset=utf-8" };
 const port = Number(process.env.PORT) || 3000;
+const apiHandlers = { "/api/og-image": require("./api/og-image"), "/api/share": require("./api/share") };
 const escapeXml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;", "'":"&apos;" }[char]));
 const cleanText = (value, fallback, max) => String(value || fallback).replace(/[\u0000-\u001f\u007f]/g, " ").trim().slice(0, max) || fallback;
 function makeOgImage(title, description) {
@@ -40,6 +41,15 @@ const server = http.createServer((req,res) => {
   let parsedUrl;
   try { parsedUrl = new URL(req.url, "http://localhost"); } catch { res.writeHead(400); return res.end("Bad request"); }
   const pathname = decodeURIComponent(parsedUrl.pathname);
+  if (apiHandlers[pathname]) {
+    const query = Object.fromEntries(parsedUrl.searchParams.entries());
+    const apiRes = {
+      setHeader: (name, value) => res.setHeader(name, value),
+      status: (code) => { res.statusCode = code; return apiRes; },
+      send: (body) => { if (!res.headersSent) res.writeHead(res.statusCode || 200); res.end(body); }
+    };
+    return apiHandlers[pathname]({ ...req, query }, apiRes);
+  }
   if (pathname === "/og-image.svg") {
     const title = cleanText(parsedUrl.searchParams.get("title"), "AUREVON TECH", 90);
     const description = cleanText(parsedUrl.searchParams.get("description"), "Digital products, intelligent learning experiences and thoughtful engineering.", 180);
