@@ -114,15 +114,3 @@ export default function About() {
     </div>
   );
 }
-
-/** شاشة الترحيب عند فتح التطبيق */
-export function Intro({ onStart }: { onStart: () => void }) {
-  return (
-    <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-base p-5 sm:p-6" role="dialog" aria-label="مرحباً بك في فايورا">
-      <div className="w-full max-w-2xl space-y-6">
-        <div className="card"><BrandHero /></div>
-        <button type="button" className="btn btn-primary w-full" onClick={onStart}>ابدأ رحلتك مع فايورا</button>
-      </div>
-    </div>
-  );
-}
