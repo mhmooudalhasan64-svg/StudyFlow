@@ -49,6 +49,22 @@ const updateNetworkState=()=>{if(offlineNotice)offlineNotice.classList.toggle("v
 window.addEventListener("online",updateNetworkState);
 window.addEventListener("offline",updateNetworkState);
 updateNetworkState();
+/* Accessible tabs for the framework-free interactive hero console. */
+const heroTabs=[...document.querySelectorAll("[data-hero-tab]")];
+const heroPanels=[...document.querySelectorAll("[data-hero-panel]")];
+const activateHeroTab=(name)=>{
+ heroTabs.forEach(tab=>tab.setAttribute("aria-pressed",String(tab.dataset.heroTab===name)));
+ heroPanels.forEach(panel=>{panel.hidden=panel.dataset.heroPanel!==name;});
+};
+heroTabs.forEach((tab,index)=>tab.addEventListener("click",()=>activateHeroTab(tab.dataset.heroTab)));
+heroTabs.forEach((tab,index)=>tab.addEventListener("keydown",event=>{
+ if(event.key!=="ArrowLeft"&&event.key!=="ArrowRight")return;
+ event.preventDefault();
+ const direction=event.key==="ArrowRight"?1:-1;
+ const next=heroTabs[(index+direction+heroTabs.length)%heroTabs.length];
+ next.focus();
+ activateHeroTab(next.dataset.heroTab);
+}));
 const heroVisual=document.querySelector(".hero .visual");
 if(heroVisual&&window.matchMedia("(pointer:fine)").matches&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches){
  heroVisual.addEventListener("pointermove",event=>{
