@@ -32,18 +32,68 @@ if(labGenerate&&labBrief&&labResult){
  });
 }
 if(labCopy)labCopy.addEventListener("click",async()=>{if(!latestLabText)return;try{await labCopyText(latestLabText);labStatus.textContent=document.documentElement.lang==="en"?"COPIED":"تم النسخ";}catch(error){labStatus.textContent=document.documentElement.lang==="en"?"COPY UNAVAILABLE":"تعذر النسخ";}});
-const apiExamples={
- og:'curl -G "'+window.location.origin+'/api/og-image" \\\n  --data-urlencode "title=AUREVON TECH" \\\n  --data-urlencode "description=Digital products and intelligent experiences"\n\n// Live endpoint: returns a generated SVG image.',
- share:'curl -G "'+window.location.origin+'/api/share" \\\n  --data-urlencode "title=AUREVON TECH" \\\n  --data-urlencode "description=Digital products and intelligent experiences"\n\n// Live endpoint: returns HTML with dynamic Open Graph metadata.',
-
- health:'curl -X GET "https://api.example.com/v1/status" \\\n  -H "Accept: application/json"\n\n// Illustrative contract only.\n// No live API is connected.',
- projects:'curl -X POST "https://api.example.com/v1/projects" \\\n  -H "Content-Type: application/json" \\\n  -H "Authorization: Bearer YOUR_TOKEN" \\\n  -d \'{"name":"Sample project","type":"platform"}\'\n\n// Example payload only.\n// Endpoint is not deployed.',
- assistant:'curl -X POST "https://api.example.com/v1/assistant/preview" \\\n  -H "Content-Type: application/json" \\\n  -d \'{"prompt":"Summarize this project idea"}\'\n\n// Illustrative request only.\n// Do not send real user data.'
+/* Live AUREVON API playground: only endpoints implemented by this server are listed. */
+const apiDefinitions={
+ health:{method:"GET",path:"/api/system/health",accept:"application/json"},
+ og:{method:"GET",path:"/api/og-image?title=AUREVON%20TECH&description=Digital%20products%20and%20intelligent%20experiences",accept:"image/svg+xml"},
+ share:{method:"GET",path:"/api/share?share_title=AUREVON%20TECH&share_description=Digital%20products%20and%20intelligent%20experiences",accept:"text/html"}
+};
+let selectedApi="health";
+const apiCode=document.getElementById("api-code");
+const apiResponse=document.getElementById("api-response");
+const apiStatus=document.getElementById("api-status");
+const apiMeta=document.getElementById("api-meta");
+const apiRun=document.getElementById("api-run");
+const currentLanguage=()=>document.documentElement.lang==="en"?"en":"ar";
+const renderApiRequest=()=>{
+ const item=apiDefinitions[selectedApi];if(!item||!apiCode)return;
+ apiCode.textContent=item.method+" "+window.location.origin+item.path+"\nAccept: "+item.accept;
 };
 document.querySelectorAll("[data-api]").forEach(button=>button.addEventListener("click",()=>{
  document.querySelectorAll("[data-api]").forEach(item=>item.setAttribute("aria-pressed",String(item===button)));
- document.getElementById("api-code").textContent=apiExamples[button.dataset.api]||apiExamples.health;
+ selectedApi=button.dataset.api;
+ renderApiRequest();
+ if(apiStatus){apiStatus.className="api-status";apiStatus.textContent=currentLanguage()==="en"?"Ready to test":"جاهز للاختبار";}
+ if(apiMeta)apiMeta.textContent=currentLanguage()==="en"?"No request has been sent yet.":"لم يتم إرسال أي طلب بعد.";
+ if(apiResponse)apiResponse.textContent=currentLanguage()==="en"?'// Press "Send request" to call the selected live endpoint.':'// اضغط «إرسال الطلب» لتنفيذ طلب حقيقي إلى الخادم.';
 }));
+if(apiRun&&apiResponse&&apiStatus&&apiMeta){
+ apiRun.addEventListener("click",async()=>{
+  const item=apiDefinitions[selectedApi];if(!item)return;
+  const en=currentLanguage()==="en";
+  apiRun.disabled=true;
+  apiRun.textContent=en?"Sending…":"جارٍ الإرسال…";
+  apiStatus.className="api-status";
+  apiStatus.textContent=en?"Request in progress":"الطلب قيد التنفيذ";
+  apiResponse.textContent=en?"// Waiting for server response…":"// بانتظار استجابة الخادم…";
+  const started=performance.now();
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),15000);
+  try{
+   const response=await fetch(item.path,{method:item.method,headers:{Accept:item.accept},cache:"no-store",signal:controller.signal});
+   const body=await response.text();
+   const elapsed=Math.round(performance.now()-started);
+   const contentType=response.headers.get("content-type")||"unknown";
+   apiStatus.className="api-status "+(response.ok?"is-success":"is-error");
+   apiStatus.textContent="HTTP "+response.status+" "+response.statusText;
+   apiMeta.textContent="Duration: "+elapsed+" ms  ·  Content-Type: "+contentType+"  ·  URL: "+new URL(item.path,window.location.origin).pathname;
+   let display=body;
+   if(contentType.includes("application/json")){try{display=JSON.stringify(JSON.parse(body),null,2);}catch{}}
+   apiResponse.textContent=display.slice(0,12000)+(display.length>12000?"\n… response truncated":"");
+  }catch(error){
+   const timedOut=error&&error.name==="AbortError";
+   apiStatus.className="api-status is-error";
+   apiStatus.textContent=en?"Request failed":"فشل الطلب";
+   apiMeta.textContent=timedOut?(en?"Timed out after 15 seconds":"انتهت مهلة الطلب بعد 15 ثانية"):(en?"The server could not be reached":"تعذر الوصول إلى الخادم");
+   apiResponse.textContent=String(error&&error.message||error);
+  }finally{
+   clearTimeout(timeout);
+   apiRun.disabled=false;
+   apiRun.textContent=en?"Send request ↗":"إرسال الطلب ↗";
+  }
+ });
+}
+renderApiRequest();
 const offlineNotice=document.getElementById("offline-notice");
 const updateNetworkState=()=>{if(offlineNotice)offlineNotice.classList.toggle("visible",!navigator.onLine);};
 window.addEventListener("online",updateNetworkState);
