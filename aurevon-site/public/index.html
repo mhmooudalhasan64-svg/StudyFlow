@@ -1640,13 +1640,20 @@ let language="ar";
 
 // AUREVON uses the dark visual identity exclusively. Theme switching is intentionally disabled.
 document.documentElement.dataset.theme="dark";
-document.document.documentElement.style.colorScheme="dark";
+document.documentElement.style.colorScheme="dark";
 
 const langButton=document.getElementById("language-toggle");
 const applyLanguage=(next)=>{
  language=next;
  document.documentElement.lang=next;
  document.documentElement.dir=next==="ar"?"rtl":"ltr";
+ const estimatorType=document.getElementById("aurevon-estimator-type");
+ const estimatorAi=document.getElementById("aurevon-estimator-ai");
+ if(estimatorType){const labels=next==="ar"?["موقع إلكتروني","تطبيق ويب","تطبيق هاتف","منصة متكاملة"]:["Website","Web application","Mobile application","Integrated platform"];[...estimatorType.options].forEach((option,index)=>option.textContent=labels[index]);}
+ if(estimatorAi){const labels=next==="ar"?["دون تكامل","تكامل أساسي","تكامل متقدم"]:["No AI integration","Basic AI integration","Advanced AI integration"];[...estimatorAi.options].forEach((option,index)=>option.textContent=labels[index]);}
+ const commandSearchInput=document.getElementById("aurevon-command-search");
+ if(commandSearchInput)commandSearchInput.placeholder=next==="ar"?"ابحث عن قسم أو إجراء…":"Search sections or actions…";
+
  document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{const key=el.getAttribute("data-i18n-placeholder");const value=translations[next][key];if(value!==undefined)el.setAttribute("placeholder",value);});
  document.querySelectorAll("[data-i18n]").forEach(el=>{
   const key=el.getAttribute("data-i18n");
