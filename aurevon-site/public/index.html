@@ -1335,6 +1335,33 @@ html.aurevon-performance .capability:before,html.aurevon-performance .panel:befo
 @media(max-width:650px){.aurevon-tool-toggle{min-height:36px;padding:6px;font-size:9px}.aurevon-tool-toggle>span:not(:first-child){display:none}.aurevon-metric-grid{grid-template-columns:1fr}.aurevon-metric-card{padding:18px}.aurevon-release-list article{grid-template-columns:1fr auto;gap:9px}.aurevon-release-tag{grid-column:1/-1}.aurevon-release-list h3{font-size:13px}.aurevon-estimator-form{grid-template-columns:1fr}.aurevon-estimator-wide,.aurevon-estimator-submit{grid-column:auto}.aurevon-eco-nodes{grid-template-columns:1fr 1fr}.aurevon-eco-nodes article{padding:15px 7px}.aurevon-eco-nodes b{font-size:10px}#aurevon-toast-region{inset-inline:12px;bottom:12px;width:auto}}
 @media(prefers-reduced-motion:reduce){.aurevon-toast{animation:none}}
 
+
+/* AUREVON product ecosystem — native HTML/CSS, responsive and bilingual. */
+.aurevon-products-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:17px;align-items:stretch}
+.aurevon-product-card{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:24px;min-width:0;overflow:hidden;padding:clamp(22px,3.3vw,34px);border:1px solid #cbd2d83b;border-radius:23px;background:linear-gradient(145deg,#1b1f24ed,#0e1013f2);box-shadow:0 18px 48px #0007;backdrop-filter:blur(14px);transition:transform .28s ease,border-color .28s ease,box-shadow .28s ease}
+.aurevon-product-card:hover{transform:translateY(-5px);border-color:#c5cdd17a;box-shadow:0 24px 58px #000a}
+.aurevon-product-featured{background:radial-gradient(ellipse at 95% 0%,#8295a52b,transparent 43%),linear-gradient(145deg,#222830f2,#101317f5);border-color:#aebdca5c}
+.aurevon-product-featured:after{content:"V";position:absolute;inset-inline-start:-12px;bottom:-112px;font-size:300px;line-height:1;font-weight:950;color:#ffffff08;pointer-events:none}
+.aurevon-product-card>*{position:relative;z-index:1}
+.aurevon-product-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.aurevon-product-badge{display:inline-flex;align-items:center;min-height:27px;padding:5px 10px;border:1px solid #b9c8d34a;border-radius:999px;background:#b7c9d20d;color:#c9d4db;font:800 9px/1.3 ui-monospace,monospace;letter-spacing:.09em;direction:ltr}
+.aurevon-product-status{display:inline-flex;align-items:center;gap:7px;color:#b7c5bd;font-size:10px}
+.aurevon-product-status i{width:7px;height:7px;border-radius:50%;background:#91c6a2;box-shadow:0 0 12px #91c6a266}
+.aurevon-product-status.is-planned{color:#c0b9a9}
+.aurevon-product-status.is-planned i{background:#c4ad78;box-shadow:0 0 12px #c4ad7855}
+.aurevon-product-identity{display:flex;align-items:center;gap:17px;margin-top:14px}
+.aurevon-product-symbol{display:grid;place-items:center;flex:0 0 58px;width:58px;height:58px;border:1px solid #d7dfe36b;border-radius:17px;background:linear-gradient(145deg,#dce1e4,#747f88);color:#11161a;font-size:32px;font-weight:950;box-shadow:0 10px 26px #0006}
+.aurevon-product-symbol.api-symbol{background:linear-gradient(145deg,#414b55,#171d23);color:#e0e6ea;font:800 18px ui-monospace,monospace}
+.aurevon-product-category{display:block;color:#aebbc4;font-size:10px;margin-bottom:3px}
+.aurevon-product-identity h3{margin:0;color:#f0f2f3;font-size:clamp(27px,3.5vw,39px);line-height:1.25;letter-spacing:.12em;direction:ltr;text-align:start}
+.aurevon-product-identity h3 span{font-size:.48em;letter-spacing:.08em;color:#aeb9c0}
+.aurevon-product-card>p{max-width:680px;margin:0;color:#b3bbc0;font-size:12px;line-height:2.1}
+.aurevon-product-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding-top:19px;border-top:1px solid #cbd2d826}
+.aurevon-product-footer .btn{min-height:43px;padding:9px 15px;font-size:11px}
+.aurevon-product-footnote{max-width:230px;color:#89949b;font-size:9px;line-height:1.8}
+@media(max-width:760px){.aurevon-products-grid{grid-template-columns:1fr}.aurevon-product-card{gap:20px;padding:22px}.aurevon-product-footer{align-items:flex-start;flex-direction:column}.aurevon-product-footnote{max-width:none}}
+@media(prefers-reduced-motion:reduce){.aurevon-product-card{transition:none}}
+
 </style>
 </head>
 <body>
@@ -1543,16 +1570,45 @@ Accept: application/json</pre>
 </section>
 <section class="premium-section" id="ecosystem" aria-labelledby="ecosystem-title">
  <div class="wrap">
-  <div class="premium-head"><div><div class="kicker">CONNECTED PRODUCT VISION</div><h2 id="ecosystem-title"><span class="lang-ar">تصوّر المنظومة المترابطة</span><span class="lang-en">Unified ecosystem concept</span></h2><p><span class="lang-ar">خريطة مفاهيمية توضّح كيف يمكن أن تتكامل الهوية وتجربة الويب والتطبيق والخدمات الذكية. هذا تصور معماري، وليس ادعاءً بأن جميع الاتصالات منشورة حالياً.</span><span class="lang-en">A conceptual map of how identity, web, mobile and intelligent services could connect. This is an architecture concept, not a claim that every integration is live.</span></p></div><span class="demo-tag">CONCEPT · NOT ALL LINKS LIVE</span></div>
-  <div class="aurevon-ecosystem" role="img" aria-label="Conceptual architecture linking account, web platform, mobile app, voice services and AI assistant">
-   <div class="aurevon-eco-core"><span class="aurevon-eco-symbol">A</span><b>AUREVON IDENTITY</b><small><span class="lang-ar">هوية وتجربة موحّدة · تصور مستقبلي</span><span class="lang-en">Unified identity · future concept</span></small></div>
-   <div class="aurevon-eco-links" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-   <div class="aurevon-eco-nodes">
-    <article><span>01</span><b>WEB PLATFORM</b><small><span class="lang-ar">تجربة الويب</span><span class="lang-en">Web experience</span></small><em class="eco-live"><span class="lang-ar">الموقع متاح</span><span class="lang-en">Website available</span></em></article>
-    <article><span>02</span><b>MOBILE APP</b><small><span class="lang-ar">تطبيق الهاتف</span><span class="lang-en">Mobile application</span></small><em><span class="lang-ar">مسار منتج</span><span class="lang-en">Product track</span></em></article>
-    <article><span>03</span><b>VOICE SERVICES</b><small><span class="lang-ar">الخدمات الصوتية</span><span class="lang-en">Voice experiences</span></small><em><span class="lang-ar">تكامل مقترح</span><span class="lang-en">Proposed integration</span></em></article>
-    <article><span>04</span><b>AVORA AI</b><small><span class="lang-ar">المساعد الذكي</span><span class="lang-en">AI assistant</span></small><em><span class="lang-ar">معاينة محلية حالياً</span><span class="lang-en">Local preview currently</span></em></article>
+  <div class="premium-head">
+   <div>
+    <div class="kicker">ECOSYSTEM &amp; PRODUCTS</div>
+    <h2 id="ecosystem-title"><span class="lang-ar">منظومة التطبيقات والمنتجات الرقمية</span><span class="lang-en">Digital products &amp; applications</span></h2>
+    <p><span class="lang-ar">نبني منتجات رقمية مترابطة تخدم التعلّم والتجارب الذكية، ضمن منظومة AUREVON التقنية.</span><span class="lang-en">We build connected digital products for learning and intelligent experiences across the AUREVON technology ecosystem.</span></p>
    </div>
+   <span class="demo-tag">AUREVON PRODUCT ECOSYSTEM</span>
+  </div>
+  <div class="aurevon-products-grid">
+   <article class="aurevon-product-card aurevon-product-featured">
+    <div class="aurevon-product-top">
+     <span class="aurevon-product-badge">AUREVON FLAGSHIP</span>
+     <span class="aurevon-product-status"><i></i><span class="lang-ar">متاح للويب والموبايل</span><span class="lang-en">Available on web &amp; mobile</span></span>
+    </div>
+    <div class="aurevon-product-identity">
+     <span class="aurevon-product-symbol" aria-hidden="true">V</span>
+     <div><span class="aurevon-product-category"><span class="lang-ar">التقنيات التعليمية والذكاء الاصطناعي</span><span class="lang-en">Educational technology &amp; AI</span></span><h3>VAYORA</h3></div>
+    </div>
+    <p><span class="lang-ar">منصة تعليمية ذكية موجّهة للطلاب، تجمع تنظيم الدراسة وأدوات التركيز ومراجعة الاختبارات، مع تجارب صوتية ومساعد تعليمي ضمن بيئة واحدة.</span><span class="lang-en">An intelligent learning platform for students, bringing together study planning, focus tools and test revision, with voice experiences and an educational assistant in one environment.</span></p>
+    <div class="aurevon-product-footer">
+     <a class="btn primary" href="https://aurevonteam-26ku21huq-mhm23.vercel.app/" target="_blank" rel="noopener noreferrer"><span class="lang-ar">استكشف VAYORA</span><span class="lang-en">Explore VAYORA</span><span aria-hidden="true">↗</span></a>
+     <span class="aurevon-product-footnote"><span class="lang-ar">المنتج الأساسي ضمن منظومة AUREVON</span><span class="lang-en">The flagship AUREVON product</span></span>
+    </div>
+   </article>
+   <article class="aurevon-product-card aurevon-product-api">
+    <div class="aurevon-product-top">
+     <span class="aurevon-product-badge">CORE AI SERVICE</span>
+     <span class="aurevon-product-status is-planned"><i></i><span class="lang-ar">قيد التطوير</span><span class="lang-en">In development</span></span>
+    </div>
+    <div class="aurevon-product-identity">
+     <span class="aurevon-product-symbol api-symbol" aria-hidden="true">&lt;/&gt;</span>
+     <div><span class="aurevon-product-category"><span class="lang-ar">محرك المعالجة الذكي</span><span class="lang-en">Intelligent processing engine</span></span><h3>AVORA <span>CORE API</span></h3></div>
+    </div>
+    <p><span class="lang-ar">تصوّر تقني لخدمات المعالجة الصوتية والتفاعل الذكي والتعلّم الحواري داخل التطبيقات. لم تُنشر واجهة API عامة مستقلة لهذا المحرك حتى الآن.</span><span class="lang-en">A technical concept for voice processing, intelligent interaction and conversational learning inside applications. No standalone public API for this engine has been released yet.</span></p>
+    <div class="aurevon-product-footer">
+     <a class="btn secondary" href="#developers"><span class="lang-ar">واجهات API المنشورة</span><span class="lang-en">Published API endpoints</span><span aria-hidden="true">↗</span></a>
+     <span class="aurevon-product-footnote"><span class="lang-ar">البوابة تعرض نقاط الاتصال المتاحة فعلياً فقط</span><span class="lang-en">The portal lists only endpoints that are actually available</span></span>
+    </div>
+   </article>
   </div>
  </div>
 </section>
