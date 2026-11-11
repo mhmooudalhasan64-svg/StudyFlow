@@ -33,6 +33,9 @@ if(labGenerate&&labBrief&&labResult){
 }
 if(labCopy)labCopy.addEventListener("click",async()=>{if(!latestLabText)return;try{await labCopyText(latestLabText);labStatus.textContent=document.documentElement.lang==="en"?"COPIED":"تم النسخ";}catch(error){labStatus.textContent=document.documentElement.lang==="en"?"COPY UNAVAILABLE":"تعذر النسخ";}});
 const apiExamples={
+ og:'curl -G "'+window.location.origin+'/api/og-image" \\\n  --data-urlencode "title=AUREVON TECH" \\\n  --data-urlencode "description=Digital products and intelligent experiences"\n\n// Live endpoint: returns a generated SVG image.',
+ share:'curl -G "'+window.location.origin+'/api/share" \\\n  --data-urlencode "title=AUREVON TECH" \\\n  --data-urlencode "description=Digital products and intelligent experiences"\n\n// Live endpoint: returns HTML with dynamic Open Graph metadata.',
+
  health:'curl -X GET "https://api.example.com/v1/status" \\\n  -H "Accept: application/json"\n\n// Illustrative contract only.\n// No live API is connected.',
  projects:'curl -X POST "https://api.example.com/v1/projects" \\\n  -H "Content-Type: application/json" \\\n  -H "Authorization: Bearer YOUR_TOKEN" \\\n  -d \'{"name":"Sample project","type":"platform"}\'\n\n// Example payload only.\n// Endpoint is not deployed.',
  assistant:'curl -X POST "https://api.example.com/v1/assistant/preview" \\\n  -H "Content-Type: application/json" \\\n  -d \'{"prompt":"Summarize this project idea"}\'\n\n// Illustrative request only.\n// Do not send real user data.'
