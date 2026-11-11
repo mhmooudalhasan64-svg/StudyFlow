@@ -4,7 +4,7 @@ const path = require("node:path");
 const root = path.join(__dirname, "public");
 const types = { ".html":"text/html; charset=utf-8", ".svg":"image/svg+xml; charset=utf-8", ".txt":"text/plain; charset=utf-8", ".js":"text/javascript; charset=utf-8", ".css":"text/css; charset=utf-8", ".webmanifest":"application/manifest+json; charset=utf-8" };
 const port = Number(process.env.PORT) || 3000;
-const apiHandlers = { "/api/og-image": require("./api/og-image"), "/api/share": require("./api/share") };
+const apiHandlers = { "/api/og-image": require("./api/og-image"), "/api/share": require("./api/share"), "/api/system/health": (req, res) => { if (req.method !== "GET") { res.setHeader("Allow", "GET"); res.setHeader("Content-Type", "application/json; charset=utf-8"); return res.status(405).send(JSON.stringify({ error: "method_not_allowed", allowed: ["GET"] })); } res.setHeader("Content-Type", "application/json; charset=utf-8"); res.setHeader("Cache-Control", "no-store"); res.setHeader("X-Content-Type-Options", "nosniff"); return res.status(200).send(JSON.stringify({ status: "healthy", service: "AUREVON TECH", timestamp: new Date().toISOString(), uptime_seconds: Math.floor(process.uptime()), runtime: process.version })); } };
 const escapeXml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;", "'":"&apos;" }[char]));
 const cleanText = (value, fallback, max) => String(value || fallback).replace(/[\u0000-\u001f\u007f]/g, " ").trim().slice(0, max) || fallback;
 function makeOgImage(title, description) {
