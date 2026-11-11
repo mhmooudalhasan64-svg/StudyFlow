@@ -77,3 +77,19 @@ if(heroVisual&&window.matchMedia("(pointer:fine)").matches&&!window.matchMedia("
  heroVisual.addEventListener("pointerleave",()=>{heroVisual.style.setProperty("--hero-tilt-x","0deg");heroVisual.style.setProperty("--hero-tilt-y","0deg");});
 }
 }
+
+
+/* Copy the official AUREVON contact number on request. */
+document.querySelectorAll("[data-copy-phone]").forEach(button=>{
+ button.addEventListener("click",async()=>{
+  const number=button.dataset.copyPhone;
+  const status=button.parentElement.querySelector("[data-copy-status]");
+  try{
+   await navigator.clipboard.writeText(number);
+   const lang=document.documentElement.lang==="en"?"en":"ar";
+   if(status)status.textContent=lang==="en"?"Number copied":"تم نسخ الرقم";
+  }catch(error){
+   if(status)status.textContent=document.documentElement.lang==="en"?"Copy is unavailable in this browser":"تعذر النسخ من هذا المتصفح";
+  }
+ });
+});
