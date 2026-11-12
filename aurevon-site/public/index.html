@@ -1666,6 +1666,78 @@ header.scrolled .mark{transform:scale(.92);transform-origin:center}
  .btn,button,.lang,.menu-toggle,.aurevon-tool-toggle,.vayora-timer-modes button,[data-api],.aurevon-command-item{transition:none}
 }
 
+
+
+/* AUREVON mobile dock — premium tactile navigation */
+@media(max-width:760px){
+ .mobile-dock{
+  bottom:max(12px,env(safe-area-inset-bottom));
+  width:min(460px,calc(100% - 26px));
+  gap:6px;
+  padding:8px;
+  border:1px solid #d7b66c66;
+  border-radius:22px;
+  background:linear-gradient(145deg,#242016f5,#11100df7 68%);
+  box-shadow:0 18px 48px #000c, inset 0 1px #f5e4b51c, 0 0 24px #c9a45a12;
+  -webkit-backdrop-filter:blur(24px) saturate(125%);
+  backdrop-filter:blur(24px) saturate(125%);
+ }
+ .mobile-dock a{
+  position:relative;
+  min-height:58px;
+  align-content:center;
+  justify-items:center;
+  gap:4px;
+  padding:7px 3px 6px;
+  border:1px solid transparent;
+  border-radius:15px;
+  color:#bdb39e;
+  font-size:10px;
+  font-weight:750;
+  letter-spacing:.01em;
+  transition:color .22s ease,background .22s ease,border-color .22s ease,transform .22s ease,box-shadow .22s ease;
+  -webkit-tap-highlight-color:transparent;
+ }
+ .mobile-dock a:before{
+  content:"";
+  position:absolute;
+  inset:3px 5px auto;
+  height:1px;
+  opacity:0;
+  background:linear-gradient(90deg,transparent,#f0d995,transparent);
+  transition:opacity .22s ease;
+ }
+ .mobile-dock svg{
+  width:20px;height:20px;
+  padding:2px;
+  overflow:visible;
+  stroke:currentColor;
+  stroke-width:1.8;
+  filter:drop-shadow(0 2px 5px #0008);
+  transition:transform .22s ease,filter .22s ease;
+ }
+ .mobile-dock a[aria-current="location"]{
+  color:#f4d88f;
+  border-color:#d7b66c55;
+  background:linear-gradient(145deg,#d7b66c20,#d7b66c08);
+  box-shadow:inset 0 1px #f5e4b51a,0 5px 16px #0005;
+ }
+ .mobile-dock a[aria-current="location"]:before{opacity:1}
+ .mobile-dock a[aria-current="location"] svg{
+  transform:translateY(-1px) scale(1.08);
+  filter:drop-shadow(0 0 7px #d7b66c55);
+ }
+ .mobile-dock a:active{transform:scale(.95);background:#d7b66c20}
+ .mobile-dock a:focus-visible{outline:2px solid #f0d995;outline-offset:2px;background:#d7b66c18}
+}
+@media(hover:hover) and (pointer:fine) and (max-width:760px){
+ .mobile-dock a:hover{color:#f4d88f;background:#d7b66c12;border-color:#d7b66c35;transform:translateY(-2px)}
+ .mobile-dock a:hover svg{transform:translateY(-1px)}
+}
+@media(prefers-reduced-motion:reduce){
+ .mobile-dock a,.mobile-dock svg,.mobile-dock a:before{transition:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -2112,7 +2184,7 @@ window.addEventListener("resize",()=>{
 const progressBar=document.getElementById("reading-progress-bar");
 const backTop=document.getElementById("back-to-top");
 const siteHeader=document.querySelector("header");
-const navLinks=[...document.querySelectorAll('.links a[href^="#"],.mobile-links a[href^="#"]')];
+const navLinks=[...document.querySelectorAll('.links a[href^="#"],.mobile-links a[href^="#"],.mobile-dock a[href^="#"]')];
 const observedSections=[...new Set(navLinks.map(link=>document.querySelector(link.getAttribute("href"))).filter(Boolean))];
 const sectionObserver=("IntersectionObserver" in window)?new IntersectionObserver(entries=>{
  entries.forEach(entry=>{
