@@ -408,6 +408,16 @@ async function readBoundedJson(request: Request): Promise<{ body: unknown } | { 
 }
 
 async function handlePost(request: Request): Promise<Response> {
+  // Central server-side cutoff: legacy clients without the current build header
+  // cannot use the AI endpoint, including direct Vercel serverless requests.
+  const suppliedBuild = Number(request.headers.get('x-vayora-build') || 0);
+  if (!Number.isSafeInteger(suppliedBuild) || suppliedBuild < 7) {
+    return json({
+      code: 'update_required',
+      error: 'هذا الإصدار لم يعد مدعوماً. حدّث VAYORA إلى أحدث إصدار للمتابعة.',
+      minimumBuild: 7,
+    }, 426);
+  }
   // Reject browser-origin requests unless the exact origin is explicitly trusted.
   // Native Capacitor origins are allowlisted below; requests without Origin remain
   // available to native clients and server-to-server callers.
