@@ -1362,6 +1362,95 @@ html.aurevon-performance .capability:before,html.aurevon-performance .panel:befo
 @media(max-width:760px){.aurevon-products-grid{grid-template-columns:1fr}.aurevon-product-card{gap:20px;padding:22px}.aurevon-product-footer{align-items:flex-start;flex-direction:column}.aurevon-product-footnote{max-width:none}}
 @media(prefers-reduced-motion:reduce){.aurevon-product-card{transition:none}}
 
+
+/* AUREVON interface organization — clear hierarchy, consistent rhythm, responsive navigation */
+:root{
+ --aurevon-gold:#c8a765;
+ --aurevon-gold-soft:#e2cc9b;
+ --aurevon-gold-line:#c8a76545;
+}
+html{scroll-padding-top:104px}
+.wrap{width:min(1240px,calc(100% - 56px))}
+header .nav{gap:clamp(10px,1.5vw,20px)}
+header .nav-actions{gap:7px;flex-shrink:0}
+header .links{flex:1;justify-content:center;min-width:0}
+header .links a{white-space:nowrap}
+header .nav-cta{white-space:nowrap;padding-inline:15px}
+.section,.premium-section{scroll-margin-top:100px}
+.section{padding-block:clamp(72px,7.2vw,104px)}
+.premium-section{padding-block:clamp(68px,7vw,98px)}
+.section-head,.premium-head{max-width:790px;margin-bottom:clamp(25px,3vw,42px)}
+.section-head h2,.premium-head h2{max-width:760px;text-wrap:balance}
+.section-head p,.premium-head p{max-width:690px}
+.signature-strip{padding-block:0 18px}
+.signature-inner{border-color:var(--aurevon-gold-line);background:linear-gradient(110deg,#c8a7650c,#ffffff03)}
+.signature-number,.kicker,.eyebrow{color:#d0b77f}
+.signature-item strong{color:#eee9dd}
+.signature-item small{color:#aaa397}
+.panel,.capability,.step,.principle,.vayora-card,.aurevon-product-card,.aurevon-metric-card{
+ border-color:#d4d9dc25;
+}
+.capabilities{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch}
+.capability{min-height:190px}
+.product{align-items:stretch}
+.product-main,.product-side{height:100%}
+.product-main{display:flex;flex-direction:column;align-items:flex-start;justify-content:center}
+.product-main .product-note{margin-top:15px}
+.premium-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+.premium-head>div{min-width:0}
+.premium-shell{width:100%}
+.vayora-stats{align-items:stretch}
+.vayora-work-grid{align-items:stretch}
+.vayora-card{min-width:0}
+.developer-grid{align-items:stretch}
+.api-console{min-width:0}
+.aurevon-products-grid{align-items:stretch}
+.aurevon-product-card{height:100%}
+.inquiry-shell{align-items:start}
+footer .foot{min-height:54px}
+@media(max-width:1080px){
+ header .nav{height:74px}
+ header .links{display:none}
+ header .menu-toggle{display:inline-flex;align-items:center;justify-content:center}
+ header .nav-cta{display:none}
+ header .mobile-links{top:calc(100% - 1px)}
+}
+@media(max-width:760px){
+ .wrap{width:calc(100% - 30px)}
+ .section{padding-block:60px}
+ .premium-section{padding-block:56px}
+ .section-head,.premium-head{margin-bottom:24px}
+ .section-head h2,.premium-head h2{font-size:clamp(27px,7vw,36px);line-height:1.35}
+ .premium-head{align-items:flex-start;flex-direction:column;gap:12px}
+ .signature-strip{padding-bottom:8px}
+ .signature-inner{grid-template-columns:1fr}
+ .signature-item{min-height:66px;padding:13px 16px}
+ .signature-item+.signature-item{border-inline-start:0;border-top:1px solid #cbd2d626}
+ .capabilities{grid-template-columns:1fr}
+ .capability{min-height:unset;padding:22px}
+ .product{grid-template-columns:1fr}
+ .product-main,.product-side{height:auto}
+ .steps{grid-template-columns:1fr 1fr}
+ .principles{grid-template-columns:1fr}
+ .faq{grid-template-columns:1fr}
+ .vayora-work-grid,.developer-grid{grid-template-columns:1fr}
+ .aurevon-products-grid{grid-template-columns:1fr}
+ .aurevon-metric-grid{grid-template-columns:1fr}
+ .inquiry-shell{grid-template-columns:1fr}
+ header .nav{height:70px}
+ header .nav-actions{gap:5px}
+ header .aurevon-tool-toggle{min-width:38px;padding-inline:8px}
+}
+@media(max-width:420px){
+ .wrap{width:calc(100% - 26px)}
+ .steps{grid-template-columns:1fr}
+ .hero .actions{gap:9px}
+ .hero .actions .btn{width:100%}
+ .product-main{padding:23px}
+ .vayora-stats{grid-template-columns:1fr 1fr}
+ .phone-number{font-size:clamp(23px,7vw,32px)}
+}
+
 </style>
 </head>
 <body>
@@ -1438,6 +1527,7 @@ html.aurevon-performance .capability:before,html.aurevon-performance .panel:befo
 <div class="signature-item"><span class="signature-number">02</span><div><strong data-i18n="strip_learning">LEARNING SYSTEMS</strong><small data-i18n="strip_learning_sub">تقنيات تعليمية ذكية</small></div></div>
 <div class="signature-item"><span class="signature-number">03</span><div><strong data-i18n="strip_intelligence">APPLIED INTELLIGENCE</strong><small data-i18n="strip_intelligence_sub">ذكاء اصطناعي يخدم التجربة</small></div></div>
 </div></section>
+<section class="section"><div class="wrap"><div class="final-cta"><div><h2 data-i18n="final_title">المستقبل لا يُنتظر. بل يُبنى.</h2><p data-i18n="final_desc">اكتشف VAYORA، وتعرّف على أحد تطبيقات رؤية أوريفون في التعليم الذكي.</p></div><a class="btn primary" href="#product" data-i18n="final_button">استكشف VAYORA ↗</a></div></div></section>
 <section class="section" id="about"><div class="wrap">
 <div class="section-head"><div class="kicker" data-i18n="about_kicker">ABOUT AUREVON</div><h2 data-i18n="about_title">نصنع التقنية لتخدم الإنسان.</h2><p data-i18n="about_desc">AUREVON TECH شركة تقنية تركّز على تطوير المنتجات الرقمية والتجارب التعليمية الذكية. نؤمن أن قيمة التقنية لا تُقاس بتعقيدها، بل بما تمنحه للناس من وضوح وقدرة وإنجاز.</p></div>
 <div class="grid-2">
@@ -1470,7 +1560,67 @@ html.aurevon-performance .capability:before,html.aurevon-performance .panel:befo
 </aside>
 </div>
 </div></section>
-
+<section class="premium-section" id="ecosystem" aria-labelledby="ecosystem-title">
+ <div class="wrap">
+  <div class="premium-head">
+   <div>
+    <div class="kicker">ECOSYSTEM &amp; PRODUCTS</div>
+    <h2 id="ecosystem-title"><span class="lang-ar">منظومة التطبيقات والمنتجات الرقمية</span><span class="lang-en">Digital products &amp; applications</span></h2>
+    <p><span class="lang-ar">نبني منتجات رقمية مترابطة تخدم التعلّم والتجارب الذكية، ضمن منظومة AUREVON التقنية.</span><span class="lang-en">We build connected digital products for learning and intelligent experiences across the AUREVON technology ecosystem.</span></p>
+   </div>
+   <span class="demo-tag">AUREVON PRODUCT ECOSYSTEM</span>
+  </div>
+  <div class="aurevon-products-grid">
+   <article class="aurevon-product-card aurevon-product-featured">
+    <div class="aurevon-product-top">
+     <span class="aurevon-product-badge">AUREVON FLAGSHIP</span>
+     <span class="aurevon-product-status"><i></i><span class="lang-ar">متاح للويب والموبايل</span><span class="lang-en">Available on web &amp; mobile</span></span>
+    </div>
+    <div class="aurevon-product-identity">
+     <span class="aurevon-product-symbol" aria-hidden="true">V</span>
+     <div><span class="aurevon-product-category"><span class="lang-ar">التقنيات التعليمية والذكاء الاصطناعي</span><span class="lang-en">Educational technology &amp; AI</span></span><h3>VAYORA</h3></div>
+    </div>
+    <p><span class="lang-ar">منصة تعليمية ذكية موجّهة للطلاب، تجمع تنظيم الدراسة وأدوات التركيز ومراجعة الاختبارات، مع تجارب صوتية ومساعد تعليمي ضمن بيئة واحدة.</span><span class="lang-en">An intelligent learning platform for students, bringing together study planning, focus tools and test revision, with voice experiences and an educational assistant in one environment.</span></p>
+    <div class="aurevon-product-footer">
+     <a class="btn primary" href="https://aurevonteam-26ku21huq-mhm23.vercel.app/" target="_blank" rel="noopener noreferrer"><span class="lang-ar">استكشف VAYORA</span><span class="lang-en">Explore VAYORA</span><span aria-hidden="true">↗</span></a>
+     <span class="aurevon-product-footnote"><span class="lang-ar">المنتج الأساسي ضمن منظومة AUREVON</span><span class="lang-en">The flagship AUREVON product</span></span>
+    </div>
+   </article>
+   <article class="aurevon-product-card aurevon-product-api">
+    <div class="aurevon-product-top">
+     <span class="aurevon-product-badge">CORE AI SERVICE</span>
+     <span class="aurevon-product-status is-planned"><i></i><span class="lang-ar">قيد التطوير</span><span class="lang-en">In development</span></span>
+    </div>
+    <div class="aurevon-product-identity">
+     <span class="aurevon-product-symbol api-symbol" aria-hidden="true">&lt;/&gt;</span>
+     <div><span class="aurevon-product-category"><span class="lang-ar">محرك المعالجة الذكي</span><span class="lang-en">Intelligent processing engine</span></span><h3>AVORA <span>CORE API</span></h3></div>
+    </div>
+    <p><span class="lang-ar">تصوّر تقني لخدمات المعالجة الصوتية والتفاعل الذكي والتعلّم الحواري داخل التطبيقات. لم تُنشر واجهة API عامة مستقلة لهذا المحرك حتى الآن.</span><span class="lang-en">A technical concept for voice processing, intelligent interaction and conversational learning inside applications. No standalone public API for this engine has been released yet.</span></p>
+    <div class="aurevon-product-footer">
+     <a class="btn secondary" href="#developers"><span class="lang-ar">واجهات API المنشورة</span><span class="lang-en">Published API endpoints</span><span aria-hidden="true">↗</span></a>
+     <span class="aurevon-product-footnote"><span class="lang-ar">البوابة تعرض نقاط الاتصال المتاحة فعلياً فقط</span><span class="lang-en">The portal lists only endpoints that are actually available</span></span>
+    </div>
+   </article>
+  </div>
+ </div>
+</section>
+<section class="section" id="process"><div class="wrap">
+<div class="section-head"><div class="kicker" data-i18n="process_kicker">HOW WE BUILD</div><h2 data-i18n="process_title">منهج واضح. تنفيذ متقن. تطوير مستمر.</h2><p data-i18n="process_desc">نقسم العمل إلى مراحل مترابطة حتى تكون القرارات واضحة والنتيجة قابلة للقياس والتحسين.</p></div>
+<div class="steps">
+<article class="step"><div class="num">01 / DISCOVER</div><h3 data-i18n="step1_title">الفهم والاستكشاف</h3><p data-i18n="step1_desc">فهم الجمهور والاحتياج والهدف قبل اختيار الحل.</p></article>
+<article class="step"><div class="num">02 / DESIGN</div><h3 data-i18n="step2_title">التصميم والتخطيط</h3><p data-i18n="step2_desc">بناء تجربة واضحة وهوية متماسكة وهيكل قابل للتوسع.</p></article>
+<article class="step"><div class="num">03 / BUILD</div><h3 data-i18n="step3_title">الهندسة والتنفيذ</h3><p data-i18n="step3_desc">تطوير سريع ومنظم مع الاهتمام بالأداء وإمكانية الوصول.</p></article>
+<article class="step"><div class="num">04 / EVOLVE</div><h3 data-i18n="step4_title">الاختبار والتحسين</h3><p data-i18n="step4_desc">مراجعة التفاصيل ومعالجة الملاحظات وتطوير المنتج باستمرار.</p></article>
+</div>
+</div></section>
+<section class="section" id="vision"><div class="wrap">
+<div class="section-head"><div class="kicker" data-i18n="principles_kicker">OUR PRINCIPLES</div><h2 data-i18n="principles_title">الجودة ليست تفصيلاً إضافياً.</h2><p data-i18n="principles_desc">هذه المبادئ توجه قراراتنا في كل منتج وتجربة نعمل عليها.</p></div>
+<div class="principles">
+<div class="principle"><b data-i18n="principle1_title">وضوح قبل التعقيد</b><span data-i18n="principle1_desc">واجهات مفهومة ومسارات استخدام تقلل الاحتكاك.</span></div>
+<div class="principle"><b data-i18n="principle2_title">أداء واعتمادية</b><span data-i18n="principle2_desc">اهتمام بالسرعة والتوافق والاستقرار على مختلف الأجهزة.</span></div>
+<div class="principle"><b data-i18n="principle3_title">تحسين مستمر</b><span data-i18n="principle3_desc">تطوير مبني على الاختبار والملاحظات والاستخدام الفعلي.</span></div>
+</div>
+</div></section>
 <section class="premium-section" id="playground" aria-labelledby="playground-title">
  <div class="wrap">
   <div class="premium-head"><div><div class="kicker">VAYORA · INTERACTIVE STUDY SPACE</div><h2 id="playground-title"><span class="lang-ar">جرّب مساحة VAYORA الدراسية</span><span class="lang-en">Explore the VAYORA study space</span></h2><p><span class="lang-ar">نموذج تفاعلي لتخطيط الدراسة وإدارة جلسات التركيز ومتابعة الإنجاز. تُحفظ المهام محلياً على هذا المتصفح.</span><span class="lang-en">An interactive preview for planning study, managing focus sessions, and tracking progress. Tasks are saved locally in this browser.</span></p></div><span class="demo-tag">INTERACTIVE · LOCAL DEMO</span></div>
@@ -1530,88 +1680,6 @@ Accept: application/json</pre>
   </div>
  </div>
 </section>
-<section class="section" id="process"><div class="wrap">
-<div class="section-head"><div class="kicker" data-i18n="process_kicker">HOW WE BUILD</div><h2 data-i18n="process_title">منهج واضح. تنفيذ متقن. تطوير مستمر.</h2><p data-i18n="process_desc">نقسم العمل إلى مراحل مترابطة حتى تكون القرارات واضحة والنتيجة قابلة للقياس والتحسين.</p></div>
-<div class="steps">
-<article class="step"><div class="num">01 / DISCOVER</div><h3 data-i18n="step1_title">الفهم والاستكشاف</h3><p data-i18n="step1_desc">فهم الجمهور والاحتياج والهدف قبل اختيار الحل.</p></article>
-<article class="step"><div class="num">02 / DESIGN</div><h3 data-i18n="step2_title">التصميم والتخطيط</h3><p data-i18n="step2_desc">بناء تجربة واضحة وهوية متماسكة وهيكل قابل للتوسع.</p></article>
-<article class="step"><div class="num">03 / BUILD</div><h3 data-i18n="step3_title">الهندسة والتنفيذ</h3><p data-i18n="step3_desc">تطوير سريع ومنظم مع الاهتمام بالأداء وإمكانية الوصول.</p></article>
-<article class="step"><div class="num">04 / EVOLVE</div><h3 data-i18n="step4_title">الاختبار والتحسين</h3><p data-i18n="step4_desc">مراجعة التفاصيل ومعالجة الملاحظات وتطوير المنتج باستمرار.</p></article>
-</div>
-</div></section>
-<section class="section" id="vision"><div class="wrap">
-<div class="section-head"><div class="kicker" data-i18n="principles_kicker">OUR PRINCIPLES</div><h2 data-i18n="principles_title">الجودة ليست تفصيلاً إضافياً.</h2><p data-i18n="principles_desc">هذه المبادئ توجه قراراتنا في كل منتج وتجربة نعمل عليها.</p></div>
-<div class="principles">
-<div class="principle"><b data-i18n="principle1_title">وضوح قبل التعقيد</b><span data-i18n="principle1_desc">واجهات مفهومة ومسارات استخدام تقلل الاحتكاك.</span></div>
-<div class="principle"><b data-i18n="principle2_title">أداء واعتمادية</b><span data-i18n="principle2_desc">اهتمام بالسرعة والتوافق والاستقرار على مختلف الأجهزة.</span></div>
-<div class="principle"><b data-i18n="principle3_title">تحسين مستمر</b><span data-i18n="principle3_desc">تطوير مبني على الاختبار والملاحظات والاستخدام الفعلي.</span></div>
-</div>
-</div></section>
-<section class="section" id="faq"><div class="wrap">
-<div class="section-head"><div class="kicker" data-i18n="faq_kicker">GOOD TO KNOW</div><h2 data-i18n="faq_title">أسئلة مختصرة.</h2><p data-i18n="faq_desc">معلومات أساسية عن أوريفون ومنتجها الحالي.</p></div>
-<div class="faq">
-<details><summary data-i18n="faq1_q">ما هي AUREVON TECH؟</summary><p data-i18n="faq1_a">شركة تقنية تعمل على تطوير المنتجات الرقمية والتقنيات التعليمية ودمج الذكاء الاصطناعي في الحلول العملية.</p></details>
-<details><summary data-i18n="faq2_q">ما المنتج الذي تعرضه أوريفون حالياً؟</summary><p data-i18n="faq2_a">VAYORA، منصة تعليمية ذكية تركز على تنظيم الدراسة وأدوات التركيز والمراجعة والتقييم.</p></details>
-<details><summary data-i18n="faq3_q">هل VAYORA متاحة عبر الهاتف؟</summary><p data-i18n="faq3_a">يمكن الوصول إلى المنصة عبر متصفح الهاتف أو الحاسوب، مع تصميم يستجيب لأحجام الشاشات المختلفة.</p></details>
-<details><summary data-i18n="faq4_q">كيف تطوّر أوريفون منتجاتها؟</summary><p data-i18n="faq4_a">نعتمد مراحل تبدأ بفهم الاحتياج، ثم التصميم والتنفيذ والاختبار والتحسين المستمر.</p></details>
-</div>
-</div></section>
-
-<section class="premium-section aurevon-metrics-section" id="live-metrics" aria-labelledby="aurevon-metrics-title">
- <div class="wrap">
-  <div class="premium-head"><div><div class="kicker">OBSERVABILITY · LIVE CHECK</div><h2 id="aurevon-metrics-title"><span class="lang-ar">مؤشرات موثوقية قابلة للتحقق</span><span class="lang-en">Verifiable service metrics</span></h2><p><span class="lang-ar">قراءة مباشرة من خادم الموقع. زمن الاستجابة هنا هو زمن الطلب من متصفحك، وليس ضماناً ثابتاً للأداء.</span><span class="lang-en">A live reading from the website server. Response time is measured from your browser and is not a fixed performance guarantee.</span></p></div><span class="demo-tag" id="aurevon-health-label" role="status">CHECKING · /api/system/health</span></div>
-  <div class="aurevon-metric-grid">
-   <article class="aurevon-metric-card"><span class="aurevon-metric-label"><span class="lang-ar">حالة الخادم</span><span class="lang-en">Server status</span></span><strong id="aurevon-metric-status">—</strong><small><span class="lang-ar">فحص نقطة الصحة الفعلية</span><span class="lang-en">Actual health endpoint check</span></small></article>
-   <article class="aurevon-metric-card"><span class="aurevon-metric-label"><span class="lang-ar">زمن الاستجابة</span><span class="lang-en">Round-trip time</span></span><strong id="aurevon-metric-rtt">—</strong><small><span class="lang-ar">قياس متصفحك بالمللي ثانية</span><span class="lang-en">Measured by your browser in milliseconds</span></small></article>
-   <article class="aurevon-metric-card"><span class="aurevon-metric-label"><span class="lang-ar">مدة تشغيل العملية</span><span class="lang-en">Process uptime</span></span><strong id="aurevon-metric-uptime">—</strong><small><span class="lang-ar">من وقت تشغيل عملية Node الحالية</span><span class="lang-en">Current Node process uptime</span></small></article>
-  </div>
-  <div class="aurevon-metric-foot"><span id="aurevon-metric-checked"><span class="lang-ar">لم يكتمل الفحص بعد.</span><span class="lang-en">The first check has not completed.</span></span><button type="button" class="aurevon-inline-button" id="aurevon-metric-refresh"><span class="lang-ar">إعادة الفحص ↻</span><span class="lang-en">Check again ↻</span></button></div>
- </div>
-</section>
-<section class="premium-section" id="ecosystem" aria-labelledby="ecosystem-title">
- <div class="wrap">
-  <div class="premium-head">
-   <div>
-    <div class="kicker">ECOSYSTEM &amp; PRODUCTS</div>
-    <h2 id="ecosystem-title"><span class="lang-ar">منظومة التطبيقات والمنتجات الرقمية</span><span class="lang-en">Digital products &amp; applications</span></h2>
-    <p><span class="lang-ar">نبني منتجات رقمية مترابطة تخدم التعلّم والتجارب الذكية، ضمن منظومة AUREVON التقنية.</span><span class="lang-en">We build connected digital products for learning and intelligent experiences across the AUREVON technology ecosystem.</span></p>
-   </div>
-   <span class="demo-tag">AUREVON PRODUCT ECOSYSTEM</span>
-  </div>
-  <div class="aurevon-products-grid">
-   <article class="aurevon-product-card aurevon-product-featured">
-    <div class="aurevon-product-top">
-     <span class="aurevon-product-badge">AUREVON FLAGSHIP</span>
-     <span class="aurevon-product-status"><i></i><span class="lang-ar">متاح للويب والموبايل</span><span class="lang-en">Available on web &amp; mobile</span></span>
-    </div>
-    <div class="aurevon-product-identity">
-     <span class="aurevon-product-symbol" aria-hidden="true">V</span>
-     <div><span class="aurevon-product-category"><span class="lang-ar">التقنيات التعليمية والذكاء الاصطناعي</span><span class="lang-en">Educational technology &amp; AI</span></span><h3>VAYORA</h3></div>
-    </div>
-    <p><span class="lang-ar">منصة تعليمية ذكية موجّهة للطلاب، تجمع تنظيم الدراسة وأدوات التركيز ومراجعة الاختبارات، مع تجارب صوتية ومساعد تعليمي ضمن بيئة واحدة.</span><span class="lang-en">An intelligent learning platform for students, bringing together study planning, focus tools and test revision, with voice experiences and an educational assistant in one environment.</span></p>
-    <div class="aurevon-product-footer">
-     <a class="btn primary" href="https://aurevonteam-26ku21huq-mhm23.vercel.app/" target="_blank" rel="noopener noreferrer"><span class="lang-ar">استكشف VAYORA</span><span class="lang-en">Explore VAYORA</span><span aria-hidden="true">↗</span></a>
-     <span class="aurevon-product-footnote"><span class="lang-ar">المنتج الأساسي ضمن منظومة AUREVON</span><span class="lang-en">The flagship AUREVON product</span></span>
-    </div>
-   </article>
-   <article class="aurevon-product-card aurevon-product-api">
-    <div class="aurevon-product-top">
-     <span class="aurevon-product-badge">CORE AI SERVICE</span>
-     <span class="aurevon-product-status is-planned"><i></i><span class="lang-ar">قيد التطوير</span><span class="lang-en">In development</span></span>
-    </div>
-    <div class="aurevon-product-identity">
-     <span class="aurevon-product-symbol api-symbol" aria-hidden="true">&lt;/&gt;</span>
-     <div><span class="aurevon-product-category"><span class="lang-ar">محرك المعالجة الذكي</span><span class="lang-en">Intelligent processing engine</span></span><h3>AVORA <span>CORE API</span></h3></div>
-    </div>
-    <p><span class="lang-ar">تصوّر تقني لخدمات المعالجة الصوتية والتفاعل الذكي والتعلّم الحواري داخل التطبيقات. لم تُنشر واجهة API عامة مستقلة لهذا المحرك حتى الآن.</span><span class="lang-en">A technical concept for voice processing, intelligent interaction and conversational learning inside applications. No standalone public API for this engine has been released yet.</span></p>
-    <div class="aurevon-product-footer">
-     <a class="btn secondary" href="#developers"><span class="lang-ar">واجهات API المنشورة</span><span class="lang-en">Published API endpoints</span><span aria-hidden="true">↗</span></a>
-     <span class="aurevon-product-footnote"><span class="lang-ar">البوابة تعرض نقاط الاتصال المتاحة فعلياً فقط</span><span class="lang-en">The portal lists only endpoints that are actually available</span></span>
-    </div>
-   </article>
-  </div>
- </div>
-</section>
 <section class="premium-section" id="project-estimator" aria-labelledby="estimator-title">
  <div class="wrap">
   <div class="premium-head"><div><div class="kicker">PROJECT SCOPE PLANNER</div><h2 id="estimator-title"><span class="lang-ar">مقدّر نطاق المشروع</span><span class="lang-en">Project scope estimator</span></h2><p><span class="lang-ar">كوّن تصوراً أولياً للمنتج والشاشات والتكاملات، واحصل على ملخص تنفيذي ونطاق زمني إرشادي.</span><span class="lang-en">Shape an initial product scope and receive an executive brief with an indicative timeline range.</span></p></div><span class="demo-tag">LOCAL ESTIMATE · NOT AI OR A QUOTE</span></div>
@@ -1627,6 +1695,17 @@ Accept: application/json</pre>
   <p class="aurevon-disclaimer"><span class="lang-ar">التقدير محلي قائم على قواعد تقريبية، وليس ناتج نموذج ذكاء اصطناعي أو سعراً نهائياً. الجدول الفعلي يتغير حسب المتطلبات والتصميم والمراجعات والتكاملات.</span><span class="lang-en">This is a local rule-based estimate, not AI output or a final quote. Actual delivery depends on requirements, design, reviews and integrations.</span></p>
  </div>
 </section>
+<section class="premium-section aurevon-metrics-section" id="live-metrics" aria-labelledby="aurevon-metrics-title">
+ <div class="wrap">
+  <div class="premium-head"><div><div class="kicker">OBSERVABILITY · LIVE CHECK</div><h2 id="aurevon-metrics-title"><span class="lang-ar">مؤشرات موثوقية قابلة للتحقق</span><span class="lang-en">Verifiable service metrics</span></h2><p><span class="lang-ar">قراءة مباشرة من خادم الموقع. زمن الاستجابة هنا هو زمن الطلب من متصفحك، وليس ضماناً ثابتاً للأداء.</span><span class="lang-en">A live reading from the website server. Response time is measured from your browser and is not a fixed performance guarantee.</span></p></div><span class="demo-tag" id="aurevon-health-label" role="status">CHECKING · /api/system/health</span></div>
+  <div class="aurevon-metric-grid">
+   <article class="aurevon-metric-card"><span class="aurevon-metric-label"><span class="lang-ar">حالة الخادم</span><span class="lang-en">Server status</span></span><strong id="aurevon-metric-status">—</strong><small><span class="lang-ar">فحص نقطة الصحة الفعلية</span><span class="lang-en">Actual health endpoint check</span></small></article>
+   <article class="aurevon-metric-card"><span class="aurevon-metric-label"><span class="lang-ar">زمن الاستجابة</span><span class="lang-en">Round-trip time</span></span><strong id="aurevon-metric-rtt">—</strong><small><span class="lang-ar">قياس متصفحك بالمللي ثانية</span><span class="lang-en">Measured by your browser in milliseconds</span></small></article>
+   <article class="aurevon-metric-card"><span class="aurevon-metric-label"><span class="lang-ar">مدة تشغيل العملية</span><span class="lang-en">Process uptime</span></span><strong id="aurevon-metric-uptime">—</strong><small><span class="lang-ar">من وقت تشغيل عملية Node الحالية</span><span class="lang-en">Current Node process uptime</span></small></article>
+  </div>
+  <div class="aurevon-metric-foot"><span id="aurevon-metric-checked"><span class="lang-ar">لم يكتمل الفحص بعد.</span><span class="lang-en">The first check has not completed.</span></span><button type="button" class="aurevon-inline-button" id="aurevon-metric-refresh"><span class="lang-ar">إعادة الفحص ↻</span><span class="lang-en">Check again ↻</span></button></div>
+ </div>
+</section>
 <section class="premium-section" id="newsroom" aria-labelledby="newsroom-title">
  <div class="wrap">
   <div class="premium-head"><div><div class="kicker">AUREVON · PRODUCT NOTES</div><h2 id="newsroom-title"><span class="lang-ar">مركز التحديثات</span><span class="lang-en">Newsroom & release notes</span></h2><p><span class="lang-ar">سجل موجز للوظائف والتحسينات الموجودة في الموقع حالياً، دون ادعاء جدول نشر أسبوعي غير موثق.</span><span class="lang-en">A concise record of capabilities currently present on the site, without claiming an undocumented weekly release schedule.</span></p></div><span class="demo-tag">SITE CHANGELOG</span></div>
@@ -1637,6 +1716,15 @@ Accept: application/json</pre>
   </div>
  </div>
 </section>
+<section class="section" id="faq"><div class="wrap">
+<div class="section-head"><div class="kicker" data-i18n="faq_kicker">GOOD TO KNOW</div><h2 data-i18n="faq_title">أسئلة مختصرة.</h2><p data-i18n="faq_desc">معلومات أساسية عن أوريفون ومنتجها الحالي.</p></div>
+<div class="faq">
+<details><summary data-i18n="faq1_q">ما هي AUREVON TECH؟</summary><p data-i18n="faq1_a">شركة تقنية تعمل على تطوير المنتجات الرقمية والتقنيات التعليمية ودمج الذكاء الاصطناعي في الحلول العملية.</p></details>
+<details><summary data-i18n="faq2_q">ما المنتج الذي تعرضه أوريفون حالياً؟</summary><p data-i18n="faq2_a">VAYORA، منصة تعليمية ذكية تركز على تنظيم الدراسة وأدوات التركيز والمراجعة والتقييم.</p></details>
+<details><summary data-i18n="faq3_q">هل VAYORA متاحة عبر الهاتف؟</summary><p data-i18n="faq3_a">يمكن الوصول إلى المنصة عبر متصفح الهاتف أو الحاسوب، مع تصميم يستجيب لأحجام الشاشات المختلفة.</p></details>
+<details><summary data-i18n="faq4_q">كيف تطوّر أوريفون منتجاتها؟</summary><p data-i18n="faq4_a">نعتمد مراحل تبدأ بفهم الاحتياج، ثم التصميم والتنفيذ والاختبار والتحسين المستمر.</p></details>
+</div>
+</div></section>
 <section class="section" id="contact"><div class="wrap"><div class="section-head"><div class="kicker" data-i18n="contact_kicker">CONTACT AUREVON</div><h2 data-i18n="contact_title">لنبدأ محادثة.</h2><p data-i18n="contact_desc">للاستفسارات والتواصل مع فريق أوريفون، يمكنك الاتصال مباشرة أو مراسلتنا عبر واتساب.</p></div><div class="final-cta contact-direct phone-showcase">
  <div class="phone-showcase-copy">
   <span class="phone-eyebrow" data-i18n="phone_eyebrow">خط التواصل المباشر</span>
@@ -1654,7 +1742,6 @@ Accept: application/json</pre>
  </div>
  <span class="phone-watermark" aria-hidden="true">A</span>
 </div><div class="inquiry-shell"><div class="inquiry-intro"><span class="kicker" data-i18n="contact_form_kicker">PROJECT INTAKE</span><h3 data-i18n="contact_form_title">ابدأ طلب مشروعك</h3><p data-i18n="contact_form_desc">أجب عن الحقول الأساسية، وسنجهّز رسالة واضحة لفريق أوريفون عبر واتساب.</p><div class="inquiry-assurance"><span class="assurance-mark">✓</span><span data-i18n="contact_privacy">لن تُرسل أي بيانات تلقائياً؛ ستراجع الرسالة وتؤكد إرسالها داخل واتساب.</span></div></div><form class="inquiry-form" id="project-inquiry"><div class="inquiry-fields"><label class="inquiry-field"><span data-i18n="contact_service_label">ما الذي تريد تطويره؟</span><select name="service" required><option value="website" data-i18n="contact_service_website">موقع إلكتروني احترافي</option><option value="platform" data-i18n="contact_service_platform">منصة أو تطبيق ويب</option><option value="ai" data-i18n="contact_service_ai">دمج الذكاء الاصطناعي</option><option value="learning" data-i18n="contact_service_learning">منتج أو نظام تعليمي</option><option value="other" data-i18n="contact_service_other">استشارة أو فكرة أخرى</option></select></label><label class="inquiry-field"><span data-i18n="contact_project_label">حالة المشروع</span><select name="project" required><option value="new" data-i18n="contact_project_new">مشروع جديد</option><option value="improve" data-i18n="contact_project_improve">تطوير مشروع قائم</option><option value="consult" data-i18n="contact_project_consult">استشارة وتحديد المتطلبات</option></select></label><label class="inquiry-field"><span data-i18n="contact_timeline_label">الإطار الزمني</span><select name="timeline"><option value="urgent" data-i18n="contact_timeline_urgent">في أقرب وقت</option><option value="month" data-i18n="contact_timeline_month">خلال 2–4 أسابيع</option><option value="flexible" data-i18n="contact_timeline_flexible">مرن، حسب خطة العمل</option></select></label><label class="inquiry-field inquiry-message"><span data-i18n="contact_details_label">ملخص الفكرة (اختياري)</span><textarea name="details" rows="4" maxlength="1200" data-i18n-placeholder="contact_details_placeholder" placeholder="اكتب ما تريد تحقيقه أو المشكلة التي تريد حلها..."></textarea></label></div><button class="btn primary inquiry-submit" type="submit" data-i18n="contact_submit">إرسال ملخص المشروع عبر واتساب ↗</button></form></div></div></section>
-<section class="section"><div class="wrap"><div class="final-cta"><div><h2 data-i18n="final_title">المستقبل لا يُنتظر. بل يُبنى.</h2><p data-i18n="final_desc">اكتشف VAYORA، وتعرّف على أحد تطبيقات رؤية أوريفون في التعليم الذكي.</p></div><a class="btn primary" href="#product" data-i18n="final_button">استكشف VAYORA ↗</a></div></div></section>
 </main>
 <button class="back-top" id="back-to-top" type="button" aria-label="Back to top" title="Back to top"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7M12 19V5"/></svg></button>
 
