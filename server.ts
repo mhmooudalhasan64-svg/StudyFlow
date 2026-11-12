@@ -91,6 +91,17 @@ const server = createServer(async (incoming, outgoing) => {
     const method = incoming.method || 'GET';
     const url = new URL(incoming.url || '/', `http://${incoming.headers.host || 'localhost'}`);
 
+    if (url.pathname === '/api/version' && method === 'GET') {
+      sendJson(outgoing, 200, {
+        app: 'VAYORA-SAPIENTIA',
+        minimumBuild: 7,
+        latestBuild: 7,
+        versionName: '0.0.1',
+        updateRequired: false,
+      });
+      return;
+    }
+
     if (url.pathname === '/healthz' && method === 'GET') {
       outgoing.writeHead(200, {
         'content-type': 'application/json; charset=utf-8',
