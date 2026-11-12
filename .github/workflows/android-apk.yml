@@ -1,4 +1,4 @@
-name: Build VAYORA Aureon Dawn Android APK
+name: Build VAYORA Sapientia Android APK
 
 on:
   workflow_dispatch:
@@ -89,7 +89,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: VAYORA-Smart-Learning-Journey-0.0.1
+          name: VAYORA-SAPIENTIA-0.0.1
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
