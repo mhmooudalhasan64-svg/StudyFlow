@@ -619,7 +619,7 @@ function withCors(response: Response, request: Request): Response {
   if (origin && isAllowedOrigin(origin, request)) {
     headers.set('Access-Control-Allow-Origin', origin);
     headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Vayora-Build');
     headers.set('Access-Control-Max-Age', '86400');
   }
   return new Response(response.body, {
