@@ -19,13 +19,13 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
-
-const APP_BUILD_CODE = 7;
 import { useApp } from './store';
 import { useHashRoute, type Route } from './lib/route';
 import Dashboard from './pages/Dashboard';
 import About from './pages/About';
 import { AlarmRinger } from './components/Alarms';
+
+const APP_BUILD_CODE = 7;
 
 const VoiceTeacher = lazy(() => import('./components/VoiceTeacher'));
 const Planner = lazy(() => import('./pages/Planner'));
