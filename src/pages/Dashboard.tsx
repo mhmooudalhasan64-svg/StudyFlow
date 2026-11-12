@@ -260,7 +260,7 @@ export default function Dashboard() {
               <p className="mt-1 text-[9px] text-slate-300 sm:text-[10px]">الرؤية والتطوير</p>
             </div>
             <div className="rounded-2xl border border-amber-200/25 bg-amber-200/10 px-1.5 py-3 text-center sm:px-3">
-              <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-amber-100/20 bg-white/10"><img src="/icon.svg" alt="" className="h-6 w-6" /></span>
+              <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-amber-100/20 bg-white/10"><img src="/logo.png" alt="" className="h-6 w-6" /></span>
               <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">VAYORA</p>
               <p className="mt-1 text-[9px] text-amber-100 sm:text-[10px]">تجربة التعلم</p>
             </div>
