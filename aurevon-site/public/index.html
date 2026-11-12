@@ -1628,6 +1628,44 @@ header.scrolled .mark{transform:scale(.92);transform-origin:center}
  .hero .orbit{transform:none!important}
 }
 
+
+/* AUREVON tactile 3D buttons — graphite, gold and silver palette preserved. */
+.btn,button,.lang,.menu-toggle,.aurevon-tool-toggle,
+.vayora-timer-modes button,[data-api],.aurevon-command-item{
+ transform:translateY(0);
+ transform-style:preserve-3d;
+ box-shadow:0 5px 0 rgba(0,0,0,.58),0 8px 16px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.18);
+ transition:transform .16s ease,box-shadow .16s ease,filter .16s ease,background .16s ease,border-color .16s ease;
+}
+.btn.primary,button.primary{
+ box-shadow:0 5px 0 #80683e,0 10px 20px rgba(0,0,0,.3),0 0 18px rgba(200,167,101,.13),inset 0 1px 0 rgba(255,255,255,.48),inset 0 -2px 0 rgba(93,67,29,.22);
+ text-shadow:0 1px 0 rgba(255,255,255,.22);
+}
+.btn.secondary,.btn:not(.primary){
+ box-shadow:0 5px 0 #080a0c,0 9px 18px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.13),inset 0 -1px 0 rgba(0,0,0,.45);
+}
+.btn:hover,button:hover,.lang:hover,.menu-toggle:hover,.aurevon-tool-toggle:hover,
+.vayora-timer-modes button:hover,[data-api]:hover,.aurevon-command-item:hover{
+ transform:translateY(-2px);
+ filter:brightness(1.08);
+}
+.btn.primary:hover,button.primary:hover{
+ box-shadow:0 7px 0 #80683e,0 14px 25px rgba(0,0,0,.34),0 0 24px rgba(200,167,101,.2),inset 0 1px 0 rgba(255,255,255,.5);
+}
+.btn.secondary:hover,.btn:not(.primary):hover{
+ box-shadow:0 7px 0 #080a0c,0 13px 22px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.16);
+}
+.btn:active,button:active,.lang:active,.menu-toggle:active,.aurevon-tool-toggle:active,
+.vayora-timer-modes button:active,[data-api]:active,.aurevon-command-item:active{
+ transform:translateY(3px);
+ box-shadow:0 1px 0 rgba(0,0,0,.7),0 3px 7px rgba(0,0,0,.2),inset 0 2px 5px rgba(0,0,0,.2);
+ filter:brightness(.98);
+}
+.btn:disabled,button:disabled{transform:none;filter:none;box-shadow:0 2px 5px rgba(0,0,0,.2);cursor:not-allowed}
+@media(prefers-reduced-motion:reduce){
+ .btn,button,.lang,.menu-toggle,.aurevon-tool-toggle,.vayora-timer-modes button,[data-api],.aurevon-command-item{transition:none}
+}
+
 </style>
 </head>
 <body>
