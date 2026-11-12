@@ -1451,6 +1451,129 @@ footer .foot{min-height:54px}
  .phone-number{font-size:clamp(23px,7vw,32px)}
 }
 
+
+/* AUREVON — refined premium interface pass */
+/* A restrained gold-and-graphite system, applied without changing existing sections or behavior. */
+:root{
+ --aurevon-gold:#c8a765;
+ --aurevon-gold-bright:#e4cf9f;
+ --aurevon-gold-muted:#a88b53;
+ --aurevon-glass:rgba(20,22,25,.82);
+ --aurevon-shadow:0 24px 70px rgba(0,0,0,.34);
+}
+html{scroll-padding-top:112px}
+body{
+ background:
+  radial-gradient(ellipse at 52% 0%,rgba(200,167,101,.105),transparent 34%),
+  radial-gradient(ellipse at 5% 44%,rgba(112,125,137,.12),transparent 31%),
+  radial-gradient(ellipse at 96% 76%,rgba(200,167,101,.065),transparent 28%),
+  linear-gradient(145deg,#08090b 0%,#111418 48%,#090a0c 100%);
+}
+body:after{
+ content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.14;
+ background-image:linear-gradient(rgba(210,190,150,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(210,190,150,.055) 1px,transparent 1px);
+ background-size:72px 72px;
+ mask-image:linear-gradient(to bottom,black,transparent 78%);
+}
+header{
+ background:rgba(8,9,11,.88);
+ border-bottom-color:rgba(200,167,101,.25);
+ box-shadow:0 12px 36px rgba(0,0,0,.22);
+}
+header.scrolled{background:rgba(8,9,11,.96);border-bottom-color:rgba(200,167,101,.38)}
+.brand .word{color:#f1eee7}
+.brand .word small{color:#b5a783}
+.mark path{stroke:#ddc58e}
+.links a[aria-current="location"]{color:#f0d9a5}
+.links a[aria-current="location"]:after{transform:scaleX(1);background:linear-gradient(90deg,transparent,var(--aurevon-gold),transparent)}
+.lang,.menu-toggle,.aurevon-tool-toggle{border-color:rgba(200,167,101,.32);background:rgba(200,167,101,.055)}
+.lang:hover,.menu-toggle:hover,.aurevon-tool-toggle:hover{border-color:rgba(228,207,159,.72);background:rgba(200,167,101,.12)}
+.mobile-links{border-color:rgba(200,167,101,.28);background:rgba(15,17,20,.97)}
+.hero{isolation:isolate;padding-top:clamp(88px,10vw,138px)}
+.hero:before{content:"";position:absolute;z-index:-1;inset:7% -8% 0;background:radial-gradient(ellipse at 72% 44%,rgba(200,167,101,.095),transparent 37%);pointer-events:none}
+.eyebrow,.kicker,.signature-number{color:var(--aurevon-gold-bright)}
+.eyebrow:before{background:var(--aurevon-gold)}
+.shine{background:linear-gradient(105deg,#fff 0%,#e6d7b7 38%,#a58c5d 72%,#f0e6d0 100%);background-clip:text}
+.hero .lead{color:#c0c1c0}
+.orbit{border-color:rgba(200,167,101,.34);background:radial-gradient(circle at 50% 48%,rgba(200,167,101,.14),rgba(37,39,40,.36) 48%,transparent 72%);box-shadow:inset 0 0 90px rgba(200,167,101,.06),0 28px 80px rgba(0,0,0,.32)}
+.orbit:before,.orbit:after{border-color:rgba(218,195,145,.35)}
+.orbit-ring{border-color:rgba(218,195,145,.34)}
+.core{border-color:rgba(228,207,159,.62);background:linear-gradient(145deg,#4a4438,#17191b 70%);box-shadow:0 18px 65px rgba(200,167,101,.12)}
+.node{border-color:rgba(200,167,101,.34);background:rgba(17,18,19,.94)}
+.node b{color:#eee4cf}
+.btn{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease,background .22s ease}
+.primary{background:linear-gradient(115deg,#f0e4c7,#c8a765 58%,#9f8148);color:#111;border-color:#f0d9a5;box-shadow:0 12px 34px rgba(200,167,101,.16)}
+.primary:hover{box-shadow:0 17px 42px rgba(200,167,101,.25)}
+.secondary{border-color:rgba(200,167,101,.42);background:rgba(200,167,101,.055)}
+.secondary:hover{border-color:var(--aurevon-gold);background:rgba(200,167,101,.12)}
+.section,.premium-section{position:relative}
+.section-head,.premium-head{position:relative}
+.section-head:after,.premium-head:after{content:"";display:block;width:58px;height:2px;margin-top:18px;background:linear-gradient(90deg,var(--aurevon-gold),transparent);border-radius:3px}
+.section-head h2,.premium-head h2{letter-spacing:-.035em}
+.section-head p,.premium-head p{color:#adb2b5}
+.signature-inner{border-color:rgba(200,167,101,.25);background:linear-gradient(110deg,rgba(200,167,101,.09),rgba(255,255,255,.018))}
+.signature-item strong{color:#eee5d2}
+.panel,.capability,.step,.principle,.vayora-card,.aurevon-product-card,.aurevon-metric-card,.aurevon-estimator-form,.aurevon-estimator-output,.aurevon-ecosystem{
+ border-color:rgba(200,167,101,.18);
+ background:linear-gradient(145deg,rgba(30,31,31,.9),rgba(13,15,17,.94));
+ box-shadow:0 16px 42px rgba(0,0,0,.16);
+}
+.panel:hover,.capability:hover,.step:hover,.principle:hover,.aurevon-product-card:hover{
+ border-color:rgba(228,207,159,.5);
+ box-shadow:0 25px 60px rgba(0,0,0,.32),0 0 0 1px rgba(200,167,101,.06);
+}
+.index,.cap-icon,.vayora-count,.aurevon-product-badge{border-color:rgba(200,167,101,.36);background:rgba(200,167,101,.07);color:#e2cfaa}
+.cap-icon svg{stroke:#e3d2ad}
+.product-main,.aurevon-product-featured{
+ border-color:rgba(200,167,101,.42);
+ background:radial-gradient(ellipse at 92% 0%,rgba(200,167,101,.2),transparent 42%),linear-gradient(140deg,#27251f,#111417 72%);
+}
+.product-main:after,.aurevon-product-featured:after{color:rgba(200,167,101,.055)}
+.v-mark,.aurevon-product-symbol{background:linear-gradient(145deg,#f0e4c7,#c8a765 65%,#8f7444);color:#111;border-color:#f0d9a5}
+.product-name,.aurevon-product-identity h3{color:#f1e8d6}
+.product-note,.aurevon-product-footnote{color:#b2a88f!important}
+.aurevon-product-status{color:#c5d7c8}
+.aurevon-product-status.is-planned{color:#ddc38c}
+.aurevon-product-status i{background:#9bc5a4;box-shadow:0 0 12px #9bc5a466}
+.aurevon-product-status.is-planned i{background:var(--aurevon-gold);box-shadow:0 0 12px #c8a76566}
+.vayora-stat,.aurevon-metric-card{border-color:rgba(200,167,101,.2)}
+.vayora-progress-track i{background:linear-gradient(90deg,#8d7447,#e6d2a7)}
+.vayora-timer-modes button[aria-pressed=true]{background:linear-gradient(115deg,#f0e4c7,#c8a765);border-color:#e4cf9f;color:#111}
+.vayora-add-task input,.avora-form input,.aurevon-estimator-form select,.aurevon-estimator-form input{border-color:rgba(200,167,101,.28);background:#0c0e10}
+.vayora-add-task input:focus,.avora-form input:focus,.aurevon-estimator-form select:focus,.aurevon-estimator-form input:focus{outline-color:rgba(228,207,159,.8)}
+.aurevon-eco-core{border-color:rgba(200,167,101,.48);background:linear-gradient(145deg,#28241c,#111416)}
+.aurevon-eco-symbol{border-color:rgba(228,207,159,.65);color:#e5d2a8}
+.aurevon-eco-links:before,.aurevon-eco-links i{background-color:rgba(200,167,101,.48)}
+.aurevon-eco-nodes article{border-color:rgba(200,167,101,.2);background:rgba(200,167,101,.035)}
+.aurevon-eco-nodes article>span,.aurevon-eco-nodes em{color:#d2bd91}
+.aurevon-estimate-range{color:#e8d7b5}
+.aurevon-release-state,.aurevon-release-tag{color:#ddc38c;border-color:rgba(200,167,101,.3)}
+details{border-color:rgba(200,167,101,.2);background:rgba(255,255,255,.025)}
+details[open]{border-color:rgba(200,167,101,.42);background:rgba(200,167,101,.045)}
+summary:after{color:var(--aurevon-gold-bright)}
+.phone-showcase{border-color:rgba(200,167,101,.62)!important}
+.final-cta{border-color:rgba(200,167,101,.38);background:radial-gradient(ellipse at 95% 0%,rgba(200,167,101,.16),transparent 40%),linear-gradient(115deg,#24221d,#101316)}
+footer{border-top-color:rgba(200,167,101,.22)}
+footer .word small{color:#b4a27b}
+button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--aurevon-gold-bright);outline-offset:4px}
+#aurevon-command-box,.aurevon-command-box{border-color:rgba(200,167,101,.4)}
+.aurevon-command-item:hover,.aurevon-command-item:focus{background:rgba(200,167,101,.11)}
+.aurevon-toast{border-color:rgba(200,167,101,.4)}
+@media(max-width:760px){
+ body:after{background-size:54px 54px;opacity:.09}
+ .hero{padding-top:54px}
+ .hero:before{inset:0 -10%}
+ .section-head:after,.premium-head:after{margin-top:13px}
+ .node{border-color:rgba(200,167,101,.38)}
+ .panel,.capability,.step,.principle,.vayora-card,.aurevon-product-card{box-shadow:0 12px 30px rgba(0,0,0,.18)}
+}
+@media(hover:none){
+ .panel:hover,.capability:hover,.step:hover,.principle:hover,.aurevon-product-card:hover{transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+ .btn,.panel,.capability,.step,.principle,.aurevon-product-card{transition:none!important}
+}
+
 </style>
 </head>
 <body>
