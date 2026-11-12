@@ -18,6 +18,9 @@ import {
   GraduationCap,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
+
+const APP_BUILD_CODE = 7;
 import { useApp } from './store';
 import { useHashRoute, type Route } from './lib/route';
 import Dashboard from './pages/Dashboard';
@@ -158,6 +161,7 @@ export default function App() {
   const [hintVisible, setHintVisible] = useState(false);
   const [avoraCallOpen, setAvoraCallOpen] = useState(false);
   const [avoraToolsOpen, setAvoraToolsOpen] = useState(false);
+  const [updateRequired, setUpdateRequired] = useState(false);
   const route = useHashRoute();
   const online = useOnline();
   const visibleNav = NAV;
@@ -186,6 +190,27 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+
+    const checkMinimumBuild = async () => {
+      if (!navigator.onLine) return;
+      const apiBase = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
+      try {
+        const response = await fetch(`${apiBase}/api/version`, { cache: 'no-store' });
+        if (!response.ok) return;
+        const policy = await response.json() as { minimumBuild?: number };
+        setUpdateRequired(Number(policy.minimumBuild || 0) > APP_BUILD_CODE);
+      } catch {
+        // Preserve offline study access if the version service cannot be reached.
+      }
+    };
+
+    void checkMinimumBuild();
+    window.addEventListener('online', checkMinimumBuild);
+    return () => window.removeEventListener('online', checkMinimumBuild);
+  }, []);
+
+  useEffect(() => {
     void init();
   }, [init]);
 
@@ -204,6 +229,23 @@ export default function App() {
     return (
       <div className="grid min-h-screen place-items-center text-muted" role="status">
         جارٍ التحميل…
+      </div>
+    );
+  }
+
+  if (updateRequired) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-base px-6 py-10 text-center">
+        <section className="w-full max-w-md rounded-3xl border border-line bg-card p-7 shadow-xl" dir="rtl">
+          <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl bg-accent/10 text-accent">
+            <GraduationCap size={34} />
+          </div>
+          <h1 className="text-2xl font-black text-main">تحديث مطلوب</h1>
+          <p className="mt-3 text-sm leading-7 text-muted">
+            هذا الإصدار من VAYORA لم يعد معتمداً. ثبّت أحدث إصدار من VAYORA — SAPIENTIA للمتابعة.
+          </p>
+          <p className="mt-4 text-xs text-muted">Build {APP_BUILD_CODE} · AUREVON TECHNOLOGY</p>
+        </section>
       </div>
     );
   }
