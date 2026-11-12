@@ -21,10 +21,7 @@ export default defineConfig({
         background_color: '#101522',
         theme_color: '#101522',
         icons: [
-          { src: 'pwa-64x64.png', sizes: '64x64', type: 'image/png' },
-          { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
-          { src: 'maskable-icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: 'icon.svg', sizes: '256x256', type: 'image/svg+xml', purpose: 'any' },
         ],
       },
       workbox: {
