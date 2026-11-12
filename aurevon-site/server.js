@@ -35,6 +35,41 @@ function renderHtml(data, req, parsedUrl) {
   html = html.replace(/<link rel="canonical"[^>]*>/, '<link rel="canonical" href="' + escapeXml(origin + parsedUrl.pathname) + '">');
   replaceMeta(/<meta name="twitter:card"[^>]*>/, '<meta name="twitter:card" content="summary_large_image">');
   html = html.replace("</head>", '<meta property="og:image" content="' + escapeXml(imageUrl) + '"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:image" content="' + escapeXml(imageUrl) + '"></head>');
+  const appNavigationStyles = `<style id="aurevon-app-navigation">
+@media(max-width:760px){
+  .mobile-dock{
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+    width:min(460px,calc(100% - 24px));
+    bottom:calc(10px + env(safe-area-inset-bottom));
+    padding:7px;
+    gap:6px;
+    border-radius:20px;
+  }
+  .mobile-dock a{
+    min-height:58px;
+    align-content:center;
+    gap:5px;
+    padding:7px 4px;
+    border:1px solid transparent;
+    border-radius:13px;
+    font-size:10px;
+    font-weight:750;
+    letter-spacing:0;
+    transition:background .2s ease,border-color .2s ease,transform .2s ease,color .2s ease;
+  }
+  .mobile-dock a[aria-current="location"]{
+    color:#f3f5f6;
+    background:linear-gradient(145deg,#343b42,#171b20);
+    border-color:#d4dce244;
+    box-shadow:inset 0 1px 0 #ffffff20,0 5px 15px #0007;
+  }
+  .mobile-dock svg{width:21px;height:21px}
+  .mobile-dock a:active{transform:scale(.96)}
+  footer{padding-bottom:calc(108px + env(safe-area-inset-bottom))}
+}
+@media(prefers-reduced-motion:reduce){.mobile-dock a{transition:none!important}}
+</style>`;
+  html = html.replace("</head>", appNavigationStyles + "</head>");
   return html;
 }
 const server = http.createServer((req,res) => {
