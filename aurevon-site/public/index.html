@@ -1574,6 +1574,60 @@ button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,s
  .btn,.panel,.capability,.step,.principle,.aurevon-product-card{transition:none!important}
 }
 
+
+/* AUREVON premium interaction pass — retain the established graphite, gold and silver identity. */
+:root{
+ --aurevon-gold:#c8a765;
+ --aurevon-gold-bright:#e4cf9f;
+ --aurevon-spot:rgba(200,167,101,.15);
+}
+header .nav{transition:height .28s ease}
+header.scrolled .nav{height:68px}
+header.scrolled .mark{transform:scale(.92);transform-origin:center}
+.brand .mark{transition:transform .28s ease}
+.hero .visual{isolation:isolate;perspective:1000px}
+.hero .visual:before{
+ content:"";position:absolute;inset:4%;z-index:-1;pointer-events:none;border-radius:50%;
+ background:radial-gradient(ellipse at var(--aurevon-pointer-x,50%) var(--aurevon-pointer-y,48%),rgba(200,167,101,.18),rgba(200,167,101,.045) 30%,transparent 68%);
+ filter:blur(12px);opacity:.9;transition:opacity .3s ease;
+}
+.hero .orbit{transform:rotateX(var(--hero-tilt-y,0deg)) rotateY(var(--hero-tilt-x,0deg));transition:transform .28s ease-out}
+.capabilities{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch}
+.capability{position:relative;isolation:isolate;overflow:hidden}
+.capability:nth-child(1){min-height:226px}
+.capability:nth-child(2){min-height:196px}
+.capability:nth-child(3){min-height:212px}
+.aurevon-products-grid{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:18px}
+.aurevon-product-card,.vayora-card,.aurevon-metric-card,.panel,.capability,.step,.principle{
+ position:relative;isolation:isolate;overflow:hidden;
+}
+.aurevon-product-card:before,.vayora-card:before,.aurevon-metric-card:before,.panel:before,.capability:before,.step:before,.principle:before{
+ content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;
+ background:radial-gradient(320px circle at var(--spot-x,50%) var(--spot-y,50%),var(--aurevon-spot),transparent 68%);
+ transition:opacity .24s ease;
+}
+.aurevon-product-card:hover:before,.vayora-card:hover:before,.aurevon-metric-card:hover:before,.panel:hover:before,.capability:hover:before,.step:hover:before,.principle:hover:before{opacity:1}
+.capability,.aurevon-product-card,.vayora-card,.aurevon-metric-card,.panel,.step,.principle{
+ transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
+}
+@media(max-width:900px){
+ .aurevon-products-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:760px){
+ header.scrolled .nav{height:64px}
+ .capabilities{grid-template-columns:1fr}
+ .capability:nth-child(n){min-height:unset}
+ .aurevon-products-grid{grid-template-columns:1fr}
+ .hero .visual:before{opacity:.55}
+}
+@media(hover:none){
+ .hero .visual:before{opacity:.35}
+}
+@media(prefers-reduced-motion:reduce){
+ header .nav,.brand .mark,.hero .orbit,.capability,.aurevon-product-card,.vayora-card,.aurevon-metric-card,.panel,.step,.principle{transition:none!important}
+ .hero .orbit{transform:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -2072,6 +2126,39 @@ else window.addEventListener("load",()=>window.setTimeout(loadAurevonEnhancement
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){
  window.addEventListener("load",()=>navigator.serviceWorker.register("/sw.js",{scope:"/"}).catch(error=>console.warn("[AUREVON] Offline shell registration failed",error)),{once:true});
 }
+</script>
+
+<script>
+/* Lightweight pointer lighting for desktop; no dependency and no layout-affecting animation. */
+(()=>{
+ const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ const finePointer=window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+ if(reduce||!finePointer)return;
+ const visual=document.querySelector(".hero .visual");
+ if(visual){
+  visual.addEventListener("pointermove",event=>{
+   const rect=visual.getBoundingClientRect();
+   visual.style.setProperty("--aurevon-pointer-x",((event.clientX-rect.left)/rect.width*100).toFixed(1)+"%");
+   visual.style.setProperty("--aurevon-pointer-y",((event.clientY-rect.top)/rect.height*100).toFixed(1)+"%");
+  },{passive:true});
+  visual.addEventListener("pointerleave",()=>{
+   visual.style.setProperty("--aurevon-pointer-x","50%");
+   visual.style.setProperty("--aurevon-pointer-y","48%");
+  },{passive:true});
+ }
+ const cards=document.querySelectorAll(".aurevon-product-card,.vayora-card,.aurevon-metric-card,.panel,.capability,.step,.principle");
+ cards.forEach(card=>{
+  card.addEventListener("pointermove",event=>{
+   const rect=card.getBoundingClientRect();
+   card.style.setProperty("--spot-x",(event.clientX-rect.left)+"px");
+   card.style.setProperty("--spot-y",(event.clientY-rect.top)+"px");
+  },{passive:true});
+  card.addEventListener("pointerleave",()=>{
+   card.style.setProperty("--spot-x","50%");
+   card.style.setProperty("--spot-y","50%");
+  },{passive:true});
+ });
+})();
 </script>
 </body>
 </html>
