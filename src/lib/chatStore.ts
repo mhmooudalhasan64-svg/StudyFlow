@@ -21,7 +21,7 @@ function postChat(body: unknown): Promise<Response> {
   const apiBase = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
   return fetch(`${apiBase}/api/chat`, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', 'x-vayora-build': '7' },
     body: JSON.stringify(body),
   });
 }
