@@ -15,6 +15,7 @@ import {
   X,
   HelpCircle,
   ChevronDown,
+  GraduationCap,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useApp } from './store';
@@ -350,7 +351,7 @@ function Brand() {
       <span className="flex flex-col leading-tight">
         <span className="vayora-brand-name" dir="ltr">VAYORA</span>
         <span className="text-[10px] text-muted">فايورا · منصة تعليمية ذكية</span>
-        <span className="vayora-brand-parent mt-1" dir="ltr"><span aria-hidden="true">◆</span> AUREVON TECHNOLOGY</span>
+        <span className="vayora-brand-parent mt-1 inline-flex items-center gap-1.5" dir="ltr"><GraduationCap size={12} strokeWidth={2.2} aria-hidden="true" /> AUREVON TECHNOLOGY</span>
       </span>
     </a>
   );
