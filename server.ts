@@ -92,13 +92,20 @@ const server = createServer(async (incoming, outgoing) => {
     const url = new URL(incoming.url || '/', `http://${incoming.headers.host || 'localhost'}`);
 
     if (url.pathname === '/api/version' && method === 'GET') {
-      sendJson(outgoing, 200, {
+      const origin = incoming.headers.origin || '';
+      const mobileOrigins = new Set(['capacitor://localhost', 'http://localhost', 'https://localhost']);
+      outgoing.writeHead(200, {
+        'content-type': 'application/json; charset=utf-8',
+        'cache-control': 'no-store',
+        ...(mobileOrigins.has(origin) ? { 'access-control-allow-origin': origin, 'vary': 'Origin' } : {}),
+      });
+      outgoing.end(JSON.stringify({
         app: 'VAYORA-SAPIENTIA',
         minimumBuild: 7,
         latestBuild: 7,
         versionName: '0.0.1',
         updateRequired: false,
-      });
+      }));
       return;
     }
 
