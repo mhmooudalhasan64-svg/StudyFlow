@@ -1,0 +1,17 @@
+{
+  "id": "/",
+  "name": "AUREVON TECH",
+  "short_name": "AUREVON",
+  "description": "AUREVON TECH — Digital products and intelligent experiences.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#090a0c",
+  "theme_color": "#090a0c",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

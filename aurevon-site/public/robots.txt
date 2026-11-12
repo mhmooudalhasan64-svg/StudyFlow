@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://aurevon-tech-site-mhm23.vercel.app/sitemap.xml
