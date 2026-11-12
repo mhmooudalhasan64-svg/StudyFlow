@@ -129,6 +129,18 @@ const server = createServer(async (incoming, outgoing) => {
       return;
     }
 
+    if (url.pathname === '/api/chat' && method === 'POST') {
+      const suppliedBuild = Number(incoming.headers['x-vayora-build'] || 0);
+      if (!Number.isInteger(suppliedBuild) || suppliedBuild < 7) {
+        sendJson(outgoing, 426, {
+          code: 'update_required',
+          error: 'هذا الإصدار لم يعد مدعوماً. حدّث VAYORA إلى أحدث إصدار للمتابعة.',
+          minimumBuild: 7,
+        });
+        return;
+      }
+    }
+
     if (url.pathname === '/api/chat' && (method === 'POST' || method === 'OPTIONS')) {
       const headers = new Headers();
       for (const [key, value] of Object.entries(incoming.headers)) {
