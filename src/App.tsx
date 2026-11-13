@@ -25,7 +25,7 @@ import Dashboard from './pages/Dashboard';
 import About from './pages/About';
 import { AlarmRinger } from './components/Alarms';
 
-const APP_BUILD_CODE = 7;
+const APP_BUILD_CODE = 8;
 
 const VoiceTeacher = lazy(() => import('./components/VoiceTeacher'));
 const Planner = lazy(() => import('./pages/Planner'));
@@ -242,7 +242,7 @@ export default function App() {
           </div>
           <h1 className="text-2xl font-black text-main">تحديث مطلوب</h1>
           <p className="mt-3 text-sm leading-7 text-muted">
-            هذا الإصدار من VAYORA لم يعد معتمداً. ثبّت أحدث إصدار من VAYORA — SAPIENTIA للمتابعة.
+            هذا الإصدار من VAYORA لم يعد معتمداً. ثبّت أحدث إصدار من VAYORA — Aureon Edition للمتابعة.
           </p>
           <p className="mt-4 text-xs text-muted">Build {APP_BUILD_CODE} · AUREVON TECHNOLOGY</p>
         </section>
