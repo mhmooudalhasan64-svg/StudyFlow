@@ -12,7 +12,7 @@ function BrandHero() {
     <section className="vayora-brand-hero relative isolate overflow-hidden rounded-3xl border p-6 text-center text-white shadow-xl sm:p-9">
       <div className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full border border-sky-200/15 shadow-[0_0_0_24px_rgb(125_211_252/0.035),0_0_0_48px_rgb(165_180_252/0.025)]" />
       <div className="relative mx-auto grid h-20 w-20 place-items-center rounded-[1.6rem] border border-white/20 bg-white/10 shadow-lg backdrop-blur">
-        <img src="/logo.png" alt="رمز VAYORA الهندسي" className="h-14 w-14" />
+        <img src="/logo.webp" alt="رمز VAYORA الهندسي" className="h-14 w-14" />
       </div>
       <p className="mt-5 text-3xl font-black tracking-[0.12em]" dir="ltr">VAYORA</p>
       <p className="mt-1 text-lg font-bold text-sky-100">فايورا</p>
@@ -46,7 +46,7 @@ function ProductIdentity() {
           <span className="mt-4 inline-flex rounded-full border border-slate-300/20 bg-white/5 px-3 py-1 text-[10px] font-bold text-slate-200">الرؤية والتطوير</span>
         </article>
         <article className="rounded-2xl border border-sky-300/30 bg-gradient-to-b from-sky-400/15 to-sky-950/20 p-4 text-center shadow-xl shadow-sky-950/20">
-          <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-sky-200/25 bg-sky-100/10 shadow-lg"><img src="/logo.png" alt="رمز VAYORA" className="h-10 w-10" /></span>
+          <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-sky-200/25 bg-sky-100/10 shadow-lg"><img src="/logo.webp" alt="رمز VAYORA" className="h-10 w-10" /></span>
           <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">VAYORA</p>
           <p className="mt-1 text-sm font-bold text-sky-100">فايورا · المنصة التعليمية</p>
           <p className="mt-3 text-xs leading-6 text-slate-200">المساحة التي تجمع التخطيط الدراسي، التركيز، المكتبة، المراجعة، الاختبارات، وتتبع التقدم في تجربة واحدة.</p>

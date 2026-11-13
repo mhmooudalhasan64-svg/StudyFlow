@@ -388,7 +388,7 @@ function Brand() {
   return (
     <a href="#/home" className="vayora-brand flex items-center gap-3" aria-label="VAYORA by AUREVON — الرئيسية">
       <span className="vayora-brand-mark">
-        <img src="/logo.png" alt="" width={38} height={38} className="h-9 w-9 object-contain" />
+        <img src="/logo.webp" alt="" width={38} height={38} className="h-9 w-9 object-contain" />
       </span>
       <span className="flex flex-col leading-tight">
         <span className="vayora-brand-name" dir="ltr">VAYORA</span>
