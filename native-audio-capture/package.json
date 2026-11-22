@@ -1,7 +1,7 @@
 {
   "name": "@vayora/native-audio-capture",
   "version": "1.0.0",
-  "description": "Android system playback audio capture bridge for VAYORA",
+  "description": "Android system playback audio capture bridge for MASAR",
   "main": "dist/esm/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",

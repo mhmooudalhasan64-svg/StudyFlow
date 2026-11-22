@@ -53,7 +53,7 @@ const GROUPS: { title: string; description: string; items: Item[] }[] = [
       { href: '#/assistant', label: 'AVORA AI', Icon: Bot, tone: 'violet' },
       { href: '#/settings', label: 'الإعدادات', Icon: SettingsIcon, tone: 'slate' },
       { href: '#/help', label: 'شرح أزرار التطبيق', Icon: CircleHelp, tone: 'cyan' },
-      { href: '#/about', label: 'عن المنصة (VAYORA)', Icon: Info, tone: 'blue' },
+      { href: '#/about', label: 'عن المنصة (MASAR)', Icon: Info, tone: 'blue' },
     ],
   },
 ];
@@ -61,7 +61,7 @@ const GROUPS: { title: string; description: string; items: Item[] }[] = [
 export default function More() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <PageTitle title="كل الميزات" subtitle="جميع أدوات VAYORA متاحة هنا، مرتبة حسب الاستخدام." />
+      <PageTitle title="كل الميزات" subtitle="جميع أدوات MASAR متاحة هنا، مرتبة حسب الاستخدام." />
       {GROUPS.map((group) => (
         <section key={group.title} className="space-y-3">
           <div>

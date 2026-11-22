@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* هوية VAYORA: أبيض وفضي للوضع الفاتح، وأسود وفضي للوضع الداكن */
+/* هوية MASAR: أبيض وفضي للوضع الفاتح، وأسود وفضي للوضع الداكن */
 :root {
   color-scheme: light;
   --base: 247 248 250;
@@ -200,7 +200,7 @@ aside nav a[aria-current='page']::before {
 }
 
 
-/* VAYORA icon system — consistent premium line icons across the entire app */
+/* MASAR icon system — consistent premium line icons across the entire app */
 .lucide {
   flex: 0 0 auto;
   stroke-width: 1.85;
@@ -361,7 +361,7 @@ input, select, textarea {
   .app-main { animation: none; }
 }
 
-/* VAYORA feature icon identities — color-coded, consistent and theme-aware */
+/* MASAR feature icon identities — color-coded, consistent and theme-aware */
 .feature-icon {
   display: inline-grid;
   width: 2.9rem;
@@ -537,7 +537,7 @@ button:disabled {
 }
 
 
-/* ── VAYORA × AUREVON: luxury technology design system ── */
+/* ── MASAR × AUREVON: luxury technology design system ── */
 :root {
   --base: 246 247 249;
   --card: 255 255 255;
@@ -676,7 +676,7 @@ aside nav a[aria-current='page'] {
 }
 
 
-/* ── VAYORA premium interface refinement ── */
+/* ── MASAR premium interface refinement ── */
 :root {
   --base: 247 247 249;
   --card: 255 255 255;

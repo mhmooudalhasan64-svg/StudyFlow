@@ -141,7 +141,7 @@ const server = createServer(async (incoming, outgoing) => {
       if (!Number.isInteger(suppliedBuild) || suppliedBuild < 7) {
         sendJson(outgoing, 426, {
           code: 'update_required',
-          error: 'هذا الإصدار لم يعد مدعوماً. حدّث VAYORA إلى أحدث إصدار للمتابعة.',
+          error: 'هذا الإصدار لم يعد مدعوماً. حدّث MASAR إلى أحدث إصدار للمتابعة.',
           minimumBuild: 7,
         });
         return;
@@ -191,5 +191,5 @@ const server = createServer(async (incoming, outgoing) => {
 });
 
 server.listen(port, '0.0.0.0', () => {
-  console.log(`VAYORA app and avora API listening on port ${port}`);
+  console.log(`MASAR app and avora API listening on port ${port}`);
 });

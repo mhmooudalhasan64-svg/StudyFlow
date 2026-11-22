@@ -234,12 +234,12 @@ export default function YouTubeStudy() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <PageTitle title="YouTube داخل VAYORA" subtitle="تصفّح YouTube وابحث عن الدروس وشاهدها من داخل تجربة VAYORA." />
+      <PageTitle title="YouTube داخل MASAR" subtitle="تصفّح YouTube وابحث عن الدروس وشاهدها من داخل تجربة MASAR." />
 
       <section className="card space-y-3">
         <div className="flex items-center gap-2">
           <Youtube size={22} className="text-rose-500" />
-          <h2 className="font-bold">تصفّح YouTube من داخل VAYORA</h2>
+          <h2 className="font-bold">تصفّح YouTube من داخل MASAR</h2>
         </div>
         <p className="text-sm leading-6 text-muted">
           افتح واجهة YouTube لتبحث عن الفيديوهات وتتصفحها وتشاهدها. في تطبيق Android تُفتح نافذة تصفح مدمجة؛ أما نسخة الويب فقد تفتح YouTube في تبويب جديد بسبب قيود المتصفح.
@@ -250,7 +250,7 @@ export default function YouTubeStudy() {
       </section>
 
       <section className="card space-y-3">
-        <h2 className="font-bold">مشاهدة فيديو داخل VAYORA</h2>
+        <h2 className="font-bold">مشاهدة فيديو داخل MASAR</h2>
         <label className="label" htmlFor="youtube-url">رابط الفيديو</label>
         <input id="youtube-url" className="input" type="url" dir="ltr" inputMode="url"
           placeholder="https://www.youtube.com/watch?v=..." value={url}
@@ -272,7 +272,7 @@ export default function YouTubeStudy() {
               </a>
             </div>
             <p className="text-xs leading-5 text-muted">
-              التنزيل متاح فقط عبر خيارات YouTube الرسمية عندما يسمح الفيديو والمنطقة والحساب بذلك. لا يتيح VAYORA تنزيل ملفات الفيديو من خوادم YouTube.
+              التنزيل متاح فقط عبر خيارات YouTube الرسمية عندما يسمح الفيديو والمنطقة والحساب بذلك. لا يتيح MASAR تنزيل ملفات الفيديو من خوادم YouTube.
             </p>
           </>
         ) : url.trim() ? (
@@ -288,7 +288,7 @@ export default function YouTubeStudy() {
           <h2 className="font-bold">اسأل AVORA عن الفيديو</h2>
         </div>
         <p className="text-sm leading-6 text-muted">
-          شغّل الفيديو ثم ابدأ الالتقاط. على Android يلتقط VAYORA صوت تشغيل الوسائط المسموح به من النظام ويحوّله محلياً إلى نص باستخدام Whisper المضمّن داخل التطبيق، دون استخدام الميكروفون بديلاً. نسخة الويب تحتفظ بالتقاط الميكروفون.
+          شغّل الفيديو ثم ابدأ الالتقاط. على Android يلتقط MASAR صوت تشغيل الوسائط المسموح به من النظام ويحوّله محلياً إلى نص باستخدام Whisper المضمّن داخل التطبيق، دون استخدام الميكروفون بديلاً. نسخة الويب تحتفظ بالتقاط الميكروفون.
         </p>
         <div className="flex flex-wrap gap-2">
           {!capturing ? (

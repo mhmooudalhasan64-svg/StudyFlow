@@ -1,4 +1,4 @@
-# VAYORA Android local transcription
+# MASAR Android local transcription
 
 Android playback transcription uses the pinned whisper.cpp engine and the multilingual
 `ggml-base-q5_1.bin` model. The model is fetched only during the Android CI build,
