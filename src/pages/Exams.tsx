@@ -1,14 +1,16 @@
 import { useMemo, useState, type FormEvent } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Download, Plus, Trash2 } from 'lucide-react';
 import { useApp } from '../store';
 import { Empty, PageTitle, SubjectDot, SubjectSelect } from '../components/ui';
 import { daysLabel, daysUntil, formatLongDate, toDateKey } from '../lib/utils';
+import { buildIcs, type CalendarEvent } from '../lib/calendar';
 
 export default function Exams() {
   const exams = useApp((s) => s.exams);
   const addExam = useApp((s) => s.addExam);
   const removeExam = useApp((s) => s.removeExam);
   const subjects = useApp((s) => s.subjects);
+  const tasks = useApp((s) => s.tasks);
 
   const today = toDateKey();
   const [title, setTitle] = useState('');
@@ -23,6 +25,23 @@ export default function Exams() {
     };
   }, [exams]);
 
+  const calendarEvents = useMemo<CalendarEvent[]>(
+    () => [
+      ...exams.map((e) => ({ id: `exam-${e.id}`, title: `امتحان: ${e.title}`, date: e.date })),
+      ...tasks.filter((t) => !t.done && t.date >= today).map((t) => ({ id: `task-${t.id}`, title: t.title, date: t.date })),
+    ],
+    [exams, tasks, today],
+  );
+
+  const exportCalendar = () => {
+    const url = URL.createObjectURL(new Blob([buildIcs(calendarEvents)], { type: 'text/calendar;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'studyflow-calendar.ics';
+    a.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
   const submit = (e: FormEvent) => {
     e.preventDefault();
     const name = title.trim() || subjects.find((s) => s.id === subjectId)?.name || '';
@@ -34,7 +53,21 @@ export default function Exams() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <PageTitle title="العدّ التنازلي للامتحانات" subtitle="اعرف المدة المتبقية لكل امتحان وخطّط وفقًا لها" />
+      <PageTitle
+        title="العدّ التنازلي للامتحانات"
+        subtitle="اعرف المدة المتبقية لكل امتحان وخطّط وفقًا لها"
+        action={
+          <button
+            type="button"
+            className="btn btn-ghost !px-3"
+            onClick={exportCalendar}
+            disabled={calendarEvents.length === 0}
+            aria-label="تصدير الامتحانات والمهام إلى التقويم"
+          >
+            <Download size={16} /> تقويم
+          </button>
+        }
+      />
 
       <form onSubmit={submit} className="card space-y-3">
         <h2 className="font-bold">إضافة امتحان</h2>

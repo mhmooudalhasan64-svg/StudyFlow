@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Copy, Printer } from 'lucide-react';
 import { useApp } from '../store';
 import { Empty, PageTitle } from '../components/ui';
-import { buildReport, reportToText } from '../lib/report';
+import { buildReport, compareReports, reportToText } from '../lib/report';
 import { addDays, formatMinutes, toDateKey, weekdayShort } from '../lib/utils';
 
 export default function Reports() {
@@ -20,6 +20,11 @@ export default function Reports() {
     () => buildReport({ sessions, attempts, lessons, results }, end),
     [sessions, attempts, lessons, results, end],
   );
+  const prevReport = useMemo(
+    () => buildReport({ sessions, attempts, lessons, results }, addDays(end, -7)),
+    [sessions, attempts, lessons, results, end],
+  );
+  const trend = compareReports(report, prevReport);
   const nameOf = (id: number | null) => subjects.find((s) => s.id === id)?.name ?? 'بدون مادة';
   const colorOf = (id: number | null) => subjects.find((s) => s.id === id)?.color ?? 'rgb(var(--muted))';
   const max = Math.max(1, ...report.minutesPerDay);
@@ -69,6 +74,8 @@ export default function Reports() {
         <Tile label="الدروس المنجزة" value={String(report.lessonsDone)} />
         <Tile label="الأسئلة الصحيحة" value={`${report.correct}/${report.answered}`} />
       </section>
+
+      {trend && <p className="text-center text-sm text-muted">ساعات التركيز: {trend}</p>}
 
       {empty ? (
         <Empty>لا نشاط في هذه الفترة.</Empty>

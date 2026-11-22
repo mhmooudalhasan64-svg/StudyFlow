@@ -1,5 +1,5 @@
 import type { Attempt, ExamResult, Lesson, StudySession } from '../db';
-import { formatMinutes } from './utils';
+import { daysUntil, formatMinutes, parseDateKey } from './utils';
 import { lastNDays, minutesByDay } from './stats';
 
 export interface WeeklyReport {
@@ -81,4 +81,19 @@ export function reportToText(r: WeeklyReport, nameOf: (id: number | null) => str
     }
   }
   return lines.join('\n');
+}
+
+/** نسبة التغيير في ساعات التركيز مقارنةً بالفترة السابقة، أو null إن لم يوجد أساس للمقارنة */
+export function compareReports(cur: WeeklyReport, prev: WeeklyReport): string | null {
+  if (prev.totalMin === 0) return null;
+  const diff = Math.round(((cur.totalMin - prev.totalMin) / prev.totalMin) * 100);
+  if (diff === 0) return 'نفس ساعات الفترة السابقة';
+  return `${diff > 0 ? '+' : ''}${diff}% عن الفترة السابقة`;
+}
+
+/** عدد الأيام منذ آخر جلسة تركيز، أو null إن لم تكن هناك جلسات */
+export function daysSinceLastSession(sessions: readonly StudySession[], today: string): number | null {
+  if (sessions.length === 0) return null;
+  const last = sessions.reduce((m, s) => (s.dateKey > m ? s.dateKey : m), sessions[0].dateKey);
+  return Math.max(0, -daysUntil(last, parseDateKey(today)));
 }
