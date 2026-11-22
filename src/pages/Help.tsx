@@ -91,7 +91,7 @@ export default function Help() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
-      <PageTitle title="دليل استخدام Study Flow" subtitle="شرح مبسّط للأزرار والصفحات — افتح الشرح عند الحاجة." />
+      <PageTitle title="دليل استخدام مسار MASAR" subtitle="شرح مبسّط للأزرار والصفحات — افتح الشرح عند الحاجة." />
       <section className="card space-y-3 border-accent/30 bg-gradient-to-l from-accent/10 via-card to-card">
         <div className="flex items-center gap-2">
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent/15 text-accent"><HelpCircle size={21} /></span>
