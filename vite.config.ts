@@ -9,7 +9,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png', 'icon.svg'],
       manifest: {
-        name: 'MASAR 1.0.0 — Stable Release',
+        name: 'مسار MASAR — منصة تعليمية ذكية متكاملة',
         short_name: 'MASAR',
         description: 'MASAR — منصة تعليمية عربية ذكية متكاملة. An intelligent, integrated Arabic learning platform.',
         lang: 'ar',
@@ -18,8 +18,8 @@ export default defineConfig({
         scope: '/',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#101522',
-        theme_color: '#101522',
+        background_color: '#0B1422',
+        theme_color: '#0B1422',
         icons: [
           { src: 'icon.svg', sizes: '256x256', type: 'image/svg+xml', purpose: 'any' },
         ],
