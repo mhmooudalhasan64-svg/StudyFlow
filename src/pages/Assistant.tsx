@@ -355,10 +355,10 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
 
       {extraUsagePending && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4" role="presentation">
-          <section role="dialog" aria-modal="true" aria-labelledby="avora-extra-title" className="w-full max-w-md rounded-2xl border border-line bg-card p-5 shadow-2xl">
+          <section role="dialog" aria-modal="true" aria-labelledby="dalil-extra-title" className="w-full max-w-md rounded-2xl border border-line bg-card p-5 shadow-2xl">
             <div className="mb-3 flex items-center gap-3">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent/10 text-accent"><Bot size={22} /></span>
-              <h2 id="avora-extra-title" className="text-lg font-bold">استمرار استخدام DALIL AI</h2>
+              <h2 id="dalil-extra-title" className="text-lg font-bold">استمرار استخدام DALIL AI</h2>
             </div>
             <p className="text-sm leading-7 text-muted">انتهى رصيدك المجاني الحالي. هل توافق على تفعيل الاستخدام الإضافي لمتابعة العمل مع DALIL AI؟</p>
             <p className="mt-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs leading-6">قد تترتب تكلفة إضافية على هذا الخيار. لن يتم تفعيله دون موافقتك.</p>
