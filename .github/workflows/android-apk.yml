@@ -1,9 +1,9 @@
-name: Build MASAR Android APK
+name: Build MASAR Standalone Android APK
 
 on:
   workflow_dispatch:
   push:
-    branches: ["main", "feat/vayora-aurevon-skova-identity", "golden-vayora-1"]
+    branches: ["golden-vayora-1"]
     paths:
       - "src/**"
       - "public/**"
@@ -17,7 +17,7 @@ on:
       - ".github/workflows/android-apk.yml"
 
 concurrency:
-  group: android-release-${{ github.ref }}
+  group: masar-standalone-android-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -68,47 +68,41 @@ jobs:
           VITE_API_BASE_URL: https://studyflow-preview-preview.up.railway.app
         run: npm run build
 
-      - name: Create or sync Android project
-        run: |
-          if [ -d android ]; then
-            npx cap sync android
-          else
-            npx cap add android
-            npx cap sync android
-          fi
+      - name: Sync Android project
+        run: npx cap sync android
 
       - name: Verify native plugin is included in Android project
         run: grep -q "vayora-native-audio-capture" android/app/capacitor.build.gradle
 
-      - name: Validate and install the original release signing key
+      - name: Install and verify new MASAR release signing key
         env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          MASAR_ANDROID_KEYSTORE_BASE64: ${{ secrets.MASAR_ANDROID_KEYSTORE_BASE64 }}
+          MASAR_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.MASAR_ANDROID_KEYSTORE_PASSWORD }}
+          MASAR_ANDROID_KEY_ALIAS: ${{ secrets.MASAR_ANDROID_KEY_ALIAS }}
+          MASAR_ANDROID_KEY_PASSWORD: ${{ secrets.MASAR_ANDROID_KEY_PASSWORD }}
         shell: bash
         run: |
           set -euo pipefail
-          for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD; do
+          for name in MASAR_ANDROID_KEYSTORE_BASE64 MASAR_ANDROID_KEYSTORE_PASSWORD MASAR_ANDROID_KEY_ALIAS MASAR_ANDROID_KEY_PASSWORD; do
             if [ -z "${!name:-}" ]; then
-              echo "::error::Required signing secret $name is missing. No APK was built."
+              echo "::error::Required new MASAR signing secret $name is missing. No APK was built."
               exit 1
             fi
           done
-          KEYSTORE_PATH="$RUNNER_TEMP/masar-original-release.jks"
-          printf '%s' "$ANDROID_KEYSTORE_BASE64" | tr -d '\r\n ' | base64 --decode > "$KEYSTORE_PATH"
+          KEYSTORE_PATH="$RUNNER_TEMP/masar-release.jks"
+          printf '%s' "$MASAR_ANDROID_KEYSTORE_BASE64" | tr -d '\r\n ' | base64 --decode > "$KEYSTORE_PATH"
           test -s "$KEYSTORE_PATH"
-          keytool -list -v -keystore "$KEYSTORE_PATH" -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias "$ANDROID_KEY_ALIAS" > "$RUNNER_TEMP/keystore-check.txt"
-          ACTUAL_CERT_SHA="$(sed -n 's/^[[:space:]]*SHA256: //p' "$RUNNER_TEMP/keystore-check.txt" | head -n 1 | tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]')"
-          EXPECTED_CERT_SHA="307B59491B258EE103FD72D6EE41727BF2D9AD8AAF82B61119BF4F75AF3734A6"
+          keytool -list -v -keystore "$KEYSTORE_PATH" -storepass "$MASAR_ANDROID_KEYSTORE_PASSWORD" -alias "$MASAR_ANDROID_KEY_ALIAS" > "$RUNNER_TEMP/masar-keystore-check.txt"
+          ACTUAL_CERT_SHA="$(sed -n 's/^[[:space:]]*SHA256: //p' "$RUNNER_TEMP/masar-keystore-check.txt" | head -n 1 | tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]')"
+          EXPECTED_CERT_SHA="11CC6B5A915420DEBE273F72D54100388B2D2B3F36FB338E978F2F9473A4AA5F"
           if [ "$ACTUAL_CERT_SHA" != "$EXPECTED_CERT_SHA" ]; then
-            echo "::error::The configured keystore certificate does not match the original installed-app signing certificate. Refusing to build an incompatible update."
+            echo "::error::The new MASAR keystore does not match the generated release certificate. Refusing to build."
             exit 1
           fi
           echo "ANDROID_KEYSTORE_PATH=$KEYSTORE_PATH" >> "$GITHUB_ENV"
-          echo "ANDROID_KEYSTORE_PASSWORD=$ANDROID_KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
-          echo "ANDROID_KEY_ALIAS=$ANDROID_KEY_ALIAS" >> "$GITHUB_ENV"
-          echo "ANDROID_KEY_PASSWORD=$ANDROID_KEY_PASSWORD" >> "$GITHUB_ENV"
+          echo "ANDROID_KEYSTORE_PASSWORD=$MASAR_ANDROID_KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
+          echo "ANDROID_KEY_ALIAS=$MASAR_ANDROID_KEY_ALIAS" >> "$GITHUB_ENV"
+          echo "ANDROID_KEY_PASSWORD=$MASAR_ANDROID_KEY_PASSWORD" >> "$GITHUB_ENV"
 
       - name: Build signed release APK
         run: |
@@ -116,27 +110,27 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleRelease
 
-      - name: Verify APK identity, version and signature
+      - name: Verify standalone APK identity, version and signature
         shell: bash
         run: |
           set -euo pipefail
           APK="android/app/build/outputs/apk/release/app-release.apk"
           test -s "$APK"
           BADGING="$($ANDROID_HOME/build-tools/35.0.0/aapt dump badging "$APK")"
-          echo "$BADGING" | grep -F "package: name='com.mhmooud.studyflow' versionCode='8'"
+          echo "$BADGING" | grep -F "package: name='com.aurevon.masar' versionCode='1'"
           CERTS="$(apksigner verify --print-certs "$APK")"
           echo "$CERTS"
           ACTUAL_CERT_SHA="$(printf '%s\n' "$CERTS" | sed -n 's/.*certificate SHA-256 digest: //p' | head -n 1 | tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]')"
-          EXPECTED_CERT_SHA="307B59491B258EE103FD72D6EE41727BF2D9AD8AAF82B61119BF4F75AF3734A6"
+          EXPECTED_CERT_SHA="11CC6B5A915420DEBE273F72D54100388B2D2B3F36FB338E978F2F9473A4AA5F"
           if [ "$ACTUAL_CERT_SHA" != "$EXPECTED_CERT_SHA" ]; then
-            echo "::error::APK signature verification failed: certificate fingerprint mismatch."
+            echo "::error::APK signature verification failed: new MASAR certificate fingerprint mismatch."
             exit 1
           fi
 
-      - name: Upload verified update APK
+      - name: Upload verified standalone APK
         uses: actions/upload-artifact@v4
         with:
-          name: MASAR-Android-v8-update
+          name: MASAR-Android-Standalone-v1
           path: android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 14
