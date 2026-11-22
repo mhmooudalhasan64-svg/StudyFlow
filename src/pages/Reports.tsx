@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Copy, Printer } from 'lucide-react';
+import { Copy, Printer, Share2 } from 'lucide-react';
 import { useApp } from '../store';
 import { Empty, PageTitle } from '../components/ui';
 import { buildReport, reportToText } from '../lib/report';
@@ -35,6 +35,11 @@ export default function Reports() {
     }
   };
 
+  const shareWhatsApp = () => {
+    const text = reportToText(report, nameOf);
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+  };
+
   const empty = report.totalMin === 0 && report.results.length === 0 && report.answered === 0 && report.lessonsDone === 0;
 
   return (
@@ -46,6 +51,9 @@ export default function Reports() {
           <div className="flex gap-2 print:hidden">
             <button type="button" className="btn btn-ghost !px-3" onClick={() => void copy()} aria-label="نسخ التقرير">
               <Copy size={16} /> {copied ? 'تم النسخ' : 'نسخ'}
+            </button>
+            <button type="button" className="btn btn-ghost !px-3" onClick={shareWhatsApp} aria-label="مشاركة التقرير على واتساب">
+              <Share2 size={16} /> واتساب
             </button>
             <button type="button" className="btn btn-ghost !px-3" onClick={() => window.print()} aria-label="طباعة التقرير">
               <Printer size={16} />
