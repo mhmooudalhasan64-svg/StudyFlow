@@ -544,9 +544,9 @@ button:disabled {
   --main: 20 27 39;
   --muted: 104 112 125;
   --line: 218 222 229;
-  --accent: 166 126 57;
-  --accent2: 196 157 83;
-  --accent3: 225 202 151;
+  --accent: 15 118 110;
+  --accent2: 20 184 166;
+  --accent3: 153 246 228;
   --onaccent: 22 25 31;
 }
 .dark {
@@ -555,19 +555,19 @@ button:disabled {
   --main: 239 242 247;
   --muted: 160 169 182;
   --line: 52 62 77;
-  --accent: 196 157 83;
-  --accent2: 218 183 112;
-  --accent3: 238 216 164;
+  --accent: 20 184 166;
+  --accent2: 94 234 212;
+  --accent3: 204 251 241;
   --onaccent: 18 22 30;
 }
 body {
   background-image:
-    radial-gradient(58rem 32rem at 100% -12%, rgb(196 157 83 / 0.095), transparent 58%),
+    radial-gradient(58rem 32rem at 100% -12%, rgb(20 184 166 / 0.095), transparent 58%),
     radial-gradient(48rem 30rem at -8% 100%, rgb(34 55 83 / 0.07), transparent 62%);
 }
 .dark body {
   background-image:
-    radial-gradient(58rem 32rem at 100% -12%, rgb(196 157 83 / 0.105), transparent 58%),
+    radial-gradient(58rem 32rem at 100% -12%, rgb(20 184 166 / 0.105), transparent 58%),
     radial-gradient(48rem 30rem at -8% 100%, rgb(39 61 91 / 0.2), transparent 62%);
 }
 .app-sidebar {
@@ -596,17 +596,17 @@ body {
 }
 .vayora-brand-parent span { color: rgb(var(--accent2)); font-size: .55rem; }
 .vayora-brand-hero {
-  border-color: rgb(218 183 112 / .38);
+  border-color: rgb(94 234 212 / .38);
   background:
-    radial-gradient(ellipse at 12% 5%, rgb(218 183 112 / .19), transparent 43%),
+    radial-gradient(ellipse at 12% 5%, rgb(94 234 212 / .19), transparent 43%),
     radial-gradient(ellipse at 92% 95%, rgb(47 75 105 / .48), transparent 48%),
     linear-gradient(135deg, #0c1421 0%, #17263a 56%, #202c3d 100%);
   box-shadow: 0 22px 58px rgb(8 15 25 / .2), inset 0 1px 0 rgb(255 255 255 / .1);
 }
 .vayora-brand-hero .text-sky-100,
-.vayora-brand-hero .text-sky-200\/80 { color: #e5c98e !important; }
-.vayora-brand-hero .border-sky-400\/20 { border-color: rgb(218 183 112 / .3) !important; }
-.vayora-brand-hero .bg-white\/10 { background: rgb(218 183 112 / .12) !important; }
+.vayora-brand-hero .text-sky-200\/80 { color: #99f6e4 !important; }
+.vayora-brand-hero .border-sky-400\/20 { border-color: rgb(94 234 212 / .3) !important; }
+.vayora-brand-hero .bg-white\/10 { background: rgb(94 234 212 / .12) !important; }
 .vayora-brand-hero .text-slate-200 { color: #d4dbe5 !important; }
 .aurevon-ecosystem {
   border-color: rgb(218 183 112 / .34);

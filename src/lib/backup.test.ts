@@ -27,7 +27,7 @@ describe('backup', () => {
 
   it('rejects invalid files with Arabic messages', () => {
     expect(() => parseBackup('not json')).toThrow('الملف ليس نسخة احتياطية صالحة');
-    expect(() => parseBackup('{"app":"other"}')).toThrow('ليس نسخة احتياطية من StudyFlow');
+    expect(() => parseBackup('{"app":"other"}')).toThrow('ليس نسخة احتياطية من MASAR');
     expect(() =>
       parseBackup(JSON.stringify({ app: 'studyflow', version: 1, exportedAt: 0, tables: {} })),
     ).toThrow('النسخة ناقصة');

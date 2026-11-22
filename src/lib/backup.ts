@@ -39,7 +39,7 @@ export function parseBackup(json: string): BackupFile {
   }
   const o = raw as Partial<BackupFile> | null;
   if (!o || o.app !== 'studyflow' || o.version !== 1 || typeof o.tables !== 'object' || o.tables === null)
-    throw new Error('الملف ليس نسخة احتياطية من StudyFlow');
+    throw new Error('الملف ليس نسخة احتياطية من MASAR');
   for (const name of BACKUP_TABLES) {
     if (!Array.isArray(o.tables[name])) throw new Error(`النسخة ناقصة: الجدول «${name}» مفقود`);
   }

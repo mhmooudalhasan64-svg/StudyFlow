@@ -63,7 +63,7 @@ export function buildReport(
 /** نص قابل للنسخ والمشاركة */
 export function reportToText(r: WeeklyReport, nameOf: (id: number | null) => string): string {
   const lines = [
-    `تقرير StudyFlow الأسبوعي (${r.from} → ${r.to})`,
+    `تقرير MASAR الأسبوعي (${r.from} → ${r.to})`,
     `• ساعات التركيز: ${formatMinutes(r.totalMin)}`,
     `• عدد الجلسات: ${r.sessionCount} (في ${r.activeDays} أيام)`,
     `• الدروس المنجزة: ${r.lessonsDone}`,

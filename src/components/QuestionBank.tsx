@@ -78,7 +78,7 @@ export default function QuestionBank({ onBack }: { onBack: () => void }) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'studyflow-questions.json';
+    a.download = 'masar-questions.json';
     a.click();
     URL.revokeObjectURL(url);
   };
