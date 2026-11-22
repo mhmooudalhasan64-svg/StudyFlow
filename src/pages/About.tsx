@@ -9,7 +9,7 @@ const pillars = [
 
 function BrandHero() {
   return (
-    <section className="vayora-brand-hero relative isolate overflow-hidden rounded-3xl border p-6 text-center text-white shadow-xl sm:p-9">
+    <section className="masar-brand-hero relative isolate overflow-hidden rounded-3xl border p-6 text-center text-white shadow-xl sm:p-9">
       <div className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full border border-sky-200/15 shadow-[0_0_0_24px_rgb(125_211_252/0.035),0_0_0_48px_rgb(165_180_252/0.025)]" />
       <div className="relative mx-auto grid h-20 w-20 place-items-center rounded-[1.6rem] border border-white/20 bg-white/10 shadow-lg backdrop-blur">
         <img src="/icon.svg" alt="رمز MASAR الهندسي" className="h-14 w-14" />
