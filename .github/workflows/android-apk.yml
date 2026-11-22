@@ -17,14 +17,14 @@ on:
       - ".github/workflows/android-apk.yml"
 
 concurrency:
-  group: android-whisper-${{ github.ref }}
+  group: android-release-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   build-android:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -80,16 +80,63 @@ jobs:
       - name: Verify native plugin is included in Android project
         run: grep -q "vayora-native-audio-capture" android/app/capacitor.build.gradle
 
-      - name: Build installable debug APK
+      - name: Validate and install the original release signing key
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error::Required signing secret $name is missing. No APK was built."
+              exit 1
+            fi
+          done
+          KEYSTORE_PATH="$RUNNER_TEMP/masar-original-release.jks"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | tr -d '\r\n ' | base64 --decode > "$KEYSTORE_PATH"
+          test -s "$KEYSTORE_PATH"
+          keytool -list -v -keystore "$KEYSTORE_PATH" -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias "$ANDROID_KEY_ALIAS" > "$RUNNER_TEMP/keystore-check.txt"
+          ACTUAL_CERT_SHA="$(sed -n 's/^[[:space:]]*SHA256: //p' "$RUNNER_TEMP/keystore-check.txt" | head -n 1 | tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]')"
+          EXPECTED_CERT_SHA="307B59491B258EE103FD72D6EE41727BF2D9AD8AAF82B61119BF4F75AF3734A6"
+          if [ "$ACTUAL_CERT_SHA" != "$EXPECTED_CERT_SHA" ]; then
+            echo "::error::The configured keystore certificate does not match the original installed-app signing certificate. Refusing to build an incompatible update."
+            exit 1
+          fi
+          echo "ANDROID_KEYSTORE_PATH=$KEYSTORE_PATH" >> "$GITHUB_ENV"
+          echo "ANDROID_KEYSTORE_PASSWORD=$ANDROID_KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
+          echo "ANDROID_KEY_ALIAS=$ANDROID_KEY_ALIAS" >> "$GITHUB_ENV"
+          echo "ANDROID_KEY_PASSWORD=$ANDROID_KEY_PASSWORD" >> "$GITHUB_ENV"
+
+      - name: Build signed release APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleRelease
 
-      - name: Upload APK
+      - name: Verify APK identity, version and signature
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="android/app/build/outputs/apk/release/app-release.apk"
+          test -s "$APK"
+          BADGING="$($ANDROID_HOME/build-tools/35.0.0/aapt dump badging "$APK")"
+          echo "$BADGING" | grep -F "package: name='com.mhmooud.studyflow' versionCode='8'"
+          CERTS="$(apksigner verify --print-certs "$APK")"
+          echo "$CERTS"
+          ACTUAL_CERT_SHA="$(printf '%s\n' "$CERTS" | sed -n 's/.*certificate SHA-256 digest: //p' | head -n 1 | tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]')"
+          EXPECTED_CERT_SHA="307B59491B258EE103FD72D6EE41727BF2D9AD8AAF82B61119BF4F75AF3734A6"
+          if [ "$ACTUAL_CERT_SHA" != "$EXPECTED_CERT_SHA" ]; then
+            echo "::error::APK signature verification failed: certificate fingerprint mismatch."
+            exit 1
+          fi
+
+      - name: Upload verified update APK
         uses: actions/upload-artifact@v4
         with:
-          name: MASAR-0.0.1
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: MASAR-Android-v8-update
+          path: android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 14
