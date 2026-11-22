@@ -1,18 +1,18 @@
 apply plugin: 'com.android.application'
 
 android {
+    // Keep the existing Android namespace so native source packages remain unchanged.
     namespace "com.mhmooud.studyflow"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.mhmooud.studyflow"
+        // New application ID allows MASAR to install alongside the legacy app.
+        applicationId "com.aurevon.masar"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 8
-        versionName "0.0.1"
+        versionCode 1
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
-             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
-             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
