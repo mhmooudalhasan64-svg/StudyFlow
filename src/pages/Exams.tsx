@@ -4,6 +4,14 @@ import { useApp } from '../store';
 import { Empty, PageTitle, SubjectDot, SubjectSelect } from '../components/ui';
 import { daysLabel, daysUntil, formatLongDate, toDateKey } from '../lib/utils';
 
+const EXAM_NIGHT_CHECKLIST = [
+  'الهوية أو بطاقة الامتحان',
+  'أقلام وأدوات مسموح بها',
+  'ماء ووجبة خفيفة',
+  'النوم مبكراً',
+  'الوصول قبل الموعد بربع ساعة',
+];
+
 export default function Exams() {
   const exams = useApp((s) => s.exams);
   const addExam = useApp((s) => s.addExam);
@@ -14,6 +22,7 @@ export default function Exams() {
   const [title, setTitle] = useState('');
   const [subjectId, setSubjectId] = useState<number | null>(null);
   const [date, setDate] = useState('');
+  const [checked, setChecked] = useState<Set<number>>(() => new Set());
 
   const { upcoming, past } = useMemo(() => {
     const sorted = [...exams].sort((a, b) => a.date.localeCompare(b.date));
@@ -69,6 +78,34 @@ export default function Exams() {
           <Plus size={16} /> إضافة
         </button>
       </form>
+
+      {upcoming.length > 0 && daysUntil(upcoming[0].date) <= 1 && (
+        <section className="card space-y-3 border-accent/60" aria-label="قائمة ليلة الامتحان">
+          <h2 className="font-bold">قائمة ليلة الامتحان: {upcoming[0].title}</h2>
+          <ul className="space-y-2">
+            {EXAM_NIGHT_CHECKLIST.map((item, i) => (
+              <li key={item}>
+                <label className="flex cursor-pointer items-center gap-3 text-sm">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 accent-accent"
+                    checked={checked.has(i)}
+                    onChange={() =>
+                      setChecked((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(i)) next.delete(i);
+                        else next.add(i);
+                        return next;
+                      })
+                    }
+                  />
+                  <span className={checked.has(i) ? 'text-muted line-through' : ''}>{item}</span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="space-y-3">
         <h2 className="font-bold">القادمة</h2>
