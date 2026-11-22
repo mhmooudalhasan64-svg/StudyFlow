@@ -52,7 +52,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
   };
   const sourcePage = sourceRoute ? pageNames[sourceRoute] : undefined;
   const contextualSend = (message: string) => send(sourcePage
-    ? `سياق الصفحة الحالية: أنا أستخدم صفحة «${sourcePage}» في تطبيق Study Flow. اجعل مساعدتك مرتبطة بهذه الصفحة وأزرارها ووظيفتها، ولا تفترض بيانات غير ظاهرة.
+    ? `سياق الصفحة الحالية: أنا أستخدم صفحة «${sourcePage}» في منصة مسار MASAR. اجعل مساعدتك مرتبطة بهذه الصفحة وأزرارها ووظيفتها، ولا تفترض بيانات غير ظاهرة.
 
 سؤالي: ${message}`
     : message);
