@@ -95,7 +95,7 @@ export default function MindMap() {
       <body>
         <main class="sheet">
           <header>
-            <div class="brand">STUDY FLOW</div>
+            <div class="brand">MASAR</div>
             <h1>${safe(subject.name)}</h1>
             <p class="subtitle">الخريطة الذهنية للمادة</p>
           </header>
@@ -106,7 +106,7 @@ export default function MindMap() {
             <div><strong>${percent}%</strong><span>نسبة الإنجاز</span></div>
           </div>
           ${unitMarkup}
-          <footer>تم إنشاء هذه الخريطة من Study Flow · ${generatedAt}</footer>
+          <footer>تم إنشاء هذه الخريطة من مسار MASAR · ${generatedAt}</footer>
         </main>
         <script>window.addEventListener('load', () => setTimeout(() => window.print(), 300));</script>
       </body>
