@@ -6,6 +6,7 @@ import { Empty, PageTitle, ProgressRing } from '../components/ui';
 import { computeStreak, minutesByDay } from '../lib/stats';
 import { backupReminderDue, dailyPhrase, motivationMessage, SLOGAN } from '../lib/motivation';
 import { currentMistakes, dailyResult } from '../lib/practice';
+import { daysSinceLastSession } from '../lib/report';
 import { buildTodayFlow, computeReadiness } from '../lib/readiness';
 import { daysLabel, daysUntil, formatMinutes, toDateKey } from '../lib/utils';
 
@@ -63,6 +64,8 @@ export default function Dashboard() {
         .sort((a, b) => a.date.localeCompare(b.date))[0],
     [exams],
   );
+
+  const idleDays = useMemo(() => daysSinceLastSession(sessions, today), [sessions, today]);
 
   return (
     <div className="mx-auto max-w-4xl space-y-5">
@@ -219,6 +222,16 @@ export default function Dashboard() {
             <p className="text-sm text-muted">
               {dueLessons} درس و{dueCards} بطاقة بانتظارك اليوم
             </p>
+          </div>
+        </a>
+      )}
+
+      {idleDays !== null && idleDays >= 3 && (
+        <a href="#/timer" className="card flex items-center gap-3 transition hover:border-accent">
+          <Flame className="text-accent" />
+          <div>
+            <p className="font-bold">لم تدرس منذ {idleDays} أيام</p>
+            <p className="text-sm text-muted">ابدأ بجلسة قصيرة مدتها 10 دقائق. البداية هي الجزء الأصعب فقط.</p>
           </div>
         </a>
       )}
