@@ -5,6 +5,8 @@ on:
     branches: ["golden-vayora-1"]
     paths:
       - ".github/workflows/android-apk-debug.yml"
+      - "android/app/src/main/AndroidManifest.xml"
+      - "android/app/src/main/res/**"
   workflow_dispatch:
 
 permissions:
