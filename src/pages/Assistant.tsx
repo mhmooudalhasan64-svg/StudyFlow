@@ -5,7 +5,7 @@ import { PageTitle } from '../components/ui';
 import Advisor from '../components/Advisor';
 import { useApp } from '../store';
 import { buildLearnerProfile, contextFrom } from '../lib/advisor';
-import { canListen, canSpeak, listen, speak, stopSpeaking } from '../lib/voice';
+import { canListen, canSpeak, listen, prepareVoice, speak, stopSpeaking } from '../lib/voice';
 import { toDateKey } from '../lib/utils';
 import { ACCEPT, extractFileText } from '../lib/fileText';
 
@@ -40,6 +40,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
   const [fileError, setFileError] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const voicePreparingRef = useRef(false);
   const sourceRoute = new URLSearchParams(window.location.hash.split('?')[1] ?? '').get('from');
   const pageNames: Record<string, string> = {
     home: 'الرئيسية', today: 'يومي الدراسي', plan: 'الخطة', timer: 'مؤقت التركيز',
@@ -118,18 +119,37 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
     startHandsFreeListening();
   };
 
-  const toggleMic = () => {
+  const toggleMic = async () => {
     if (listening) {
       stopListenRef.current?.();
+      stopListenRef.current = null;
+      setListening(false);
       return;
     }
+    if (voicePreparingRef.current) return;
+    voicePreparingRef.current = true;
     setVoiceError(null);
-    setListening(true);
-    stopListenRef.current = listen({
-      onText: (t) => setText(t),
-      onEnd: () => setListening(false),
-      onError: (m) => setVoiceError(m),
-    });
+    try {
+      // Android requires the native speech service and runtime permission before start().
+      await prepareVoice();
+      setListening(true);
+      stopListenRef.current = listen({
+        onText: (t) => setText(t),
+        onEnd: () => {
+          stopListenRef.current = null;
+          setListening(false);
+        },
+        onError: (m) => {
+          setVoiceError(m);
+          setListening(false);
+        },
+      });
+    } catch (cause) {
+      setListening(false);
+      setVoiceError(cause instanceof Error ? cause.message : 'تعذّر تهيئة التعرف الصوتي. تحقق من إذن الميكروفون وخدمة التعرف على الكلام في Android.');
+    } finally {
+      voicePreparingRef.current = false;
+    }
   };
 
   const toggleSpeak = (i: number, content: string) => {
