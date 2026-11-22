@@ -1,0 +1,86 @@
+name: Build MASAR Android APK (Debug)
+
+on:
+  push:
+    branches: ["golden-vayora-1"]
+    paths:
+      - ".github/workflows/android-apk-debug.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-debug-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Fetch and verify bundled Whisper model
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODEL_DIR="native-audio-capture/android/src/main/assets/models"
+          MODEL_PATH="$MODEL_DIR/ggml-base-q5_1.bin"
+          mkdir -p "$MODEL_DIR"
+          curl --fail --location --retry 3 --retry-delay 2 \
+            "https://huggingface.co/ggerganov/whisper.cpp/resolve/f281eb45af861ab5e5297d23694b7d46e090c02c/ggml-base-q5_1.bin" \
+            --output "$MODEL_PATH"
+          echo "422f1ae452ade6f30a004d7e5c6a43195e4433bc370bf23fac9cc591f01a8898  $MODEL_PATH" | sha256sum --check -
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK, NDK and CMake
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools platforms;android-35 build-tools;35.0.0 ndk;27.2.12479018 cmake;3.22.1"
+
+      - name: Install web dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Install Capacitor Android tooling
+        run: npm install --no-save --package-lock=false @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
+
+      - name: Build web app for Android
+        env:
+          VITE_API_BASE_URL: https://studyflow-preview-preview.up.railway.app
+        run: npm run build
+
+      - name: Sync Android project
+        run: npx cap sync android
+
+      - name: Verify native plugin is included
+        run: grep -q "vayora-native-audio-capture" android/app/capacitor.build.gradle
+
+      - name: Build ordinary debug APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Verify APK identity and version
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="android/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          BADGING="$($ANDROID_HOME/build-tools/35.0.0/aapt dump badging "$APK")"
+          echo "$BADGING" | grep -F "package: name='com.aurevon.masar' versionCode='1'"
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MASAR-Android-Debug-v1
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
