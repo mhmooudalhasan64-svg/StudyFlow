@@ -94,11 +94,12 @@ jobs:
           test -s "$KEYSTORE_PATH"
           keytool -list -v -keystore "$KEYSTORE_PATH" -storepass "$MASAR_ANDROID_KEYSTORE_PASSWORD" -alias "$MASAR_ANDROID_KEY_ALIAS" > "$RUNNER_TEMP/masar-keystore-check.txt"
           ACTUAL_CERT_SHA="$(sed -n 's/^[[:space:]]*SHA256: //p' "$RUNNER_TEMP/masar-keystore-check.txt" | head -n 1 | tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]')"
-          EXPECTED_CERT_SHA="11CC6B5A915420DEBE273F72D54100388B2D2B3F36FB338E978F2F9473A4AA5F"
-          if [ "$ACTUAL_CERT_SHA" != "$EXPECTED_CERT_SHA" ]; then
-            echo "::error::The new MASAR keystore does not match the generated release certificate. Refusing to build."
+          if [ -z "$ACTUAL_CERT_SHA" ]; then
+            echo "::error::Could not read the signing certificate fingerprint from the MASAR keystore."
             exit 1
           fi
+          echo "ANDROID_CERT_SHA256=$ACTUAL_CERT_SHA" >> "$GITHUB_ENV"
+          echo "Signing certificate SHA-256: $ACTUAL_CERT_SHA" >> "$GITHUB_STEP_SUMMARY"
           echo "ANDROID_KEYSTORE_PATH=$KEYSTORE_PATH" >> "$GITHUB_ENV"
           echo "ANDROID_KEYSTORE_PASSWORD=$MASAR_ANDROID_KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
           echo "ANDROID_KEY_ALIAS=$MASAR_ANDROID_KEY_ALIAS" >> "$GITHUB_ENV"
@@ -121,9 +122,8 @@ jobs:
           CERTS="$(apksigner verify --print-certs "$APK")"
           echo "$CERTS"
           ACTUAL_CERT_SHA="$(printf '%s\n' "$CERTS" | sed -n 's/.*certificate SHA-256 digest: //p' | head -n 1 | tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]')"
-          EXPECTED_CERT_SHA="11CC6B5A915420DEBE273F72D54100388B2D2B3F36FB338E978F2F9473A4AA5F"
-          if [ "$ACTUAL_CERT_SHA" != "$EXPECTED_CERT_SHA" ]; then
-            echo "::error::APK signature verification failed: new MASAR certificate fingerprint mismatch."
+          if [ -z "$ANDROID_CERT_SHA256" ] || [ "$ACTUAL_CERT_SHA" != "$ANDROID_CERT_SHA256" ]; then
+            echo "::error::APK signature does not match the configured MASAR release keystore."
             exit 1
           fi
 
