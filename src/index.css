@@ -248,7 +248,7 @@ a:has(> svg):hover > svg {
 
 
 
-/* ── Refined Study Flow interface ───────────────────────────── */
+/* ── Refined MASAR interface ───────────────────────────── */
 :root {
   --surface-glass: 255 255 255;
 }
@@ -578,24 +578,24 @@ body {
   background: rgb(var(--card) / .94);
   border-color: rgb(var(--accent2) / .2);
 }
-.vayora-brand { min-width: 0; text-decoration: none; }
-.vayora-brand-mark {
+.masar-brand { min-width: 0; text-decoration: none; }
+.masar-brand-mark {
   display: grid; width: 2.8rem; height: 2.8rem; flex: 0 0 auto;
   place-items: center; border: 1px solid rgb(var(--accent2) / .42);
   border-radius: 1rem; background: linear-gradient(145deg, rgb(20 30 46), rgb(37 48 65));
   box-shadow: 0 5px 16px rgb(18 28 42 / .2), inset 0 1px 0 rgb(255 255 255 / .18);
 }
-.vayora-brand-name {
+.masar-brand-name {
   color: rgb(var(--main)); font-size: 1.08rem; font-weight: 950;
   letter-spacing: .13em; line-height: 1.1;
 }
-.vayora-brand-parent {
+.masar-brand-parent {
   display: inline-flex; align-items: center; gap: .3rem;
   color: rgb(var(--accent)); font-size: .52rem; font-weight: 900;
   letter-spacing: .16em;
 }
-.vayora-brand-parent span { color: rgb(var(--accent2)); font-size: .55rem; }
-.vayora-brand-hero {
+.masar-brand-parent span { color: rgb(var(--accent2)); font-size: .55rem; }
+.masar-brand-hero {
   border-color: rgb(94 234 212 / .38);
   background:
     radial-gradient(ellipse at 12% 5%, rgb(94 234 212 / .19), transparent 43%),
@@ -603,11 +603,11 @@ body {
     linear-gradient(135deg, #0c1421 0%, #17263a 56%, #202c3d 100%);
   box-shadow: 0 22px 58px rgb(8 15 25 / .2), inset 0 1px 0 rgb(255 255 255 / .1);
 }
-.vayora-brand-hero .text-sky-100,
-.vayora-brand-hero .text-sky-200\/80 { color: #99f6e4 !important; }
-.vayora-brand-hero .border-sky-400\/20 { border-color: rgb(94 234 212 / .3) !important; }
-.vayora-brand-hero .bg-white\/10 { background: rgb(94 234 212 / .12) !important; }
-.vayora-brand-hero .text-slate-200 { color: #d4dbe5 !important; }
+.masar-brand-hero .text-sky-100,
+.masar-brand-hero .text-sky-200\/80 { color: #99f6e4 !important; }
+.masar-brand-hero .border-sky-400\/20 { border-color: rgb(94 234 212 / .3) !important; }
+.masar-brand-hero .bg-white\/10 { background: rgb(94 234 212 / .12) !important; }
+.masar-brand-hero .text-slate-200 { color: #d4dbe5 !important; }
 .aurevon-ecosystem {
   border-color: rgb(218 183 112 / .34);
   background:
@@ -671,8 +671,8 @@ aside nav a[aria-current='page'] {
 .card { box-shadow: 0 9px 28px rgb(16 25 39 / .045), inset 0 1px 0 rgb(255 255 255 / .18); }
 .dark .card { box-shadow: 0 10px 30px rgb(0 0 0 / .16), inset 0 1px 0 rgb(255 255 255 / .035); }
 @media (max-width: 767px) {
-  .vayora-brand-mark { width: 2.55rem; height: 2.55rem; border-radius: .9rem; }
-  .vayora-brand-name { font-size: 1rem; }
+  .masar-brand-mark { width: 2.55rem; height: 2.55rem; border-radius: .9rem; }
+  .masar-brand-name { font-size: 1rem; }
 }
 
 
@@ -723,12 +723,12 @@ body {
 .app-mobile-nav {
   box-shadow: 0 -12px 34px rgb(8 15 25 / .09);
 }
-.vayora-brand-mark {
+.masar-brand-mark {
   border-color: rgb(var(--accent2) / .55);
   background: linear-gradient(145deg, #111d2e, #24364d);
   box-shadow: 0 7px 20px rgb(9 16 27 / .22), inset 0 1px 0 rgb(255 255 255 / .2);
 }
-.vayora-brand-name { letter-spacing: .16em; }
+.masar-brand-name { letter-spacing: .16em; }
 .dashboard-hero {
   border-color: rgb(var(--accent2) / .34);
   background:
