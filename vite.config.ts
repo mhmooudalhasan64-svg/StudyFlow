@@ -11,7 +11,7 @@ export default defineConfig({
       manifest: {
         name: 'MASAR 1.0.0 — Stable Release',
         short_name: 'MASAR',
-        description: 'MASAR — An intelligent, integrated learning platform.',
+        description: 'MASAR — منصة تعليمية عربية ذكية متكاملة. An intelligent, integrated Arabic learning platform.',
         lang: 'ar',
         dir: 'rtl',
         start_url: '/',

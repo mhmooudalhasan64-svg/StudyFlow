@@ -91,7 +91,7 @@ function ProductIdentity() {
 export default function About() {
   return (
     <div className="mx-auto max-w-4xl space-y-4">
-      <PageTitle title="عن MASAR" subtitle="تعرّف على المنصة والمنظومة التي تقف خلفها" />
+      <PageTitle title="عن MASAR" subtitle="منصة تعليمية عربية تعرّف عليها ومنظومتها" />
       <div className="card space-y-6">
         <BrandHero />
         <ProductIdentity />
