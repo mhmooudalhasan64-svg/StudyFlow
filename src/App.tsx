@@ -386,14 +386,14 @@ function OfflineChip() {
 
 function Brand() {
   return (
-    <a href="#/home" className="vayora-brand flex items-center gap-3" aria-label="MASAR by AUREVON — الرئيسية">
-      <span className="vayora-brand-mark">
+    <a href="#/home" className="masar-brand flex items-center gap-3" aria-label="MASAR by AUREVON — الرئيسية">
+      <span className="masar-brand-mark">
         <img src="/icon.svg" alt="" width={38} height={38} className="h-9 w-9 object-contain" />
       </span>
       <span className="flex flex-col leading-tight">
-        <span className="vayora-brand-name" dir="ltr">MASAR</span>
+        <span className="masar-brand-name" dir="ltr">MASAR</span>
         <span className="text-[10px] text-muted">مسار · منصة تعليمية ذكية</span>
-        <span className="vayora-brand-parent mt-1 inline-flex items-center gap-1.5" dir="ltr"><GraduationCap size={12} strokeWidth={2.2} aria-hidden="true" /> AUREVON TECHNOLOGY</span>
+        <span className="masar-brand-parent mt-1 inline-flex items-center gap-1.5" dir="ltr"><GraduationCap size={12} strokeWidth={2.2} aria-hidden="true" /> AUREVON TECHNOLOGY</span>
       </span>
     </a>
   );
