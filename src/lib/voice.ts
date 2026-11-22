@@ -54,7 +54,7 @@ export function cleanForSpeech(text: string): string {
     .replace(EMOJI_CODEPOINTS, ' ')
     // Remove textual emoji shortcodes if a model emits them instead of Unicode glyphs.
     .replace(/:[a-z0-9_+-]{2,}:/gi, ' ')
-    .replace(/\bavora\b/gi, 'أفورا')
+    .replace(/\bDALIL\b/gi, 'دليل')
     .replace(/\bMASAR\b/gi, 'مسار')
     .replace(/[*#_`>~|]/g, ' ')
     .replace(/https?:\/\/\S+/gi, 'رابط')

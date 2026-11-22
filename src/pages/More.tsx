@@ -22,7 +22,7 @@ const GROUPS: { title: string; description: string; items: Item[] }[] = [
   },
   {
     title: 'التعلم المرئي',
-    description: 'شاهد الدروس على YouTube وحلّل محتواها مع AVORA.',
+    description: 'شاهد الدروس على YouTube وحلّل محتواها مع DALIL.',
     items: [
       { href: '#/youtube', label: 'فيديوهات YouTube', Icon: Youtube, tone: 'rose' },
     ],
@@ -50,7 +50,7 @@ const GROUPS: { title: string; description: string; items: Item[] }[] = [
     title: 'المساعدة والتطبيق',
     description: 'المساعد الذكي والإعدادات ومعلومات التطبيق.',
     items: [
-      { href: '#/assistant', label: 'AVORA AI', Icon: Bot, tone: 'violet' },
+      { href: '#/assistant', label: 'DALIL AI', Icon: Bot, tone: 'violet' },
       { href: '#/settings', label: 'الإعدادات', Icon: SettingsIcon, tone: 'slate' },
       { href: '#/help', label: 'شرح أزرار التطبيق', Icon: CircleHelp, tone: 'cyan' },
       { href: '#/about', label: 'عن المنصة (MASAR)', Icon: Info, tone: 'blue' },

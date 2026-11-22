@@ -140,7 +140,7 @@ export const useChat = create<ChatState>((set, get) => ({
 
   cancelExtraUsage: () => set({
     extraUsagePending: false,
-    error: 'اخترت الانتظار حتى يتجدد رصيد AVORA AI المجاني.',
+    error: 'اخترت الانتظار حتى يتجدد رصيد DALIL AI المجاني.',
   }),
 
   clear: () => {
@@ -176,7 +176,7 @@ export async function askBook(args: { question: string; name: string; text: stri
   return data.reply;
 }
 
-/** سؤال AVORA عن تفريغ فيديو؛ لا يُطلب من النموذج اختراع مشاهد أو توقيتات. */
+/** سؤال DALIL عن تفريغ فيديو؛ لا يُطلب من النموذج اختراع مشاهد أو توقيتات. */
 export async function askVideo(args: { question: string; title: string; transcript: string }): Promise<string> {
   const transcript = args.transcript.trim().slice(0, 8000);
   if (transcript.length < 20) throw new Error('أضف نص ترجمة أو تفريغاً أطول للفيديو أولاً.');

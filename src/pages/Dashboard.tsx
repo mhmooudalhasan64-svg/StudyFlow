@@ -244,7 +244,7 @@ export default function Dashboard() {
           </p>
         </div>
       </a>
-      <a href="#/about" className="group relative block overflow-hidden rounded-3xl border border-accent/25 bg-gradient-to-br from-[#101b2b] via-[#17283d] to-[#26364b] p-5 text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:border-amber-200/45 sm:p-6" aria-label="اكتشف منظومة AUREVON وMASAR وAVORA">
+      <a href="#/about" className="group relative block overflow-hidden rounded-3xl border border-accent/25 bg-gradient-to-br from-[#101b2b] via-[#17283d] to-[#26364b] p-5 text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:border-amber-200/45 sm:p-6" aria-label="اكتشف منظومة AUREVON وMASAR وDALIL">
         <div className="pointer-events-none absolute -left-12 -top-16 h-40 w-40 rounded-full bg-amber-300/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-16 -right-10 h-40 w-40 rounded-full bg-slate-300/10 blur-3xl" />
         <div className="relative">
@@ -266,12 +266,12 @@ export default function Dashboard() {
             </div>
             <div className="rounded-2xl border border-slate-300/20 bg-slate-300/10 px-1.5 py-3 text-center sm:px-3">
               <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-slate-100/20 bg-white/10"><Bot size={18} className="text-amber-100" /></span>
-              <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">AVORA</p>
+              <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">DALIL</p>
               <p className="mt-1 text-[9px] text-amber-100 sm:text-[10px]">المساعدة الذكية</p>
             </div>
           </div>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-white/10 pt-3 text-[10px] font-semibold text-slate-200 sm:text-xs">
-            <span>AUREVON تقود</span><span className="text-slate-500">·</span><span>MASAR تجمع</span><span className="text-slate-500">·</span><span>AVORA تساعد</span>
+            <span>AUREVON تقود</span><span className="text-slate-500">·</span><span>MASAR تجمع</span><span className="text-slate-500">·</span><span>DALIL تساعد</span>
           </div>
           <p className="mt-2 text-center text-[10px] font-bold text-amber-200 transition group-hover:text-white">اكتشف كيف تعمل المنظومة معاً ←</p>
         </div>

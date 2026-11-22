@@ -195,7 +195,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
   return (
     <div className="mx-auto flex max-w-2xl flex-col">
       <PageTitle
-        title="AVORA AI"
+        title="DALIL AI"
         subtitle="خطة مراجعة تلقائية، وأسئلة عن دروسك"
         action={
           messages.length > 0 ? (
@@ -206,7 +206,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
         }
       />
 
-      {sourcePage && <div className="mb-3 rounded-xl border border-accent/25 bg-accent/5 px-3 py-2 text-xs text-muted">سياق المساعدة: فتحت AVORA AI من صفحة <strong className="text-main">{sourcePage}</strong>، لذلك ستكون الإجابات مرتبطة بها.</div>}
+      {sourcePage && <div className="mb-3 rounded-xl border border-accent/25 bg-accent/5 px-3 py-2 text-xs text-muted">سياق المساعدة: فتحت DALIL AI من صفحة <strong className="text-main">{sourcePage}</strong>، لذلك ستكون الإجابات مرتبطة بها.</div>}
 
       <Advisor />
 
@@ -260,7 +260,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
           <option value="problem_solver">مساعد حل المسائل خطوة بخطوة</option>
           <option value="voice_teacher">المدرّس الصوتي</option>
         </select>
-        {style === 'mastery' && <p className="rounded-xl border border-accent/20 bg-accent/5 px-3 py-2 text-xs leading-6 text-muted">سيعمل AVORA معك بهدف واحد في كل مرة: تشخيص سريع، شرح متدرّج، تدريب، ثم تحقق من الإتقان قبل الانتقال.</p>}
+        {style === 'mastery' && <p className="rounded-xl border border-accent/20 bg-accent/5 px-3 py-2 text-xs leading-6 text-muted">سيعمل DALIL معك بهدف واحد في كل مرة: تشخيص سريع، شرح متدرّج، تدريب، ثم تحقق من الإتقان قبل الانتقال.</p>}
         {style === 'problem_solver' && <p className="rounded-xl border border-accent/20 bg-accent/5 px-3 py-2 text-xs leading-6 text-muted">حلّ منظم: تحديد المعطيات والمطلوب، اختيار القانون، التعويض والحساب بالوحدات، ثم التحقق من النتيجة. اكتب المسألة كاملة وحدد المادة، وإذا أردت تلميحاً دون الحل الكامل فاذكر ذلك.</p>}
       </div>
 
@@ -269,7 +269,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
           <div className="space-y-3 py-4 text-center">
             <Bot className="mx-auto text-accent" size={36} />
             <p className="text-sm text-muted">
-              {attachment ? 'تم إرفاق الملف. اسأل عنه أو اختر مما يلي:' : 'مرحباً! أنا AVORA AI، مساعدك الدراسي. جرّب أحد هذه الأسئلة:'}
+              {attachment ? 'تم إرفاق الملف. اسأل عنه أو اختر مما يلي:' : 'مرحباً! أنا DALIL AI، مساعدك الدراسي. جرّب أحد هذه الأسئلة:'}
             </p>
             <div className="flex flex-col gap-2">
               {(attachment ? FILE_SUGGESTIONS : SUGGESTIONS).map((s) => (
@@ -338,9 +338,9 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
           <section role="dialog" aria-modal="true" aria-labelledby="avora-extra-title" className="w-full max-w-md rounded-2xl border border-line bg-card p-5 shadow-2xl">
             <div className="mb-3 flex items-center gap-3">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent/10 text-accent"><Bot size={22} /></span>
-              <h2 id="avora-extra-title" className="text-lg font-bold">استمرار استخدام AVORA AI</h2>
+              <h2 id="avora-extra-title" className="text-lg font-bold">استمرار استخدام DALIL AI</h2>
             </div>
-            <p className="text-sm leading-7 text-muted">انتهى رصيدك المجاني الحالي. هل توافق على تفعيل الاستخدام الإضافي لمتابعة العمل مع AVORA AI؟</p>
+            <p className="text-sm leading-7 text-muted">انتهى رصيدك المجاني الحالي. هل توافق على تفعيل الاستخدام الإضافي لمتابعة العمل مع DALIL AI؟</p>
             <p className="mt-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs leading-6">قد تترتب تكلفة إضافية على هذا الخيار. لن يتم تفعيله دون موافقتك.</p>
             <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
               <button type="button" className="btn btn-primary" onClick={() => void continueWithExtraUsage()}>نعم، أوافق</button>

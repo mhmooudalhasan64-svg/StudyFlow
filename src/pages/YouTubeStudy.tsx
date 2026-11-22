@@ -285,7 +285,7 @@ export default function YouTubeStudy() {
       <section className="card space-y-3">
         <div className="flex items-center gap-2">
           <MessageCircle size={19} className="text-accent" />
-          <h2 className="font-bold">اسأل AVORA عن الفيديو</h2>
+          <h2 className="font-bold">اسأل DALIL عن الفيديو</h2>
         </div>
         <p className="text-sm leading-6 text-muted">
           شغّل الفيديو ثم ابدأ الالتقاط. على Android يلتقط MASAR صوت تشغيل الوسائط المسموح به من النظام ويحوّله محلياً إلى نص باستخدام Whisper المضمّن داخل التطبيق، دون استخدام الميكروفون بديلاً. نسخة الويب تحتفظ بالتقاط الميكروفون.
@@ -347,10 +347,10 @@ export default function YouTubeStudy() {
         <button className="btn btn-primary w-full" type="button"
           onClick={() => void submitQuestion()}
           disabled={!videoId || transcript.trim().length < 20 || !question.trim() || busy || capturing}>
-          {busy ? <><Loader2 size={17} className="animate-spin" /> جارٍ التحليل...</> : <><Send size={17} /> اسأل AVORA</>}
+          {busy ? <><Loader2 size={17} className="animate-spin" /> جارٍ التحليل...</> : <><Send size={17} /> اسأل DALIL</>}
         </button>
         {error && <p role="alert" className="text-sm text-bad">{error}</p>}
-        {answer && <div className="rounded-xl border border-subtle p-4 space-y-2"><h3 className="font-bold">إجابة AVORA</h3><p className="text-sm leading-7 whitespace-pre-wrap">{answer}</p></div>}
+        {answer && <div className="rounded-xl border border-subtle p-4 space-y-2"><h3 className="font-bold">إجابة DALIL</h3><p className="text-sm leading-7 whitespace-pre-wrap">{answer}</p></div>}
         <p className="text-xs leading-5 text-muted">
           على Android تتم معالجة الصوت محلياً بمحرك Whisper المضمّن، ولا يعتمد تحويله إلى نص على خدمة تعرّف خارجية. قد يمنع Android التقاط صوت بعض التطبيقات أو الفيديوهات وفق سياسة الحماية. في نسخة الويب يبقى الالتقاط عبر الميكروفون وخدمة التعرّف المتاحة في المتصفح.
         </p>
