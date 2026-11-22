@@ -114,7 +114,7 @@ const server = createServer(async (incoming, outgoing) => {
         'content-type': 'application/json; charset=utf-8',
         'cache-control': 'no-store',
       });
-      outgoing.end(JSON.stringify({ ok: true, service: 'vayora-avora-api' }));
+      outgoing.end(JSON.stringify({ ok: true, service: 'masar-dalil-api' }));
       return;
     }
 
@@ -191,5 +191,5 @@ const server = createServer(async (incoming, outgoing) => {
 });
 
 server.listen(port, '0.0.0.0', () => {
-  console.log(`MASAR app and avora API listening on port ${port}`);
+  console.log(`MASAR app and DALIL API listening on port ${port}`);
 });
