@@ -242,7 +242,7 @@ export default function App() {
           </div>
           <h1 className="text-2xl font-black text-main">تحديث مطلوب</h1>
           <p className="mt-3 text-sm leading-7 text-muted">
-            هذا الإصدار من MASAR لم يعد معتمداً. ثبّت أحدث إصدار من MASAR — SAPIENTIA للمتابعة.
+            هذا الإصدار من MASAR لم يعد معتمداً. ثبّت أحدث إصدار من MASAR للمتابعة.
           </p>
           <p className="mt-4 text-xs text-muted">Build {APP_BUILD_CODE} · AUREVON TECHNOLOGY</p>
         </section>
