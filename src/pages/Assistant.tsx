@@ -232,7 +232,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
 
       <h2 className="mb-1 font-bold">اسأل عن دروسك</h2>
       <p className="mb-3 text-xs text-muted">
-        هذا القسم يحتاج إنترنت، ويعمل فقط بعد أن يفعّله صاحب التطبيق بمفتاح الخدمة.
+        تحتاج هذه الميزة إلى اتصال بالإنترنت.
       </p>
 
       <details className="card mb-3 !p-3 text-sm">
