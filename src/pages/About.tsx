@@ -17,6 +17,7 @@ function BrandHero() {
       <p className="mt-5 text-3xl font-black tracking-[0.12em]" dir="ltr">MASAR</p>
       <p className="mt-1 text-lg font-bold text-sky-100">مسار</p>
       <p className="mt-4 text-sm font-semibold text-white/90">منصة تعليمية ذكية متكاملة</p>
+      <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold text-white"><span dir="rtl">الإصدار التطويري 0.0.1 · نهوض</span></div>
       <p className="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-200">تجربة تعليمية تجمع أدوات الدراسة والمعرفة والمساعدة الذكية في منظومة واحدة، لتجعل رحلة التعلم أوضح وأكثر ترابطاً.</p>
       <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold text-sky-100">
         <Sparkles size={14} /> تعلّم بذكاء. تطوّر بثقة.
