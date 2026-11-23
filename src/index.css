@@ -537,28 +537,28 @@ button:disabled {
 }
 
 
-/* ── MASAR × AUREVON: luxury technology design system ── */
+/* ── MASAR × ATHEER: black and royal-gold design system ── */
 :root {
-  --base: 246 247 249;
-  --card: 255 255 255;
-  --main: 20 27 39;
-  --muted: 104 112 125;
-  --line: 218 222 229;
-  --accent: 15 118 110;
-  --accent2: 20 184 166;
-  --accent3: 153 246 228;
-  --onaccent: 22 25 31;
+  --base: 247 244 236;
+  --card: 255 253 248;
+  --main: 25 22 16;
+  --muted: 112 104 88;
+  --line: 222 212 190;
+  --accent: 157 116 49;
+  --accent2: 201 164 76;
+  --accent3: 232 223 201;
+  --onaccent: 8 8 8;
 }
 .dark {
-  --base: 10 14 22;
-  --card: 18 24 35;
-  --main: 239 242 247;
-  --muted: 160 169 182;
-  --line: 52 62 77;
-  --accent: 20 184 166;
-  --accent2: 94 234 212;
-  --accent3: 204 251 241;
-  --onaccent: 18 22 30;
+  --base: 8 8 8;
+  --card: 20 19 16;
+  --main: 238 230 211;
+  --muted: 174 164 142;
+  --line: 69 60 43;
+  --accent: 201 164 76;
+  --accent2: 232 200 126;
+  --accent3: 245 225 174;
+  --onaccent: 8 8 8;
 }
 body {
   background-image:
@@ -596,33 +596,33 @@ body {
 }
 .masar-brand-parent span { color: rgb(var(--accent2)); font-size: .55rem; }
 .masar-brand-hero {
-  border-color: rgb(94 234 212 / .38);
+  border-color: rgb(201 164 76 / .38);
   background:
-    radial-gradient(ellipse at 12% 5%, rgb(94 234 212 / .19), transparent 43%),
-    radial-gradient(ellipse at 92% 95%, rgb(47 75 105 / .48), transparent 48%),
-    linear-gradient(135deg, #0c1421 0%, #17263a 56%, #202c3d 100%);
+    radial-gradient(ellipse at 12% 5%, rgb(201 164 76 / .19), transparent 43%),
+    radial-gradient(ellipse at 92% 95%, rgb(68 52 22 / .38), transparent 48%),
+    linear-gradient(135deg, #080808 0%, #17130a 56%, #211b0e 100%);
   box-shadow: 0 22px 58px rgb(8 15 25 / .2), inset 0 1px 0 rgb(255 255 255 / .1);
 }
 .masar-brand-hero .text-sky-100,
-.masar-brand-hero .text-sky-200\/80 { color: #99f6e4 !important; }
-.masar-brand-hero .border-sky-400\/20 { border-color: rgb(94 234 212 / .3) !important; }
-.masar-brand-hero .bg-white\/10 { background: rgb(94 234 212 / .12) !important; }
+.masar-brand-hero .text-sky-200\/80 { color: #e8dfc9 !important; }
+.masar-brand-hero .border-sky-400\/20 { border-color: rgb(201 164 76 / .3) !important; }
+.masar-brand-hero .bg-white\/10 { background: rgb(201 164 76 / .12) !important; }
 .masar-brand-hero .text-slate-200 { color: #d4dbe5 !important; }
-.aurevon-ecosystem {
-  border-color: rgb(218 183 112 / .34);
+.atheer-ecosystem {
+  border-color: rgb(201 164 76 / .34);
   background:
-    radial-gradient(ellipse at 8% 0%, rgb(218 183 112 / .14), transparent 42%),
-    radial-gradient(ellipse at 100% 100%, rgb(43 65 92 / .42), transparent 45%),
-    linear-gradient(135deg, #0a1220, #142338 58%, #1c293b);
+    radial-gradient(ellipse at 8% 0%, rgb(201 164 76 / .14), transparent 42%),
+    radial-gradient(ellipse at 100% 100%, rgb(68 52 22 / .28), transparent 45%),
+    linear-gradient(135deg, #080808, #17130a 58%, #211b0e);
 }
-.aurevon-ecosystem .text-sky-100,
-.aurevon-ecosystem .text-sky-200\/80 { color: #e5c98e !important; }
-.aurevon-ecosystem .border-sky-300\/30,
-.aurevon-ecosystem .border-sky-200\/25 { border-color: rgb(218 183 112 / .34) !important; }
-.aurevon-ecosystem .bg-sky-400\/15,
-.aurevon-ecosystem .bg-sky-100\/10 { background-color: rgb(218 183 112 / .12) !important; }
-.aurevon-ecosystem .text-violet-100,
-.aurevon-ecosystem .text-violet-200 { color: #d8c39a !important; }
+.atheer-ecosystem .text-sky-100,
+.atheer-ecosystem .text-sky-200\/80 { color: #e8dfc9 !important; }
+.atheer-ecosystem .border-sky-300\/30,
+.atheer-ecosystem .border-sky-200\/25 { border-color: rgb(201 164 76 / .34) !important; }
+.atheer-ecosystem .bg-sky-400\/15,
+.atheer-ecosystem .bg-sky-100\/10 { background-color: rgb(201 164 76 / .12) !important; }
+.atheer-ecosystem .text-violet-100,
+.atheer-ecosystem .text-violet-200 { color: #e8dfc9 !important; }
 .dashboard-hero {
   border-color: rgb(var(--accent2) / .28);
   background:
@@ -700,12 +700,12 @@ aside nav a[aria-current='page'] {
 body {
   background-image:
     radial-gradient(58rem 34rem at 100% -12%, rgb(194 153 78 / .11), transparent 58%),
-    radial-gradient(48rem 30rem at 0% 100%, rgb(36 58 84 / .07), transparent 60%);
+    radial-gradient(48rem 30rem at 0% 100%, rgb(112 87 38 / .045), transparent 60%);
 }
 .dark body {
   background-image:
     radial-gradient(58rem 34rem at 100% -12%, rgb(199 158 83 / .12), transparent 58%),
-    radial-gradient(48rem 30rem at 0% 100%, rgb(36 58 84 / .2), transparent 60%);
+    radial-gradient(48rem 30rem at 0% 100%, rgb(112 87 38 / .12), transparent 60%);
 }
 .app-sidebar {
   background: linear-gradient(180deg, rgb(var(--card) / .98), rgb(var(--base) / .94));
@@ -721,11 +721,11 @@ body {
   backdrop-filter: blur(22px);
 }
 .app-mobile-nav {
-  box-shadow: 0 -12px 34px rgb(8 15 25 / .09);
+  box-shadow: 0 -12px 34px rgb(0 0 0 / .14);
 }
 .masar-brand-mark {
   border-color: rgb(var(--accent2) / .55);
-  background: linear-gradient(145deg, #111d2e, #24364d);
+  background: linear-gradient(145deg, #080808, #1d180d);
   box-shadow: 0 7px 20px rgb(9 16 27 / .22), inset 0 1px 0 rgb(255 255 255 / .2);
 }
 .masar-brand-name { letter-spacing: .16em; }
@@ -733,15 +733,15 @@ body {
   border-color: rgb(var(--accent2) / .34);
   background:
     radial-gradient(ellipse at 8% 8%, rgb(var(--accent2) / .2), transparent 48%),
-    radial-gradient(ellipse at 94% 90%, rgb(42 65 91 / .13), transparent 42%),
+    radial-gradient(ellipse at 94% 90%, rgb(112 87 38 / .07), transparent 42%),
     linear-gradient(135deg, rgb(var(--card) / .99), rgb(var(--card) / .88));
-  box-shadow: 0 22px 54px rgb(22 35 52 / .09), inset 0 1px 0 rgb(255 255 255 / .55);
+  box-shadow: 0 22px 54px rgb(0 0 0 / .07), inset 0 1px 0 rgb(255 255 255 / .55);
 }
 .dark .dashboard-hero {
   background:
     radial-gradient(ellipse at 8% 8%, rgb(var(--accent2) / .18), transparent 48%),
-    radial-gradient(ellipse at 94% 90%, rgb(42 65 91 / .32), transparent 42%),
-    linear-gradient(135deg, #111d2e, #121a28);
+    radial-gradient(ellipse at 94% 90%, rgb(112 87 38 / .18), transparent 42%),
+    linear-gradient(135deg, #080808, #121a28);
   box-shadow: 0 24px 58px rgb(0 0 0 / .22), inset 0 1px 0 rgb(255 255 255 / .06);
 }
 .dashboard-stat {
