@@ -785,3 +785,125 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .app-main, .dashboard-stat, .card { animation: none; transition: none; }
 }
+
+
+/* ── MASAR النهضة 1.0: الهوية الزرقاء المعتمدة ── */
+:root {
+  --base: 242 247 252;
+  --card: 255 255 255;
+  --main: 18 38 61;
+  --muted: 91 115 141;
+  --line: 207 222 237;
+  --accent: 31 91 153;
+  --accent2: 39 157 190;
+  --accent3: 190 224 241;
+  --onaccent: 255 255 255;
+}
+.dark {
+  --base: 7 17 31;
+  --card: 13 29 49;
+  --main: 235 244 252;
+  --muted: 153 178 202;
+  --line: 43 69 97;
+  --accent: 57 139 205;
+  --accent2: 69 190 205;
+  --accent3: 112 198 218;
+  --onaccent: 7 17 31;
+}
+body {
+  background-image:
+    radial-gradient(58rem 34rem at 100% -12%, rgb(39 157 190 / .12), transparent 58%),
+    radial-gradient(48rem 30rem at 0% 100%, rgb(31 91 153 / .08), transparent 60%);
+}
+.dark body {
+  background-image:
+    radial-gradient(58rem 34rem at 100% -12%, rgb(39 157 190 / .16), transparent 58%),
+    radial-gradient(48rem 30rem at 0% 100%, rgb(31 91 153 / .2), transparent 60%);
+}
+.app-sidebar {
+  background: linear-gradient(180deg, rgb(var(--card) / .97), rgb(var(--base) / .94));
+  border-inline-end-color: rgb(var(--accent2) / .24);
+}
+.app-mobile-header, .app-mobile-nav {
+  background: rgb(var(--card) / .94);
+  border-color: rgb(var(--accent2) / .22);
+  backdrop-filter: blur(22px);
+}
+.masar-brand-mark {
+  border-color: rgb(var(--accent2) / .55);
+  background: linear-gradient(145deg, #0b2340, #174b78 58%, #147f9b);
+  box-shadow: 0 7px 20px rgb(11 35 64 / .24), inset 0 1px 0 rgb(255 255 255 / .2);
+}
+.masar-brand-parent { color: #b58a43; }
+.masar-brand-parent span { color: #c9a44c; }
+.masar-brand-hero {
+  border-color: rgb(201 164 76 / .38);
+  background:
+    radial-gradient(ellipse at 10% 5%, rgb(39 157 190 / .24), transparent 45%),
+    radial-gradient(ellipse at 92% 95%, rgb(201 164 76 / .12), transparent 44%),
+    linear-gradient(135deg, #07172b 0%, #102e4e 58%, #123d59 100%);
+}
+.masar-brand-hero .text-sky-100,
+.masar-brand-hero .text-sky-200\\/80 { color: #e8f4fc !important; }
+.masar-brand-hero .border-sky-400\\/20 { border-color: rgb(69 190 205 / .34) !important; }
+.masar-brand-hero .bg-white\\/10 { background: rgb(69 190 205 / .13) !important; }
+.atheer-ecosystem {
+  border-color: rgb(201 164 76 / .32);
+  background:
+    radial-gradient(ellipse at 8% 0%, rgb(39 157 190 / .18), transparent 44%),
+    radial-gradient(ellipse at 100% 100%, rgb(201 164 76 / .1), transparent 46%),
+    linear-gradient(135deg, #07172b, #102e4e 60%, #123d59);
+}
+.dashboard-hero {
+  border-color: rgb(var(--accent2) / .3);
+  background:
+    radial-gradient(ellipse at 8% 8%, rgb(var(--accent2) / .17), transparent 48%),
+    radial-gradient(ellipse at 94% 90%, rgb(201 164 76 / .07), transparent 42%),
+    linear-gradient(135deg, rgb(var(--card) / .99), rgb(var(--card) / .88));
+}
+.dark .dashboard-hero {
+  background:
+    radial-gradient(ellipse at 8% 8%, rgb(var(--accent2) / .18), transparent 48%),
+    radial-gradient(ellipse at 94% 90%, rgb(201 164 76 / .1), transparent 42%),
+    linear-gradient(135deg, #07172b, #102b48);
+}
+.dashboard-orb { border-color: rgb(var(--accent2) / .2); }
+.dashboard-stat-icon {
+  border-color: rgb(var(--accent2) / .3);
+  background: linear-gradient(145deg, rgb(var(--accent3) / .22), rgb(var(--accent) / .09));
+  color: rgb(var(--accent));
+}
+.feature-icon {
+  --feature-rgb: 39 157 190 !important;
+  border-color: rgb(var(--accent2) / .3);
+  color: rgb(var(--accent)) !important;
+  background: linear-gradient(145deg, rgb(var(--accent3) / .2), rgb(var(--accent) / .06));
+}
+.dark .feature-icon { color: rgb(var(--accent3)) !important; }
+.btn-primary {
+  border: 1px solid rgb(var(--accent2) / .6);
+  background: linear-gradient(125deg, #1f5b99, #279dbe);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgb(31 91 153 / .2);
+}
+.btn-primary:hover { background: linear-gradient(125deg, #286eae, #35aecb); }
+.btn-ghost:hover, .input:focus { border-color: rgb(var(--accent2) / .65); }
+aside nav a[aria-current='page'] {
+  border-color: rgb(var(--accent2) / .34);
+  background: linear-gradient(100deg, rgb(var(--accent2) / .16), rgb(var(--accent3) / .07));
+  color: rgb(var(--accent));
+}
+.app-mobile-nav a[aria-current='page'] { color: rgb(var(--accent)); }
+.app-mobile-nav a[aria-current='page']::before {
+  background: linear-gradient(90deg, rgb(var(--accent)), rgb(var(--accent2)));
+}
+.avora-launcher-trigger-icon {
+  background: linear-gradient(145deg, #1f5b99, #279dbe);
+  color: #fff;
+}
+.card {
+  box-shadow: 0 10px 30px rgb(14 42 68 / .045), inset 0 1px 0 rgb(255 255 255 / .2);
+}
+.dark .card {
+  box-shadow: 0 12px 32px rgb(0 0 0 / .2), inset 0 1px 0 rgb(255 255 255 / .035);
+}
