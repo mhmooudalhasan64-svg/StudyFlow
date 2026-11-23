@@ -66,30 +66,31 @@ export default function Dashboard() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-5">
-      <div className="flex items-center justify-between gap-3">
-        <PageTitle title="مساحة إنجازك" subtitle="خطّط، ركّز، وتابع تقدّمك في مكان واحد." />
-        <span className="hidden items-center gap-1.5 rounded-full border border-accent/25 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent sm:inline-flex">
-          ✦ مساحة إنجازك
-        </span>
-      </div>
+      <header className="masar-dashboard-intro flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="mb-1 text-xs font-extrabold tracking-wide text-accent">أهلاً بك في مسار</p>
+          <PageTitle title="لوحة مسارك الدراسي" subtitle="خطوة منظّمة اليوم، تقرّبك من هدفك غداً." />
+        </div>
+        <span className="masar-dashboard-mark" dir="rtl"><span aria-hidden="true">✦</span> تعلّم · نظّم · تقدّم</span>
+      </header>
 
-      <a href="#/today" className="card flex items-center justify-between gap-3 border-accent/30 bg-accent/5 transition hover:border-accent">
-        <div><p className="font-bold">لوحة يومي الدراسي</p><p className="mt-1 text-xs text-muted">مهامك ومراجعاتك ووقت تركيزك في شاشة واحدة.</p></div>
-        <span className="btn btn-primary shrink-0 !px-3 !py-2 text-xs">افتح يومي ←</span>
+      <a href="#/today" className="masar-today-link card flex items-center justify-between gap-3 border-accent/30 transition hover:border-accent">
+        <div className="min-w-0"><p className="font-bold">مسارك اليوم</p><p className="mt-1 text-xs text-muted">مهامك ومراجعاتك ووقت تركيزك في لوحة واحدة.</p></div>
+        <span className="btn btn-primary shrink-0 !px-3 !py-2 text-xs">عرض يومي <span aria-hidden="true">←</span></span>
       </a>
 
       <section className="dashboard-hero relative overflow-hidden rounded-3xl border border-accent/25 p-5 shadow-xl shadow-accent2/10 sm:p-7" aria-label="ملخص تقدمك اليوم">
         <div className="dashboard-orb dashboard-orb-one" aria-hidden="true" />
         <div className="dashboard-orb dashboard-orb-two" aria-hidden="true" />
         <div className="relative z-10">
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-semibold text-accent">✦ مساحة إنجازك اليومية</p><span className="rounded-full border border-accent/25 bg-accent/5 px-3 py-1 text-[9px] font-black tracking-[0.16em] text-accent" dir="ltr">MASAR · BY AUREVON</span></div>
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-extrabold text-accent">مسارك الدراسي يبدأ بخطوة</p><span className="rounded-full border border-accent/25 bg-accent/5 px-3 py-1 text-[10px] font-bold text-accent">منصة مسار</span></div>
           <div className="flex flex-col items-center gap-5 sm:flex-row sm:justify-between">
             <div className="order-2 flex-1 text-center sm:order-1 sm:text-start">
-              <p className="text-sm text-muted">مدة دراستك اليوم</p>
+              <p className="text-sm font-semibold text-muted">إنجازك الدراسي اليوم</p>
               <p className="mt-1 text-4xl font-black tracking-tight sm:text-5xl">{formatMinutes(todayMin)}</p>
-              <p className="mt-2 text-sm text-muted">هدفك اليومي: {formatMinutes(goal)}</p>
+              <p className="mt-2 text-sm text-muted">من هدفك اليومي البالغ {formatMinutes(goal)}</p>
               <p className="mx-auto mt-3 max-w-md text-sm leading-6 sm:mx-0">{motivationMessage(pct, streak)}</p>
-              <a href="#/timer" className="btn btn-primary mt-5">▶ ابدأ جلسة تركيز</a>
+              <a href="#/timer" className="btn btn-primary mt-5"><span aria-hidden="true">▶</span> ابدأ جلسة تركيز</a>
             </div>
             <div className="order-1 rounded-full bg-base/40 p-2 shadow-inner sm:order-2">
               <ProgressRing pct={pct} size={142} stroke={11} gradientId="ring-home">
@@ -100,7 +101,7 @@ export default function Dashboard() {
               </ProgressRing>
             </div>
           </div>
-          <div className="mt-6 border-t border-line/60 pt-4">
+          <div className="masar-daily-phrase mt-6 border-t border-line/60 pt-4">
             <p className="text-sm font-bold leading-relaxed">{dailyPhrase(today)}</p>
             <p className="mt-1 text-xs text-muted">{SLOGAN}</p>
           </div>
