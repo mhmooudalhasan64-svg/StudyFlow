@@ -11,7 +11,7 @@ import android.os.Build;
 import android.os.IBinder;
 
 public final class PlaybackCaptureService extends Service {
-    private static final String CHANNEL_ID = "vayora_playback_capture";
+    private static final String CHANNEL_ID = "masar_playback_capture";
     private static final int NOTIFICATION_ID = 7401;
     private static Runnable pendingReadyCallback;
 
@@ -40,7 +40,7 @@ public final class PlaybackCaptureService extends Service {
             NotificationChannel channel = new NotificationChannel(
                 CHANNEL_ID, "التقاط صوت الفيديو", NotificationManager.IMPORTANCE_LOW
             );
-            channel.setDescription("إشعار ظاهر أثناء تحليل صوت تشغيل الوسائط داخل VAYORA");
+            channel.setDescription("إشعار ظاهر أثناء تحليل صوت تشغيل الوسائط داخل مسار");
             NotificationManager manager = getSystemService(NotificationManager.class);
             if (manager != null) manager.createNotificationChannel(channel);
         }
@@ -49,7 +49,7 @@ public final class PlaybackCaptureService extends Service {
             : new Notification.Builder(this);
         Notification notification = builder
             .setSmallIcon(android.R.drawable.ic_btn_speak_now)
-            .setContentTitle("VAYORA — AVORA")
+            .setContentTitle("مسار — MASAR")
             .setContentText("يحلّل صوت الفيديو المسموح به من النظام")
             .setOngoing(true)
             .setCategory(Notification.CATEGORY_SERVICE)
