@@ -336,7 +336,7 @@ async function overLimit(ip: string): Promise<boolean | null> {
       const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(ip));
       const ipHash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
       const day = new Date().toISOString().slice(0, 10);
-      const key = `masar:chat:daily:${day}:${ipHash}`;
+      const key = `vayora:chat:daily:${day}:${ipHash}`;
       const script = "local n = redis.call('INCR', KEYS[1]); if n == 1 then redis.call('EXPIRE', KEYS[1], ARGV[1]); end; return n";
       const count = Number(await redisClient.eval(script, { keys: [key], arguments: ['172800'] }));
       if (!Number.isFinite(count) || count < 1) return null;
