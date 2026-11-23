@@ -234,12 +234,12 @@ export default function YouTubeStudy() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <PageTitle title="YouTube داخل VAYORA" subtitle="تصفّح YouTube وابحث عن الدروس وشاهدها من داخل تجربة VAYORA." />
+      <PageTitle title="YouTube داخل مسار" subtitle="تصفّح YouTube وابحث عن الدروس وشاهدها من داخل تجربة مسار." />
 
       <section className="card space-y-3">
         <div className="flex items-center gap-2">
           <Youtube size={22} className="text-rose-500" />
-          <h2 className="font-bold">تصفّح YouTube من داخل VAYORA</h2>
+          <h2 className="font-bold">تصفّح YouTube من داخل مسار</h2>
         </div>
         <p className="text-sm leading-6 text-muted">
           افتح واجهة YouTube لتبحث عن الفيديوهات وتتصفحها وتشاهدها. في تطبيق Android تُفتح نافذة تصفح مدمجة؛ أما نسخة الويب فقد تفتح YouTube في تبويب جديد بسبب قيود المتصفح.
@@ -250,7 +250,7 @@ export default function YouTubeStudy() {
       </section>
 
       <section className="card space-y-3">
-        <h2 className="font-bold">مشاهدة فيديو داخل VAYORA</h2>
+        <h2 className="font-bold">مشاهدة فيديو داخل مسار</h2>
         <label className="label" htmlFor="youtube-url">رابط الفيديو</label>
         <input id="youtube-url" className="input" type="url" dir="ltr" inputMode="url"
           placeholder="https://www.youtube.com/watch?v=..." value={url}
@@ -272,7 +272,7 @@ export default function YouTubeStudy() {
               </a>
             </div>
             <p className="text-xs leading-5 text-muted">
-              التنزيل متاح فقط عبر خيارات YouTube الرسمية عندما يسمح الفيديو والمنطقة والحساب بذلك. لا يتيح VAYORA تنزيل ملفات الفيديو من خوادم YouTube.
+              التنزيل متاح فقط عبر خيارات YouTube الرسمية عندما يسمح الفيديو والمنطقة والحساب بذلك. لا يتيح مسار تنزيل ملفات الفيديو من خوادم YouTube.
             </p>
           </>
         ) : url.trim() ? (
@@ -285,10 +285,10 @@ export default function YouTubeStudy() {
       <section className="card space-y-3">
         <div className="flex items-center gap-2">
           <MessageCircle size={19} className="text-accent" />
-          <h2 className="font-bold">اسأل AVORA عن الفيديو</h2>
+          <h2 className="font-bold">اسأل دليل عن الفيديو</h2>
         </div>
         <p className="text-sm leading-6 text-muted">
-          شغّل الفيديو ثم ابدأ الالتقاط. على Android يلتقط VAYORA صوت تشغيل الوسائط المسموح به من النظام ويحوّله محلياً إلى نص باستخدام Whisper المضمّن داخل التطبيق، دون استخدام الميكروفون بديلاً. نسخة الويب تحتفظ بالتقاط الميكروفون.
+          شغّل الفيديو ثم ابدأ الالتقاط. على Android يلتقط مسار صوت تشغيل الوسائط المسموح به من النظام ويحوّله محلياً إلى نص باستخدام Whisper المضمّن داخل التطبيق، دون استخدام الميكروفون بديلاً. نسخة الويب تحتفظ بالتقاط الميكروفون.
         </p>
         <div className="flex flex-wrap gap-2">
           {!capturing ? (
@@ -347,10 +347,10 @@ export default function YouTubeStudy() {
         <button className="btn btn-primary w-full" type="button"
           onClick={() => void submitQuestion()}
           disabled={!videoId || transcript.trim().length < 20 || !question.trim() || busy || capturing}>
-          {busy ? <><Loader2 size={17} className="animate-spin" /> جارٍ التحليل...</> : <><Send size={17} /> اسأل AVORA</>}
+          {busy ? <><Loader2 size={17} className="animate-spin" /> جارٍ التحليل...</> : <><Send size={17} /> اسأل دليل</>}
         </button>
         {error && <p role="alert" className="text-sm text-bad">{error}</p>}
-        {answer && <div className="rounded-xl border border-subtle p-4 space-y-2"><h3 className="font-bold">إجابة AVORA</h3><p className="text-sm leading-7 whitespace-pre-wrap">{answer}</p></div>}
+        {answer && <div className="rounded-xl border border-subtle p-4 space-y-2"><h3 className="font-bold">إجابة دليل</h3><p className="text-sm leading-7 whitespace-pre-wrap">{answer}</p></div>}
         <p className="text-xs leading-5 text-muted">
           على Android تتم معالجة الصوت محلياً بمحرك Whisper المضمّن، ولا يعتمد تحويله إلى نص على خدمة تعرّف خارجية. قد يمنع Android التقاط صوت بعض التطبيقات أو الفيديوهات وفق سياسة الحماية. في نسخة الويب يبقى الالتقاط عبر الميكروفون وخدمة التعرّف المتاحة في المتصفح.
         </p>
