@@ -1,13 +1,25 @@
-name: Build MASAR Android APK (Debug)
+name: Build ATHEER MASAR Android Debug APK
 
 on:
   push:
-    branches: ["golden-vayora-1"]
+    branches: ["atheer-masar-brand-preview"]
     paths:
+      - "src/**"
+      - "public/**"
+      - "api/**"
+      - "index.html"
+      - "package.json"
+      - "vite.config.ts"
+      - "pwa-assets.config.ts"
+      - "capacitor.config.json"
+      - "android/**"
+      - "native-audio-capture/**"
       - ".github/workflows/android-apk-debug.yml"
-      - "android/app/src/main/AndroidManifest.xml"
-      - "android/app/src/main/res/**"
   workflow_dispatch:
+
+concurrency:
+  group: atheer-masar-android-debug-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -15,9 +27,12 @@ permissions:
 jobs:
   build-debug-apk:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Fetch and verify bundled Whisper model
         shell: bash
@@ -77,12 +92,12 @@ jobs:
           APK="android/app/build/outputs/apk/debug/app-debug.apk"
           test -s "$APK"
           BADGING="$($ANDROID_HOME/build-tools/35.0.0/aapt dump badging "$APK")"
-          echo "$BADGING" | grep -F "package: name='com.aurevon.masar' versionCode='1'"
+          echo "$BADGING" | grep -F "package: name='com.atheer.masar' versionCode='1'"
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: MASAR-Android-Debug-v1
+          name: ATHEER-MASAR-Android-Debug-v1
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
