@@ -86,7 +86,7 @@ export default function PronunciationCoach() {
     setError('');
     setFeedback('');
     speak(lesson.practice, {
-      onError: message => setError(message),
+      onError: message => { setError(message); stopRef.current = null; setListening(false); },
     }, { rate: 1, style: 'soft' });
   };
 
