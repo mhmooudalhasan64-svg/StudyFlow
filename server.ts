@@ -100,7 +100,7 @@ const server = createServer(async (incoming, outgoing) => {
         ...(mobileOrigins.has(origin) ? { 'access-control-allow-origin': origin, 'vary': 'Origin' } : {}),
       });
       outgoing.end(JSON.stringify({
-        app: 'VAYORA-SAPIENTIA',
+        app: 'MASAR',
         minimumBuild: 7,
         latestBuild: 7,
         versionName: '0.0.1',
@@ -114,7 +114,7 @@ const server = createServer(async (incoming, outgoing) => {
         'content-type': 'application/json; charset=utf-8',
         'cache-control': 'no-store',
       });
-      outgoing.end(JSON.stringify({ ok: true, service: 'vayora-avora-api' }));
+      outgoing.end(JSON.stringify({ ok: true, service: 'atheer-masar-api' }));
       return;
     }
 
@@ -191,5 +191,5 @@ const server = createServer(async (incoming, outgoing) => {
 });
 
 server.listen(port, '0.0.0.0', () => {
-  console.log(`MASAR app and avora API listening on port ${port}`);
+  console.log(`MASAR app and ATHEER API listening on port ${port}`);
 });
