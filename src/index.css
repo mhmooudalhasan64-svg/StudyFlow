@@ -840,3 +840,77 @@ h1, h2, h3, .font-bold, .font-extrabold {
   .masar-brand-ar { font-size: 1.25rem; }
   .masar-brand-sub { font-size: .54rem; }
 }
+
+
+/* ── MASAR dashboard: Arabic-first hierarchy ── */
+.masar-dashboard-intro {
+  position: relative;
+  padding: .25rem .1rem .1rem;
+}
+.masar-dashboard-intro .mb-4 { margin-bottom: .15rem; }
+.masar-dashboard-intro h1 {
+  font-family: "Noto Kufi Arabic", "Tajawal", "Segoe UI", sans-serif;
+  font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+  font-weight: 900;
+  letter-spacing: -.035em;
+}
+.masar-dashboard-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  margin-bottom: .6rem;
+  border: 1px solid rgb(var(--accent2) / .28);
+  border-radius: 999px;
+  background: rgb(var(--accent2) / .07);
+  padding: .48rem .8rem;
+  color: rgb(var(--accent));
+  font-size: .68rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.masar-dashboard-mark span {
+  color: rgb(var(--accent2));
+}
+.masar-today-link {
+  background:
+    radial-gradient(ellipse at 100% 0%, rgb(var(--accent2) / .13), transparent 55%),
+    linear-gradient(110deg, rgb(var(--card) / .98), rgb(var(--accent2) / .045));
+}
+.masar-today-link > div:first-child p:first-child {
+  font-size: .95rem;
+}
+.masar-daily-phrase {
+  position: relative;
+  padding-inline-start: .9rem;
+}
+.masar-daily-phrase::before {
+  position: absolute;
+  inset-block: 1rem .2rem;
+  inset-inline-start: 0;
+  width: 2px;
+  border-radius: 999px;
+  background: linear-gradient(to bottom, rgb(var(--accent2)), transparent);
+  content: "";
+}
+.dashboard-hero {
+  border-radius: 1.65rem;
+}
+.dashboard-hero .relative.z-10 > div:first-child {
+  align-items: center;
+}
+.dashboard-hero .relative.z-10 > div:first-child span {
+  letter-spacing: 0;
+}
+@media (max-width: 640px) {
+  .masar-dashboard-intro {
+    align-items: flex-start;
+  }
+  .masar-dashboard-mark {
+    margin-top: -.25rem;
+    margin-bottom: .25rem;
+  }
+  .dashboard-hero {
+    border-radius: 1.35rem;
+    padding: 1.15rem;
+  }
+}
