@@ -678,24 +678,24 @@ aside nav a[aria-current='page'] {
 
 /* ── MASAR premium interface refinement ── */
 :root {
-  --base: 247 247 249;
-  --card: 255 255 255;
-  --main: 22 29 41;
-  --muted: 105 114 128;
-  --line: 222 225 231;
+  --base: 247 244 236;
+  --card: 255 253 248;
+  --main: 25 22 16;
+  --muted: 112 104 88;
+  --line: 222 212 190;
   --accent: 157 116 49;
-  --accent2: 194 153 78;
-  --accent3: 226 201 151;
+  --accent2: 201 164 76;
+  --accent3: 232 223 201;
 }
 .dark {
-  --base: 9 14 23;
-  --card: 17 25 37;
-  --main: 240 243 248;
-  --muted: 161 171 185;
-  --line: 48 61 78;
-  --accent: 199 158 83;
-  --accent2: 224 190 119;
-  --accent3: 241 218 164;
+  --base: 8 8 8;
+  --card: 20 19 16;
+  --main: 238 230 211;
+  --muted: 174 164 142;
+  --line: 69 60 43;
+  --accent: 201 164 76;
+  --accent2: 232 200 126;
+  --accent3: 245 225 174;
 }
 body {
   background-image:
