@@ -1,4 +1,4 @@
-import { BookOpen, BrainCircuit, Compass, GraduationCap, Layers3, Sparkles, Building2 } from 'lucide-react';
+import { BookOpen, BrainCircuit, Compass, GraduationCap, Layers3, Sparkles } from 'lucide-react';
 import { PageTitle } from '../components/ui';
 
 const pillars = [
@@ -34,14 +34,14 @@ function ProductIdentity() {
       <div className="relative text-center">
         <p className="text-[10px] font-black tracking-[0.28em] text-amber-200/80" dir="ltr">ATHEER · DIGITAL PLATFORM</p>
         <h2 className="mt-2 text-2xl font-black sm:text-3xl">أثير تطوّر منصة MASAR ومساعد DALIL</h2>
-        <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-stone-300">أثير (ATHEER) هي الشركة المالكة والمطوّرة لمنصة MASAR (مسار)، وهي منصة تعليمية ذكية متكاملة. أما DALIL (دليل) فهو المساعد الذكي المدمج داخل مسار.</p>
+        <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-stone-300">شركة أثير (ATHEER) هي المالكة والمطوّرة لمنصة MASAR (مسار)، وهي منصة تعليمية ذكية متكاملة. أما DALIL (دليل) فهو المساعد الذكي المدمج داخل مسار.</p>
       </div>
 
       <div className="relative grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <article className="rounded-2xl border border-white/10 bg-white/[0.055] p-4 text-center backdrop-blur-sm">
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-amber-200/20 bg-slate-200/10 text-amber-50 shadow-lg text-2xl font-black">أ</span>
           <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">ATHEER</p>
-          <p className="mt-1 text-sm font-bold text-amber-50/90">أثير · الشركة المالكة والمطوّرة</p>
+          <p className="mt-1 text-sm font-bold text-amber-50/90">شركة أثير · المالكة والمطوّرة</p>
           <p className="mt-3 text-xs leading-6 text-stone-300">شركة تقنية تعمل على ابتكار وتطوير تطبيقات ذكية وعملية تساعد على تنظيم الحياة اليومية وتسهيلها.</p>
           <p className="mt-3 text-[10px] font-semibold text-amber-100/80">التقنية بذكاء، والحياة ببساطة.</p>
           <span className="mt-4 inline-flex rounded-full border border-amber-200/20 bg-white/5 px-3 py-1 text-[10px] font-bold text-amber-50/90">الرؤية والتطوير</span>
