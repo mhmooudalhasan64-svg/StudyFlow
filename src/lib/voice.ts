@@ -28,7 +28,7 @@ export async function prepareVoice(): Promise<void> {
     if (!availability.available) throw new Error('ميزة التعرّف على الكلام غير متاحة على هذا الجهاز. تحقق من تثبيت خدمة Google للصوت.');
     let permission = await SpeechRecognition.checkPermissions();
     if (permission.speechRecognition !== 'granted') permission = await SpeechRecognition.requestPermissions();
-    if (permission.speechRecognition !== 'granted') throw new Error('يجب السماح لـ VAYORA باستخدام الميكروفون من إعدادات التطبيق.');
+    if (permission.speechRecognition !== 'granted') throw new Error('يجب السماح لتطبيق مسار باستخدام الميكروفون من إعدادات التطبيق.');
     return;
   }
   if (!recognitionCtor()) throw new Error('التعرّف على الكلام غير مدعوم في هذا المتصفح. افتح المنصة عبر Chrome أو استخدم تطبيق Android.');
@@ -54,8 +54,8 @@ export function cleanForSpeech(text: string): string {
     .replace(EMOJI_CODEPOINTS, ' ')
     // Remove textual emoji shortcodes if a model emits them instead of Unicode glyphs.
     .replace(/:[a-z0-9_+-]{2,}:/gi, ' ')
-    .replace(/\bavora\b/gi, 'أفورا')
-    .replace(/\bVAYORA\b/gi, 'فايورا')
+    .replace(/\bavora\b/gi, 'دليل')
+    .replace(/\bVAYORA\b/gi, 'مسار')
     .replace(/[*#_`>~|]/g, ' ')
     .replace(/https?:\/\/\S+/gi, 'رابط')
     .replace(/\s+/g, ' ')
