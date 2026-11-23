@@ -21,7 +21,7 @@ function BrandHero() {
       <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold text-amber-100">
         <Sparkles size={14} /> تعلّم بذكاء. تطوّر بثقة.
       </div>
-      <p className="mt-5 text-[10px] font-bold tracking-[0.2em] text-amber-100/80" dir="ltr">AN ATHEER PRODUCT</p>
+      <p className="mt-5 text-[10px] font-bold tracking-[0.2em] text-amber-100/80" dir="ltr">AN ATHEER PLATFORM</p>
     </section>
   );
 }
@@ -32,7 +32,7 @@ function ProductIdentity() {
       <div className="pointer-events-none absolute -left-20 -top-24 h-64 w-64 rounded-full bg-amber-400/10 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-24 -right-16 h-64 w-64 rounded-full bg-amber-400/10 blur-3xl" />
       <div className="relative text-center">
-        <p className="text-[10px] font-black tracking-[0.28em] text-amber-200/80" dir="ltr">ATHEER · PRODUCT FAMILY</p>
+        <p className="text-[10px] font-black tracking-[0.28em] text-amber-200/80" dir="ltr">ATHEER · DIGITAL PLATFORM</p>
         <h2 className="mt-2 text-2xl font-black sm:text-3xl">أثير تطوّر منصة MASAR ومساعد DALIL</h2>
         <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-stone-300">أثير هي المنصة المطوّرة لمنتجاتها الرقمية. MASAR (مسار) منصتها التعليمية، وDALIL (دليل) هو المساعد الذكي المدمج داخل تجربة مسار.</p>
       </div>
@@ -64,12 +64,12 @@ function ProductIdentity() {
       <div className="relative rounded-2xl border border-white/10 bg-black/15 p-4 sm:p-5">
         <div className="mb-4 flex items-center justify-center gap-2 text-xs font-bold text-amber-100"><Layers3 size={15} /> كيف ترتبط المنتجات؟</div>
         <div className="grid gap-2 sm:grid-cols-3">
-          <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-amber-50">01 · ATHEER</p><p className="mt-1 text-[11px] leading-5 text-stone-300">تنتج وتطوّر المنتجات</p></div>
+          <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-amber-50">01 · ATHEER</p><p className="mt-1 text-[11px] leading-5 text-stone-300">تطوّر حلولاً رقمية</p></div>
           <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-amber-100">02 · MASAR</p><p className="mt-1 text-[11px] leading-5 text-stone-300">المنصة التعليمية المتكاملة</p></div>
           <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-amber-100">03 · DALIL</p><p className="mt-1 text-[11px] leading-5 text-stone-300">المساعد الذكي المخصص لمسار</p></div>
         </div>
         <p className="mt-4 text-center text-sm font-extrabold tracking-wide">ATHEER تطوّر · MASAR تعلّم · DALIL تساعد</p>
-        <p className="mt-1 text-center text-[10px] text-slate-400">MASAR منصة تعليمية من أثير، وDALIL مساعدها الذكي المدمج.</p>
+        <p className="mt-1 text-center text-[10px] text-stone-400">MASAR منصة تعليمية من أثير، وDALIL مساعدها الذكي المدمج.</p>
       </div>
 
       <div className="relative grid gap-3 sm:grid-cols-2">
