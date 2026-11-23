@@ -785,3 +785,58 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .app-main, .dashboard-stat, .card { animation: none; transition: none; }
 }
+
+
+/* ── MASAR Arabic-first identity refinement ── */
+.masar-brand-ar {
+  color: rgb(var(--main));
+  font-family: "Noto Kufi Arabic", "Tajawal", "Segoe UI", sans-serif;
+  font-size: 1.42rem;
+  font-weight: 950;
+  line-height: 1;
+  letter-spacing: 0;
+  text-shadow: 0 1px 0 rgb(255 255 255 / .12);
+}
+.masar-brand-sub {
+  margin-top: .24rem;
+  color: rgb(var(--muted));
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .015em;
+}
+.masar-brand-sub span {
+  color: rgb(var(--accent2));
+  padding-inline: .12rem;
+}
+.vayora-brand-parent {
+  margin-top: .38rem;
+  font-size: .48rem;
+  letter-spacing: .12em;
+}
+.vayora-brand-mark {
+  border-radius: 1.05rem;
+  box-shadow: 0 8px 22px rgb(9 16 27 / .24), inset 0 1px 0 rgb(255 255 255 / .22);
+}
+.dashboard-hero {
+  position: relative;
+  overflow: hidden;
+}
+.dashboard-hero::after {
+  position: absolute;
+  inset-inline-start: -2.5rem;
+  bottom: -4rem;
+  width: 13rem;
+  height: 13rem;
+  border: 1px solid rgb(var(--accent2) / .13);
+  border-radius: 42% 58% 60% 40%;
+  transform: rotate(-28deg);
+  content: "";
+  pointer-events: none;
+}
+h1, h2, h3, .font-bold, .font-extrabold {
+  text-rendering: optimizeLegibility;
+}
+@media (max-width: 767px) {
+  .masar-brand-ar { font-size: 1.25rem; }
+  .masar-brand-sub { font-size: .54rem; }
+}
