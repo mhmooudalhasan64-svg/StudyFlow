@@ -213,7 +213,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
   };
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col">
+    <div className="dalil-assistant mx-auto flex max-w-2xl flex-col">
       <PageTitle
         title="DALIL AI"
         subtitle="خطة مراجعة تلقائية، وأسئلة عن دروسك"
