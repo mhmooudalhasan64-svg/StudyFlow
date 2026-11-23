@@ -257,15 +257,24 @@ export function listen(h: ListenHandlers): () => void {
   const Ctor = recognitionCtor();
   if (!Ctor) { h.onError('متصفحك لا يدعم الإملاء الصوتي. افتح مسار عبر Chrome حديث.'); h.onEnd(); return () => {}; }
   const r = new Ctor();
+  let stopped = false;
+  let failed = false;
   r.lang = h.lang ?? 'ar-SA';
   r.interimResults = true;
   r.continuous = false;
-  r.onresult = e => { let transcript = ''; for (let i = 0; i < e.results.length; i++) transcript += e.results[i][0].transcript; h.onText(transcript.trim()); };
+  r.onresult = e => {
+    if (stopped) return;
+    let transcript = '';
+    for (let i = 0; i < e.results.length; i++) transcript += e.results[i][0].transcript;
+    h.onText(transcript.trim());
+  };
   r.onerror = e => {
+    if (stopped) return;
+    failed = true;
     const code = e.error;
     h.onError(code === 'not-allowed' || code === 'service-not-allowed' ? 'اسمح للمتصفح باستخدام الميكروفون من إعدادات الموقع.' : code === 'no-speech' ? 'لم أسمع شيئاً، حاول مرة أخرى.' : code === 'audio-capture' ? 'تعذّر الوصول إلى الميكروفون. تحقق من توصيله وعدم استخدام تطبيق آخر له.' : 'تعذّر التعرف على الصوت.');
   };
-  r.onend = () => h.onEnd();
-  try { r.start(); } catch { h.onError('تعذّر تشغيل الميكروفون. تحقق من أذونات المتصفح.'); h.onEnd(); }
-  return () => { try { r.stop(); } catch { /* no-op */ } };
+  r.onend = () => { if (!stopped && !failed) h.onEnd(); };
+  try { r.start(); } catch { failed = true; h.onError('تعذّر تشغيل الميكروفون. تحقق من أذونات المتصفح.'); }
+  return () => { stopped = true; try { r.stop(); } catch { /* no-op */ } };
 }
