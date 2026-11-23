@@ -1,31 +1,29 @@
-name: VAYORA quality checks
+name: ATHEER MASAR quality checks
 
 on:
   push:
     branches:
-      - main
-      - feat/vayora-aurevon-skova-identity
-      - titan-enhancements
+      - atheer-masar-brand-preview
   pull_request:
     branches:
-      - main
-      - feat/vayora-aurevon-skova-identity
-      - titan-enhancements
+      - atheer-masar-brand-preview
 
 permissions:
   contents: read
 
 concurrency:
-  group: vayora-ci-${{ github.workflow }}-${{ github.ref }}
+  group: atheer-masar-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Use Node.js 22
         uses: actions/setup-node@v4
