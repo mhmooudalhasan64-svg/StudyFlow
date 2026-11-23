@@ -15,7 +15,7 @@ function BrandHero() {
         <img src="/icon.svg" alt="رمز مسار الهندسي" className="h-14 w-14" />
       </div>
       <p className="mt-5 text-3xl font-black tracking-[0.12em]" dir="ltr">MASAR</p>
-      <p className="mt-1 text-lg font-bold text-sky-100">فايورا</p>
+      <p className="mt-1 text-lg font-bold text-sky-100">مسار</p>
       <p className="mt-4 text-sm font-semibold text-white/90">منصة تعليمية ذكية متكاملة</p>
       <p className="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-200">تجربة تعليمية تجمع أدوات الدراسة والمعرفة والمساعدة الذكية في منظومة واحدة، لتجعل رحلة التعلم أوضح وأكثر ترابطاً.</p>
       <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold text-sky-100">
@@ -48,14 +48,14 @@ function ProductIdentity() {
         <article className="rounded-2xl border border-sky-300/30 bg-gradient-to-b from-sky-400/15 to-sky-950/20 p-4 text-center shadow-xl shadow-sky-950/20">
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-sky-200/25 bg-sky-100/10 shadow-lg"><img src="/icon.svg" alt="رمز مسار" className="h-10 w-10" /></span>
           <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">MASAR</p>
-          <p className="mt-1 text-sm font-bold text-sky-100">فايورا · المنصة التعليمية</p>
+          <p className="mt-1 text-sm font-bold text-sky-100">مسار · المنصة التعليمية</p>
           <p className="mt-3 text-xs leading-6 text-slate-200">المساحة التي تجمع التخطيط الدراسي، التركيز، المكتبة، المراجعة، الاختبارات، وتتبع التقدم في تجربة واحدة.</p>
           <span className="mt-4 inline-flex rounded-full border border-sky-200/25 bg-sky-100/10 px-3 py-1 text-[10px] font-bold text-sky-100">تجربة التعلم</span>
         </article>
         <article className="rounded-2xl border border-violet-300/25 bg-gradient-to-b from-violet-400/15 to-violet-950/20 p-4 text-center">
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-violet-200/25 bg-violet-100/10 shadow-lg"><BrainCircuit size={27} /></span>
           <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">دليل</p>
-          <p className="mt-1 text-sm font-bold text-violet-100">أفورا · المساعد الذكي لفايورا</p>
+          <p className="mt-1 text-sm font-bold text-violet-100">أفورا · المساعد الذكي لمسار</p>
           <p className="mt-3 text-xs leading-6 text-slate-200">المساعد الذكي لمنصة مسار؛ يساعد الطالب على فهم الدروس، والإجابة عن الأسئلة، والتفاعل النصي والصوتي ضمن تجربته التعليمية.</p>
           <span className="mt-4 inline-flex rounded-full border border-violet-200/25 bg-violet-100/10 px-3 py-1 text-[10px] font-bold text-violet-100">المساعدة الذكية</span>
         </article>
