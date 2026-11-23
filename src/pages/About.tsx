@@ -55,7 +55,7 @@ function ProductIdentity() {
         <article className="rounded-2xl border border-violet-300/25 bg-gradient-to-b from-violet-400/15 to-violet-950/20 p-4 text-center">
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-violet-200/25 bg-violet-100/10 shadow-lg"><BrainCircuit size={27} /></span>
           <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">دليل</p>
-          <p className="mt-1 text-sm font-bold text-violet-100">أفورا · المساعد الذكي لمسار</p>
+          <p className="mt-1 text-sm font-bold text-violet-100">دليل · المساعد الذكي لمنصة مسار</p>
           <p className="mt-3 text-xs leading-6 text-slate-200">المساعد الذكي لمنصة مسار؛ يساعد الطالب على فهم الدروس، والإجابة عن الأسئلة، والتفاعل النصي والصوتي ضمن تجربته التعليمية.</p>
           <span className="mt-4 inline-flex rounded-full border border-violet-200/25 bg-violet-100/10 px-3 py-1 text-[10px] font-bold text-violet-100">المساعدة الذكية</span>
         </article>
