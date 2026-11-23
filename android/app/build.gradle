@@ -6,7 +6,7 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
         // New application ID allows MASAR to install alongside the legacy app.
-        applicationId "com.aurevon.masar"
+        applicationId "com.atheer.masar"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
