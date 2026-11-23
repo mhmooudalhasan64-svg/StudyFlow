@@ -1,6 +1,6 @@
-/* Deferred AUREVON feature bundle. Loaded after the primary page becomes idle. */
+/* Deferred ATHEER feature bundle. Loaded after the primary page becomes idle. */
 export function initAurevonEnhancements(){
-/* AUREVON progressive enhancements: local playground, docs preview, offline state and subtle depth. */
+/* ATHEER progressive enhancements: local playground, docs preview, offline state and subtle depth. */
 const reducedMotion=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 if(!reducedMotion&&"IntersectionObserver" in window){
  document.body.classList.add("motion-ready");
@@ -32,11 +32,11 @@ if(labGenerate&&labBrief&&labResult){
  });
 }
 if(labCopy)labCopy.addEventListener("click",async()=>{if(!latestLabText)return;try{await labCopyText(latestLabText);labStatus.textContent=document.documentElement.lang==="en"?"COPIED":"تم النسخ";}catch(error){labStatus.textContent=document.documentElement.lang==="en"?"COPY UNAVAILABLE":"تعذر النسخ";}});
-/* Live AUREVON API playground: only endpoints implemented by this server are listed. */
+/* Live ATHEER API playground: only endpoints implemented by this server are listed. */
 const apiDefinitions={
  health:{method:"GET",path:"/api/system/health",accept:"application/json"},
- og:{method:"GET",path:"/api/og-image?title=AUREVON%20TECH&description=Digital%20products%20and%20intelligent%20experiences",accept:"image/svg+xml"},
- share:{method:"GET",path:"/api/share?share_title=AUREVON%20TECH&share_description=Digital%20products%20and%20intelligent%20experiences",accept:"text/html"}
+ og:{method:"GET",path:"/api/og-image?title=ATHEER%20TECH&description=Digital%20products%20and%20intelligent%20experiences",accept:"image/svg+xml"},
+ share:{method:"GET",path:"/api/share?share_title=ATHEER%20TECH&share_description=Digital%20products%20and%20intelligent%20experiences",accept:"text/html"}
 };
 let selectedApi="health";
 const apiCode=document.getElementById("api-code");
@@ -136,7 +136,7 @@ if(demo){
  const empty=document.getElementById("vayora-empty");
  const lang=()=>document.documentElement.lang==="en"?"en":"ar";
  const copyText=(ar,en)=>lang()==="en"?en:ar;
- const storageKey="aurevon-vayora-demo-tasks-v1";
+ const storageKey="atheer-vayora-demo-tasks-v1";
  let tasks=[];
  try{const saved=JSON.parse(localStorage.getItem(storageKey)||"null");if(Array.isArray(saved))tasks=saved.filter(t=>t&&typeof t.text==="string").slice(0,40).map(t=>({id:String(t.id),text:t.text.slice(0,90),done:Boolean(t.done)}));}catch{}
  const persist=()=>{try{localStorage.setItem(storageKey,JSON.stringify(tasks));}catch{}};
@@ -227,36 +227,36 @@ if(glowCards.length&&window.matchMedia("(hover:hover) and (pointer:fine)").match
 }
 
 
-/* AUREVON adaptive performance mode, OLED palette, live health metrics and conversion tools. */
-const toastRegion=document.getElementById("aurevon-toast-region");
-window.AUREVONToast=(message)=>{
+/* ATHEER adaptive performance mode, OLED palette, live health metrics and conversion tools. */
+const toastRegion=document.getElementById("atheer-toast-region");
+window.ATHEERToast=(message)=>{
  if(!toastRegion)return;
- const item=document.createElement("div");item.className="aurevon-toast";item.setAttribute("role","status");item.textContent=message;toastRegion.appendChild(item);
+ const item=document.createElement("div");item.className="atheer-toast";item.setAttribute("role","status");item.textContent=message;toastRegion.appendChild(item);
  window.setTimeout(()=>item.remove(),3600);
 };
 const performanceButton=document.getElementById("performance-toggle");
 const oledButton=document.getElementById("oled-toggle");
 const connection=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
-const performanceKey="aurevon-performance-mode-v1";
-const oledKey="aurevon-oled-mode-v1";
+const performanceKey="atheer-performance-mode-v1";
+const oledKey="atheer-oled-mode-v1";
 let performanceChoice=null;
 try{performanceChoice=localStorage.getItem(performanceKey);}catch(error){}
 const autoLowBandwidth=!!(connection&&(connection.saveData||/^(slow-2g|2g)$/.test(connection.effectiveType||"")));
 const setPerformanceMode=(enabled,notify=false)=>{
- document.documentElement.classList.toggle("aurevon-performance",enabled);
+ document.documentElement.classList.toggle("atheer-performance",enabled);
  if(performanceButton)performanceButton.setAttribute("aria-pressed",String(enabled));
- if(notify&&window.AUREVONToast)window.AUREVONToast(enabled?(document.documentElement.lang==="en"?"Performance mode enabled":"تم تفعيل وضع الأداء"):(document.documentElement.lang==="en"?"Full visual mode restored":"تمت استعادة المؤثرات البصرية"));
+ if(notify&&window.ATHEERToast)window.ATHEERToast(enabled?(document.documentElement.lang==="en"?"Performance mode enabled":"تم تفعيل وضع الأداء"):(document.documentElement.lang==="en"?"Full visual mode restored":"تمت استعادة المؤثرات البصرية"));
 };
 setPerformanceMode(performanceChoice==="on"||(performanceChoice===null&&autoLowBandwidth));
 if(performanceButton)performanceButton.addEventListener("click",()=>{
- const enabled=!document.documentElement.classList.contains("aurevon-performance");
+ const enabled=!document.documentElement.classList.contains("atheer-performance");
  try{localStorage.setItem(performanceKey,enabled?"on":"off");}catch(error){}
  setPerformanceMode(enabled,true);
 });
 const setOledMode=(enabled,notify=false)=>{
  document.documentElement.dataset.oled=enabled?"true":"false";
  if(oledButton)oledButton.setAttribute("aria-pressed",String(enabled));
- if(notify&&window.AUREVONToast)window.AUREVONToast(enabled?(document.documentElement.lang==="en"?"True black mode enabled":"تم تفعيل الأسود المطلق"):(document.documentElement.lang==="en"?"Standard dark palette restored":"تمت استعادة الوضع الداكن المعتاد"));
+ if(notify&&window.ATHEERToast)window.ATHEERToast(enabled?(document.documentElement.lang==="en"?"True black mode enabled":"تم تفعيل الأسود المطلق"):(document.documentElement.lang==="en"?"Standard dark palette restored":"تمت استعادة الوضع الداكن المعتاد"));
 };
 let savedOled=false;try{savedOled=localStorage.getItem(oledKey)==="on";}catch(error){}
 setOledMode(savedOled);
@@ -264,9 +264,9 @@ if(oledButton)oledButton.addEventListener("click",()=>{const enabled=document.do
 if(connection&&connection.addEventListener&&performanceChoice===null)connection.addEventListener("change",()=>setPerformanceMode(!!(connection.saveData||/^(slow-2g|2g)$/.test(connection.effectiveType||""))));
 
 /* Quick navigation: Ctrl/Cmd+K, searchable by section name. */
-const commandBackdrop=document.getElementById("aurevon-command-backdrop");
-const commandSearch=document.getElementById("aurevon-command-search");
-const commandList=document.getElementById("aurevon-command-list");
+const commandBackdrop=document.getElementById("atheer-command-backdrop");
+const commandSearch=document.getElementById("atheer-command-search");
+const commandList=document.getElementById("atheer-command-list");
 const commandTargets=[
  ["home","الرئيسية","Home"],["about","عن الشركة","About"],["capabilities","مجالاتنا","Capabilities"],["product","المنتج","Product"],["playground","مساحة الدراسة","Study workspace"],["developers","بوابة المطورين","Developer portal"],["live-metrics","مؤشرات الأداء","Live metrics"],["ecosystem","المنظومة","Ecosystem"],["project-estimator","تقدير المشروع","Project estimator"],["process","منهج العمل","Process"],["vision","الرؤية","Vision"],["newsroom","التحديثات","Release notes"],["faq","الأسئلة","FAQ"],["contact","تواصل معنا","Contact"]
 ];
@@ -278,13 +278,13 @@ const renderCommands=(query="")=>{
  const en=document.documentElement.lang==="en";
  const matches=commandTargets.filter(item=>(item[1]+" "+item[2]).toLowerCase().includes(query.toLowerCase()));
  matches.forEach(item=>{
-  const button=document.createElement("button");button.type="button";button.className="aurevon-command-item";
+  const button=document.createElement("button");button.type="button";button.className="atheer-command-item";
   const label=document.createElement("span");label.textContent=en?item[2]:item[1];
   const hint=document.createElement("small");hint.textContent="#"+item[0];button.append(label,hint);
   button.addEventListener("click",()=>{closeCommand();document.getElementById(item[0])?.scrollIntoView({behavior:reducedMotion?"auto":"smooth"});});
   commandList.appendChild(button);
  });
- if(!matches.length){const empty=document.createElement("p");empty.className="aurevon-command-item";empty.textContent=en?"No matching sections":"لا توجد أقسام مطابقة";commandList.appendChild(empty);}
+ if(!matches.length){const empty=document.createElement("p");empty.className="atheer-command-item";empty.textContent=en?"No matching sections":"لا توجد أقسام مطابقة";commandList.appendChild(empty);}
 };
 const openCommand=()=>{
  if(!commandBackdrop)return;
@@ -296,17 +296,17 @@ document.addEventListener("keydown",event=>{
  if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="k"){event.preventDefault();openCommand();}
  if(event.key==="Escape"&&commandBackdrop?.classList.contains("open"))closeCommand();
 });
-if(navigator.onLine===false)window.AUREVONToast?.(document.documentElement.lang==="en"?"You are currently offline":"الاتصال بالإنترنت غير متاح حالياً");
-window.addEventListener("offline",()=>window.AUREVONToast?.(document.documentElement.lang==="en"?"Connection lost":"انقطع الاتصال بالإنترنت"));
-window.addEventListener("online",()=>window.AUREVONToast?.(document.documentElement.lang==="en"?"Connection restored":"عاد الاتصال بالإنترنت"));
+if(navigator.onLine===false)window.ATHEERToast?.(document.documentElement.lang==="en"?"You are currently offline":"الاتصال بالإنترنت غير متاح حالياً");
+window.addEventListener("offline",()=>window.ATHEERToast?.(document.documentElement.lang==="en"?"Connection lost":"انقطع الاتصال بالإنترنت"));
+window.addEventListener("online",()=>window.ATHEERToast?.(document.documentElement.lang==="en"?"Connection restored":"عاد الاتصال بالإنترنت"));
 
 /* Health data comes from the real server endpoint; RTT is measured in this browser. */
-const healthStatus=document.getElementById("aurevon-metric-status");
-const healthRtt=document.getElementById("aurevon-metric-rtt");
-const healthUptime=document.getElementById("aurevon-metric-uptime");
-const healthLabel=document.getElementById("aurevon-health-label");
-const healthChecked=document.getElementById("aurevon-metric-checked");
-const healthRefresh=document.getElementById("aurevon-metric-refresh");
+const healthStatus=document.getElementById("atheer-metric-status");
+const healthRtt=document.getElementById("atheer-metric-rtt");
+const healthUptime=document.getElementById("atheer-metric-uptime");
+const healthLabel=document.getElementById("atheer-health-label");
+const healthChecked=document.getElementById("atheer-metric-checked");
+const healthRefresh=document.getElementById("atheer-metric-refresh");
 const formatUptime=seconds=>{
  const total=Math.max(0,Number(seconds)||0),days=Math.floor(total/86400),hours=Math.floor(total%86400/3600),minutes=Math.floor(total%3600/60);
  return days?days+"d "+hours+"h":hours?hours+"h "+minutes+"m":minutes+"m";
@@ -338,14 +338,14 @@ healthRefresh?.addEventListener("click",checkAurevonHealth);
 if(healthStatus){checkAurevonHealth();window.setInterval(checkAurevonHealth,60000);}
 
 /* Rule-based estimate: transparent planning range, never presented as AI output. */
-const estimatorForm=document.getElementById("aurevon-estimator-form");
-const estimatorOutput=document.getElementById("aurevon-estimator-output");
+const estimatorForm=document.getElementById("atheer-estimator-form");
+const estimatorOutput=document.getElementById("atheer-estimator-output");
 estimatorForm?.addEventListener("submit",event=>{
  event.preventDefault();
  const en=document.documentElement.lang==="en";
- const type=document.getElementById("aurevon-estimator-type").value;
- const screens=Math.max(1,Math.min(100,Number(document.getElementById("aurevon-estimator-screens").value)||1));
- const ai=document.getElementById("aurevon-estimator-ai").value;
+ const type=document.getElementById("atheer-estimator-type").value;
+ const screens=Math.max(1,Math.min(100,Number(document.getElementById("atheer-estimator-screens").value)||1));
+ const ai=document.getElementById("atheer-estimator-ai").value;
  const base={website:1.5,webapp:3,mobile:4.5,platform:5.5}[type]||3;
  const complexity=Math.max(0,screens-5)*.18;
  const integration={none:0,basic:1,advanced:2.5}[ai]||0;
@@ -360,15 +360,15 @@ estimatorForm?.addEventListener("submit",event=>{
  estimatorOutput.replaceChildren();
  const kicker=document.createElement("div");kicker.className="kicker";kicker.textContent="EXECUTIVE SUMMARY";
  const heading=document.createElement("h3");heading.textContent=title;
- const rangeNode=document.createElement("div");rangeNode.className="aurevon-estimate-range";rangeNode.textContent=range;
+ const rangeNode=document.createElement("div");rangeNode.className="atheer-estimate-range";rangeNode.textContent=range;
  const desc=document.createElement("p");desc.textContent=summary;
  const list=document.createElement("ol");steps.forEach(step=>{const li=document.createElement("li");li.textContent=step;list.appendChild(li);});
  const note=document.createElement("p");note.textContent=en?"Rule-based planning range only. Discovery may change scope and schedule; no price or delivery commitment is implied.":"نطاق تخطيطي قائم على قواعد تقريبية فقط. قد تغيّر مرحلة التحليل النطاق والمدة؛ ولا يمثّل ذلك سعراً أو التزاماً بالتسليم.";
  estimatorOutput.append(kicker,heading,rangeNode,desc,list,note);
- window.AUREVONToast?.(en?"Planning estimate generated":"تم إنشاء التقدير التخطيطي");
+ window.ATHEERToast?.(en?"Planning estimate generated":"تم إنشاء التقدير التخطيطي");
 });
 
-/* Copy the official AUREVON contact number on request. */
+/* Copy the official ATHEER contact number on request. */
 document.querySelectorAll("[data-copy-phone]").forEach(button=>{
  button.addEventListener("click",async()=>{
   const number=button.dataset.copyPhone;
