@@ -103,7 +103,7 @@ const server = createServer(async (incoming, outgoing) => {
         app: 'MASAR',
         minimumBuild: 7,
         latestBuild: 7,
-        versionName: '0.0.1',
+        versionName: '1.0.0',
         updateRequired: false,
       }));
       return;
