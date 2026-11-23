@@ -975,3 +975,112 @@ h1, h2, h3, .font-bold, .font-extrabold {
 @media (prefers-reduced-motion: reduce) {
   .app-mobile-nav-link svg { transition: none; }
 }
+
+
+/* MASAR — Arabic-first identity system (replaces inherited VAYORA palette) */
+:root {
+  color-scheme: light;
+  --base: 244 248 249;
+  --card: 255 255 255;
+  --main: 16 42 56;
+  --muted: 93 116 128;
+  --line: 214 228 232;
+  --accent: 15 159 147;
+  --accent2: 70 197 181;
+  --accent3: 190 239 230;
+  --onaccent: 5 34 39;
+  --ok: 39 132 99;
+  --bad: 183 67 76;
+  --surface-glass: 255 255 255;
+}
+.dark {
+  color-scheme: dark;
+  --base: 7 21 31;
+  --card: 15 37 49;
+  --main: 232 246 244;
+  --muted: 151 180 187;
+  --line: 37 66 76;
+  --accent: 64 201 184;
+  --accent2: 124 224 208;
+  --accent3: 179 242 231;
+  --onaccent: 5 31 34;
+  --ok: 116 210 166;
+  --bad: 235 132 139;
+  --surface-glass: 16 39 50;
+}
+body {
+  background-image:
+    radial-gradient(58rem 32rem at 100% -12%, rgb(var(--accent) / .12), transparent 62%),
+    radial-gradient(46rem 28rem at -8% 105%, rgb(var(--accent2) / .08), transparent 62%);
+}
+.card {
+  border-color: rgb(var(--line) / .88);
+  background-image: linear-gradient(145deg, rgb(var(--card) / .98), rgb(var(--card) / .88));
+  box-shadow: 0 12px 34px rgb(5 31 42 / .055), inset 0 1px 0 rgb(255 255 255 / .16);
+}
+.btn-primary {
+  background: linear-gradient(115deg, rgb(var(--accent)), rgb(var(--accent2)));
+  color: rgb(var(--onaccent));
+  box-shadow: 0 8px 22px rgb(var(--accent) / .22);
+}
+.app-sidebar {
+  background: linear-gradient(180deg, rgb(var(--card) / .96), rgb(var(--base) / .92));
+}
+.app-mobile-nav {
+  background: rgb(var(--card) / .96);
+}
+.dashboard-hero {
+  background:
+    radial-gradient(ellipse at 8% 8%, rgb(var(--accent2) / .2), transparent 48%),
+    radial-gradient(ellipse at 92% 92%, rgb(var(--accent3) / .13), transparent 44%),
+    linear-gradient(135deg, rgb(var(--card) / .99), rgb(var(--card) / .86));
+  border: 1px solid rgb(var(--accent) / .15);
+}
+.vayora-brand-mark {
+  border-radius: 1rem;
+  background: linear-gradient(145deg, #0b2635, #14505a);
+  box-shadow: 0 8px 22px rgb(4 27 36 / .24), inset 0 1px 0 rgb(255 255 255 / .2);
+  padding: .16rem;
+}
+.vayora-brand-mark img { border-radius: .86rem; }
+.masar-brand-ar {
+  color: rgb(var(--main));
+  font-family: "Noto Kufi Arabic", "Tajawal", "Segoe UI", sans-serif;
+  font-size: 1.45rem;
+  font-weight: 950;
+  letter-spacing: -.055em;
+}
+.masar-brand-sub {
+  color: rgb(var(--muted));
+  font-size: .62rem;
+  font-weight: 750;
+  letter-spacing: 0;
+}
+.vayora-brand-parent {
+  color: rgb(var(--accent));
+  font-size: .53rem;
+  font-weight: 850;
+  letter-spacing: .035em;
+}
+.app-sidebar-link[aria-current='page'] {
+  border-color: rgb(var(--accent) / .24);
+  background: linear-gradient(110deg, rgb(var(--accent) / .15), rgb(var(--accent2) / .08));
+  color: rgb(var(--main));
+}
+.app-sidebar-link[aria-current='page'] svg,
+.app-mobile-nav-link[aria-current='page'] svg { color: rgb(var(--accent)); }
+.app-mobile-nav-link[aria-current='page']::before {
+  background: linear-gradient(90deg, rgb(var(--accent)), rgb(var(--accent2)));
+}
+.app-sidebar-caption { color: rgb(var(--muted)); }
+.dashboard-stat-icon {
+  border-color: rgb(var(--accent) / .2);
+  background: linear-gradient(145deg, rgb(var(--accent3) / .2), rgb(var(--accent) / .1));
+  color: rgb(var(--accent));
+}
+.dashboard-stat-icon svg { color: rgb(var(--accent)); }
+.dark .dashboard-stat-icon svg { color: rgb(var(--accent2)); }
+@media (max-width: 640px) {
+  .masar-brand-ar { font-size: 1.3rem; }
+  .masar-brand-sub { font-size: .57rem; }
+}
