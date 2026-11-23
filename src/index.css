@@ -804,7 +804,7 @@ body,.dark body{background-color:rgb(var(--base));background-image:radial-gradie
 .btn-primary{border:1px solid rgb(var(--accent2)/.72);background:linear-gradient(135deg,#C9A44C,#E8DFC9);color:#080808;box-shadow:0 7px 20px rgb(201 164 76/.2)}
 .btn-primary:hover{background:linear-gradient(135deg,#D8B65F,#F0E7D3)}.btn-ghost:hover,.input:focus{border-color:rgb(var(--accent2)/.72)}
 aside nav a[aria-current=page]{border-color:rgb(var(--accent2)/.42);background:linear-gradient(100deg,rgb(var(--accent2)/.18),rgb(var(--accent3)/.06));color:rgb(var(--accent))}
-.dark aside nav a[aria-current=page]{color:rgb(var(--accent3))}.app-mobile-nav a[aria-current=page]{color:rgb(var(--accent)}
+.dark aside nav a[aria-current=page]{color:rgb(var(--accent3))}.app-mobile-nav a[aria-current=page]{color:rgb(var(--accent))}
 .avora-launcher-trigger{border-color:rgb(var(--accent2)/.62)}.avora-launcher-trigger-icon{background:linear-gradient(145deg,#C9A44C,#E8DFC9);color:#080808}
 .masar-brand-hero,.atheer-ecosystem{border-color:rgb(201 164 76/.48)!important;background:radial-gradient(ellipse at 8% 0%,rgb(201 164 76/.17),transparent 43%),radial-gradient(ellipse at 100% 100%,rgb(232 223 201/.045),transparent 46%),linear-gradient(135deg,#080808 0%,#17130b 58%,#252525 100%)!important;color:#E8DFC9!important;box-shadow:0 22px 58px rgb(0 0 0/.3),inset 0 1px 0 rgb(232 223 201/.07)}
 .masar-brand-hero .text-sky-100,.atheer-ecosystem .text-sky-100,.atheer-ecosystem .text-violet-100,.atheer-ecosystem .text-violet-200{color:#E8DFC9!important}
