@@ -69,7 +69,7 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
         }
         void handleTranscript(heard);
       },
-      onError: message => setError(message),
+      onError: message => { setError(message); stopTeacher(); },
     });
   };
   startListeningRef.current = startListening;
