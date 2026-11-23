@@ -785,3 +785,30 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .app-main, .dashboard-stat, .card { animation: none; transition: none; }
 }
+
+
+/* ATHEER identity layer — black, royal gold and warm ivory */
+:root{color-scheme:light;--base:244 240 230;--card:255 252 244;--main:37 37 37;--muted:105 96 78;--line:215 202 172;--accent:145 106 35;--accent2:201 164 76;--accent3:232 223 201;--onaccent:8 8 8}
+.dark{color-scheme:dark;--base:8 8 8;--card:37 37 37;--main:232 223 201;--muted:174 164 141;--line:83 72 49;--accent:201 164 76;--accent2:224 190 119;--accent3:232 223 201;--onaccent:8 8 8}
+body,.dark body{background-color:rgb(var(--base));background-image:radial-gradient(56rem 32rem at 100% -12%,rgb(201 164 76/.12),transparent 58%),radial-gradient(44rem 28rem at 0% 105%,rgb(232 223 201/.035),transparent 62%)}
+.app-sidebar{background:linear-gradient(180deg,rgb(var(--card)/.98),rgb(var(--base)/.96));border-inline-end-color:rgb(var(--accent2)/.28)}
+.app-mobile-header,.app-mobile-nav{background:rgb(var(--card)/.94);border-color:rgb(var(--accent2)/.24)}
+.masar-brand-mark{border-color:rgb(var(--accent2)/.7);background:linear-gradient(145deg,#080808,#252525);box-shadow:0 7px 22px rgb(0 0 0/.28),inset 0 1px 0 rgb(232 223 201/.12)}
+.masar-brand-name{color:rgb(var(--main))}.masar-brand-parent{color:#C9A44C;letter-spacing:.13em}
+.dashboard-hero{border-color:rgb(var(--accent2)/.42);background:radial-gradient(ellipse at 8% 8%,rgb(var(--accent2)/.18),transparent 48%),radial-gradient(ellipse at 94% 90%,rgb(232 223 201/.055),transparent 42%),linear-gradient(135deg,rgb(var(--card)/.99),rgb(var(--base)/.88))}
+.dark .dashboard-hero{background:radial-gradient(ellipse at 8% 8%,rgb(201 164 76/.16),transparent 48%),radial-gradient(ellipse at 94% 90%,rgb(232 223 201/.045),transparent 42%),linear-gradient(135deg,#17130b,#080808)}
+.dashboard-orb{border-color:rgb(var(--accent2)/.22)}.dashboard-stat,.card{border-color:rgb(var(--line)/.82)}
+.dark .dashboard-stat,.dark .card{background-color:rgb(var(--card)/.9)}
+.feature-icon,.dashboard-stat-icon{--feature-rgb:201 164 76!important;border-color:rgb(var(--accent2)/.38);color:rgb(var(--accent))!important;background:linear-gradient(145deg,rgb(var(--accent3)/.17),rgb(var(--accent2)/.07))}
+.dark .feature-icon,.dark .dashboard-stat-icon{color:rgb(var(--accent3))!important}
+.btn-primary{border:1px solid rgb(var(--accent2)/.72);background:linear-gradient(135deg,#C9A44C,#E8DFC9);color:#080808;box-shadow:0 7px 20px rgb(201 164 76/.2)}
+.btn-primary:hover{background:linear-gradient(135deg,#D8B65F,#F0E7D3)}.btn-ghost:hover,.input:focus{border-color:rgb(var(--accent2)/.72)}
+aside nav a[aria-current=page]{border-color:rgb(var(--accent2)/.42);background:linear-gradient(100deg,rgb(var(--accent2)/.18),rgb(var(--accent3)/.06));color:rgb(var(--accent))}
+.dark aside nav a[aria-current=page]{color:rgb(var(--accent3))}.app-mobile-nav a[aria-current=page]{color:rgb(var(--accent)}
+.avora-launcher-trigger{border-color:rgb(var(--accent2)/.62)}.avora-launcher-trigger-icon{background:linear-gradient(145deg,#C9A44C,#E8DFC9);color:#080808}
+.masar-brand-hero,.atheer-ecosystem{border-color:rgb(201 164 76/.48)!important;background:radial-gradient(ellipse at 8% 0%,rgb(201 164 76/.17),transparent 43%),radial-gradient(ellipse at 100% 100%,rgb(232 223 201/.045),transparent 46%),linear-gradient(135deg,#080808 0%,#17130b 58%,#252525 100%)!important;color:#E8DFC9!important;box-shadow:0 22px 58px rgb(0 0 0/.3),inset 0 1px 0 rgb(232 223 201/.07)}
+.masar-brand-hero .text-sky-100,.atheer-ecosystem .text-sky-100,.atheer-ecosystem .text-violet-100,.atheer-ecosystem .text-violet-200{color:#E8DFC9!important}
+.atheer-ecosystem .text-slate-200,.atheer-ecosystem .text-slate-300,.atheer-ecosystem .text-slate-400{color:#CFC4AA!important}
+.atheer-ecosystem .text-amber-200,.atheer-ecosystem .text-amber-100{color:#E8DFC9!important}
+.atheer-ecosystem .border-sky-300\/30,.atheer-ecosystem .border-violet-300\/25,.atheer-ecosystem .border-amber-200\/25{border-color:rgb(201 164 76/.38)!important}
+.atheer-ecosystem .bg-sky-400\/15,.atheer-ecosystem .bg-sky-100\/10,.atheer-ecosystem .bg-violet-400\/15,.atheer-ecosystem .bg-violet-100\/10,.atheer-ecosystem .bg-amber-200\/10{background-color:rgb(201 164 76/.12)!important}

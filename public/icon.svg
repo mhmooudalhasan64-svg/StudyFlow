@@ -1,34 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="MASAR">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#071329"/>
-      <stop offset="1" stop-color="#102B4A"/>
-    </linearGradient>
-    <linearGradient id="page" x1="0" y1="0" x2="0.9" y2="1">
-      <stop offset="0" stop-color="#FFFFFF"/>
-      <stop offset="1" stop-color="#B9D8E8"/>
-    </linearGradient>
-    <linearGradient id="road" x1="0" y1="1" x2="0.8" y2="0">
-      <stop offset="0" stop-color="#087F8C"/>
-      <stop offset="0.55" stop-color="#12D6C3"/>
-      <stop offset="1" stop-color="#B9FFF7"/>
-    </linearGradient>
-    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#FFF1A8"/>
-      <stop offset="1" stop-color="#D99A27"/>
-    </linearGradient>
-    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
-      <feGaussianBlur stdDeviation="7" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
-  <rect width="256" height="256" rx="58" fill="url(#bg)"/>
-  <circle cx="128" cy="117" r="94" fill="none" stroke="url(#gold)" stroke-width="4" opacity=".7"/>
-  <path d="M128 21 L137 39 L156 48 L137 57 L128 76 L119 57 L100 48 L119 39 Z" fill="url(#gold)" filter="url(#glow)"/>
-  <path d="M24 174 Q72 151 126 185 Q181 151 232 174 L232 208 Q179 190 128 224 Q77 190 24 208 Z" fill="#0A9C9D" opacity=".95"/>
-  <path d="M27 165 Q77 143 128 178 Q179 143 229 165 L229 193 Q178 177 128 211 Q78 177 27 193 Z" fill="url(#page)"/>
-  <path d="M128 178 Q128 196 128 211" fill="none" stroke="#8AAFC4" stroke-width="3" opacity=".9"/>
-  <path d="M128 185 C105 163 74 151 42 157 L42 181 C75 178 103 190 128 211 C153 190 181 178 214 181 L214 157 C182 151 151 163 128 185Z" fill="#EAF7FC" opacity=".9"/>
-  <path d="M128 190 C111 165 88 151 70 143 C49 134 58 113 87 103 C111 95 130 82 128 66 L107 66 L128 39 L149 66 L137 66 C142 96 119 112 98 123 C87 129 93 137 111 145 C129 153 145 165 153 184 Z" fill="url(#road)" filter="url(#glow)"/>
-  <path d="M128 39 L107 66 L119 64 L128 78 L137 64 L149 66 Z" fill="#D8FFFC"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="MASAR by ATHEER">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#080808"/><stop offset="1" stop-color="#252525"/></linearGradient><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8DFC9"/><stop offset=".48" stop-color="#C9A44C"/><stop offset="1" stop-color="#8D692B"/></linearGradient></defs>
+<rect width="256" height="256" rx="58" fill="url(#bg)"/>
+<path d="M128 20 151 33 164 56 151 79 128 92 105 79 92 56 105 33Z" fill="none" stroke="url(#gold)" stroke-width="3.5" opacity=".8"/>
+<path d="M128 38 140 58 128 78 116 58Z" fill="url(#gold)"/>
+<path d="M43 143 112 124 128 135 144 124 213 143 213 190 145 170 128 182 111 170 43 190Z" fill="none" stroke="url(#gold)" stroke-width="7" stroke-linejoin="round"/>
+<path d="M128 135V181M57 151 111 166M199 151 145 166M128 126V93M116 106 128 93 140 106" fill="none" stroke="url(#gold)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

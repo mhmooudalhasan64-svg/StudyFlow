@@ -244,7 +244,7 @@ export default function App() {
           <p className="mt-3 text-sm leading-7 text-muted">
             هذا الإصدار من MASAR لم يعد معتمداً. ثبّت أحدث إصدار من MASAR للمتابعة.
           </p>
-          <p className="mt-4 text-xs text-muted">Build {APP_BUILD_CODE} · AUREVON TECHNOLOGY</p>
+          <p className="mt-4 text-xs text-muted">Build {APP_BUILD_CODE} · ATHEER | أثير</p>
         </section>
       </div>
     );
@@ -386,14 +386,14 @@ function OfflineChip() {
 
 function Brand() {
   return (
-    <a href="#/home" className="masar-brand flex items-center gap-3" aria-label="MASAR by AUREVON — الرئيسية">
+    <a href="#/home" className="masar-brand flex items-center gap-3" aria-label="MASAR — منتج من أثير | ATHEER — الرئيسية">
       <span className="masar-brand-mark">
         <img src="/icon.svg" alt="" width={38} height={38} className="h-9 w-9 object-contain" />
       </span>
       <span className="flex flex-col leading-tight">
         <span className="masar-brand-name" dir="ltr">MASAR</span>
         <span className="text-[10px] text-muted">مسار · منصة تعليمية ذكية</span>
-        <span className="masar-brand-parent mt-1 inline-flex items-center gap-1.5" dir="ltr"><GraduationCap size={12} strokeWidth={2.2} aria-hidden="true" /> AUREVON TECHNOLOGY</span>
+        <span className="masar-brand-parent mt-1 inline-flex items-center gap-1.5" dir="ltr">ATHEER <span aria-hidden="true">·</span> أثير</span>
       </span>
     </a>
   );
