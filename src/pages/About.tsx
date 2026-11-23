@@ -16,31 +16,31 @@ function BrandHero() {
       </div>
       <p className="mt-5 text-3xl font-black tracking-[0.12em]" dir="ltr">MASAR</p>
       <p className="mt-1 text-lg font-bold text-sky-100">مسار</p>
-      <p className="mt-4 text-sm font-semibold text-white/90">MASAR · تطبيق تعليمي ضمن منظومة أثير</p>
+      <p className="mt-4 text-sm font-semibold text-white/90">منصة تعليمية ذكية متكاملة</p>
       <p className="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-200">تجربة تعليمية تجمع أدوات الدراسة والمعرفة والمساعدة الذكية في منظومة واحدة، لتجعل رحلة التعلم أوضح وأكثر ترابطاً.</p>
       <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold text-sky-100">
-        <Sparkles size={14} /> التقنية بذكاء، والحياة ببساطة.
+        <Sparkles size={14} /> تعلّم بذكاء. تطوّر بثقة.
       </div>
-      <p className="mt-5 text-[10px] font-bold tracking-[0.2em] text-sky-100/80" dir="ltr">A PRODUCT BY ATHEER</p>
+      <p className="mt-5 text-[10px] font-bold tracking-[0.2em] text-sky-100/80" dir="ltr">AN AUREVON PRODUCT</p>
     </section>
   );
 }
 
 function ProductIdentity() {
   return (
-    <section className="atheer-ecosystem relative isolate space-y-6 overflow-hidden rounded-3xl border p-5 text-white shadow-2xl sm:p-7">
+    <section className="aurevon-ecosystem relative isolate space-y-6 overflow-hidden rounded-3xl border p-5 text-white shadow-2xl sm:p-7">
       <div className="pointer-events-none absolute -left-20 -top-24 h-64 w-64 rounded-full bg-sky-400/10 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-24 -right-16 h-64 w-64 rounded-full bg-violet-400/10 blur-3xl" />
       <div className="relative text-center">
-        <p className="text-[10px] font-black tracking-[0.28em] text-sky-200/80" dir="ltr">ATHEER · PRODUCT FAMILY</p>
-        <h2 className="mt-2 text-2xl font-black sm:text-3xl">أثير تطوّر حلولاً ذكية، ومنها MASAR وDALIL</h2>
-        <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-slate-300">أثير هي المنصة والشركة المطوّرة. MASAR أحد تطبيقاتها التعليمية، وDALIL هو المساعد الذكي المدمج داخل مسار.</p>
+        <p className="text-[10px] font-black tracking-[0.28em] text-sky-200/80" dir="ltr">AUREVON · PRODUCT FAMILY</p>
+        <h2 className="mt-2 text-2xl font-black sm:text-3xl">AUREVON تنتج MASAR وDALIL</h2>
+        <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-slate-300">AUREVON هي الجهة المنتجة لكلٍّ من MASAR وDALIL. مسار هي المنصة التعليمية، ودليل هو المساعد الذكي والذكاء الاصطناعي المخصص للعمل داخلها.</p>
       </div>
 
       <div className="relative grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <article className="rounded-2xl border border-white/10 bg-white/[0.055] p-4 text-center backdrop-blur-sm">
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-slate-300/20 bg-slate-200/10 text-slate-100 shadow-lg"><Building2 size={26} /></span>
-          <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">ATHEER</p>
+          <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">AUREVON</p>
           <p className="mt-1 text-sm font-bold text-slate-200">أوريفون · الشركة المنتجة</p>
           <p className="mt-3 text-xs leading-6 text-slate-300">الجهة المنتجة والمطوّرة لمنتجاتها الرقمية، ومنها MASAR وDALIL.</p>
           <span className="mt-4 inline-flex rounded-full border border-slate-300/20 bg-white/5 px-3 py-1 text-[10px] font-bold text-slate-200">الرؤية والتطوير</span>
@@ -48,14 +48,14 @@ function ProductIdentity() {
         <article className="rounded-2xl border border-sky-300/30 bg-gradient-to-b from-sky-400/15 to-sky-950/20 p-4 text-center shadow-xl shadow-sky-950/20">
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-sky-200/25 bg-sky-100/10 shadow-lg"><img src="/icon.svg" alt="رمز MASAR" className="h-10 w-10" /></span>
           <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">MASAR</p>
-          <p className="mt-1 text-sm font-bold text-sky-100">مسار · التطبيق التعليمي</p>
+          <p className="mt-1 text-sm font-bold text-sky-100">مسار · المنصة التعليمية</p>
           <p className="mt-3 text-xs leading-6 text-slate-200">المساحة التي تجمع التخطيط الدراسي، التركيز، المكتبة، المراجعة، الاختبارات، وتتبع التقدم في تجربة واحدة.</p>
           <span className="mt-4 inline-flex rounded-full border border-sky-200/25 bg-sky-100/10 px-3 py-1 text-[10px] font-bold text-sky-100">تجربة التعلم</span>
         </article>
         <article className="rounded-2xl border border-violet-300/25 bg-gradient-to-b from-violet-400/15 to-violet-950/20 p-4 text-center">
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-violet-200/25 bg-violet-100/10 shadow-lg"><BrainCircuit size={27} /></span>
           <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">DALIL</p>
-          <p className="mt-1 text-sm font-bold text-violet-100">دليل | DALIL AI · المساعد الذكي لمسار</p>
+          <p className="mt-1 text-sm font-bold text-violet-100">دليل · المساعد الذكي لمسار</p>
           <p className="mt-3 text-xs leading-6 text-slate-200">الذكاء الاصطناعي المخصص لمنصة MASAR؛ يساعد الطالب على فهم الدروس، والإجابة عن الأسئلة، والتفاعل النصي والصوتي ضمن تجربته التعليمية.</p>
           <span className="mt-4 inline-flex rounded-full border border-violet-200/25 bg-violet-100/10 px-3 py-1 text-[10px] font-bold text-violet-100">المساعدة الذكية</span>
         </article>
@@ -64,12 +64,12 @@ function ProductIdentity() {
       <div className="relative rounded-2xl border border-white/10 bg-black/15 p-4 sm:p-5">
         <div className="mb-4 flex items-center justify-center gap-2 text-xs font-bold text-sky-100"><Layers3 size={15} /> كيف ترتبط المنتجات؟</div>
         <div className="grid gap-2 sm:grid-cols-3">
-          <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-slate-100">01 · ATHEER</p><p className="mt-1 text-[11px] leading-5 text-slate-300">تنتج وتطوّر المنتجات</p></div>
+          <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-slate-100">01 · AUREVON</p><p className="mt-1 text-[11px] leading-5 text-slate-300">تنتج وتطوّر المنتجات</p></div>
           <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-sky-100">02 · MASAR</p><p className="mt-1 text-[11px] leading-5 text-slate-300">المنصة التعليمية المتكاملة</p></div>
           <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-violet-100">03 · DALIL</p><p className="mt-1 text-[11px] leading-5 text-slate-300">المساعد الذكي المخصص لمسار</p></div>
         </div>
-        <p className="mt-4 text-center text-sm font-extrabold tracking-wide">ATHEER تبتكر · MASAR تنظّم التعلّم · DALIL تساعد</p>
-        <p className="mt-1 text-center text-[10px] text-slate-400">MASAR تطبيق تعليمي من أثير، وDALIL هو المساعد الذكي المخصص للعمل داخله.</p>
+        <p className="mt-4 text-center text-sm font-extrabold tracking-wide">AUREVON تنتج · MASAR تعلّم · DALIL تساعد</p>
+        <p className="mt-1 text-center text-[10px] text-slate-400">منتجان من AUREVON؛ وتعمل DALIL بوصفها المساعد الذكي المخصص داخل MASAR.</p>
       </div>
 
       <div className="relative grid gap-3 sm:grid-cols-2">
@@ -109,7 +109,7 @@ export default function About() {
           <h2 className="mt-3 text-lg font-extrabold">مساحة واحدة لرحلتك التعليمية</h2>
           <p className="mt-2 text-sm leading-7 text-muted">من تنظيم الوقت إلى فهم الدروس، ومن التدريب إلى قياس التقدم؛ صُممت MASAR لتجمع احتياجات التعلم اليومية ضمن تجربة سهلة ومتناسقة.</p>
         </section>
-        <p className="text-center text-xs font-semibold text-muted">ATHEER · TECHNOLOGY WITH INTELLIGENCE</p>
+        <p className="text-center text-xs font-semibold text-muted">AUREVON · PRODUCER OF MASAR & DALIL</p>
       </div>
     </div>
   );
