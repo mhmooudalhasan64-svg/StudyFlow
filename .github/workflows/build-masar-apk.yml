@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feat/masar-daleel-identity
+      - feat/masar-arabic-identity
     paths:
       - '.github/workflows/build-masar-apk.yml'
       - 'src/**'
