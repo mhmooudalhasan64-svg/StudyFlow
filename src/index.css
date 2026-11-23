@@ -844,9 +844,9 @@ body {
     linear-gradient(135deg, #07172b 0%, #102e4e 58%, #123d59 100%);
 }
 .masar-brand-hero .text-sky-100,
-.masar-brand-hero .text-sky-200\\/80 { color: #e8f4fc !important; }
-.masar-brand-hero .border-sky-400\\/20 { border-color: rgb(69 190 205 / .34) !important; }
-.masar-brand-hero .bg-white\\/10 { background: rgb(69 190 205 / .13) !important; }
+.masar-brand-hero .text-sky-200\/80 { color: #e8f4fc !important; }
+.masar-brand-hero .border-sky-400\/20 { border-color: rgb(69 190 205 / .34) !important; }
+.masar-brand-hero .bg-white\/10 { background: rgb(69 190 205 / .13) !important; }
 .atheer-ecosystem {
   border-color: rgb(201 164 76 / .32);
   background:
@@ -906,4 +906,44 @@ aside nav a[aria-current='page'] {
 }
 .dark .card {
   box-shadow: 0 12px 32px rgb(0 0 0 / .2), inset 0 1px 0 rgb(255 255 255 / .035);
+}
+
+
+/* DALIL AI — focused blue identity inside MASAR */
+.dalil-assistant > .card[aria-live="polite"] {
+  border-color: rgb(var(--accent2) / .34);
+  background:
+    radial-gradient(ellipse at 8% 0%, rgb(var(--accent2) / .09), transparent 48%),
+    linear-gradient(145deg, rgb(var(--card) / .98), rgb(var(--base) / .82));
+  box-shadow: 0 14px 34px rgb(18 65 105 / .075), inset 0 1px 0 rgb(255 255 255 / .22);
+}
+.dark .dalil-assistant > .card[aria-live="polite"] {
+  background:
+    radial-gradient(ellipse at 8% 0%, rgb(var(--accent2) / .13), transparent 48%),
+    linear-gradient(145deg, rgb(var(--card) / .98), rgb(var(--base) / .92));
+  box-shadow: 0 16px 38px rgb(0 0 0 / .2), inset 0 1px 0 rgb(255 255 255 / .045);
+}
+.dalil-assistant > .card[aria-live="polite"] > div > div {
+  border-radius: 1.15rem;
+}
+.dalil-assistant .sticky form {
+  padding: .45rem;
+  border: 1px solid rgb(var(--accent2) / .28);
+  border-radius: 1.15rem;
+  background: rgb(var(--card) / .94);
+  box-shadow: 0 10px 28px rgb(7 23 43 / .1);
+  backdrop-filter: blur(18px);
+}
+.dalil-assistant .sticky form .input:focus {
+  border-color: rgb(var(--accent2) / .72);
+  box-shadow: 0 0 0 3px rgb(var(--accent2) / .12);
+}
+.dalil-assistant .sticky form button[aria-pressed="true"] {
+  box-shadow: 0 0 0 3px rgb(var(--accent2) / .16), 0 6px 18px rgb(var(--accent) / .22);
+}
+@media (max-width: 640px) {
+  .dalil-assistant .sticky form {
+    gap: .35rem;
+    padding: .35rem;
+  }
 }
