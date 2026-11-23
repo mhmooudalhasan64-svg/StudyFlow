@@ -191,46 +191,71 @@ export function stopSpeaking(): void {
 }
 
 export interface ListenHandlers { onText: (text: string) => void; onEnd: () => void; onError: (message: string) => void; lang?: string }
+
+function nativeRecognitionError(error: unknown): string {
+  const detail = typeof error === 'string'
+    ? error
+    : error instanceof Error
+      ? error.message
+      : error && typeof error === 'object' && 'message' in error
+        ? String((error as { message?: unknown }).message ?? '')
+        : String(error ?? '');
+  const normalized = detail.toLowerCase();
+
+  if (/permission|record_audio|not allowed|insufficient permissions|missing permission/.test(normalized)) {
+    return 'إذن الميكروفون غير ممنوح. افتح إعدادات Android ← التطبيقات ← مسار ← الأذونات، واسمح باستخدام الميكروفون.';
+  }
+  if (/not available|unavailable|recognition service|service is not available/.test(normalized)) {
+    return 'خدمة التعرف على الكلام غير متاحة حالياً. ثبّت أو حدّث «Speech Recognition & Synthesis by Google» أو فعّل خدمة التعرف على الكلام في إعدادات Android.';
+  }
+  if (/network|internet|timeout/.test(normalized)) {
+    return 'خدمة التعرف الصوتي لم تتمكن من الاتصال. تحقق من الإنترنت، ثم أعد المحاولة.';
+  }
+  if (/busy|too many requests/.test(normalized)) {
+    return 'خدمة الصوت مشغولة الآن. انتظر قليلاً ثم أعد المحاولة.';
+  }
+  if (/no speech|speech timeout|no match|did not understand/.test(normalized)) {
+    return 'لم ألتقط كلاماً واضحاً. قرّب الهاتف وتحدث بوضوح ثم حاول مجدداً.';
+  }
+  if (/audio|recorder/.test(normalized)) {
+    return 'تعذّر تشغيل تسجيل الصوت. أغلق أي تطبيق يستخدم الميكروفون، وتحقق من إذن الميكروفون ثم أعد المحاولة.';
+  }
+  return detail
+    ? `تعذّر تشغيل التعرف الصوتي: ${detail}`
+    : 'تعذّر تشغيل التعرف الصوتي. تحقق من إذن الميكروفون وخدمة التعرف على الكلام في Android.';
+}
+
 export function listen(h: ListenHandlers): () => void {
   if (isNative()) {
     let stopped = false;
-    let finished = false;
-    let partialHandle: { remove: () => Promise<void> } | undefined;
-    let stateHandle: { remove: () => Promise<void> } | undefined;
-    const finish = () => {
-      if (finished) return;
-      finished = true;
-      void partialHandle?.remove();
-      void stateHandle?.remove();
-      if (!stopped) h.onEnd();
-    };
+    // Use the plugin's promise-based final result instead of partialResults events.
+    // In the Android plugin, partialResults resolves start() immediately; later recognizer
+    // errors are not reliably forwarded as JS events. Waiting for the final result lets
+    // Android reject with its real error and prevents a false onEnd after a failed start.
     void (async () => {
       try {
-        partialHandle = await SpeechRecognition.addListener('partialResults', event => {
-          const text = event.matches?.[0]?.trim();
-          if (text) h.onText(text);
+        const result = await SpeechRecognition.start({
+          language: h.lang ?? 'ar-SA',
+          maxResults: 1,
+          partialResults: false,
+          popup: false,
         });
-        stateHandle = await SpeechRecognition.addListener('listeningState', event => {
-          if (event.status === 'stopped') finish();
-        });
-        await SpeechRecognition.start({ language: h.lang ?? 'ar-SA', maxResults: 1, partialResults: true, popup: false });
-      } catch {
-        if (!stopped) {
-          h.onError('تعذّر تشغيل التعرّف الصوتي. تحقق من إذن الميكروفون وخدمة Google للصوت على Android.');
-          finish();
-        }
+        if (stopped) return;
+        const transcript = result.matches?.[0]?.trim();
+        if (transcript) h.onText(transcript);
+        h.onEnd();
+      } catch (error) {
+        if (!stopped) h.onError(nativeRecognitionError(error));
       }
     })();
     return () => {
       stopped = true;
       void SpeechRecognition.stop().catch(() => undefined);
-      void partialHandle?.remove();
-      void stateHandle?.remove();
     };
   }
 
   const Ctor = recognitionCtor();
-  if (!Ctor) { h.onError('متصفحك لا يدعم الإملاء الصوتي.'); h.onEnd(); return () => {}; }
+  if (!Ctor) { h.onError('متصفحك لا يدعم الإملاء الصوتي. افتح مسار عبر Chrome حديث.'); h.onEnd(); return () => {}; }
   const r = new Ctor();
   r.lang = h.lang ?? 'ar-SA';
   r.interimResults = true;
@@ -238,9 +263,9 @@ export function listen(h: ListenHandlers): () => void {
   r.onresult = e => { let transcript = ''; for (let i = 0; i < e.results.length; i++) transcript += e.results[i][0].transcript; h.onText(transcript.trim()); };
   r.onerror = e => {
     const code = e.error;
-    h.onError(code === 'not-allowed' || code === 'service-not-allowed' ? 'اسمح للمتصفح باستخدام الميكروفون من إعدادات الموقع.' : code === 'no-speech' ? 'لم أسمع شيئاً، حاول مرة أخرى.' : 'تعذّر التعرف على الصوت.');
+    h.onError(code === 'not-allowed' || code === 'service-not-allowed' ? 'اسمح للمتصفح باستخدام الميكروفون من إعدادات الموقع.' : code === 'no-speech' ? 'لم أسمع شيئاً، حاول مرة أخرى.' : code === 'audio-capture' ? 'تعذّر الوصول إلى الميكروفون. تحقق من توصيله وعدم استخدام تطبيق آخر له.' : 'تعذّر التعرف على الصوت.');
   };
   r.onend = () => h.onEnd();
-  try { r.start(); } catch { h.onError('تعذّر تشغيل الميكروفون.'); h.onEnd(); }
+  try { r.start(); } catch { h.onError('تعذّر تشغيل الميكروفون. تحقق من أذونات المتصفح.'); h.onEnd(); }
   return () => { try { r.stop(); } catch { /* no-op */ } };
 }
