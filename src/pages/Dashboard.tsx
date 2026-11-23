@@ -85,7 +85,7 @@ export default function Dashboard() {
         <div className="dashboard-orb dashboard-orb-one" aria-hidden="true" />
         <div className="dashboard-orb dashboard-orb-two" aria-hidden="true" />
         <div className="relative z-10">
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-semibold text-accent">✦ مساحة إنجازك اليومية</p><span className="rounded-full border border-accent/25 bg-accent/5 px-3 py-1 text-[9px] font-black tracking-[0.16em] text-accent" dir="ltr">MASAR · BY AUREVON</span></div>
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-semibold text-accent">✦ مساحة إنجازك اليومية</p><span className="rounded-full border border-accent/25 bg-accent/5 px-3 py-1 text-[9px] font-black tracking-[0.16em] text-accent" dir="ltr">MASAR · BY ATHEER</span></div>
           <div className="flex flex-col items-center gap-5 sm:flex-row sm:justify-between">
             <div className="order-2 flex-1 text-center sm:order-1 sm:text-start">
               <p className="text-sm text-muted">مدة دراستك اليوم</p>
@@ -257,19 +257,19 @@ export default function Dashboard() {
           </p>
         </div>
       </a>
-      <a href="#/about" className="group relative block overflow-hidden rounded-3xl border border-accent/25 bg-gradient-to-br from-[#101b2b] via-[#17283d] to-[#26364b] p-5 text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:border-amber-200/45 sm:p-6" aria-label="اكتشف منظومة AUREVON وMASAR وDALIL">
+      <a href="#/about" className="group relative block overflow-hidden rounded-3xl border border-accent/25 bg-gradient-to-br from-[#101b2b] via-[#17283d] to-[#26364b] p-5 text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:border-amber-200/45 sm:p-6" aria-label="اكتشف منظومة ATHEER وMASAR وDALIL">
         <div className="pointer-events-none absolute -left-12 -top-16 h-40 w-40 rounded-full bg-amber-300/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-16 -right-10 h-40 w-40 rounded-full bg-slate-300/10 blur-3xl" />
         <div className="relative">
           <div className="text-center">
-            <p className="text-[9px] font-black tracking-[0.28em] text-amber-200/80" dir="ltr">THE AUREVON ECOSYSTEM</p>
+            <p className="text-[9px] font-black tracking-[0.28em] text-amber-200/80" dir="ltr">THE ATHEER ECOSYSTEM</p>
             <h2 className="mt-2 text-lg font-black sm:text-xl">منظومة تعليمية بتكامل أذكى</h2>
             <p className="mt-1 text-xs text-slate-300">شركة تقود، منصة تجمع، وذكاء يساند رحلتك.</p>
           </div>
           <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3">
             <div className="rounded-2xl border border-white/10 bg-white/[0.06] px-1.5 py-3 text-center backdrop-blur-sm sm:px-3">
               <span className="mx-auto grid h-9 w-9 place-items-center rounded-xl border border-white/15 bg-white/10 text-sm font-black">A</span>
-              <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">AUREVON</p>
+              <p className="mt-2 truncate text-[10px] font-black tracking-wide sm:text-xs" dir="ltr">ATHEER</p>
               <p className="mt-1 text-[9px] text-slate-300 sm:text-[10px]">الرؤية والتطوير</p>
             </div>
             <div className="rounded-2xl border border-amber-200/25 bg-amber-200/10 px-1.5 py-3 text-center sm:px-3">
@@ -284,7 +284,7 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-white/10 pt-3 text-[10px] font-semibold text-slate-200 sm:text-xs">
-            <span>AUREVON تقود</span><span className="text-slate-500">·</span><span>MASAR تجمع</span><span className="text-slate-500">·</span><span>DALIL تساعد</span>
+            <span>ATHEER تطوّر</span><span className="text-slate-500">·</span><span>MASAR تجمع</span><span className="text-slate-500">·</span><span>DALIL تساعد</span>
           </div>
           <p className="mt-2 text-center text-[10px] font-bold text-amber-200 transition group-hover:text-white">اكتشف كيف تعمل المنظومة معاً ←</p>
         </div>
