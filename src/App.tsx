@@ -354,8 +354,8 @@ function Brand() {
       </span>
       <span className="flex flex-col leading-tight">
         <span className="masar-brand-ar" lang="ar" dir="rtl">مَسَار</span>
-        <span className="masar-brand-sub" dir="ltr">MASAR <span aria-hidden="true">·</span> منصة تعليمية ذكية</span>
-        <span className="vayora-brand-parent mt-1" dir="ltr"><span aria-hidden="true">◆</span> AUREVON TECHNOLOGY</span>
+        <span className="masar-brand-sub" dir="rtl">منصة تعليمية ذكية متكاملة</span>
+        <span className="vayora-brand-parent mt-1" dir="rtl">AUREVON <span aria-hidden="true">·</span> تطوير محمود</span>
       </span>
     </a>
   );
