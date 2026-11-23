@@ -51,14 +51,44 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Set up Android SDK, NDK and CMake
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools platforms;android-35 build-tools;35.0.0 ndk;27.2.12479018 cmake;3.22.1"
+
+      - name: Fetch and verify bundled Whisper model
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODEL_DIR="native-audio-capture/android/src/main/assets/models"
+          MODEL_PATH="$MODEL_DIR/ggml-base-q5_1.bin"
+          mkdir -p "$MODEL_DIR"
+          curl --fail --location --retry 3 --retry-delay 2 \
+            "https://huggingface.co/ggerganov/whisper.cpp/resolve/f281eb45af861ab5e5297d23694b7d46e090c02c/ggml-base-q5_1.bin" \
+            --output "$MODEL_PATH"
+          echo "422f1ae452ade6f30a004d7e5c6a43195e4433bc370bf23fac9cc591f01a8898  $MODEL_PATH" | sha256sum --check -
+
       - name: Install web dependencies
         run: npm install --no-audit --no-fund
+
+      - name: Type-check application
+        run: npm run typecheck
+
+      - name: Run automated tests
+        run: npm test
 
       - name: Build web app
         run: npm run build
 
       - name: Sync Capacitor Android project
         run: npx --yes @capacitor/cli@6.2.0 sync android
+
+      - name: Verify native speech and Whisper plugins are linked
+        run: |
+          set -euo pipefail
+          grep -q "capacitor-community-speech-recognition" android/app/capacitor.build.gradle
+          grep -q "vayora-native-audio-capture" android/app/capacitor.build.gradle
+          test -s native-audio-capture/android/src/main/assets/models/ggml-base-q5_1.bin
 
       - name: Build debug APK
         run: |
