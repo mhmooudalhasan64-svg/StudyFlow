@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import { Bell, BellRing, Plus, Trash2 } from 'lucide-react';
 import { useApp } from '../store';
 import { dueAlarms, formatAlarmTime, isValidTime, notify, type Alarm } from '../lib/alarm';
 import { primeAudio } from '../lib/sound';
 import { speak, stopSpeaking } from '../lib/voice';
 import { toDateKey } from '../lib/utils';
+
+type NativeNotificationPermission = { granted: boolean };
+const NativeNotificationPermission = registerPlugin<{ checkNotificationsPermission(): Promise<NativeNotificationPermission>; requestNotificationsPermission(): Promise<NativeNotificationPermission>; }>('NotificationPermission');
 
 const SNOOZE_MS = 5 * 60_000;
 const MAX_ALARMS = 8;
@@ -19,6 +23,11 @@ export default function Alarms() {
     typeof Notification === 'undefined' ? 'none' : Notification.permission,
   );
 
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    void NativeNotificationPermission.checkNotificationsPermission().then(({ granted }) => setPerm(granted ? 'granted' : 'default')).catch(() => setPerm('none'));
+  }, []);
+
   const save = (next: Alarm[]) => void updateSettings({ alarms: next });
 
   const add = (e: FormEvent) => {
@@ -31,10 +40,13 @@ export default function Alarms() {
 
   const askPermission = async () => {
     try {
-      setPerm(await Notification.requestPermission());
-    } catch {
-      /* غير مدعوم */
-    }
+      if (Capacitor.isNativePlatform()) {
+        const { granted } = await NativeNotificationPermission.requestNotificationsPermission();
+        setPerm(granted ? 'granted' : 'denied');
+        return;
+      }
+      if (typeof Notification !== 'undefined') setPerm(await Notification.requestPermission());
+    } catch { setPerm('none'); }
   };
 
   return (
@@ -43,7 +55,7 @@ export default function Alarms() {
         <Bell size={18} className="text-accent" /> منبّه الدراسة
       </h2>
       <p className="text-xs text-muted">
-        يصدر المنبّه صوتًا يوميًا في الوقت المحدد، باستخدام نغمة التنبيه المختارة. يعمل عند فتح التطبيق أو تشغيله في الخلفية، لكنه لا يعمل إذا أُغلق التطبيق تمامًا.
+        يصدر المنبّه صوتًا يوميًا في الوقت المحدد، باستخدام نغمة التنبيه المختارة. يصدر المنبّه صوتًا عند تشغيل التطبيق. السماح بالإشعارات يفعّل إذن النظام؛ أما التنبيه بعد إغلاق التطبيق فيحتاج إلى جدولة محلية أصلية.
       </p>
 
       <form onSubmit={add} className="flex flex-wrap items-end gap-2">
@@ -101,10 +113,11 @@ export default function Alarms() {
 
       {perm === 'default' && (
         <button type="button" className="btn btn-ghost w-full text-xs" onClick={() => void askPermission()}>
-          اسمح بإشعارات المتصفح لتصلك التنبيهات عندما يكون التطبيق في الخلفية
+          {Capacitor.isNativePlatform() ? 'تفعيل إشعارات مسار' : 'السماح بإشعارات المتصفح'}
         </button>
       )}
-      {perm === 'denied' && <p className="text-xs text-muted">إشعارات المتصفح محظورة. يمكنك السماح بها من إعدادات الموقع.</p>}
+      {perm === 'granted' && <p className="text-xs text-muted">إذن الإشعارات مفعّل على هذا الجهاز.</p>}
+      {perm === 'denied' && <p className="text-xs text-muted">الإشعارات محظورة. يمكنك تفعيلها من إعدادات التطبيق في الجهاز.</p>}
     </div>
   );
 }
