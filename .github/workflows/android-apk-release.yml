@@ -1,6 +1,10 @@
 name: Build ATHEER MASAR Signed Release APK
 
 on:
+  push:
+    branches: ["atheer-masar-brand-preview"]
+    paths:
+      - ".github/workflows/android-apk-release.yml"
   workflow_dispatch:
 
 permissions:
