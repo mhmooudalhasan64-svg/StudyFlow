@@ -38,9 +38,9 @@ public final class PlaybackCaptureService extends Service {
         super.onCreate();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
-                CHANNEL_ID, "التقاط صوت الفيديو", NotificationManager.IMPORTANCE_LOW
+                CHANNEL_ID, "MASAR — التقاط صوت الفيديو", NotificationManager.IMPORTANCE_LOW
             );
-            channel.setDescription("إشعار ظاهر أثناء تحليل صوت تشغيل الوسائط داخل VAYORA");
+            channel.setDescription("إشعار ظاهر أثناء تحليل صوت تشغيل الوسائط داخل MASAR");
             NotificationManager manager = getSystemService(NotificationManager.class);
             if (manager != null) manager.createNotificationChannel(channel);
         }
@@ -49,7 +49,7 @@ public final class PlaybackCaptureService extends Service {
             : new Notification.Builder(this);
         Notification notification = builder
             .setSmallIcon(android.R.drawable.ic_btn_speak_now)
-            .setContentTitle("VAYORA — AVORA")
+            .setContentTitle("MASAR | ATHEER")
             .setContentText("يحلّل صوت الفيديو المسموح به من النظام")
             .setOngoing(true)
             .setCategory(Notification.CATEGORY_SERVICE)
