@@ -440,7 +440,7 @@ async function readBoundedJson(request: Request): Promise<{ body: unknown } | { 
 async function handlePost(request: Request): Promise<Response> {
   // Central server-side cutoff: legacy clients without the current build header
   // cannot use the AI endpoint, including direct Vercel serverless requests.
-  const suppliedBuild = Number(request.headers.get('x-vayora-build') || 0);
+  const suppliedBuild = Number(request.headers.get('x-masar-build') || request.headers.get('x-vayora-build') || 0);
   if (!Number.isSafeInteger(suppliedBuild) || suppliedBuild < 7) {
     return json({
       code: 'update_required',
@@ -701,7 +701,7 @@ function withCors(response: Response, request: Request): Response {
   if (origin && isAllowedOrigin(origin, request)) {
     headers.set('Access-Control-Allow-Origin', origin);
     headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Vayora-Build');
+    headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Masar-Build, X-Vayora-Build');
     headers.set('Access-Control-Max-Age', '86400');
   }
   return new Response(response.body, {
