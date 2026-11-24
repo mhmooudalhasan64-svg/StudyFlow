@@ -552,9 +552,21 @@ async function handlePost(request: Request): Promise<Response> {
       if (error instanceof Error && error.name === 'TimeoutError') timedOut = true;
     }
 
-    // A second configured free provider is tried after throttling, timeout or 5xx.
+    // Treat an empty or malformed success payload as a provider failure too.
+    // This prevents a nominal HTTP 200 with no assistant text from becoming a dead end.
+    if (upstream?.ok) {
+      const preview = await upstream.clone().json().catch(() => null) as {
+        choices?: { message?: { content?: string } }[];
+        candidates?: { content?: { parts?: { text?: string }[] } }[];
+      } | null;
+      const previewText = preview?.choices?.[0]?.message?.content
+        ?? preview?.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('');
+      if (previewText?.trim()) break;
+      upstream = null;
+    }
+
+    // A second configured free provider is tried after throttling, timeout, 5xx or empty output.
     // Authentication errors are not retried because they require configuration repair.
-    if (upstream?.ok) break;
     const canFailOver = target !== targets[targets.length - 1]
       && (upstream === null || upstream.status === 408 || upstream.status === 429 || upstream.status >= 500);
     if (!canFailOver) break;
