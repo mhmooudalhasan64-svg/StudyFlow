@@ -595,6 +595,38 @@ body {
   letter-spacing: .16em;
 }
 .masar-brand-parent span { color: rgb(var(--accent2)); font-size: .55rem; }
+.masar-brand-copy { gap: .12rem; }
+.masar-brand-name {
+  display: flex; align-items: center; gap: .38rem;
+  font-size: 1rem; letter-spacing: .035em; line-height: 1.1;
+  white-space: nowrap;
+}
+.masar-brand-separator { color: rgb(var(--accent2)); font-size: .78em; }
+.masar-brand-description {
+  color: rgb(var(--main)); font-size: .61rem; font-weight: 800;
+  line-height: 1.25; white-space: nowrap;
+}
+.masar-brand-tagline {
+  color: rgb(var(--muted)); font-size: .53rem; font-weight: 650;
+  line-height: 1.2; white-space: nowrap;
+}
+.masar-brand-tagline span { color: rgb(var(--accent2)); padding-inline: .08rem; }
+.masar-brand-parent {
+  display: inline-flex; align-items: center; gap: .22rem;
+  margin-top: .08rem; color: rgb(var(--muted)); font-size: .48rem;
+  font-weight: 700; letter-spacing: 0; line-height: 1.2; white-space: nowrap;
+}
+.masar-brand-parent b { color: rgb(var(--accent)); font-size: .5rem; letter-spacing: .11em; }
+@media (max-width: 420px) {
+  .masar-brand { gap: .55rem; }
+  .masar-brand-mark { width: 2.55rem; height: 2.55rem; }
+  .masar-brand-mark img { width: 2.2rem; height: 2.2rem; }
+  .masar-brand-name { font-size: .92rem; }
+  .masar-brand-description { font-size: .56rem; }
+  .masar-brand-tagline { font-size: .49rem; }
+  .masar-brand-parent { font-size: .45rem; }
+}
+
 .masar-brand-hero {
   border-color: rgb(201 164 76 / .38);
   background:
