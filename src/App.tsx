@@ -63,7 +63,7 @@ const PAGE_HINTS: Partial<Record<Route, string>> = {
   cards: 'افتح البطاقة وحاول تذكر الإجابة قبل إظهار الوجه الآخر.',
   stats: 'تعرض الإحصاءات ما سجلته فعلياً من جلسات وإجابات.',
   assistant: 'اكتب سؤالك أو أرفق ملفاً. إذا فتحت المساعد من صفحة أخرى فسيعرف سياقها.',
-  youtube: 'أدخل رابط فيديو، ثم أضف نص الترجمة لتسأل DALIL عن محتواه.',
+  youtube: 'أدخل رابط فيديو، ثم أضف نص الترجمة لتسأل دليل عن محتواه.',
   today: 'هذه لوحة مختصرة تجمع مهامك ومراجعاتك ووقت تركيزك لهذا اليوم.',
 };
 
@@ -85,7 +85,7 @@ const SEARCH_PAGES: { route: Route; label: string; keywords: string }[] = [
   { route: 'stats', label: 'الإحصاءات', keywords: 'نقاط ضعف دقة تقدم' },
   { route: 'reports', label: 'التقارير', keywords: 'ملخص دراسة' },
   { route: 'achievements', label: 'الإنجازات', keywords: 'أوسمة تحفيز' },
-  { route: 'assistant', label: 'DALIL AI', keywords: 'مساعد ذكي شرح سؤال' },
+  { route: 'assistant', label: 'دليل', keywords: 'مساعد ذكي شرح سؤال' },
   { route: 'youtube', label: 'فيديوهات YouTube', keywords: 'يوتيوب فيديو ترجمة تفريغ تنزيل تحليل شرح' },
   { route: 'settings', label: 'الإعدادات', keywords: 'صوت مظهر نسخ احتياطي مواد' },
   { route: 'help', label: 'شرح أزرار التطبيق', keywords: 'دليل مساعدة تعليمات' },
@@ -159,8 +159,8 @@ export default function App() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [hintVisible, setHintVisible] = useState(false);
-  const [avoraCallOpen, setAvoraCallOpen] = useState(false);
-  const [avoraToolsOpen, setAvoraToolsOpen] = useState(false);
+  const [dalilCallOpen, setdalilCallOpen] = useState(false);
+  const [dalilToolsOpen, setdalilToolsOpen] = useState(false);
   const [updateRequired, setUpdateRequired] = useState(false);
   const route = useHashRoute();
   const online = useOnline();
@@ -169,7 +169,7 @@ export default function App() {
   const searchResults = SEARCH_PAGES.filter((item) => (item.label + ' ' + item.keywords).toLowerCase().includes(searchText.trim().toLowerCase()));
 
   useEffect(() => {
-    setAvoraToolsOpen(false);
+    setdalilToolsOpen(false);
   }, [route]);
 
   useEffect(() => {
@@ -267,41 +267,41 @@ export default function App() {
         </div>
       )}
       {route !== 'assistant' && route !== 'home' && (
-        <div className="avora-launcher fixed bottom-[calc(5.2rem+env(safe-area-inset-bottom))] right-4 z-30 flex flex-col items-end gap-2 md:bottom-6 md:right-6">
-          {avoraToolsOpen && (
-            <div id="avora-launcher-menu" className="avora-launcher-menu flex min-w-[13.5rem] flex-col gap-1.5 rounded-2xl border border-line bg-card/95 p-2 shadow-2xl backdrop-blur-xl" role="group" aria-label="أدوات DALIL">
+        <div className="dalil-launcher fixed bottom-[calc(5.2rem+env(safe-area-inset-bottom))] right-4 z-30 flex flex-col items-end gap-2 md:bottom-6 md:right-6">
+          {dalilToolsOpen && (
+            <div id="dalil-launcher-menu" className="dalil-launcher-menu flex min-w-[13.5rem] flex-col gap-1.5 rounded-2xl border border-line bg-card/95 p-2 shadow-2xl backdrop-blur-xl" role="group" aria-label="أدوات دليل">
               <button
                 type="button"
-                onClick={() => { setAvoraToolsOpen(false); setAvoraCallOpen(true); }}
-                className="avora-launcher-option"
+                onClick={() => { setdalilToolsOpen(false); setdalilCallOpen(true); }}
+                className="dalil-launcher-option"
               >
-                <span className="avora-launcher-option-icon"><Phone size={17} /></span>
+                <span className="dalil-launcher-option-icon"><Phone size={17} /></span>
                 <span><strong>مكالمة المعلم</strong><small>محادثة صوتية مباشرة</small></span>
               </button>
               <a
                 href="#/assistant"
-                onClick={() => setAvoraToolsOpen(false)}
-                className="avora-launcher-option"
+                onClick={() => setdalilToolsOpen(false)}
+                className="dalil-launcher-option"
               >
-                <span className="avora-launcher-option-icon"><Bot size={17} /></span>
+                <span className="dalil-launcher-option-icon"><Bot size={17} /></span>
                 <span><strong>المساعد الدراسي</strong><small>محادثة وشرح وملفات</small></span>
               </a>
             </div>
           )}
           <button
             type="button"
-            aria-label={avoraToolsOpen ? "إغلاق أدوات DALIL" : "فتح أدوات DALIL"}
-            aria-expanded={avoraToolsOpen}
-            aria-controls="avora-launcher-menu"
-            onClick={() => setAvoraToolsOpen((open) => !open)}
-            className="avora-launcher-trigger"
+            aria-label={dalilToolsOpen ? "إغلاق أدوات دليل" : "فتح أدوات دليل"}
+            aria-expanded={dalilToolsOpen}
+            aria-controls="dalil-launcher-menu"
+            onClick={() => setdalilToolsOpen((open) => !open)}
+            className="dalil-launcher-trigger"
           >
-            <span className="avora-launcher-trigger-icon">{avoraToolsOpen ? <X size={19} /> : <Bot size={20} />}</span>
-            <span>DALIL</span>
-            <ChevronDown size={15} className={avoraToolsOpen ? "rotate-180 transition-transform" : "transition-transform"} />
+            <span className="dalil-launcher-trigger-icon">{dalilToolsOpen ? <X size={19} /> : <Bot size={20} />}</span>
+            <span>دليل</span>
+            <ChevronDown size={15} className={dalilToolsOpen ? "rotate-180 transition-transform" : "transition-transform"} />
           </button>
         </div>
-      )}      <Suspense fallback={null}><VoiceTeacher open={avoraCallOpen} onClose={() => setAvoraCallOpen(false)} /></Suspense>
+      )}      <Suspense fallback={null}><VoiceTeacher open={dalilCallOpen} onClose={() => setdalilCallOpen(false)} /></Suspense>
       {/* الشريط الجانبي (شاشات كبيرة) */}
       <aside className="app-sidebar sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
         <Brand />
@@ -346,7 +346,7 @@ export default function App() {
               <button type="button" className="btn btn-ghost !px-2 !py-1 text-xs" onClick={() => { setHintVisible(false); try { localStorage.setItem('studyflow-hint-' + route, '1'); } catch { /* لا يؤثر على الاستخدام */ } }}>فهمت</button>
             </div>
           )}
-          <Suspense fallback={<div className="grid min-h-[40vh] place-items-center text-muted" role="status">جارٍ تحميل الصفحة…</div>}>{route === 'assistant' ? <Assistant onCallOpen={() => setAvoraCallOpen(true)} /> : <Page />}</Suspense>
+          <Suspense fallback={<div className="grid min-h-[40vh] place-items-center text-muted" role="status">جارٍ تحميل الصفحة…</div>}>{route === 'assistant' ? <Assistant onCallOpen={() => setdalilCallOpen(true)} /> : <Page />}</Suspense>
         </main>
 
         {/* شريط التنقل السفلي (جوال) */}
