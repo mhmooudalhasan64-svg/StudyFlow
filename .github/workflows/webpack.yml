@@ -6,11 +6,13 @@ on:
       - main
       - feat/vayora-aurevon-skova-identity
       - titan-enhancements
+      - fix/dalil-preview-quality
   pull_request:
     branches:
       - main
       - feat/vayora-aurevon-skova-identity
       - titan-enhancements
+      - fix/dalil-preview-quality
 
 permissions:
   contents: read
