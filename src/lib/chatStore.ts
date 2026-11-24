@@ -17,7 +17,7 @@ export interface ChatAttachment {
 }
 
 function postChat(body: unknown): Promise<Response> {
-  // In the Android build, call the deployed Vercel API; on the web, keep the same-origin route.
+  // In the Android build, call the configured API base URL; on the web, use the same-origin route.
   const apiBase = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
   return fetch(`${apiBase}/api/chat`, {
     method: 'POST',
@@ -50,11 +50,11 @@ interface ChatState {
   cancelExtraUsage: () => void;
   send: (text: string) => Promise<void>;
   clear: () => void;
-  /** يعيد آخر محادثة محفوظة في الجهاز (إن لم توجد محادثة حالية) */
+  /** يعيد آخر محادثة محفوظة على الجهاز (إن لم توجد محادثة حالية) */
   load: () => Promise<void>;
 }
 
-/** المحادثة تبقى في الذاكرة فقط (لا تُحفظ على الجهاز) */
+/** تُحفظ المحادثة محلياً في IndexedDB ولا تُرسل إلى خدمة المزامنة السحابية. */
 export const useChat = create<ChatState>((set, get) => ({
   messages: [],
   attachment: null,
@@ -140,7 +140,7 @@ export const useChat = create<ChatState>((set, get) => ({
 
   cancelExtraUsage: () => set({
     extraUsagePending: false,
-    error: 'اخترت الانتظار حتى يتجدد رصيد DALIL AI المجاني.',
+    error: 'اخترت الانتظار حتى يتجدد حد الاستخدام المجاني.',
   }),
 
   clear: () => {
@@ -176,7 +176,7 @@ export async function askBook(args: { question: string; name: string; text: stri
   return data.reply;
 }
 
-/** سؤال DALIL عن تفريغ فيديو؛ لا يُطلب من النموذج اختراع مشاهد أو توقيتات. */
+/** سؤال دليل عن تفريغ فيديو؛ لا يُطلب من النموذج اختراع مشاهد أو توقيتات. */
 export async function askVideo(args: { question: string; title: string; transcript: string }): Promise<string> {
   const transcript = args.transcript.trim().slice(0, 8000);
   if (transcript.length < 20) throw new Error('أضف نص ترجمة أو تفريغاً أطول للفيديو أولاً.');
