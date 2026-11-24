@@ -785,3 +785,193 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .app-main, .dashboard-stat, .card { animation: none; transition: none; }
 }
+
+
+/* ── MASAR Arabic-first identity refinement ── */
+.masar-brand-ar {
+  color: rgb(var(--main));
+  font-family: "Noto Kufi Arabic", "Tajawal", "Segoe UI", sans-serif;
+  font-size: 1.42rem;
+  font-weight: 950;
+  line-height: 1;
+  letter-spacing: 0;
+  text-shadow: 0 1px 0 rgb(255 255 255 / .12);
+}
+.masar-brand-sub {
+  margin-top: .24rem;
+  color: rgb(var(--muted));
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .015em;
+}
+.masar-brand-sub span {
+  color: rgb(var(--accent2));
+  padding-inline: .12rem;
+}
+.vayora-brand-parent {
+  margin-top: .38rem;
+  font-size: .48rem;
+  letter-spacing: .12em;
+}
+.vayora-brand-mark {
+  border-radius: 1.05rem;
+  box-shadow: 0 8px 22px rgb(9 16 27 / .24), inset 0 1px 0 rgb(255 255 255 / .22);
+}
+.dashboard-hero {
+  position: relative;
+  overflow: hidden;
+}
+.dashboard-hero::after {
+  position: absolute;
+  inset-inline-start: -2.5rem;
+  bottom: -4rem;
+  width: 13rem;
+  height: 13rem;
+  border: 1px solid rgb(var(--accent2) / .13);
+  border-radius: 42% 58% 60% 40%;
+  transform: rotate(-28deg);
+  content: "";
+  pointer-events: none;
+}
+h1, h2, h3, .font-bold, .font-extrabold {
+  text-rendering: optimizeLegibility;
+}
+@media (max-width: 767px) {
+  .masar-brand-ar { font-size: 1.25rem; }
+  .masar-brand-sub { font-size: .54rem; }
+}
+
+
+/* ── MASAR dashboard: Arabic-first hierarchy ── */
+.masar-dashboard-intro {
+  position: relative;
+  padding: .25rem .1rem .1rem;
+}
+.masar-dashboard-intro .mb-4 { margin-bottom: .15rem; }
+.masar-dashboard-intro h1 {
+  font-family: "Noto Kufi Arabic", "Tajawal", "Segoe UI", sans-serif;
+  font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+  font-weight: 900;
+  letter-spacing: -.035em;
+}
+.masar-dashboard-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  margin-bottom: .6rem;
+  border: 1px solid rgb(var(--accent2) / .28);
+  border-radius: 999px;
+  background: rgb(var(--accent2) / .07);
+  padding: .48rem .8rem;
+  color: rgb(var(--accent));
+  font-size: .68rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.masar-dashboard-mark span {
+  color: rgb(var(--accent2));
+}
+.masar-today-link {
+  background:
+    radial-gradient(ellipse at 100% 0%, rgb(var(--accent2) / .13), transparent 55%),
+    linear-gradient(110deg, rgb(var(--card) / .98), rgb(var(--accent2) / .045));
+}
+.masar-today-link > div:first-child p:first-child {
+  font-size: .95rem;
+}
+.masar-daily-phrase {
+  position: relative;
+  padding-inline-start: .9rem;
+}
+.masar-daily-phrase::before {
+  position: absolute;
+  inset-block: 1rem .2rem;
+  inset-inline-start: 0;
+  width: 2px;
+  border-radius: 999px;
+  background: linear-gradient(to bottom, rgb(var(--accent2)), transparent);
+  content: "";
+}
+.dashboard-hero {
+  border-radius: 1.65rem;
+}
+.dashboard-hero .relative.z-10 > div:first-child {
+  align-items: center;
+}
+.dashboard-hero .relative.z-10 > div:first-child span {
+  letter-spacing: 0;
+}
+@media (max-width: 640px) {
+  .masar-dashboard-intro {
+    align-items: flex-start;
+  }
+  .masar-dashboard-mark {
+    margin-top: -.25rem;
+    margin-bottom: .25rem;
+  }
+  .dashboard-hero {
+    border-radius: 1.35rem;
+    padding: 1.15rem;
+  }
+}
+
+
+/* MASAR navigation refinement: clear hierarchy, touch targets and active states. */
+.app-sidebar-caption {
+  margin: 1.15rem 0 0.25rem;
+  padding-inline: 0.8rem;
+  color: rgb(var(--muted) / 0.78);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.035em;
+}
+.app-sidebar-link {
+  min-height: 2.9rem;
+  border-radius: 0.95rem;
+  border-color: transparent;
+}
+.app-sidebar-link[aria-current='page'] {
+  border-color: rgb(var(--accent2) / 0.24);
+  background: linear-gradient(110deg, rgb(var(--accent) / 0.12), rgb(var(--accent2) / 0.07));
+  color: rgb(var(--main));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 5px 14px rgb(var(--accent) / 0.06);
+}
+.app-sidebar-link[aria-current='page'] svg {
+  color: rgb(var(--accent2));
+  stroke-width: 2.2;
+}
+.app-mobile-nav {
+  min-height: calc(4.65rem + env(safe-area-inset-bottom));
+  padding-inline: max(0.35rem, env(safe-area-inset-left)) max(0.35rem, env(safe-area-inset-right));
+}
+.app-mobile-nav-link {
+  min-width: 0;
+  min-height: 3.8rem;
+  padding: 0.55rem 0.15rem 0.35rem;
+  border-radius: 0.85rem 0.85rem 0 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.app-mobile-nav-link svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  transition: transform 180ms ease, stroke-width 180ms ease;
+}
+.app-mobile-nav-link[aria-current='page'] svg {
+  transform: translateY(-1px);
+  stroke-width: 2.35;
+}
+.app-mobile-nav-label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.68rem;
+  line-height: 1.1;
+}
+@media (max-width: 360px) {
+  .app-mobile-nav-label { font-size: 0.62rem; }
+  .app-mobile-nav-link { padding-inline: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-mobile-nav-link svg { transition: none; }
+}

@@ -28,7 +28,7 @@ export async function prepareVoice(): Promise<void> {
     if (!availability.available) throw new Error('ميزة التعرّف على الكلام غير متاحة على هذا الجهاز. تحقق من تثبيت خدمة Google للصوت.');
     let permission = await SpeechRecognition.checkPermissions();
     if (permission.speechRecognition !== 'granted') permission = await SpeechRecognition.requestPermissions();
-    if (permission.speechRecognition !== 'granted') throw new Error('يجب السماح لـ VAYORA باستخدام الميكروفون من إعدادات التطبيق.');
+    if (permission.speechRecognition !== 'granted') throw new Error('يجب السماح لتطبيق مسار باستخدام الميكروفون من إعدادات التطبيق.');
     return;
   }
   if (!recognitionCtor()) throw new Error('التعرّف على الكلام غير مدعوم في هذا المتصفح. افتح المنصة عبر Chrome أو استخدم تطبيق Android.');
@@ -54,8 +54,8 @@ export function cleanForSpeech(text: string): string {
     .replace(EMOJI_CODEPOINTS, ' ')
     // Remove textual emoji shortcodes if a model emits them instead of Unicode glyphs.
     .replace(/:[a-z0-9_+-]{2,}:/gi, ' ')
-    .replace(/\bavora\b/gi, 'أفورا')
-    .replace(/\bVAYORA\b/gi, 'فايورا')
+    .replace(/\bavora\b/gi, 'دليل')
+    .replace(/\bVAYORA\b/gi, 'مسار')
     .replace(/[*#_`>~|]/g, ' ')
     .replace(/https?:\/\/\S+/gi, 'رابط')
     .replace(/\s+/g, ' ')
@@ -78,38 +78,51 @@ function chooseVoice(gender: VoiceGender = 'any'): SpeechSynthesisVoice | undefi
   })[0];
 }
 function sentenceChunks(text: string): string[] {
-  // Preserve the complete answer while splitting at natural Arabic phrase boundaries.
+  // Keep spoken output conversational: split on sentence endings and paragraph breaks,
+  // then use Arabic clause punctuation only when a sentence is too long.
   const sentences = text
+    .replace(/\n{2,}/g, ' | ')
     .replace(/([.!?؟؛])\s*/g, '$1|')
     .split('|')
-    .map(sentence => sentence.trim())
+    .map(sentence => sentence.replace(/^[\s•–—-]+/, '').trim())
     .filter(Boolean);
   const chunks: string[] = [];
   for (const sentence of sentences) {
-    if (sentence.length <= 220) { chunks.push(sentence); continue; }
-    const words = sentence.split(/\s+/);
+    if (sentence.length <= 190) { chunks.push(sentence); continue; }
+    const clauses = sentence.split(/(?<=[،,:])\s+/);
     let part = '';
-    for (const word of words) {
-      const candidate = part ? part + ' ' + word : word;
-      if (part && candidate.length > 190) {
+    for (const clause of clauses) {
+      const candidate = part ? part + ' ' + clause : clause;
+      if (part && candidate.length > 170) {
         chunks.push(part);
-        part = word;
+        part = clause;
       } else {
         part = candidate;
       }
-      if (/[،,:؛]$/.test(part) && part.length >= 90) {
+      if (part.length >= 150 && /[،,:]$/.test(part)) {
         chunks.push(part);
         part = '';
       }
     }
-    if (part) chunks.push(part);
+    if (part) {
+      const words = part.split(/\s+/);
+      let tail = '';
+      for (const word of words) {
+        const candidate = tail ? tail + ' ' + word : word;
+        if (tail && candidate.length > 170) {
+          chunks.push(tail);
+          tail = word;
+        } else tail = candidate;
+      }
+      if (tail) chunks.push(tail);
+    }
   }
   return chunks;
 }
 const pauseAfter = (chunk: string) =>
-  /[؟?]$/.test(chunk) ? 380 :
-  /[.!؛]$/.test(chunk) ? 300 :
-  /[،,:]$/.test(chunk) ? 210 : 160;
+  /[؟?]$/.test(chunk) ? 460 :
+  /[.!؛]$/.test(chunk) ? 340 :
+  /[،,:]$/.test(chunk) ? 230 : 180;
 
 export function speak(text: string, cb: { onEnd?: () => void; onError?: (msg: string) => void } = {}, options: VoiceOptions = {}): void {
   // Sanitize once at entry and again per chunk immediately before TTS as a final guard.
@@ -119,7 +132,7 @@ export function speak(text: string, cb: { onEnd?: () => void; onError?: (msg: st
   if (!chunks.length) { cb.onEnd?.(); return; }
   const style = options.style ?? 'soft';
   const id = ++playbackId;
-  const baseRate = style === 'energetic' ? 1.02 : style === 'strong' ? 0.96 : 0.92;
+  const baseRate = style === 'energetic' ? 1.04 : style === 'strong' ? 1 : 0.96;
   const rate = Math.min(1.5, Math.max(0.75, baseRate * (options.rate ?? 1)));
   const pitch = style === 'energetic' ? 1.04 : style === 'strong' ? 0.98 : 1.02;
 

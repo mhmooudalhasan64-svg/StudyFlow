@@ -60,7 +60,7 @@ const PAGE_HINTS: Partial<Record<Route, string>> = {
   cards: 'افتح البطاقة وحاول تذكر الإجابة قبل إظهار الوجه الآخر.',
   stats: 'تعرض الإحصاءات ما سجلته فعلياً من جلسات وإجابات.',
   assistant: 'اكتب سؤالك أو أرفق ملفاً. إذا فتحت المساعد من صفحة أخرى فسيعرف سياقها.',
-  youtube: 'أدخل رابط فيديو، ثم أضف نص الترجمة لتسأل AVORA عن محتواه.',
+  youtube: 'أدخل رابط فيديو، ثم أضف نص الترجمة لتسأل دليل عن محتواه.',
   today: 'هذه لوحة مختصرة تجمع مهامك ومراجعاتك ووقت تركيزك لهذا اليوم.',
   pronunciation: 'تدرّب على مخارج الحروف العربية، واستمع إلى النماذج وكرّر بصوتك.',
 };
@@ -83,7 +83,7 @@ const SEARCH_PAGES: { route: Route; label: string; keywords: string }[] = [
   { route: 'stats', label: 'الإحصاءات', keywords: 'نقاط ضعف دقة تقدم' },
   { route: 'reports', label: 'التقارير', keywords: 'ملخص دراسة' },
   { route: 'achievements', label: 'الإنجازات', keywords: 'أوسمة تحفيز' },
-  { route: 'assistant', label: 'AVORA AI', keywords: 'مساعد ذكي شرح سؤال' },
+  { route: 'assistant', label: 'دليل AI', keywords: 'مساعد ذكي شرح سؤال' },
   { route: 'youtube', label: 'فيديوهات YouTube', keywords: 'يوتيوب فيديو ترجمة تفريغ تنزيل تحليل شرح' },
   { route: 'settings', label: 'الإعدادات', keywords: 'صوت مظهر نسخ احتياطي مواد' },
   { route: 'help', label: 'شرح أزرار التطبيق', keywords: 'دليل مساعدة تعليمات' },
@@ -230,7 +230,7 @@ export default function App() {
       {route !== 'assistant' && route !== 'home' && (
         <div className="avora-launcher fixed bottom-[calc(5.2rem+env(safe-area-inset-bottom))] right-4 z-30 flex flex-col items-end gap-2 md:bottom-6 md:right-6">
           {avoraToolsOpen && (
-            <div id="avora-launcher-menu" className="avora-launcher-menu flex min-w-[13.5rem] flex-col gap-1.5 rounded-2xl border border-line bg-card/95 p-2 shadow-2xl backdrop-blur-xl" role="group" aria-label="أدوات AVORA">
+            <div id="avora-launcher-menu" className="avora-launcher-menu flex min-w-[13.5rem] flex-col gap-1.5 rounded-2xl border border-line bg-card/95 p-2 shadow-2xl backdrop-blur-xl" role="group" aria-label="أدوات دليل">
               <button
                 type="button"
                 onClick={() => { setAvoraToolsOpen(false); setAvoraCallOpen(true); }}
@@ -251,14 +251,14 @@ export default function App() {
           )}
           <button
             type="button"
-            aria-label={avoraToolsOpen ? "إغلاق أدوات AVORA" : "فتح أدوات AVORA"}
+            aria-label={avoraToolsOpen ? "إغلاق أدوات دليل" : "فتح أدوات دليل"}
             aria-expanded={avoraToolsOpen}
             aria-controls="avora-launcher-menu"
             onClick={() => setAvoraToolsOpen((open) => !open)}
             className="avora-launcher-trigger"
           >
             <span className="avora-launcher-trigger-icon">{avoraToolsOpen ? <X size={19} /> : <Bot size={20} />}</span>
-            <span>AVORA</span>
+            <span>دليل</span>
             <ChevronDown size={15} className={avoraToolsOpen ? "rotate-180 transition-transform" : "transition-transform"} />
           </button>
         </div>
@@ -266,13 +266,14 @@ export default function App() {
       {/* الشريط الجانبي (شاشات كبيرة) */}
       <aside className="app-sidebar sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto p-4 md:flex">
         <Brand />
-        <nav className="mt-4 flex flex-col gap-1" aria-label="التنقل الرئيسي">
+        <div className="app-sidebar-caption" aria-hidden="true">مساحات مسارك</div>
+        <nav className="mt-3 flex flex-col gap-1.5" aria-label="التنقل الرئيسي">
           {visibleNav.map(({ route: r, label, Icon }) => (
             <a
               key={r}
               href={`#/${r}`}
               aria-current={(route === r || (r === 'more' && !visibleNav.some((n) => n.route === route))) ? 'page' : undefined}
-              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+              className={`app-sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
                 route === r || (r === 'more' && !visibleNav.some((n) => n.route === route))
                   ? 'bg-gradient-to-l from-accent/20 to-accent2/20 text-accent'
                   : 'text-muted hover:bg-card/70 hover:text-main'
@@ -322,12 +323,12 @@ export default function App() {
               key={r}
               href={`#/${r}`}
               aria-current={active ? 'page' : undefined}
-              className={`flex flex-col items-center gap-0.5 py-2 text-[10px] transition ${
+              className={`app-mobile-nav-link flex flex-col items-center gap-0.5 py-2 text-[10px] transition ${
                 active ? 'text-accent' : 'text-muted'
               }`}
             >
               <Icon size={20} />
-              {label}
+              <span className="app-mobile-nav-label">{label}</span>
             </a>
             );
           })}
@@ -347,13 +348,13 @@ function OfflineChip() {
 
 function Brand() {
   return (
-    <a href="#/home" className="vayora-brand flex items-center gap-3" aria-label="VAYORA by AUREVON — الرئيسية">
+    <a href="#/home" className="vayora-brand flex items-center gap-3" aria-label="مسار MASAR من AUREVON — الرئيسية">
       <span className="vayora-brand-mark">
         <img src="/icon.svg" alt="" width={38} height={38} className="h-9 w-9 object-contain" />
       </span>
       <span className="flex flex-col leading-tight">
-        <span className="vayora-brand-name" dir="ltr">VAYORA</span>
-        <span className="text-[10px] text-muted">فايورا · منصة تعليمية ذكية</span>
+        <span className="masar-brand-ar" lang="ar" dir="rtl">مَسَار</span>
+        <span className="masar-brand-sub" dir="ltr">MASAR <span aria-hidden="true">·</span> منصة تعليمية ذكية</span>
         <span className="vayora-brand-parent mt-1" dir="ltr"><span aria-hidden="true">◆</span> AUREVON TECHNOLOGY</span>
       </span>
     </a>
