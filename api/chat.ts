@@ -544,6 +544,7 @@ async function handlePost(request: Request): Promise<Response> {
       }, 429);
     }
   } else {
+    const geminiPayload = {
       systemInstruction: { parts: [{ text: activeSystem }] },
       contents: messages.map((m) => ({
         role: m.role === 'assistant' ? 'model' : 'user',
