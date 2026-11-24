@@ -8,3 +8,8 @@ public/pwa-*.png
 public/maskable-icon-*.png
 public/apple-touch-icon-*.png
 public/favicon.ico
+
+# Android signing material must never be committed
+*.jks
+*.keystore
+MASAR-SIGNING/
