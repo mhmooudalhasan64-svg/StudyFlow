@@ -4,14 +4,20 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path android:pathData="M54,5 L60,17 L73,23 L60,29 L54,42 L48,29 L35,23 L48,17 Z"
-        android:fillColor="#FFFFFF"/>
-    <path android:pathData="M10,70 Q31,59 54,75 Q77,59 98,70 L98,88 Q76,80 54,96 Q32,80 10,88 Z"
-        android:fillColor="#42D8F5"/>
-    <path android:pathData="M12,66 Q33,56 54,71 Q75,56 96,66 L96,81 Q75,73 54,89 Q33,73 12,81 Z"
-        android:fillColor="#FFFFFF"/>
-    <path android:pathData="M54,75 C45,63 35,56 27,53 C18,49 22,39 35,34 C46,30 56,23 54,18 L43,18 L54,5 L65,18 L59,18 C62,34 50,42 40,47 C35,50 39,54 47,58 C55,62 62,68 66,77 Z"
-        android:fillColor="#42D8F5"/>
-    <path android:pathData="M54,5 L43,18 L50,17 L54,24 L59,17 L65,18 Z"
-        android:fillColor="#E8FBFF"/>
+    <!-- Start/finish gate -->
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M27,22 L35,22 L35,68 L27,68 Z M73,22 L81,22 L81,68 L73,68 Z"/>
+    <!-- Checkered finish line -->
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M35,24 L73,24 L73,48 L35,48 Z"/>
+    <path android:fillColor="#42D8F5"
+        android:pathData="M35,24 L45,24 L45,36 L35,36 Z M55,24 L65,24 L65,36 L55,36 Z M45,36 L55,36 L55,48 L45,48 Z M65,36 L73,36 L73,48 L65,48 Z"/>
+    <!-- Route leading to the finish -->
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M46,98 C47,82 44,68 39,56 L49,52 C55,66 59,82 58,98 Z"/>
+    <path android:fillColor="#42D8F5"
+        android:pathData="M52,96 C53,82 51,70 48,60 L54,57 C59,70 62,83 62,96 Z"/>
+    <!-- Forward motion marker -->
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M54,53 L43,64 L48,49 L43,43 L54,46 L65,43 L60,49 L65,64 Z"/>
 </vector>
