@@ -496,85 +496,93 @@ async function handlePost(request: Request): Promise<Response> {
   const started = Date.now();
   let upstream: Response | null = null;
 
-  if (extraUsageConsent || provider.name === 'OpenRouter' || provider.name === 'Groq') {
-    const fallbackKey = extraUsageConsent ? clean(environment().OPENAI_API_KEY) : provider.key;
-    if (!fallbackKey) {
-      return json({ error: 'خيار الاستمرار غير متاح حالياً. يمكنك المحاولة بعد تجدد الرصيد المجاني.' }, 503);
-    }
-    const endpoint = extraUsageConsent
-      ? 'https://api.openai.com/v1/chat/completions'
-      : provider.endpoint;
-    const model = extraUsageConsent ? 'gpt-4.1-mini' : provider.model;
-    const payload = JSON.stringify({
-      model,
-      messages: [{ role: 'system', content: activeSystem }, ...messages],
-      max_tokens: quiz ? 2600 : 1200,
-      temperature: quiz ? 0.3 : 0.4,
-    });
+  const openRouterFallbackKey = !extraUsageConsent && provider.name === 'Groq'
+    ? clean(environment().OPENROUTER_API_KEY)
+    : undefined;
 
-    // Retry one transient provider failure; do not retry authentication or quota errors.
-    for (let attempt = 0; attempt < 2; attempt++) {
-      try {
-        upstream = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'content-type': 'application/json', authorization: `Bearer ${fallbackKey}` },
-          body: payload,
-          signal: AbortSignal.timeout(25_000),
-        });
-      } catch {
-        upstream = null;
-      }
+  const targets = extraUsageConsent
+    ? [{
+        name: 'OpenAI',
+        key: clean(environment().OPENAI_API_KEY),
+        endpoint: 'https://api.openai.com/v1/chat/completions',
+        model: 'gpt-4.1-mini',
+        timeoutMs: 18_000,
+      }]
+    : [
+        {
+          name: provider.name,
+          key: provider.key,
+          endpoint: provider.endpoint,
+          model: provider.model,
+          timeoutMs: 11_000,
+        },
+        ...(openRouterFallbackKey ? [{
+          name: 'OpenRouter',
+          key: openRouterFallbackKey,
+          endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+          model: 'openrouter/free',
+          timeoutMs: 8_000,
+        }] : []),
+      ];
 
-      const retryable = upstream === null || upstream.status >= 500 || upstream.status === 408;
-      if (!retryable || attempt === 1) break;
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+  let activeProvider = targets[0]?.name ?? provider.name;
+  let timedOut = false;
+  const maxTokens = quiz ? 2000 : 850;
+
+  for (const target of targets) {
+    if (!target.key) continue;
+    activeProvider = target.name;
+    try {
+      upstream = await fetch(target.endpoint, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          authorization: `Bearer ${target.key}`,
+        },
+        body: JSON.stringify({
+          model: target.model,
+          messages: [{ role: 'system', content: activeSystem }, ...messages],
+          max_tokens: maxTokens,
+          temperature: quiz ? 0.3 : 0.4,
+        }),
+        signal: AbortSignal.timeout(target.timeoutMs),
+      });
+    } catch (error) {
+      upstream = null;
+      if (error instanceof Error && error.name === 'TimeoutError') timedOut = true;
     }
 
-    if (upstream?.status === 429) {
-      if (!extraUsageConsent && clean(environment().OPENAI_API_KEY)) {
-        return json({
-          code: 'extra_usage_consent_required',
-          error: 'وصل دليل إلى حدّ الاستخدام المجاني المؤقت. هل توافق على المتابعة باستخدام رصيد إضافي قد تترتب عليه تكلفة؟ لن يتم ذلك دون موافقتك.',
-        }, 402);
-      }
-      return json({
-        error: extraUsageConsent
-          ? 'تعذّر إكمال الاستخدام الإضافي حالياً. لم يتم تنفيذ الطلب؛ حاول لاحقاً.'
-          : 'وصلت خدمة الذكاء الاصطناعي إلى حدّ الاستخدام المجاني المؤقت. أعد المحاولة بعد قليل.',
-      }, 429);
-    }
-  } else {
-    const geminiPayload = {
-      systemInstruction: { parts: [{ text: activeSystem }] },
-      contents: messages.map((m) => ({
-        role: m.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: m.content }],
-      })),
-      generationConfig: { maxOutputTokens: quiz ? 2600 : 1200, temperature: quiz ? 0.3 : 0.4 },
-    };
-    for (let attempt = 0; attempt < 2; attempt++) {
-      try {
-        upstream = await fetch(provider.endpoint, {
-          method: 'POST',
-          headers: { 'content-type': 'application/json', 'x-goog-api-key': provider.key },
-          body: JSON.stringify(geminiPayload),
-          signal: AbortSignal.timeout(40_000),
-        });
-      } catch {
-        upstream = null;
-      }
-      if (upstream?.status === 429) {
-        return json({
-          code: 'extra_usage_consent_required',
-          error: 'انتهى رصيدك المجاني الحالي. هل توافق على تفعيل الاستخدام الإضافي لمتابعة العمل مع دليل؟ قد تترتب تكلفة إضافية، ولن نفعّله دون موافقتك.',
-        }, 402);
-      }
-      const transient = upstream === null || upstream.status >= 500;
-      if (!transient || Date.now() - started > 15_000) break;
-      if (attempt === 0) await new Promise((r) => setTimeout(r, 1500));
-    }
+    // A second configured free provider is tried after throttling, timeout or 5xx.
+    // Authentication errors are not retried because they require configuration repair.
+    if (upstream?.ok) break;
+    const canFailOver = target !== targets[targets.length - 1]
+      && (upstream === null || upstream.status === 408 || upstream.status === 429 || upstream.status >= 500);
+    if (!canFailOver) break;
   }
-  if (!upstream) return json({ error: 'تعذّر الاتصال بخدمة الذكاء الاصطناعي' }, 502);
+
+  if (upstream?.status === 429) {
+    if (!extraUsageConsent && clean(environment().OPENAI_API_KEY)) {
+      return json({
+        code: 'extra_usage_consent_required',
+        error: 'وصل دليل إلى حدّ الاستخدام المجاني المؤقت. هل توافق على المتابعة باستخدام رصيد إضافي قد تترتب عليه تكلفة؟ لن يتم ذلك دون موافقتك.',
+      }, 402);
+    }
+    return json({
+      error: extraUsageConsent
+        ? 'تعذّر إكمال الاستخدام الإضافي حالياً. لم يتم تنفيذ الطلب؛ حاول لاحقاً.'
+        : 'الخدمة مزدحمة حالياً. انتظر قليلاً ثم أعد المحاولة.',
+    }, 429);
+  }
+
+  if (!upstream) {
+    return json({
+      code: timedOut ? 'assistant_timeout' : 'assistant_unavailable',
+      error: timedOut
+        ? 'تأخر الرد من خدمة الذكاء الاصطناعي. سؤالك محفوظ؛ أعد المحاولة الآن.'
+        : 'تعذّر الوصول إلى خدمة دليل حالياً. سؤالك محفوظ؛ أعد المحاولة بعد قليل.',
+    }, timedOut ? 504 : 502);
+  }
+
 
   if (!upstream.ok) {
     // لا نكشف تفاصيل المزوّد أو إعدادات الخادم في رسائل الخطأ العامة.
@@ -589,7 +597,7 @@ async function handlePost(request: Request): Promise<Response> {
   type ChatCompletion = { choices?: { message?: { content?: string } }[] };
   type GeminiCompletion = { candidates?: { content?: { parts?: { text?: string }[] } }[] };
   const rawData = await upstream.json().catch(() => null) as (ChatCompletion & GeminiCompletion) | null;
-  let reply = extraUsageConsent || provider.name === 'OpenRouter' || provider.name === 'Groq'
+  let reply = extraUsageConsent || activeProvider === 'OpenRouter' || activeProvider === 'Groq'
     ? rawData?.choices?.[0]?.message?.content?.trim() || ''
     : rawData?.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('').trim() || '';
   const arabicRequest = /[\u0600-\u06FF]/.test(messages[messages.length - 1].content);
@@ -606,10 +614,10 @@ async function handlePost(request: Request): Promise<Response> {
       symbols.length / Math.max(visible.length, 1) > 0.18;
   };
 
-  if (!reply) return json({ error: 'لم يصل ردّ من المساعد، حاول مرة أخرى' }, 502);
+  if (!reply) return json({ code: 'empty_assistant_reply', error: 'لم يصل نصّ الرد من النموذج. سؤالك محفوظ؛ أعد المحاولة.' }, 502);
 
   if (arabicRequest && looksLikeSymbolNoise(reply)) {
-    return json({ error: 'وصل رد غير واضح من النموذج. أعد المحاولة بعد قليل.' }, 502);
+    return json({ code: 'unclear_assistant_reply', error: 'وصل رد غير واضح من النموذج. سؤالك محفوظ؛ أعد المحاولة.' }, 502);
   }
 
   return json({ reply });
