@@ -33,8 +33,8 @@ function ProductIdentity() {
       <div className="pointer-events-none absolute -bottom-24 -right-16 h-64 w-64 rounded-full bg-amber-400/10 blur-3xl" />
       <div className="relative text-center">
         <p className="text-[10px] font-black tracking-[0.28em] text-amber-200/80" dir="ltr">ATHEER · DIGITAL PLATFORM</p>
-        <h2 className="mt-2 text-2xl font-black sm:text-3xl">أثير تطوّر منصة MASAR ومساعد DALIL</h2>
-        <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-stone-300">شركة أثير (ATHEER) هي المالكة والمطوّرة لمنصة MASAR (مسار)، وهي منصة تعليمية ذكية متكاملة. أما DALIL (دليل) فهو المساعد الذكي المدمج داخل مسار.</p>
+        <h2 className="mt-2 text-2xl font-black sm:text-3xl">أثير تطوّر منصة MASAR ومساعد دليل</h2>
+        <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-stone-300">شركة أثير (ATHEER) هي المالكة والمطوّرة لمنصة MASAR (مسار)، وهي منصة تعليمية ذكية متكاملة. أما دليل (دليل) فهو المساعد الذكي المدمج داخل مسار.</p>
       </div>
 
       <div className="relative grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -55,7 +55,7 @@ function ProductIdentity() {
         </article>
         <article className="rounded-2xl border border-amber-300/25 bg-gradient-to-b from-amber-400/15 to-amber-950/20 p-4 text-center">
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-amber-200/25 bg-amber-100/10 shadow-lg"><BrainCircuit size={27} /></span>
-          <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">DALIL</p>
+          <p className="mt-4 text-xl font-black tracking-[0.13em]" dir="ltr">دليل</p>
           <p className="mt-1 text-sm font-bold text-amber-100">دليل · المساعد الذكي لمسار</p>
           <p className="mt-3 text-xs leading-6 text-amber-50/90">الذكاء الاصطناعي المخصص لمنصة MASAR؛ يساعد الطالب على فهم الدروس، والإجابة عن الأسئلة، والتفاعل النصي والصوتي ضمن تجربته التعليمية.</p>
           <span className="mt-4 inline-flex rounded-full border border-amber-200/25 bg-amber-100/10 px-3 py-1 text-[10px] font-bold text-amber-100">المساعدة الذكية</span>
@@ -67,16 +67,16 @@ function ProductIdentity() {
         <div className="grid gap-2 sm:grid-cols-3">
           <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-amber-50">01 · ATHEER</p><p className="mt-1 text-[11px] leading-5 text-stone-300">الشركة المالكة والمطوّرة</p></div>
           <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-amber-100">02 · MASAR</p><p className="mt-1 text-[11px] leading-5 text-stone-300">المنصة التعليمية المتكاملة</p></div>
-          <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-amber-100">03 · DALIL</p><p className="mt-1 text-[11px] leading-5 text-stone-300">المساعد الذكي المخصص لمسار</p></div>
+          <div className="rounded-xl bg-white/[0.06] p-3 text-center"><p className="text-xs font-black text-amber-100">03 · دليل</p><p className="mt-1 text-[11px] leading-5 text-stone-300">المساعد الذكي المخصص لمسار</p></div>
         </div>
-        <p className="mt-4 text-center text-sm font-extrabold tracking-wide">ATHEER تطوّر · MASAR تعلّم · DALIL تساعد</p>
-        <p className="mt-1 text-center text-[10px] text-stone-400">MASAR منصة تعليمية من أثير، وDALIL مساعدها الذكي المدمج.</p>
+        <p className="mt-4 text-center text-sm font-extrabold tracking-wide">ATHEER تطوّر · MASAR تعلّم · دليل تساعد</p>
+        <p className="mt-1 text-center text-[10px] text-stone-400">MASAR منصة تعليمية من أثير، ودليل مساعدها الذكي المدمج.</p>
       </div>
 
       <div className="relative grid gap-3 sm:grid-cols-2">
         <a href="#/assistant" className="group flex items-center gap-3 rounded-2xl border border-amber-300/20 bg-amber-300/[0.07] p-4 transition hover:border-amber-200/50 hover:bg-amber-300/10">
           <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-amber-200/10 text-amber-100"><BrainCircuit size={22} /></span>
-          <span className="min-w-0 flex-1"><span className="block text-sm font-bold">جرّب DALIL AI</span><span className="mt-1 block text-[11px] text-stone-300">انتقل إلى المساعد الدراسي الذكي</span></span>
+          <span className="min-w-0 flex-1"><span className="block text-sm font-bold">جرّب دليل</span><span className="mt-1 block text-[11px] text-stone-300">انتقل إلى المساعد الدراسي الذكي</span></span>
           <span className="text-amber-200 transition group-hover:-translate-x-1">←</span>
         </a>
         <a href="#/home" className="group flex items-center gap-3 rounded-2xl border border-amber-300/20 bg-amber-300/[0.07] p-4 transition hover:border-amber-200/50 hover:bg-amber-300/10">
