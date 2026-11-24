@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MASAR</string>
+    <string name="title_activity_main">MASAR</string>
+    <string name="package_name">com.atheer.masar</string>
+    <string name="custom_url_scheme">com.atheer.masar</string>
+</resources>
