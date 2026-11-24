@@ -108,7 +108,7 @@ export const useChat = create<ChatState>((set, get) => ({
       set({ loading: false, messages: done, extraUsagePending: false });
       void db.chatLogs.put({ key: 'main', messages: done.slice(-40), at: Date.now() }).catch(() => undefined);
     } catch {
-      set({ loading: false, error: 'لا يوجد اتصال بالإنترنت. المساعد يحتاج إلى اتصال.' });
+      set({ loading: false, error: 'تعذّر الاتصال بخدمة دليل. تحقّق من الاتصال أو أعد المحاولة.' });
     }
   },
 
@@ -134,7 +134,7 @@ export const useChat = create<ChatState>((set, get) => ({
       set({ loading: false, messages: done, extraUsagePending: false });
       void db.chatLogs.put({ key: 'main', messages: done.slice(-40), at: Date.now() }).catch(() => undefined);
     } catch {
-      set({ loading: false, error: 'لا يوجد اتصال بالإنترنت. المساعد يحتاج إلى اتصال.' });
+      set({ loading: false, error: 'تعذّر الاتصال بخدمة دليل. تحقّق من الاتصال أو أعد المحاولة.' });
     }
   },
 
@@ -169,7 +169,7 @@ export async function askBook(args: { question: string; name: string; text: stri
       bookAsk: true,
     });
   } catch {
-    throw new Error('لا يوجد اتصال بالإنترنت. المساعد يحتاج إلى اتصال.');
+    throw new Error('تعذّر الاتصال بخدمة دليل. تحقّق من الاتصال أو أعد المحاولة.');
   }
   const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
   if (!res.ok || !data.reply) throw new Error(data.error ?? 'حدث خطأ، حاول مرة أخرى');
@@ -188,7 +188,7 @@ export async function askVideo(args: { question: string; title: string; transcri
       videoAsk: true,
     });
   } catch {
-    throw new Error('لا يوجد اتصال بالإنترنت. يحتاج تحليل الفيديو إلى اتصال.');
+    throw new Error('تعذّر الاتصال بخدمة دليل لتحليل الفيديو. تحقّق من الاتصال وأعد المحاولة.');
   }
   const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
   if (!res.ok || !data.reply) throw new Error(data.error ?? 'تعذّر تحليل الفيديو. حاول مرة أخرى.');
@@ -219,7 +219,7 @@ export async function requestQuiz(args: {
       ...(att ? { attachment: { name: att.name, text: att.text } } : {}),
     });
   } catch {
-    throw new Error('لا يوجد اتصال بالإنترنت. المساعد يحتاج إلى اتصال.');
+    throw new Error('تعذّر الاتصال بخدمة دليل. تحقّق من الاتصال أو أعد المحاولة.');
   }
   const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
   if (!res.ok || !data.reply) throw new Error(data.error ?? 'حدث خطأ، حاول مرة أخرى');
@@ -242,7 +242,7 @@ export async function requestMindMap(args: {
       ...(att ? { attachment: { name: att.name, text: att.text } } : {}),
     });
   } catch {
-    throw new Error('لا يوجد اتصال بالإنترنت. إنشاء الخريطة يحتاج إلى اتصال.');
+    throw new Error('تعذّر الاتصال بخدمة دليل لإنشاء الخريطة الذهنية. تحقّق من الاتصال وأعد المحاولة.');
   }
   const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
   if (!res.ok || !data.reply) throw new Error(data.error ?? 'تعذّر إنشاء الخريطة الذهنية.');
