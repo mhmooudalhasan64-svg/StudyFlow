@@ -5,12 +5,12 @@ android {
     namespace "com.mhmooud.studyflow"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        // New application ID allows MASAR to install alongside the legacy app.
+        // Keep the MASAR application ID stable so signed updates install over the existing app.
         applicationId "com.atheer.masar"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "1.0"
+        versionCode 3
+        versionName "1.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
