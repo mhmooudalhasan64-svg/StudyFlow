@@ -23,6 +23,7 @@ function postChat(body: unknown): Promise<Response> {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-vayora-build': '7' },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(23_000),
   });
 }
 
@@ -49,6 +50,7 @@ interface ChatState {
   continueWithExtraUsage: () => Promise<void>;
   cancelExtraUsage: () => void;
   send: (text: string) => Promise<void>;
+  retryLast: () => void;
   clear: () => void;
   /** يعيد آخر محادثة محفوظة على الجهاز (إن لم توجد محادثة حالية) */
   load: () => Promise<void>;
@@ -107,9 +109,20 @@ export const useChat = create<ChatState>((set, get) => ({
       const done = [...get().messages, { role: 'assistant' as const, content: data.reply }];
       set({ loading: false, messages: done, extraUsagePending: false });
       void db.chatLogs.put({ key: 'main', messages: done.slice(-40), at: Date.now() }).catch(() => undefined);
-    } catch {
-      set({ loading: false, error: 'تعذّر الاتصال بخدمة دليل. تحقّق من الاتصال أو أعد المحاولة.' });
+    } catch (cause) {
+      const timedOut = cause instanceof Error && (cause.name === 'TimeoutError' || cause.name === 'AbortError');
+      set({ loading: false, error: timedOut
+        ? 'تأخر الرد أكثر من المعتاد. سؤالك محفوظ؛ اضغط «إعادة المحاولة» دون إعادة كتابته.'
+        : 'تعذّر الاتصال بخدمة دليل. سؤالك محفوظ؛ تحقّق من الاتصال ثم أعد المحاولة.' });
     }
+  },
+
+  retryLast: () => {
+    const { messages, loading } = get();
+    const last = messages[messages.length - 1];
+    if (loading || !last || last.role !== 'user') return;
+    set({ messages: messages.slice(0, -1), error: null, extraUsagePending: false });
+    void get().send(last.content);
   },
 
   continueWithExtraUsage: async () => {
