@@ -2,7 +2,7 @@ name: Build ATHEER MASAR Signed Release APK
 
 on:
   push:
-    branches: ["atheer-dalil-response-quality"]
+    branches: ["fix/masar-dalil-reliability"]
     paths:
       - ".github/workflows/android-apk-release.yml"
       - "android/app/src/main/res/values/**"
@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   build-signed-release:
-    if: github.ref == 'refs/heads/atheer-dalil-response-quality'
+    if: github.ref == 'refs/heads/fix/masar-dalil-reliability'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
