@@ -386,14 +386,17 @@ function OfflineChip() {
 
 function Brand() {
   return (
-    <a href="#/home" className="masar-brand flex items-center gap-3" aria-label="MASAR by ATHEER — الرئيسية">
+    <a href="#/home" className="masar-brand flex items-center gap-3" aria-label="MASAR | مسار — منصة تعليمية ذكية متكاملة — ضمن منظومة ATHEER | أثير">
       <span className="masar-brand-mark">
         <img src="/icon.svg" alt="" width={38} height={38} className="h-9 w-9 object-contain" />
       </span>
-      <span className="flex flex-col leading-tight">
-        <span className="masar-brand-name" dir="ltr">MASAR</span>
-        <span className="text-[10px] text-muted">مسار · منصة تعليمية ذكية</span>
-        <span className="masar-brand-parent mt-1 inline-flex items-center gap-1.5" dir="ltr"><GraduationCap size={12} strokeWidth={2.2} aria-hidden="true" /> ATHEER</span>
+      <span className="masar-brand-copy flex min-w-0 flex-col justify-center">
+        <span className="masar-brand-name flex items-center gap-1.5" dir="auto">
+          <span dir="ltr">MASAR</span><span className="masar-brand-separator">|</span><span dir="rtl">مسار</span>
+        </span>
+        <span className="masar-brand-description">منصة تعليمية ذكية متكاملة</span>
+        <span className="masar-brand-tagline">تعلّم <span>•</span> نظّم <span>•</span> تطوّر</span>
+        <span className="masar-brand-parent"><GraduationCap size={11} strokeWidth={2.2} aria-hidden="true" /><span>ضمن منظومة</span><b dir="ltr">ATHEER</b><span>| أثير</span></span>
       </span>
     </a>
   );
