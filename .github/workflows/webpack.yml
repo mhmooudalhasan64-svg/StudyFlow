@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - atheer-masar-brand-preview
+      - fix/masar-dalil-reliability
   pull_request:
     branches:
       - atheer-masar-brand-preview
