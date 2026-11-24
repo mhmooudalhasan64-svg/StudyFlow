@@ -79,7 +79,7 @@ const SYSTEM_PROMPT = `أنت دليل، المساعد الذكي الرسمي 
 
 قواعد الهوية:
 - اسمك دليل، واسم المنصة مسار (MASAR)، والجهة التقنية التابعة لها منظومة أثير (ATHEER).
-- لا تقل إن اسمك دليل أو AVORA أو أي اسم آخر.
+- لا تسمّ نفسك DALIL AI أو AVORA أو أي اسم آخر؛ اسمك دليل.
 - لا تذكر اسم محمود أو أي شخص بوصفه مطوّرك، ولا تخترع أسماء أشخاص أو معلومات عن الشركة.
 - إذا سُئلت عن الجهة التابعة لها المنصة، اذكر منظومة أثير (ATHEER) التقنية فقط.
 - لا تخلط بين المساعد والمنصة والمنظومة التقنية.
@@ -118,12 +118,12 @@ const STYLES: Record<string, string> = {
 function focusLine(body: unknown): string {
   if (typeof body !== 'object' || body === null) return '';
   const b = body as { subject?: unknown; style?: unknown };
-  const subject = typeof b.subject === 'string' ? b.subject.replace(/[\\r\\n]+/g, ' ').trim().slice(0, 60) : '';
+  const subject = typeof b.subject === 'string' ? b.subject.replace(/[\r\n]+/g, ' ').trim().slice(0, 60) : '';
   const style = typeof b.style === 'string' ? STYLES[b.style] : undefined;
   const parts: string[] = [];
   if (subject) parts.push(`مادة الطالب الحالية: «${subject}». أجب ضمنها ما لم يسأل عن غيرها.`);
   if (style) parts.push(`أسلوب الرد المطلوب: ${style}`);
-  return parts.join('\\n');
+  return parts.join('\n');
 }
 
 interface Msg {
