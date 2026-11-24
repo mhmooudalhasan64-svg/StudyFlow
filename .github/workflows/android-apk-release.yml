@@ -5,6 +5,12 @@ on:
     branches: ["atheer-masar-brand-preview"]
     paths:
       - ".github/workflows/android-apk-release.yml"
+      - "android/app/src/main/res/values/**"
+      - "android/app/src/main/res/values-en/**"
+      - "native-audio-capture/android/src/main/java/**"
+      - "android/app/src/main/AndroidManifest.xml"
+      - "android/app/build.gradle"
+      - "capacitor.config.json"
   workflow_dispatch:
 
 permissions:
