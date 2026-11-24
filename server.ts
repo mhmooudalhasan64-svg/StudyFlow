@@ -74,12 +74,13 @@ async function serveFrontend(pathname: string, method: string, outgoing: import(
     }
   }
 
-  const isHashedAsset = /\\.[a-f0-9]{8,}\\./i.test(servedPath);
+  const isHashedAsset = /\.[a-f0-9]{8,}\./i.test(servedPath);
+  const isRefreshCritical = ['index.html', 'sw.js', 'manifest.webmanifest', 'manifest.json'].includes(requestedPath.replace(/^\//, ''));
   outgoing.writeHead(200, {
     'content-type': MIME_TYPES[extname(servedPath).toLowerCase()] || 'application/octet-stream',
     'content-length': body.byteLength,
-    'cache-control': servedPath.endsWith('index.html')
-      ? 'no-cache'
+    'cache-control': isRefreshCritical
+      ? 'no-cache, no-store, must-revalidate'
       : isHashedAsset ? 'public, max-age=31536000, immutable' : 'public, max-age=3600',
     'x-content-type-options': 'nosniff',
   });
@@ -137,7 +138,7 @@ const server = createServer(async (incoming, outgoing) => {
     }
 
     if (url.pathname === '/api/chat' && method === 'POST') {
-      const suppliedBuild = Number(incoming.headers['x-vayora-build'] || 0);
+      const suppliedBuild = Number(incoming.headers['x-masar-build'] || incoming.headers['x-vayora-build'] || 0);
       if (!Number.isInteger(suppliedBuild) || suppliedBuild < 7) {
         sendJson(outgoing, 426, {
           code: 'update_required',
