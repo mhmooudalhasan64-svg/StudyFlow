@@ -648,7 +648,7 @@ const MOBILE_APP_ORIGINS = new Set([
 ]);
 
 const CONFIGURED_WEB_ORIGINS = new Set(
-  (environment().VAYORA_ALLOWED_ORIGINS ?? '')
+  (environment().MASAR_ALLOWED_ORIGINS ?? environment().VAYORA_ALLOWED_ORIGINS ?? '')
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean),
