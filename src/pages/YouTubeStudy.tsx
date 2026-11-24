@@ -340,8 +340,8 @@ export default function YouTubeStudy() {
           })}
           {quickQuiz.length > 0 && Object.keys(quickAnswers).length === quickQuiz.length && <p className="text-sm font-bold">نتيجتك: {quickQuiz.filter((item, index) => quickAnswers[index] === item.answerIndex).length} من {quickQuiz.length}</p>}
         </div>
-        <label className="label" htmlFor="avora-video-question">سؤالك عن الفيديو</label>
-        <input id="avora-video-question" className="input" value={question}
+        <label className="label" htmlFor="dalil-video-question">سؤالك عن الفيديو</label>
+        <input id="dalil-video-question" className="input" value={question}
           onChange={event => setQuestion(event.target.value)} maxLength={500}
           placeholder="مثلاً: لخّص الفكرة الرئيسية واشرحها..." />
         <button className="btn btn-primary w-full" type="button"
