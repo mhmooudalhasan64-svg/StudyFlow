@@ -23,7 +23,7 @@ const FILE_SUGGESTIONS = [
 ];
 
 export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
-  const { messages, attachment, loading, error, extraUsagePending, continueWithExtraUsage, cancelExtraUsage, send, retryLast, setAttachment, clear, useProfile, setUseProfile, subject, setSubject, style, setStyle, regenerate } = useChat();
+  const { messages, attachment, loading, error, extraUsagePending, continueWithExtraUsage, cancelExtraUsage, send, retryLast, setAttachment, clear, useProfile, setUseProfile, subject, setSubject, style, setStyle, webSearchEnabled, setWebSearchEnabled, regenerate } = useChat();
   const [copied, setCopied] = useState<number | null>(null);
   const app = useApp();
   const profile = useMemo(() => buildLearnerProfile(contextFrom(app, toDateKey())), [app]);
@@ -288,6 +288,19 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
         {style === 'mastery' && <p className="rounded-xl border border-accent/20 bg-accent/5 px-3 py-2 text-xs leading-6 text-muted">سيعمل دليل معك بهدف واحد في كل مرة: تشخيص سريع، شرح متدرّج، تدريب، ثم تحقق من الإتقان قبل الانتقال.</p>}
         {style === 'problem_solver' && <p className="rounded-xl border border-accent/20 bg-accent/5 px-3 py-2 text-xs leading-6 text-muted">حلّ منظم: تحديد المعطيات والمطلوب، اختيار القانون، التعويض والحساب بالوحدات، ثم التحقق من النتيجة. اكتب المسألة كاملة وحدد المادة، وإذا أردت تلميحاً دون الحل الكامل فاذكر ذلك.</p>}
       </div>
+
+      <label className="card mb-3 flex items-start gap-3 !p-3 text-sm">
+        <input
+          type="checkbox"
+          className="mt-0.5 h-5 w-5 shrink-0 accent-[rgb(var(--accent))]"
+          checked={webSearchEnabled}
+          onChange={(e) => setWebSearchEnabled(e.target.checked)}
+        />
+        <span className="min-w-0">
+          <span className="block font-medium">السماح لدليل بالبحث على الإنترنت عند الحاجة</span>
+          <span className="mt-1 block text-xs leading-5 text-muted">بحث اختياري بموافقتك. قد تصل كلفته إلى 0.002 دولار لكل سؤال بحث (عمليتا بحث كحد أقصى)، إضافة إلى أي تكلفة نموذج إن وجدت. لا يُفعّل تلقائياً.</span>
+        </span>
+      </label>
 
       <div className="card mb-3 min-h-[40vh] space-y-3" aria-live="polite">
         {messages.length === 0 && (
