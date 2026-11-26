@@ -28,15 +28,15 @@ export function buildDalilContext(input: DalilContextInput): DalilContext {
   const userTurns = recent.filter((message) => message.role === 'user').slice(-5);
   const latest = [...userTurns].reverse().find((message) => message.content.trim())?.content ?? '';
   const recentText = userTurns.map((message) => message.content).join('\n').slice(-5000);
-  const studyScore = countMatches(latest, STUDY_TERMS) + (input.subject ? 2 : 0) + (input.style && input.style !== 'normal' ? 1 : 0);
+  const studyScore = countMatches(latest, STUDY_TERMS) + (input.style && input.style !== 'normal' ? 1 : 0);
   const dailyScore = countMatches(latest, DAILY_TERMS);
   const creativeScore = countMatches(latest, CREATIVE_TERMS);
   const fatigueSignal = FATIGUE_TERMS.test(recentText);
 
   let mode: DalilMode = 'general';
   if (studyScore > 0 && dailyScore > 0) mode = 'mixed';
-  else if (studyScore > 0) mode = 'study';
   else if (dailyScore > 0) mode = 'daily';
+  else if (studyScore > 0 || input.subject) mode = 'study';
   else if (creativeScore > 0) mode = 'creative';
 
   const modeGuidance: Record<DalilMode, string> = {
