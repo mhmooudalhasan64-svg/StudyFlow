@@ -3,10 +3,10 @@ import { db, type MedicalQuestion } from '../db';
 
 export type MedicalQuestionHistoryFilter = 'all' | 'weak' | 'new';
 
-export function filterMedicalQuestions(
-  questions: Pick<MedicalQuestion, 'id' | 'attempts' | 'correctAttempts'>[],
+export function filterMedicalQuestions<T extends Pick<MedicalQuestion, 'id' | 'attempts' | 'correctAttempts'>>(
+  questions: T[],
   filter: MedicalQuestionHistoryFilter,
-): Pick<MedicalQuestion, 'id' | 'attempts' | 'correctAttempts'>[] {
+): T[] {
   if (filter === 'new') return questions.filter((question) => question.attempts === 0);
   if (filter === 'weak') return questions.filter((question) =>
     question.attempts > 0 && question.correctAttempts / question.attempts < 0.6);
