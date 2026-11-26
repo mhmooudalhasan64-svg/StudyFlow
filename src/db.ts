@@ -180,6 +180,7 @@ export interface ChatConversation {
   contextSummary?: string;
   createdAt: number;
   updatedAt: number;
+}
 
 /** سجل محادثة المساعد (محلي فقط، لا يدخل في النسخ الاحتياطي) */
 export interface ChatLog {
