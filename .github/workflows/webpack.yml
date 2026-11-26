@@ -7,11 +7,13 @@ on:
       - fix/masar-dalil-reliability
       - fix/dalil-reliability-preview
       - feat/dalil-conversational-intelligence
+      - feat/dalil-intelligence-core
   pull_request:
     branches:
       - atheer-masar-brand-preview
       - fix/masar-dalil-reliability
       - fix/dalil-reliability-preview
+      - feat/dalil-conversational-intelligence
 
 permissions:
   contents: read
