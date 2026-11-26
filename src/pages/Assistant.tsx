@@ -7,7 +7,7 @@ import { useApp } from '../store';
 import { buildLearnerProfile, contextFrom } from '../lib/advisor';
 import { canListen, canSpeak, listen, prepareVoice, speak, stopSpeaking } from '../lib/voice';
 import { toDateKey } from '../lib/utils';
-import { ACCEPT, extractFileText } from '../lib/fileText';
+import { ACCEPT, extractFileText, extractImageData } from '../lib/fileText';
 
 const SUGGESTIONS = [
   'اشرح لي فكرة الاشتقاق ببساطة مع مثال',
@@ -176,8 +176,13 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
     setFileError(null);
     setReading(true);
     try {
-      const r = await extractFileText(file);
-      setAttachment({ name: r.name, text: r.text, truncated: r.truncated });
+      if (file.type.startsWith('image/')) {
+        const image = await extractImageData(file);
+        setAttachment(image);
+      } else {
+        const r = await extractFileText(file);
+        setAttachment({ name: r.name, text: r.text, truncated: r.truncated });
+      }
     } catch (err) {
       setFileError(err instanceof Error ? err.message : 'تعذّرت قراءة الملف');
     } finally {
@@ -289,10 +294,10 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
           <div className="space-y-3 py-4 text-center">
             <Bot className="mx-auto text-accent" size={36} />
             <p className="text-sm text-muted">
-              {attachment ? 'تم إرفاق الملف. اسأل عنه أو اختر مما يلي:' : 'مرحباً! أنا دليل، مساعدك الدراسي. جرّب أحد هذه الأسئلة:'}
+              {attachment ? (attachment.imageDataUrl ? 'تم إرفاق الصورة. اسأل دليل عمّا يظهر فيها:' : 'تم إرفاق الملف. اسأل عنه أو اختر مما يلي:') : 'مرحباً! أنا دليل، مساعدك الدراسي. جرّب أحد هذه الأسئلة:'}
             </p>
             <div className="flex flex-col gap-2">
-              {(attachment ? FILE_SUGGESTIONS : SUGGESTIONS).map((s) => (
+              {(attachment ? (attachment.imageDataUrl ? ['اشرح لي ما يظهر في هذه الصورة', 'استخرج النصوص والمعادلات منها', 'حلّ السؤال الموجود في الصورة'] : FILE_SUGGESTIONS) : SUGGESTIONS).map((s) => (
                 <button key={s} type="button" className="btn btn-ghost !justify-start text-start" onClick={() => void contextualSend(s)}>
                   {s}
                 </button>
@@ -395,14 +400,16 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
             )}
             {attachment && !reading && (
               <div className="flex items-center gap-2">
-                <FileText size={18} className="shrink-0 text-accent" />
+                {attachment.imageDataUrl ? <Bot size={18} className="shrink-0 text-accent" /> : <FileText size={18} className="shrink-0 text-accent" />}
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">{attachment.name}</p>
                   <p className="text-[11px] text-muted">
-                    {attachment.truncated
-                      ? 'الملف طويل: يقرأ المساعد الجزء الأول منه فقط.'
-                      : 'يقرأ المساعد الملف كاملاً.'}{' '}
-                    محتواه يُرسل إلى خدمة الذكاء الاصطناعي.
+                    {attachment.imageDataUrl
+                      ? 'صورة مضغوطة محلياً للتحليل البصري.'
+                      : attachment.truncated
+                        ? 'الملف طويل: يقرأ المساعد الجزء الأول منه فقط.'
+                        : 'يقرأ المساعد الملف كاملاً.'}{' '}
+                    {attachment.imageDataUrl ? 'ستُرسل الصورة إلى مزوّد الرؤية بعد إرسال سؤالك.' : 'محتواه يُرسل إلى خدمة الذكاء الاصطناعي.'}
                   </p>
                 </div>
                 <button
@@ -428,8 +435,8 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
         <button
           type="button"
           className="btn btn-ghost shrink-0 !px-3"
-          aria-label="إرفاق ملف (PDF أو Word أو Excel)"
-          title="إرفاق ملف (PDF أو Word أو Excel)"
+          aria-label="إرفاق ملف أو صورة"
+          title="إرفاق ملف أو صورة"
           disabled={reading || loading}
           onClick={() => fileRef.current?.click()}
         >
@@ -475,7 +482,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
       </form>
       </div>
       <p className="mt-2 text-center text-[11px] text-muted">
-        يقبل PDF وWord (docx) وExcel (xlsx). الملفات الممسوحة ضوئياً كصور لا تُقرأ. قد يخطئ المساعد، فتحقق من المهم في كتابك.
+        يقبل PDF وWord وExcel وTXT وCSV وصور JPG وPNG وWebP. تُحلّل الصور بصرياً عند توفر مزوّد الرؤية. قد يخطئ المساعد، فتحقق من المعلومات المهمة.
       </p>
     </div>
   );
