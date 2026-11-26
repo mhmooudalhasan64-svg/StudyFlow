@@ -22,6 +22,7 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [showAll, setShowAll] = useState(false);
+  const [historyFilter, setHistoryFilter] = useState<'all' | 'weak' | 'new'>('all');
 
   const refresh = useCallback(async () => {
     const rows = await db.medicalQuestions.where('college').equals(college).toArray();
@@ -46,6 +47,11 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
   const correctTotal = useMemo(() => questions.reduce((sum, q) => sum + q.correctAttempts, 0), [questions]);
   const attemptsTotal = useMemo(() => questions.reduce((sum, q) => sum + q.attempts, 0), [questions]);
   const accuracy = attemptsTotal ? Math.round((correctTotal / attemptsTotal) * 100) : 0;
+  const historyQuestions = useMemo(() => questions.filter((question) => {
+    if (historyFilter === 'new') return question.attempts === 0;
+    if (historyFilter === 'weak') return question.attempts > 0 && question.correctAttempts / question.attempts < 0.6;
+    return true;
+  }), [questions, historyFilter]);
 
   const generate = async () => {
     if (!topic.trim() && sourceText.trim().length < 40) {
@@ -166,7 +172,33 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
 
       {!active && <div className="rounded-xl border border-dashed border-line p-4 text-center text-xs leading-6 text-muted">لا توجد أسئلة محفوظة لهذه الكلية والسنة. أنشئ مجموعة أسئلة لتبدأ التدريب.</div>}
       {questions.length > 0 && <button type="button" className="inline-flex items-center gap-2 text-xs font-semibold text-accent" onClick={() => setShowAll((v) => !v)}><BookCheck size={14}/>{showAll ? 'إخفاء سجل الأسئلة' : 'عرض سجل الأسئلة'}</button>}
-      {showAll && <div className="space-y-2">{questions.map((q, index) => <button type="button" key={q.id} onClick={() => { setActiveIndex(index); setSelected(null); }} className="flex w-full items-center justify-between gap-3 rounded-lg border border-line p-3 text-right text-xs"><span className="line-clamp-2">{q.stem}</span><span className="shrink-0 text-muted">{q.attempts ? `${Math.round(q.correctAttempts / q.attempts * 100)}%` : 'جديد'}</span></button>)}</div>}
+      {showAll && (
+        <div className="space-y-3">
+          <div className="flex flex-wrap gap-2" role="group" aria-label="تصفية سجل الأسئلة">
+            {([
+              { value: 'all', label: 'كل الأسئلة' },
+              { value: 'weak', label: 'تحتاج مراجعة' },
+              { value: 'new', label: 'لم تُحل بعد' },
+            ] as const).map((filter) => (
+              <button key={filter.value} type="button" aria-pressed={historyFilter === filter.value}
+                onClick={() => setHistoryFilter(filter.value)}
+                className={`rounded-lg px-3 py-2 text-[11px] font-bold transition ${historyFilter === filter.value ? 'bg-accent text-white' : 'border border-line bg-base text-muted'}`}>
+                {filter.label}
+              </button>
+            ))}
+          </div>
+          {historyQuestions.length ? (
+            <div className="space-y-2">{historyQuestions.map((q) => {
+              const index = questions.findIndex((item) => item.id === q.id);
+              return <button type="button" key={q.id} onClick={() => { setActiveIndex(index); setSelected(null); }}
+                className={`flex w-full items-center justify-between gap-3 rounded-lg border p-3 text-right text-xs transition ${active?.id === q.id ? 'border-accent bg-accent/5' : 'border-line'}`}>
+                <span className="line-clamp-2">{q.stem}</span>
+                <span className="shrink-0 text-muted">{q.attempts ? `${Math.round(q.correctAttempts / q.attempts * 100)}%` : 'جديد'}</span>
+              </button>;
+            })}</div>
+          ) : <p className="rounded-lg bg-base p-3 text-xs text-muted">لا توجد أسئلة ضمن هذا التصنيف حالياً.</p>}
+        </div>
+      )}
       {notice && <p role="status" className="rounded-lg bg-base p-3 text-xs leading-6 text-muted">{notice}</p>}
       {error && <p role="alert" className="flex items-start gap-2 rounded-lg bg-bad/10 p-3 text-xs leading-6 text-bad"><AlertCircle size={15} className="mt-0.5 shrink-0"/>{error}</p>}
       <p className="text-[10px] leading-5 text-muted">الأسئلة سيناريوهات افتراضية للتدريب الأكاديمي فقط. قد يخطئ النموذج؛ تحقق من الإجابات بمراجع تخصصك. لا تستخدمها لاتخاذ قرارات تخص مرضى حقيقيين.</p>
