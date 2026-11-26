@@ -8,7 +8,7 @@ export type FileKind = 'pdf' | 'docx' | 'xlsx' | 'text';
 
 export const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 ميغابايت
 export const MAX_TEXT_CHARS = 8000; // حد النص المرسل إلى المساعد
-export const ACCEPT = '.pdf,.docx,.xlsx,.txt,.csv';
+export const ACCEPT = '.pdf,.docx,.xlsx,.txt,.csv,image/jpeg,image/png,image/webp';
 
 const MAX_PDF_PAGES = 60;
 const MAX_SHEETS = 8;
@@ -24,6 +24,48 @@ export interface ExtractedFile {
 }
 
 export class FileTextError extends Error {}
+
+export interface ExtractedImage {
+  name: string;
+  text: string;
+  truncated: false;
+  imageDataUrl: string;
+}
+
+/** يضغط الصورة محلياً قبل إرسالها إلى نموذج الرؤية؛ لا تُرفع الصورة الأصلية. */
+export async function extractImageData(file: File): Promise<ExtractedImage> {
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    throw new FileTextError('الصور المدعومة: JPG وPNG وWebP.');
+  }
+  if (file.size > MAX_FILE_BYTES) throw new FileTextError('الصورة كبيرة (الحد 10 ميغابايت).');
+
+  const source = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => typeof reader.result === 'string' ? resolve(reader.result) : reject(new FileTextError('تعذّرت قراءة الصورة.'));
+    reader.onerror = () => reject(new FileTextError('تعذّرت قراءة الصورة.'));
+    reader.readAsDataURL(file);
+  });
+  const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const element = new Image();
+    element.onload = () => resolve(element);
+    element.onerror = () => reject(new FileTextError('ملف الصورة غير صالح.'));
+    element.src = source;
+  });
+  const scale = Math.min(1, 1440 / Math.max(image.naturalWidth, image.naturalHeight));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+  canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+  const context = canvas.getContext('2d');
+  if (!context) throw new FileTextError('تعذّر تجهيز الصورة على هذا الجهاز.');
+  context.fillStyle = '#ffffff';
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  let dataUrl = canvas.toDataURL('image/jpeg', 0.78);
+  if (dataUrl.length > 2_400_000) dataUrl = canvas.toDataURL('image/jpeg', 0.58);
+  if (dataUrl.length > 2_800_000) throw new FileTextError('تعذّر ضغط الصورة إلى الحجم المسموح. اختر صورة أصغر.');
+  return { name: file.name.slice(0, 80), text: '', truncated: false, imageDataUrl: dataUrl };
+}
+
 
 export function detectKind(fileName: string): FileKind | null {
   const ext = fileName.toLowerCase().split('.').pop() ?? '';
