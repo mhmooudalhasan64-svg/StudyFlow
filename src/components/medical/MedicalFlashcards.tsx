@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { BookOpenCheck, Check, Clock3, Layers3, RotateCcw, Sparkles } from 'lucide-react';
+import { BookOpenCheck, Clock3, Layers3, RotateCcw, Sparkles } from 'lucide-react';
 import { db, type MedicalFlashcard } from '../../db';
 import { buildMedicalFlashcards, saveMedicalFlashcards, scheduleMedicalReview, type MedicalCardSource, type MedicalCardRating } from '../../lib/medicalFlashcards';
 
@@ -35,7 +35,7 @@ export function MedicalFlashcards({ analysis, college, year, subject, sourceName
   useEffect(() => {
     let alive = true;
     void db.medicalCards.where('college').equals(college).toArray().then((rows) => {
-      if (alive) setCards(rows.filter((card) => card.year === year && card.subject === subject.trim())
+      if (alive) setCards(rows.filter((card) => card.year === year && (!subject.trim() || card.subject === subject.trim()))
         .sort((a, b) => a.dueAt - b.dueAt));
     }).catch(() => { if (alive) setMessage('تعذّر تحميل البطاقات المحفوظة من الجهاز.'); });
     return () => { alive = false; };
