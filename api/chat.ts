@@ -532,38 +532,70 @@ async function handlePost(request: Request): Promise<Response> {
   for (const target of targets) {
     if (!target.key) continue;
     activeProvider = target.name;
-    try {
-      upstream = await fetch(target.endpoint, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          authorization: `Bearer ${target.key}`,
-        },
-        body: JSON.stringify({
-          model: target.model,
-          messages: [{ role: 'system', content: activeSystem }, ...messages],
-          max_tokens: maxTokens,
-          temperature: quiz ? 0.3 : 0.4,
-        }),
-        signal: AbortSignal.timeout(target.timeoutMs),
-      });
-    } catch (error) {
-      upstream = null;
-      if (error instanceof Error && error.name === 'TimeoutError') timedOut = true;
+
+    // With a single free provider, retry one transient failure within the
+    // frontend's 23s request budget. Paid/consented requests are never duplicated.
+    const attempts = !extraUsageConsent && targets.length === 1 ? 2 : 1;
+    let providerSucceeded = false;
+
+    for (let attempt = 0; attempt < attempts; attempt++) {
+      try {
+        upstream = await fetch(target.endpoint, {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            authorization: `Bearer ${target.key}`,
+          },
+          body: JSON.stringify({
+            model: target.model,
+            messages: [{ role: 'system', content: activeSystem }, ...messages],
+            max_tokens: maxTokens,
+            temperature: quiz ? 0.3 : 0.4,
+          }),
+          signal: AbortSignal.timeout(attempts > 1 ? Math.min(target.timeoutMs, 9_000) : target.timeoutMs),
+        });
+      } catch (error) {
+        upstream = null;
+        if (error instanceof Error && error.name === 'TimeoutError') timedOut = true;
+        console.warn('[DALIL] provider request failed', {
+          provider: target.name,
+          attempt: attempt + 1,
+          errorName: error instanceof Error ? error.name : 'UnknownError',
+          elapsedMs: Date.now() - started,
+        });
+      }
+
+      // Treat an empty or malformed success payload as a provider failure too.
+      if (upstream?.ok) {
+        const preview = await upstream.clone().json().catch(() => null) as {
+          choices?: { message?: { content?: string } }[];
+          candidates?: { content?: { parts?: { text?: string }[] } }[];
+        } | null;
+        const previewText = preview?.choices?.[0]?.message?.content
+          ?? preview?.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('');
+        if (previewText?.trim()) {
+          providerSucceeded = true;
+          break;
+        }
+        upstream = null;
+      }
+
+      const transient = upstream === null || upstream.status === 408
+        || upstream.status === 429 || upstream.status >= 500;
+      if (transient && attempt + 1 < attempts) {
+        console.warn('[DALIL] retrying transient provider failure', {
+          provider: target.name,
+          status: upstream?.status ?? null,
+          attempt: attempt + 1,
+          elapsedMs: Date.now() - started,
+        });
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        continue;
+      }
+      break;
     }
 
-    // Treat an empty or malformed success payload as a provider failure too.
-    // This prevents a nominal HTTP 200 with no assistant text from becoming a dead end.
-    if (upstream?.ok) {
-      const preview = await upstream.clone().json().catch(() => null) as {
-        choices?: { message?: { content?: string } }[];
-        candidates?: { content?: { parts?: { text?: string }[] } }[];
-      } | null;
-      const previewText = preview?.choices?.[0]?.message?.content
-        ?? preview?.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('');
-      if (previewText?.trim()) break;
-      upstream = null;
-    }
+    if (providerSucceeded) break;
 
     // A second configured free provider is tried after throttling, timeout, 5xx or empty output.
     // Authentication errors are not retried because they require configuration repair.
