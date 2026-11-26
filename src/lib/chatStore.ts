@@ -49,6 +49,7 @@ interface ChatState {
   continueWithExtraUsage: () => Promise<void>;
   cancelExtraUsage: () => void;
   send: (text: string) => Promise<void>;
+  retryLast: () => void;
   clear: () => void;
   /** يعيد آخر محادثة محفوظة في الجهاز (إن لم توجد محادثة حالية) */
   load: () => Promise<void>;
@@ -87,6 +88,8 @@ export const useChat = create<ChatState>((set, get) => ({
     if (!content || get().loading) return;
     const messages = [...get().messages, { role: 'user' as const, content }];
     set({ messages, loading: true, error: null, extraUsagePending: false });
+    // Persist the user's message before the network request so it survives app closure or provider failure.
+    void db.chatLogs.put({ key: 'main', messages: messages.slice(-40), at: Date.now() }).catch(() => undefined);
     try {
       const res = await postChat({
         messages: messages.slice(-12),
@@ -136,6 +139,14 @@ export const useChat = create<ChatState>((set, get) => ({
     } catch {
       set({ loading: false, error: 'لا يوجد اتصال بالإنترنت. المساعد يحتاج إلى اتصال.' });
     }
+  },
+
+  retryLast: () => {
+    const { messages, loading } = get();
+    const last = messages[messages.length - 1];
+    if (loading || !last || last.role !== 'user') return;
+    set({ messages: messages.slice(0, -1), error: null, extraUsagePending: false });
+    void get().send(last.content);
   },
 
   cancelExtraUsage: () => set({
