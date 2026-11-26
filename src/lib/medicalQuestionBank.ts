@@ -42,10 +42,10 @@ export function parseMedicalQuestions(raw: string): MedicalQuestionDraft[] {
     const str = (v: unknown) => typeof v === 'string' ? v.trim() : '';
     const options = Array.isArray(q.options) ? q.options.filter((v): v is string => typeof v === 'string').map((v) => v.trim()) : [];
     const explanations = Array.isArray(q.explanations) ? q.explanations.filter((v): v is string => typeof v === 'string').map((v) => v.trim()) : [];
-    const answerIndex = Number(q.answerIndex);
+    const answerIndex = q.answerIndex;
     if (!str(q.stem) || options.length !== 4 || options.some((v) => !v) ||
         explanations.length !== 4 || explanations.some((v) => !v) ||
-        !Number.isInteger(answerIndex) || answerIndex < 0 || answerIndex > 3) continue;
+        typeof answerIndex !== 'number' || !Number.isInteger(answerIndex) || answerIndex < 0 || answerIndex > 3) continue;
     output.push({
       vignette: str(q.vignette), stem: str(q.stem), options, answerIndex, explanations,
       rationale: str(q.rationale), learningPoint: str(q.learningPoint), sourceQuote: str(q.sourceQuote),
