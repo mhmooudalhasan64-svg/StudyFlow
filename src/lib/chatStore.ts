@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { db } from '../db';
+import { db, type ChatConversation } from '../db';
 import { useApp } from '../store';
 import { buildLearnerProfile, contextFrom } from './advisor';
 import { toDateKey } from './utils';
@@ -29,6 +29,12 @@ function postChat(body: unknown): Promise<Response> {
 export type ChatStyle = 'normal' | 'explain' | 'steps' | 'summary' | 'coach' | 'diagnose' | 'exam_coach' | 'mastery' | 'problem_solver' | 'voice_teacher';
 
 interface ChatState {
+  conversations: ChatConversation[];
+  activeConversationId: string | null;
+  refreshConversations: () => Promise<void>;
+  newConversation: () => void;
+  openConversation: (id: string) => Promise<void>;
+  deleteConversation: (id: string) => Promise<void>;
   /** المادة الحالية (تُرسل ليبقى الشرح ضمنها) */
   subject: string | null;
   setSubject: (s: string | null) => void;
@@ -54,8 +60,36 @@ interface ChatState {
   load: () => Promise<void>;
 }
 
-/** المحادثة تبقى في الذاكرة فقط (لا تُحفظ على الجهاز) */
+function newConversationId(): string {
+  return typeof crypto !== 'undefined' && 'randomUUID' in crypto
+    ? crypto.randomUUID()
+    : `chat-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function conversationTitle(messages: ChatMsg[]): string {
+  const first = messages.find((message) => message.role === 'user')?.content?.trim();
+  if (!first) return 'محادثة جديدة';
+  return first.length > 42 ? `${first.slice(0, 42).trim()}…` : first;
+}
+
+async function persistConversation(id: string, messages: ChatMsg[]): Promise<void> {
+  if (!messages.length) return;
+  const existing = await db.conversations.get(id).catch(() => undefined);
+  const now = Date.now();
+  await db.conversations.put({
+    id,
+    title: conversationTitle(messages),
+    messages: messages.slice(-100),
+    createdAt: existing?.createdAt ?? now,
+    updatedAt: now,
+  });
+}
+
+/** تحفظ المحادثات على الجهاز محلياً، وتتيح فتح أكثر من سجل سابق. */
+
 export const useChat = create<ChatState>((set, get) => ({
+  conversations: [],
+  activeConversationId: null,
   messages: [],
   attachment: null,
   useProfile: true,
@@ -86,7 +120,9 @@ export const useChat = create<ChatState>((set, get) => ({
     const content = text.trim();
     if (!content || get().loading) return;
     const messages = [...get().messages, { role: 'user' as const, content }];
-    set({ messages, loading: true, error: null, extraUsagePending: false });
+    const activeId = get().activeConversationId ?? newConversationId();
+    set({ messages, activeConversationId: activeId, loading: true, error: null, extraUsagePending: false });
+    void persistConversation(activeId, messages).then(() => get().refreshConversations()).catch(() => undefined);
     try {
       const res = await postChat({
         messages: messages.slice(-12),
@@ -106,7 +142,8 @@ export const useChat = create<ChatState>((set, get) => ({
       }
       const done = [...get().messages, { role: 'assistant' as const, content: data.reply }];
       set({ loading: false, messages: done, extraUsagePending: false });
-      void db.chatLogs.put({ key: 'main', messages: done.slice(-40), at: Date.now() }).catch(() => undefined);
+      const activeId = get().activeConversationId;
+      if (activeId) void persistConversation(activeId, done).then(() => get().refreshConversations()).catch(() => undefined);
     } catch {
       set({ loading: false, error: 'لا يوجد اتصال بالإنترنت. المساعد يحتاج إلى اتصال.' });
     }
@@ -144,14 +181,58 @@ export const useChat = create<ChatState>((set, get) => ({
   }),
 
   clear: () => {
-    set({ messages: [], attachment: null, error: null, loading: false, extraUsagePending: false });
-    void db.chatLogs.delete('main').catch(() => undefined);
+    get().newConversation();
+  },
+
+  refreshConversations: async () => {
+    const rows = await db.conversations.orderBy('updatedAt').reverse().toArray().catch(() => []);
+    set({ conversations: rows });
+  },
+
+  newConversation: () => {
+    const id = newConversationId();
+    set({ activeConversationId: id, messages: [], attachment: null, error: null, loading: false, extraUsagePending: false });
+  },
+
+  openConversation: async (id) => {
+    const conversation = await db.conversations.get(id).catch(() => undefined);
+    if (!conversation) return;
+    set({ activeConversationId: id, messages: conversation.messages, attachment: null, error: null, loading: false, extraUsagePending: false });
+  },
+
+  deleteConversation: async (id) => {
+    await db.conversations.delete(id).catch(() => undefined);
+    if (get().activeConversationId === id) get().newConversation();
+    await get().refreshConversations();
   },
 
   load: async () => {
-    if (get().messages.length > 0) return;
-    const log = await db.chatLogs.get('main').catch(() => undefined);
-    if (log && get().messages.length === 0) set({ messages: log.messages });
+    if (get().messages.length > 0) {
+      await get().refreshConversations();
+      return;
+    }
+    let rows = await db.conversations.orderBy('updatedAt').reverse().toArray().catch(() => []);
+    // ترحيل سجل النسخة السابقة دون فقد المحادثة القديمة.
+    if (rows.length === 0) {
+      const legacy = await db.chatLogs.get('main').catch(() => undefined);
+      if (legacy?.messages?.length) {
+        const migrated: ChatConversation = {
+          id: 'legacy-main',
+          title: conversationTitle(legacy.messages),
+          messages: legacy.messages,
+          createdAt: legacy.at,
+          updatedAt: legacy.at,
+        };
+        await db.conversations.put(migrated).catch(() => undefined);
+        rows = [migrated];
+      }
+    }
+    if (rows.length > 0) {
+      const latest = rows[0];
+      set({ conversations: rows, activeConversationId: latest.id, messages: latest.messages });
+    } else {
+      set({ conversations: [], activeConversationId: newConversationId() });
+    }
   },
 }));
 
