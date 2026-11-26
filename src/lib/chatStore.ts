@@ -169,7 +169,8 @@ export const useChat = create<ChatState>((set, get) => ({
       }
       const done = [...get().messages, { role: 'assistant' as const, content: data.reply }];
       set({ loading: false, messages: done, extraUsagePending: false });
-      void db.chatLogs.put({ key: 'main', messages: done.slice(-40), at: Date.now() }).catch(() => undefined);
+      const activeId = get().activeConversationId;
+      if (activeId) void persistConversation(activeId, done).then(() => get().refreshConversations()).catch(() => undefined);
     } catch {
       set({ loading: false, error: 'لا يوجد اتصال بالإنترنت. المساعد يحتاج إلى اتصال.' });
     }
