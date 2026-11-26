@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AlertCircle, BookCheck, CheckCircle2, ClipboardList, Loader2, Sparkles, XCircle } from 'lucide-react';
 import { db, type MedicalQuestion } from '../../db';
 import { requestMedicalQuiz } from '../../lib/chatStore';
-import { parseMedicalQuestions, recordMedicalAnswer, saveMedicalQuestions } from '../../lib/medicalQuestionBank';
+import { filterMedicalQuestions, parseMedicalQuestions, recordMedicalAnswer, saveMedicalQuestions } from '../../lib/medicalQuestionBank';
 
 interface Props {
   college: string;
@@ -48,11 +48,10 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
   const correctTotal = useMemo(() => questions.reduce((sum, q) => sum + q.correctAttempts, 0), [questions]);
   const attemptsTotal = useMemo(() => questions.reduce((sum, q) => sum + q.attempts, 0), [questions]);
   const accuracy = attemptsTotal ? Math.round((correctTotal / attemptsTotal) * 100) : 0;
-  const historyQuestions = useMemo(() => questions.filter((question) => {
-    if (historyFilter === 'new') return question.attempts === 0;
-    if (historyFilter === 'weak') return question.attempts > 0 && question.correctAttempts / question.attempts < 0.6;
-    return true;
-  }), [questions, historyFilter]);
+  const historyQuestions = useMemo(
+    () => filterMedicalQuestions(questions, historyFilter),
+    [questions, historyFilter],
+  );
 
   const generate = async () => {
     if (!topic.trim() && sourceText.trim().length < 40) {
