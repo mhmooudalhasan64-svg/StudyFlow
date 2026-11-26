@@ -10,6 +10,7 @@ on:
       - feat/dalil-intelligence-core
       - feat/dalil-live-call-ui
       - feat/dalil-voice-barge-in
+      - feat/dalil-local-auto-barge-in
   pull_request:
     branches:
       - atheer-masar-brand-preview
@@ -18,6 +19,7 @@ on:
       - feat/dalil-conversational-intelligence
       - feat/dalil-intelligence-core
       - feat/dalil-live-call-ui
+      - feat/dalil-voice-barge-in
 
 permissions:
   contents: read
