@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react';
 import {
-  Activity, ArrowLeft, BookOpen, Brain, BriefcaseMedical, CalendarDays,
-  CheckCircle2, ChevronDown, ClipboardList, FileText, FlaskConical,
-  GraduationCap, Layers3, Microscope, Pill, Search, ShieldCheck,
-  Stethoscope, Syringe, Table2, Target, Waves,
+  Activity, ArrowLeft, BookOpen, Brain, BriefcaseMedical, ChevronDown,
+  ClipboardList, FileText, FlaskConical, GraduationCap, Layers3,
+  Microscope, Pill, Search, ShieldCheck, Stethoscope, Syringe, Table2, Waves,
 } from 'lucide-react';
 import { PageTitle } from '../components/ui';
 
