@@ -177,6 +177,27 @@ export interface ChatLog {
 }
 
 /** بطاقة تعليمية طبية مستقلة عن بطاقات المنهاج المدرسي. */
+export interface MedicalQuestion {
+  id?: number;
+  questionKey: string;
+  college: string;
+  year: string;
+  subject: string;
+  sourceName: string;
+  vignette: string;
+  stem: string;
+  options: string[];
+  answerIndex: number;
+  explanations: string[];
+  rationale: string;
+  learningPoint: string;
+  sourceQuote: string;
+  createdAt: number;
+  attempts: number;
+  correctAttempts: number;
+  lastAttemptAt: number | null;
+}
+
 export interface MedicalFlashcard {
   id?: number;
   /** مفتاح ثابت يمنع إنشاء البطاقة نفسها مرتين من المصدر نفسه. */
@@ -214,6 +235,7 @@ class StudyDB extends Dexie {
   chatLogs!: EntityTable<ChatLog, 'key'>;
   videoStudy!: EntityTable<VideoStudyCache, 'videoId'>;
   medicalCards!: EntityTable<MedicalFlashcard, 'id'>;
+  medicalQuestions!: EntityTable<MedicalQuestion, 'id'>;
 
   constructor() {
     super('studyflow');
@@ -250,6 +272,10 @@ class StudyDB extends Dexie {
     // الإصدار 6: بطاقات طبية منفصلة مع جدولة مراجعة مستقلة.
     this.version(6).stores({
       medicalCards: '++id, &cardKey, dueAt, college, year, subject',
+    });
+    // الإصدار 7: بنك أسئلة طبية وسجل محاولات مستقل عن بنك البكالوريا.
+    this.version(7).stores({
+      medicalQuestions: '++id, &questionKey, college, year, subject, createdAt',
     });
   }
 }
