@@ -371,15 +371,15 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
 
 
 function MessageBody({ content }: { content: string }) {
-  const segments = content.split(/(\`\`\`[\\s\\S]*?\`\`\`)/g).filter(Boolean);
+  const segments = content.split(/(```[\s\S]*?```)/g).filter(Boolean);
   return (
     <div className="space-y-3">
       {segments.map((segment, index) => {
-        if (segment.startsWith('\`\`\`') && segment.endsWith('\`\`\`')) {
-          const code = segment.slice(3, -3).replace(/^[\\w-]+\\n/, '');
+        if (segment.startsWith('```') && segment.endsWith('```')) {
+          const code = segment.slice(3, -3).replace(/^[\w-]+\n/, '');
           return <pre key={index} dir="ltr" className="chat-code-block overflow-x-auto rounded-xl border border-line bg-base p-3 text-xs leading-6"><code>{code}</code></pre>;
         }
-        const lines = segment.split('\\n');
+        const lines = segment.split('\n');
         const nodes: JSX.Element[] = [];
         let list: string[] = [];
         let listType: 'ul' | 'ol' | null = null;
@@ -392,8 +392,8 @@ function MessageBody({ content }: { content: string }) {
         };
         lines.forEach((line) => {
           const trimmed = line.trim();
-          const bullet = trimmed.match(/^[-*•]\\s+(.+)/);
-          const numbered = trimmed.match(/^\\d+[.)]\\s+(.+)/);
+          const bullet = trimmed.match(/^[-*•]\s+(.+)/);
+          const numbered = trimmed.match(/^\d+[.)]\s+(.+)/);
           if (bullet || numbered) {
             const nextType = bullet ? 'ul' : 'ol';
             if (listType && listType !== nextType) flush();
@@ -403,7 +403,7 @@ function MessageBody({ content }: { content: string }) {
           }
           flush();
           if (!trimmed) return;
-          const heading = trimmed.match(/^(#{1,3})\\s+(.+)/);
+          const heading = trimmed.match(/^(#{1,3})\s+(.+)/);
           if (heading) {
             const Tag = heading[1].length === 1 ? 'h2' : 'h3';
             nodes.push(<Tag key={nodes.length} className="mt-3 text-base font-bold leading-7">{inlineContent(heading[2])}</Tag>);
@@ -421,11 +421,11 @@ function MessageBody({ content }: { content: string }) {
 }
 
 function inlineContent(text: string) {
-  const tokens = text.split(/(\\*\\*[^*]+\\*\\*|\`[^\`]+\`|https?:\\/\\/[^\\s]+)/g);
+  const tokens = text.split(/(\*\*[^*]+\*\*|`[^`]+`|https?:\/\/[^\s]+)/g);
   return tokens.map((token, index) => {
     if (token.startsWith('**') && token.endsWith('**')) return <strong key={index}>{token.slice(2, -2)}</strong>;
-    if (token.startsWith('\`') && token.endsWith('\`')) return <code key={index} dir="ltr" className="rounded bg-base px-1.5 py-0.5 text-[0.9em]">{token.slice(1, -1)}</code>;
-    if (/^https?:\\/\\//.test(token)) return <a key={index} href={token} target="_blank" rel="noreferrer" className="break-all text-accent underline underline-offset-2">{token}</a>;
+    if (token.startsWith('`') && token.endsWith('`')) return <code key={index} dir="ltr" className="rounded bg-base px-1.5 py-0.5 text-[0.9em]">{token.slice(1, -1)}</code>;
+    if (/^https?:\/\//.test(token)) return <a key={index} href={token} target="_blank" rel="noreferrer" className="break-all text-accent underline underline-offset-2">{token}</a>;
     return token;
   });
 }
