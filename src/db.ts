@@ -174,9 +174,12 @@ export interface ChatConversation {
   id: string;
   title: string;
   messages: { role: 'user' | 'assistant'; content: string }[];
+  /** ملخص المحادثة الحالية لاستخدامه عند بدء محادثة تالية. */
+  summary?: string;
+  /** سياق مختصر موروث من المحادثة السابقة. */
+  contextSummary?: string;
   createdAt: number;
   updatedAt: number;
-}
 
 /** سجل محادثة المساعد (محلي فقط، لا يدخل في النسخ الاحتياطي) */
 export interface ChatLog {
