@@ -299,3 +299,34 @@ export async function requestMedicalAnalysis(args: {
   return data.reply;
 }
 
+
+/** توليد بنك أسئلة طبية افتراضية بأسلوب USMLE، مع خيار حصرها في نص المحاضرة. */
+export async function requestMedicalQuiz(args: {
+  topic: string;
+  count: number;
+  college: string;
+  year: string;
+  subject: string;
+  source?: { name: string; text: string };
+}): Promise<string> {
+  const topic = args.topic.trim().slice(0, 180);
+  const sourceText = args.source?.text.trim().slice(0, 8000) ?? '';
+  if (!topic && sourceText.length < 40) throw new Error('اكتب موضوعاً طبياً أو أرفق نص محاضرة كافياً.');
+  let res: Response;
+  try {
+    res = await postChat({
+      mode: 'medical_quiz',
+      topic,
+      count: Math.min(10, Math.max(3, args.count)),
+      college: args.college.slice(0, 60),
+      year: args.year.slice(0, 12),
+      subject: args.subject.slice(0, 80),
+      ...(sourceText ? { attachment: { name: (args.source?.name ?? 'محاضرة طبية').slice(0, 80), text: sourceText } } : {}),
+    });
+  } catch {
+    throw new Error('تعذّر الاتصال بخدمة دليل لإنشاء الأسئلة. تحقّق من الاتصال وأعد المحاولة.');
+  }
+  const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
+  if (!res.ok || !data.reply) throw new Error(data.error ?? 'تعذّر إنشاء الأسئلة الطبية.');
+  return data.reply;
+}
