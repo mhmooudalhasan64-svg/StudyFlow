@@ -8,12 +8,14 @@ on:
       - fix/dalil-reliability-preview
       - feat/dalil-conversational-intelligence
       - feat/dalil-intelligence-core
+      - feat/dalil-live-call-ui
   pull_request:
     branches:
       - atheer-masar-brand-preview
       - fix/masar-dalil-reliability
       - fix/dalil-reliability-preview
       - feat/dalil-conversational-intelligence
+      - feat/dalil-intelligence-core
 
 permissions:
   contents: read
