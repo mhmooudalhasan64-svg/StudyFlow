@@ -975,3 +975,26 @@ h1, h2, h3, .font-bold, .font-extrabold {
 @media (prefers-reduced-motion: reduce) {
   .app-mobile-nav-link svg { transition: none; }
 }
+
+
+/* مساحة محادثة دليل — محصورة بهذه الصفحة حتى لا تغيّر بقية واجهات مسار */
+.masar-chat-shell {
+  min-height: max(680px, calc(100dvh - 9rem));
+  background:
+    radial-gradient(ellipse at 50% 0%, rgb(var(--accent2) / 0.055), transparent 55%),
+    rgb(var(--card) / 0.72);
+}
+.masar-chat-sidebar { background: rgb(var(--base) / 0.97); }
+.chat-message-content { overflow-wrap: anywhere; word-break: normal; }
+.chat-message-content p + p { margin-top: 0.65rem; }
+.chat-message-content a { text-decoration-thickness: 1px; }
+.chat-code-block {
+  max-width: 100%;
+  white-space: pre;
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: plaintext;
+}
+@media (max-width: 767px) {
+  .masar-chat-shell { min-height: calc(100dvh - 10.5rem); border-radius: 1rem; }
+}
