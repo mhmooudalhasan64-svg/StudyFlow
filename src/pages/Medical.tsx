@@ -10,6 +10,7 @@ import { requestMedicalAnalysis } from '../lib/chatStore';
 import { MedicalFlashcards } from '../components/medical/MedicalFlashcards';
 import { MedicalQuestionBank } from '../components/medical/MedicalQuestionBank';
 import { MedicalSimulator } from '../components/medical/MedicalSimulator';
+import { MedicalVisuals } from '../components/medical/MedicalVisuals';
 
 type CollegeId = 'medicine' | 'dentistry' | 'pharmacy' | 'nursing';
 type Track = 'systems' | 'rotations';
@@ -298,6 +299,10 @@ export default function Medical() {
           </div>
         )}
       </section>
+
+      {analysis && (analysis.pathways?.length || analysis.comparisonTables?.length) ? (
+        <MedicalVisuals pathways={analysis.pathways} comparisonTables={analysis.comparisonTables} />
+      ) : null}
 
       <MedicalFlashcards
         analysis={analysis}
