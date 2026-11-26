@@ -23,7 +23,9 @@ export const ROUTES = [
   'more',
   'about',
   'help',
-  'today',\n  'university',
+  'today',
+  'university',
+  'medical',
 ] as const;
 export type Route = (typeof ROUTES)[number];
 
