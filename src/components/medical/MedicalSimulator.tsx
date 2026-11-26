@@ -163,7 +163,7 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
               const correct = index === station.answerIndex;
               const chosen = selected === index;
               const style = selected === null ? 'border-line bg-card hover:border-accent/50' : correct ? 'border-good bg-good/10' : chosen ? 'border-bad bg-bad/10' : 'border-line bg-card opacity-75';
-              return <button key={index} type="button" disabled={selected !== null} onClick={() => submitStation(index)} className={`flex w-full items-start gap-3 rounded-xl border p-3 text-right text-xs leading-6 ${style}`}>
+              return <button key={index} type="button" disabled={selected !== null} aria-pressed={selected === index} onClick={() => submitStation(index)} className={`flex w-full items-start gap-3 rounded-xl border p-3 text-right text-xs leading-6 ${style}`}>
                 <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-base text-[10px] font-black">{['A','B','C','D'][index]}</span><span className="flex-1">{option}</span>
                 {selected !== null && correct && <CheckCircle2 size={16} className="shrink-0 text-good"/>}
                 {selected !== null && chosen && !correct && <XCircle size={16} className="shrink-0 text-bad"/>}
@@ -171,7 +171,7 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
             })}
           </div>
           {selected !== null && (
-            <div className="space-y-2 rounded-xl bg-card p-3">
+            <div role="status" aria-live="polite" className="space-y-2 rounded-xl bg-card p-3">
               <p className={`text-xs font-extrabold ${selected === station.answerIndex ? 'text-good' : 'text-bad'}`}>{selected === station.answerIndex ? 'اختيار مناسب' : `الاختيار الأفضل: ${['A','B','C','D'][station.answerIndex]}`}</p>
               {station.feedback.map((line, index) => <p key={index} className="text-xs leading-6"><strong>{['A','B','C','D'][index]}:</strong> {line}</p>)}
               {station.rationale && <p className="border-t border-line pt-2 text-xs leading-6 text-muted">{station.rationale}</p>}
