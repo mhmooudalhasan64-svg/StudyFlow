@@ -37,6 +37,9 @@ interface ChatState {
   /** أسلوب الرد */
   style: ChatStyle;
   setStyle: (s: ChatStyle) => void;
+  /** البحث الخارجي اختياري ويتطلب تفعيل المستخدم لكل جلسة */
+  webSearchEnabled: boolean;
+  setWebSearchEnabled: (enabled: boolean) => void;
   /** يعيد توليد آخر رد */
   regenerate: () => void;
   messages: ChatMsg[];
@@ -73,6 +76,8 @@ export const useChat = create<ChatState>((set, get) => ({
   setSubject: (subject) => set({ subject }),
   style: 'normal',
   setStyle: (style) => set({ style }),
+  webSearchEnabled: false,
+  setWebSearchEnabled: (webSearchEnabled) => set({ webSearchEnabled }),
 
   regenerate: () => {
     const { messages, loading } = get();
@@ -95,6 +100,7 @@ export const useChat = create<ChatState>((set, get) => ({
     try {
       const res = await postChat({
         messages: messages.slice(-12),
+        ...(get().webSearchEnabled ? { webSearch: true } : {}),
         ...(get().subject ? { subject: get().subject } : {}),
         ...(get().style !== 'normal' ? { style: get().style } : {}),
         ...(get().useProfile ? { profile: learnerProfile() } : {}),
@@ -136,6 +142,7 @@ export const useChat = create<ChatState>((set, get) => ({
       const res = await postChat({
         messages: current.messages.slice(-12),
         extraUsageConsent: true,
+        ...(current.webSearchEnabled ? { webSearch: true } : {}),
         ...(current.subject ? { subject: current.subject } : {}),
         ...(current.style !== 'normal' ? { style: current.style } : {}),
         ...(current.useProfile ? { profile: learnerProfile() } : {}),
