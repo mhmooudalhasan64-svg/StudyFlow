@@ -37,6 +37,7 @@ interface ChatState {
   newConversation: () => void;
   openConversation: (id: string) => Promise<void>;
   deleteConversation: (id: string) => Promise<void>;
+  renameConversation: (id: string, title: string) => Promise<void>;
   /** المادة الحالية (تُرسل ليبقى الشرح ضمنها) */
   subject: string | null;
   setSubject: (s: string | null) => void;
@@ -95,7 +96,7 @@ async function persistConversation(id: string, messages: ChatMsg[], contextSumma
   await db.conversations.put({
     id,
     title: conversationTitle(messages),
-    messages: messages.slice(-100),
+    messages,
     summary: buildConversationSummary(messages, contextSummary),
     contextSummary: contextSummary || undefined,
     createdAt: existing?.createdAt ?? now,
@@ -144,7 +145,7 @@ export const useChat = create<ChatState>((set, get) => ({
     void persistConversation(activeId, messages, get().previousSummary).then(() => get().refreshConversations()).catch(() => undefined);
     try {
       const res = await postChat({
-        messages: messages.slice(-12),
+        messages,
         ...(get().previousSummary ? { previousContext: get().previousSummary } : {}),
         ...(get().subject ? { subject: get().subject } : {}),
         ...(get().style !== 'normal' ? { style: get().style } : {}),
@@ -175,7 +176,7 @@ export const useChat = create<ChatState>((set, get) => ({
     set({ loading: true, error: null, extraUsagePending: false });
     try {
       const res = await postChat({
-        messages: current.messages.slice(-12),
+        messages: current.messages,
         ...(current.previousSummary ? { previousContext: current.previousSummary } : {}),
         extraUsageConsent: true,
         ...(current.subject ? { subject: current.subject } : {}),
@@ -243,6 +244,15 @@ export const useChat = create<ChatState>((set, get) => ({
   deleteConversation: async (id) => {
     await db.conversations.delete(id).catch(() => undefined);
     if (get().activeConversationId === id) get().newConversation();
+    await get().refreshConversations();
+  },
+
+  renameConversation: async (id, title) => {
+    const cleanTitle = title.replace(/[\\r\\n]+/g, ' ').trim().slice(0, 80);
+    if (!cleanTitle) return;
+    const conversation = await db.conversations.get(id).catch(() => undefined);
+    if (!conversation) return;
+    await db.conversations.put({ ...conversation, title: cleanTitle, updatedAt: Date.now() });
     await get().refreshConversations();
   },
 
