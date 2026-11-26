@@ -12,7 +12,6 @@ on:
       - feat/dalil-voice-barge-in
       - feat/dalil-local-auto-barge-in
       - feat/masar-university-hub
-      - feat/masar-university-hub
       - feat/masar-medical-hub
   pull_request:
     branches:
@@ -24,6 +23,7 @@ on:
       - feat/dalil-live-call-ui
       - feat/dalil-voice-barge-in
       - feat/dalil-local-auto-barge-in
+      - feat/masar-university-hub
 
 permissions:
   contents: read
