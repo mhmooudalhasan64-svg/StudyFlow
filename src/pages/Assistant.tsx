@@ -270,12 +270,10 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
             ) : (
               <div className="mx-auto max-w-3xl space-y-7">
                 {messages.map((message, index) => (
-                  <article key={index} className={`flex gap-3 ${message.role === 'user' ? 'justify-start' : 'justify-start'}`}>
-                    <div className={`mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full ${message.role === 'assistant' ? 'bg-accent/15 text-accent' : 'bg-base text-muted'}`}>
-                      {message.role === 'assistant' ? <Bot size={17} /> : <span className="text-xs font-bold">أنت</span>}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="mb-1 text-xs font-bold">{message.role === 'assistant' ? 'دليل' : 'أنت'}</div>
+                  <article key={index} className={`flex items-start gap-3 ${message.role === 'user' ? 'justify-start' : 'justify-start'}`}>
+                    {message.role === 'assistant' && <div className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-accent/15 text-accent"><Bot size={17} /></div>}
+                    <div className={message.role === 'user' ? 'max-w-[88%]' : 'min-w-0 flex-1'}>
+                      <div className={`mb-1 text-xs font-bold ${message.role === 'user' ? 'text-end' : ''}`}>{message.role === 'assistant' ? 'دليل' : 'أنت'}</div>
                       <div className={`chat-message-content text-sm leading-8 ${message.role === 'user' ? 'rounded-2xl bg-base px-4 py-3' : 'px-0 py-1'}`}>
                         <MessageBody content={message.content} />
                       </div>
@@ -287,6 +285,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
                         </div>
                       )}
                     </div>
+                    {message.role === 'user' && <div className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-base text-muted"><span className="text-xs font-bold">أنت</span></div>}
                   </article>
                 ))}
                 {loading && <div className="flex items-center gap-3 text-sm text-muted"><span className="grid h-8 w-8 place-items-center rounded-full bg-accent/15 text-accent"><Bot size={17} /></span><span className="animate-pulse">دليل يكتب…</span></div>}
