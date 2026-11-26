@@ -91,14 +91,19 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
     setFinished(true);
     setSaving(true);
     try {
+      const completedAt = Date.now();
       await db.medicalSimulations.add({
         caseTitle: caseData.caseTitle,
         college, year, subject: subject.trim() || topic.trim() || 'موضوع طبي',
         score: nextScore, total: caseData.stations.length,
-        createdAt: Date.now(), completedAt: Date.now(),
+        createdAt: completedAt, completedAt,
       });
-      await refreshHistory();
       setNotice('حُفظت نتيجة المحاكاة على هذا الجهاز.');
+      try {
+        await refreshHistory();
+      } catch {
+        setError('حُفظت النتيجة، لكن تعذّر تحديث سجل المحاكاة المعروض.');
+      }
     } catch {
       setError('اكتملت المحاكاة، لكن تعذّر حفظ النتيجة محلياً.');
     } finally {
