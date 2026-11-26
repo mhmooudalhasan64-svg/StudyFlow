@@ -9,6 +9,7 @@ import { extractFileText } from '../lib/fileText';
 import { requestMedicalAnalysis } from '../lib/chatStore';
 import { MedicalFlashcards } from '../components/medical/MedicalFlashcards';
 import { MedicalQuestionBank } from '../components/medical/MedicalQuestionBank';
+import { MedicalSimulator } from '../components/medical/MedicalSimulator';
 
 type CollegeId = 'medicine' | 'dentistry' | 'pharmacy' | 'nursing';
 type Track = 'systems' | 'rotations';
@@ -307,6 +308,14 @@ export default function Medical() {
       />
 
       <MedicalQuestionBank
+        college={selectedCollege.label}
+        year={year}
+        subject={lectureSubject}
+        sourceText={lectureText}
+        sourceName={lectureName}
+      />
+
+      <MedicalSimulator
         college={selectedCollege.label}
         year={year}
         subject={lectureSubject}
