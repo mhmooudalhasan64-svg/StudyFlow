@@ -451,7 +451,7 @@ async function overLimit(ip: string): Promise<boolean | null> {
   return cur.count > DAILY_LIMIT;
 }
 
-const MAX_REQUEST_BYTES = 128 * 1024;
+const MAX_REQUEST_BYTES = 256 * 1024;
 
 /** يفرض حدّاً فعلياً على جسم الطلب أثناء القراءة، حتى عند غياب Content-Length أو عدم صحته. */
 async function readBoundedJson(request: Request): Promise<{ body: unknown } | { response: Response }> {
