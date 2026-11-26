@@ -11,6 +11,7 @@ on:
       - feat/dalil-live-call-ui
       - feat/dalil-voice-barge-in
       - feat/dalil-local-auto-barge-in
+      - feat/masar-university-hub
   pull_request:
     branches:
       - atheer-masar-brand-preview
@@ -20,6 +21,7 @@ on:
       - feat/dalil-intelligence-core
       - feat/dalil-live-call-ui
       - feat/dalil-voice-barge-in
+      - feat/dalil-local-auto-barge-in
 
 permissions:
   contents: read
