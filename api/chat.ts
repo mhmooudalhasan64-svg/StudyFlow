@@ -134,6 +134,7 @@ interface Msg {
 interface Attachment {
   name: string;
   text: string;
+  imageDataUrl?: string;
 }
 
 const usage = new Map<string, { day: string; count: number }>();
@@ -181,9 +182,13 @@ function sanitizeAttachment(body: unknown): Attachment | null {
   if (typeof body !== 'object' || body === null) return null;
   const a = (body as { attachment?: unknown }).attachment;
   if (typeof a !== 'object' || a === null) return null;
-  const { name, text } = a as { name?: unknown; text?: unknown };
+  const { name, text, imageDataUrl } = a as { name?: unknown; text?: unknown; imageDataUrl?: unknown };
+  const safeName = (typeof name === 'string' ? name : 'ملف').replace(/[\\r\\n"«»]/g, ' ').trim().slice(0, 80) || 'ملف';
+  if (typeof imageDataUrl === 'string') {
+    if (imageDataUrl.length > 2_800_000 || !/^data:image\\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+=*$/.test(imageDataUrl)) return null;
+    return { name: redactPersonalData(safeName), text: '', imageDataUrl };
+  }
   if (typeof text !== 'string' || !text.trim()) return null;
-  const safeName = (typeof name === 'string' ? name : 'ملف').replace(/[\r\n"«»]/g, ' ').trim().slice(0, 80) || 'ملف';
   return { name: redactPersonalData(safeName), text: redactPersonalData(text.trim()).slice(0, MAX_ATTACH_CHARS) };
 }
 
@@ -418,7 +423,7 @@ async function overLimit(ip: string): Promise<boolean | null> {
   return cur.count > DAILY_LIMIT;
 }
 
-const MAX_REQUEST_BYTES = 64 * 1024;
+const MAX_REQUEST_BYTES = 3 * 1024 * 1024;
 
 /** يفرض حدّاً فعلياً على جسم الطلب أثناء القراءة، حتى عند غياب Content-Length أو عدم صحته. */
 async function readBoundedJson(request: Request): Promise<{ body: unknown } | { response: Response }> {
@@ -490,6 +495,7 @@ async function handlePost(request: Request): Promise<Response> {
   const body = parsed.body;
   const attachment = sanitizeAttachment(body);
   const quiz = mindMapRequest(body, attachment) ?? quizRequest(body, attachment);
+  if (attachment?.imageDataUrl && quiz) return json({ error: 'تحليل الصور متاح في المحادثة العادية حالياً. أرسل سؤالك عن الصورة دون اختيار إنشاء اختبار أو خريطة ذهنية.' }, 400);
   if (quiz === 'invalid') return json({ error: 'اكتب موضوع الاختبار أو أرفق ملفاً.' }, 400);
   const messages = quiz ? quiz.messages : sanitize(body);
   if (!messages) return json({ error: 'رسائل غير صالحة' }, 400);
@@ -519,7 +525,13 @@ async function handlePost(request: Request): Promise<Response> {
     ? clean(environment().OPENROUTER_API_KEY)
     : undefined;
 
-  const targets = extraUsageConsent
+  const targets = attachment?.imageDataUrl
+    ? (extraUsageConsent
+        ? [{ name: 'OpenAI', key: clean(environment().OPENAI_API_KEY), endpoint: 'https://api.openai.com/v1/chat/completions', model: 'gpt-4.1-mini', timeoutMs: 18_000 }]
+        : (clean(environment().OPENROUTER_API_KEY)
+            ? [{ name: 'OpenRouter', key: clean(environment().OPENROUTER_API_KEY)!, endpoint: 'https://openrouter.ai/api/v1/chat/completions', model: 'openrouter/free', timeoutMs: 18_000 }]
+            : []))
+    : extraUsageConsent
     ? [{
         name: 'OpenAI',
         key: clean(environment().OPENAI_API_KEY),
@@ -544,6 +556,8 @@ async function handlePost(request: Request): Promise<Response> {
         }] : []),
       ];
 
+  if (attachment?.imageDataUrl && targets.length === 0) return json({ error: 'تحليل الصور يحتاج إلى تفعيل مزوّد OpenRouter على الخادم. لم تُرسل الصورة إلى أي مزوّد.' }, 503);
+
   let activeProvider = targets[0]?.name ?? provider.name;
   let timedOut = false;
   const maxTokens = quiz ? 2000 : 1100;
@@ -567,7 +581,15 @@ async function handlePost(request: Request): Promise<Response> {
           },
           body: JSON.stringify({
             model: target.model,
-            messages: [{ role: 'system', content: activeSystem }, ...messages],
+            messages: [
+              { role: 'system', content: activeSystem },
+              ...messages.map((message, index) => attachment?.imageDataUrl && index === messages.length - 1 && message.role === 'user'
+                ? { role: message.role, content: [
+                    { type: 'text', text: message.content },
+                    { type: 'image_url', image_url: { url: attachment.imageDataUrl } },
+                  ] }
+                : message),
+            ],
             max_tokens: maxTokens,
             temperature: quiz ? 0.3 : 0.4,
           }),
