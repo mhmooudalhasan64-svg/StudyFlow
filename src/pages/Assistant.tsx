@@ -390,8 +390,32 @@ function MessageBody({ content }: { content: string }) {
           list = [];
           listType = null;
         };
-        lines.forEach((line) => {
+        for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+          const line = lines[lineIndex];
           const trimmed = line.trim();
+          if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+            flush();
+            const tableLines: string[] = [];
+            while (lineIndex < lines.length && lines[lineIndex].trim().startsWith('|') && lines[lineIndex].trim().endsWith('|')) {
+              tableLines.push(lines[lineIndex].trim());
+              lineIndex++;
+            }
+            lineIndex--;
+            const rows = tableLines.map((row) => row.slice(1, -1).split('|').map((cell) => cell.trim()));
+            const isDivider = (row: string[]) => row.length > 0 && row.every((cell) => /^:?-{3,}:?$/.test(cell));
+            const hasHeader = rows.length > 1 && isDivider(rows[1]);
+            const header = rows[0] ?? [];
+            const bodyRows = rows.slice(hasHeader ? 2 : 1);
+            nodes.push(
+              <div key={nodes.length} className="my-3 overflow-x-auto rounded-xl border border-line">
+                <table className="w-full border-collapse text-start text-xs">
+                  <thead className="bg-base"><tr>{header.map((cell, cellIndex) => <th key={cellIndex} className="border-b border-line px-3 py-2 font-bold">{inlineContent(cell)}</th>)}</tr></thead>
+                  <tbody>{bodyRows.map((row, rowIndex) => <tr key={rowIndex}>{header.map((_, cellIndex) => <td key={cellIndex} className="border-b border-line/60 px-3 py-2 align-top">{inlineContent(row[cellIndex] ?? '')}</td>)}</tr>)}</tbody>
+                </table>
+              </div>,
+            );
+            continue;
+          }
           const bullet = trimmed.match(/^[-*•]\s+(.+)/);
           const numbered = trimmed.match(/^\d+[.)]\s+(.+)/);
           if (bullet || numbered) {
@@ -399,10 +423,10 @@ function MessageBody({ content }: { content: string }) {
             if (listType && listType !== nextType) flush();
             listType = nextType;
             list.push((bullet ?? numbered)![1]);
-            return;
+            continue;
           }
           flush();
-          if (!trimmed) return;
+          if (!trimmed) continue;
           const heading = trimmed.match(/^(#{1,3})\s+(.+)/);
           if (heading) {
             const Tag = heading[1].length === 1 ? 'h2' : 'h3';
@@ -412,18 +436,19 @@ function MessageBody({ content }: { content: string }) {
           } else {
             nodes.push(<p key={nodes.length} className="whitespace-pre-wrap">{inlineContent(line)}</p>);
           }
-        });
+        }
         flush();
         return <div key={index} className="space-y-1">{nodes}</div>;
       })}
     </div>
   );
 }
-
 function inlineContent(text: string) {
-  const tokens = text.split(/(\*\*[^*]+\*\*|`[^`]+`|https?:\/\/[^\s]+)/g);
+  const tokens = text.split(/(\*\*[^*]+\*\*|~~[^~]+~~|\*[^*]+\*|`[^`]+`|https?:\/\/[^\s]+)/g);
   return tokens.map((token, index) => {
     if (token.startsWith('**') && token.endsWith('**')) return <strong key={index}>{token.slice(2, -2)}</strong>;
+    if (token.startsWith('~~') && token.endsWith('~~')) return <s key={index}>{token.slice(2, -2)}</s>;
+    if (token.startsWith('*') && token.endsWith('*')) return <em key={index}>{token.slice(1, -1)}</em>;
     if (token.startsWith('`') && token.endsWith('`')) return <code key={index} dir="ltr" className="rounded bg-base px-1.5 py-0.5 text-[0.9em]">{token.slice(1, -1)}</code>;
     if (/^https?:\/\//.test(token)) return <a key={index} href={token} target="_blank" rel="noreferrer" className="break-all text-accent underline underline-offset-2">{token}</a>;
     return token;
