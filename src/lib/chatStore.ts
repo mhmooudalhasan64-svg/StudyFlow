@@ -31,6 +31,8 @@ export type ChatStyle = 'normal' | 'explain' | 'steps' | 'summary' | 'coach' | '
 interface ChatState {
   conversations: ChatConversation[];
   activeConversationId: string | null;
+  /** ملخص المحادثة السابقة الذي يرافق المحادثة الحالية كسياق. */
+  previousSummary: string;
   refreshConversations: () => Promise<void>;
   newConversation: () => void;
   openConversation: (id: string) => Promise<void>;
@@ -72,7 +74,21 @@ function conversationTitle(messages: ChatMsg[]): string {
   return first.length > 42 ? `${first.slice(0, 42).trim()}…` : first;
 }
 
-async function persistConversation(id: string, messages: ChatMsg[]): Promise<void> {
+function buildConversationSummary(messages: ChatMsg[], inherited = ''): string {
+  const userTurns = messages.filter((message) => message.role === 'user').slice(-5);
+  const lastAssistant = [...messages].reverse().find((message) => message.role === 'assistant');
+  const parts: string[] = [];
+  if (inherited.trim()) parts.push(`سياق سابق: ${inherited.trim().slice(0, 260)}`);
+  if (userTurns.length) {
+    parts.push(`الموضوعات والطلبات: ${userTurns.map((message) => message.content.replace(/\s+/g, ' ').trim().slice(0, 150)).join(' | ')}`);
+  }
+  if (lastAssistant) {
+    parts.push(`آخر ما وصل إليه النقاش: ${lastAssistant.content.replace(/\s+/g, ' ').trim().slice(0, 280)}`);
+  }
+  return parts.join('\n').slice(0, 900);
+}
+
+async function persistConversation(id: string, messages: ChatMsg[], contextSummary = ''): Promise<void> {
   if (!messages.length) return;
   const existing = await db.conversations.get(id).catch(() => undefined);
   const now = Date.now();
@@ -80,6 +96,8 @@ async function persistConversation(id: string, messages: ChatMsg[]): Promise<voi
     id,
     title: conversationTitle(messages),
     messages: messages.slice(-100),
+    summary: buildConversationSummary(messages, contextSummary),
+    contextSummary: contextSummary || undefined,
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
   });
@@ -90,6 +108,7 @@ async function persistConversation(id: string, messages: ChatMsg[]): Promise<voi
 export const useChat = create<ChatState>((set, get) => ({
   conversations: [],
   activeConversationId: newConversationId(),
+  previousSummary: '',
   messages: [],
   attachment: null,
   useProfile: true,
@@ -122,10 +141,11 @@ export const useChat = create<ChatState>((set, get) => ({
     const messages = [...get().messages, { role: 'user' as const, content }];
     const activeId = get().activeConversationId ?? newConversationId();
     set({ messages, activeConversationId: activeId, loading: true, error: null, extraUsagePending: false });
-    void persistConversation(activeId, messages).then(() => get().refreshConversations()).catch(() => undefined);
+    void persistConversation(activeId, messages, get().previousSummary).then(() => get().refreshConversations()).catch(() => undefined);
     try {
       const res = await postChat({
         messages: messages.slice(-12),
+        ...(get().previousSummary ? { previousContext: get().previousSummary } : {}),
         ...(get().subject ? { subject: get().subject } : {}),
         ...(get().style !== 'normal' ? { style: get().style } : {}),
         ...(get().useProfile ? { profile: learnerProfile() } : {}),
@@ -143,7 +163,7 @@ export const useChat = create<ChatState>((set, get) => ({
       const done = [...get().messages, { role: 'assistant' as const, content: data.reply }];
       set({ loading: false, messages: done, extraUsagePending: false });
       const activeId = get().activeConversationId;
-      if (activeId) void persistConversation(activeId, done).then(() => get().refreshConversations()).catch(() => undefined);
+      if (activeId) void persistConversation(activeId, done, get().previousSummary).then(() => get().refreshConversations()).catch(() => undefined);
     } catch {
       set({ loading: false, error: 'لا يوجد اتصال بالإنترنت. المساعد يحتاج إلى اتصال.' });
     }
@@ -156,6 +176,7 @@ export const useChat = create<ChatState>((set, get) => ({
     try {
       const res = await postChat({
         messages: current.messages.slice(-12),
+        ...(current.previousSummary ? { previousContext: current.previousSummary } : {}),
         extraUsageConsent: true,
         ...(current.subject ? { subject: current.subject } : {}),
         ...(current.style !== 'normal' ? { style: current.style } : {}),
@@ -170,7 +191,7 @@ export const useChat = create<ChatState>((set, get) => ({
       const done = [...get().messages, { role: 'assistant' as const, content: data.reply }];
       set({ loading: false, messages: done, extraUsagePending: false });
       const activeId = get().activeConversationId;
-      if (activeId) void persistConversation(activeId, done).then(() => get().refreshConversations()).catch(() => undefined);
+      if (activeId) void persistConversation(activeId, done, get().previousSummary).then(() => get().refreshConversations()).catch(() => undefined);
     } catch {
       set({ loading: false, error: 'لا يوجد اتصال بالإنترنت. المساعد يحتاج إلى اتصال.' });
     }
@@ -191,14 +212,32 @@ export const useChat = create<ChatState>((set, get) => ({
   },
 
   newConversation: () => {
+    const current = get();
+    const inherited = buildConversationSummary(current.messages, current.previousSummary);
     const id = newConversationId();
-    set({ activeConversationId: id, messages: [], attachment: null, error: null, loading: false, extraUsagePending: false });
+    set({
+      activeConversationId: id,
+      previousSummary: inherited,
+      messages: [],
+      attachment: null,
+      error: null,
+      loading: false,
+      extraUsagePending: false,
+    });
   },
 
   openConversation: async (id) => {
     const conversation = await db.conversations.get(id).catch(() => undefined);
     if (!conversation) return;
-    set({ activeConversationId: id, messages: conversation.messages, attachment: null, error: null, loading: false, extraUsagePending: false });
+    set({
+      activeConversationId: id,
+      previousSummary: conversation.contextSummary ?? '',
+      messages: conversation.messages,
+      attachment: null,
+      error: null,
+      loading: false,
+      extraUsagePending: false,
+    });
   },
 
   deleteConversation: async (id) => {
@@ -235,7 +274,12 @@ export const useChat = create<ChatState>((set, get) => ({
     }
     if (rows.length > 0) {
       const latest = rows[0];
-      set({ conversations: rows, activeConversationId: latest.id, messages: latest.messages });
+      set({
+        conversations: rows,
+        activeConversationId: latest.id,
+        previousSummary: latest.contextSummary ?? '',
+        messages: latest.messages,
+      });
     } else {
       set({ conversations: [], activeConversationId: newConversationId() });
     }
