@@ -204,7 +204,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
           <div className="flex items-center gap-2 font-bold"><Bot size={19} className="text-accent" /><span>دليل</span></div>
           <button type="button" className="rounded-lg p-2 text-muted hover:bg-card md:hidden" onClick={() => setHistoryOpen(false)} aria-label="إغلاق القائمة"><X size={18} /></button>
         </div>
-        <button type="button" className="mb-3 flex w-full items-center justify-center gap-2 rounded-xl border border-line bg-card px-3 py-3 text-sm font-semibold transition hover:border-accent hover:bg-card/80" onClick={() => { newConversation(); setHistoryOpen(false); }}>
+        <button type="button" className="mb-3 flex w-full items-center justify-center gap-2 rounded-xl border border-line bg-card px-3 py-3 text-sm font-semibold transition hover:border-accent hover:bg-card/80 disabled:opacity-40" disabled={loading} onClick={() => { newConversation(); setHistoryOpen(false); }}>
           <Plus size={17} /> محادثة جديدة
         </button>
         <label className="mb-3 flex items-center gap-2 rounded-xl border border-line bg-card/70 px-3 py-2.5 text-muted">
@@ -222,10 +222,10 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
                 <span className="mt-1 block text-[10px] text-muted">{conversation.messages.length} رسالة · {new Date(conversation.updatedAt).toLocaleDateString('ar')}</span>
               </button>
               <div className="flex shrink-0 items-center opacity-100 md:opacity-0 md:group-hover:opacity-100">
-                <button type="button" className="rounded-lg p-1.5 text-muted hover:bg-base hover:text-main" title="إعادة تسمية" aria-label={`إعادة تسمية ${conversation.title}`} onClick={() => { const value = window.prompt('اكتب اسماً للمحادثة', conversation.title); if (value?.trim()) void renameConversation(conversation.id, value); }}>
+                <button type="button" className="rounded-lg p-1.5 text-muted hover:bg-base hover:text-main disabled:opacity-40" disabled={loading} title="إعادة تسمية" aria-label={`إعادة تسمية ${conversation.title}`} onClick={() => { const value = window.prompt('اكتب اسماً للمحادثة', conversation.title); if (value?.trim()) void renameConversation(conversation.id, value); }}>
                   <Pencil size={14} />
                 </button>
-                <button type="button" className="rounded-lg p-1.5 text-muted hover:bg-bad/10 hover:text-bad" title="حذف المحادثة" aria-label={`حذف ${conversation.title}`} onClick={() => { if (window.confirm('هل تريد حذف هذه المحادثة نهائياً من هذا الجهاز؟')) void deleteConversation(conversation.id); }}>
+                <button type="button" className="rounded-lg p-1.5 text-muted hover:bg-bad/10 hover:text-bad disabled:opacity-40" disabled={loading} title="حذف المحادثة" aria-label={`حذف ${conversation.title}`} onClick={() => { if (window.confirm('هل تريد حذف هذه المحادثة نهائياً من هذا الجهاز؟')) void deleteConversation(conversation.id); }}>
                   <Trash2 size={14} />
                 </button>
               </div>
@@ -249,7 +249,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
           <div className="flex shrink-0 items-center gap-1.5">
             <button type="button" className="rounded-xl border border-line px-2.5 py-2 text-xs text-muted hover:bg-base" onClick={onCallOpen} aria-label="فتح المعلم الصوتي" title="المعلم الصوتي"><Phone size={15} /></button>
             <button type="button" className="rounded-xl border border-line px-2.5 py-2 text-xs text-muted hover:bg-base" onClick={() => { setHistoryOpen(true); void refreshConversations(); }}><History size={15} className="inline" /> <span className="hidden sm:inline">السجل</span></button>
-            <button type="button" className="rounded-xl bg-accent px-3 py-2 text-xs font-semibold text-onaccent hover:brightness-110" onClick={() => newConversation()}><Plus size={15} className="inline" /> جديد</button>
+            <button type="button" className="rounded-xl bg-accent px-3 py-2 text-xs font-semibold text-onaccent hover:brightness-110 disabled:opacity-40" disabled={loading} onClick={() => newConversation()}><Plus size={15} className="inline" /> جديد</button>
           </div>
         </header>
 
