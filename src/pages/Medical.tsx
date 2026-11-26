@@ -25,12 +25,32 @@ const systems = [
   { title: 'الغدد والاستقلاب', detail: 'الهرمونات والسكري والاستقلاب', icon: Activity },
 ];
 
-const rotations = [
-  { title: 'الباطنة', detail: 'التقييم السريري والتشخيص التفريقي', icon: Stethoscope },
-  { title: 'الجراحة', detail: 'التقييم قبل وبعد العمل الجراحي', icon: Syringe },
-  { title: 'طب الأطفال', detail: 'النمو والتقييم والرعاية', icon: Activity },
-  { title: 'النسائية والتوليد', detail: 'صحة المرأة ورعاية الحمل', icon: BriefcaseMedical },
-];
+const clinicalTracks: Record<CollegeId, { title: string; detail: string; icon: typeof Stethoscope }[]> = {
+  medicine: [
+    { title: 'الباطنة', detail: 'التقييم السريري والتشخيص التفريقي', icon: Stethoscope },
+    { title: 'الجراحة', detail: 'التقييم قبل وبعد العمل الجراحي', icon: Syringe },
+    { title: 'طب الأطفال', detail: 'النمو والتقييم والرعاية', icon: Activity },
+    { title: 'النسائية والتوليد', detail: 'صحة المرأة ورعاية الحمل', icon: BriefcaseMedical },
+  ],
+  dentistry: [
+    { title: 'المعالجة السنية', detail: 'التقييم وخيارات المعالجة', icon: Stethoscope },
+    { title: 'جراحة الفم', detail: 'التقييم الجراحي والتدبير الأكاديمي', icon: Syringe },
+    { title: 'تقويم الأسنان', detail: 'التشخيص وتخطيط المعالجة', icon: Activity },
+    { title: 'طب أسنان الأطفال', detail: 'تقييم ورعاية الأطفال', icon: BriefcaseMedical },
+  ],
+  pharmacy: [
+    { title: 'الصيدلة السريرية', detail: 'مراجعة العلاج ومتابعة الاستجابة', icon: Pill },
+    { title: 'صيدلة المستشفيات', detail: 'سلامة الدواء وممارسات المستشفى', icon: BriefcaseMedical },
+    { title: 'معلومات الأدوية', detail: 'تقييم الأدلة والمراجع الدوائية', icon: ClipboardList },
+    { title: 'الرعاية الصيدلانية', detail: 'التثقيف الدوائي والمتابعة', icon: Activity },
+  ],
+  nursing: [
+    { title: 'تمريض الباطنة والجراحة', detail: 'التقييم وخطط الرعاية', icon: Stethoscope },
+    { title: 'تمريض الأطفال', detail: 'رعاية الطفل ومتابعة النمو', icon: Activity },
+    { title: 'تمريض الأمومة', detail: 'رعاية الأم والوليد', icon: BriefcaseMedical },
+    { title: 'تمريض الطوارئ', detail: 'التقييم الأولي والاستجابة', icon: Syringe },
+  ],
+};
 
 const tools = [
   { title: 'المصطلحات الطبية', detail: 'تفكيك Prefix وRoot وSuffix مع شرح سياقي.', icon: Search, tag: 'مصطلحات' },
@@ -47,7 +67,7 @@ export default function Medical() {
   const [track, setTrack] = useState<Track>('systems');
   const selectedCollege = colleges.find((item) => item.id === college)!;
   const modules = useMemo(() => {
-    if (track === 'rotations') return rotations;
+    if (track === 'rotations') return clinicalTracks[college];
     if (college === 'medicine') return systems;
     if (college === 'dentistry') return [
       { title: 'علوم الفم والأسنان', detail: 'التشريح والأنسجة والتطور', icon: Activity },
@@ -104,7 +124,7 @@ export default function Medical() {
 
       <section className="card space-y-4 !p-4 sm:!p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div><h2 className="font-extrabold">مسارك الأكاديمي</h2><p className="mt-1 text-xs text-muted">حدد السنة ونمط تنظيم المحتوى.</p></div>
+          <div><h2 className="font-extrabold">مسارك الأكاديمي</h2><p className="mt-1 text-xs text-muted">{selectedCollege.short} · السنة {year} · اختر نمط تنظيم المحتوى.</p></div>
           <label className="flex items-center gap-2 text-xs font-semibold text-muted">السنة الدراسية
             <span className="relative">
               <select value={year} onChange={(event) => setYear(event.target.value)} className="min-w-24 appearance-none rounded-xl border border-line bg-base py-2 pe-8 ps-3 text-sm font-bold text-main outline-none focus:border-accent">
