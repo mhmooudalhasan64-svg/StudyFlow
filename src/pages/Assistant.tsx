@@ -298,7 +298,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
         />
         <span className="min-w-0">
           <span className="block font-medium">السماح لدليل بالبحث على الإنترنت عند الحاجة</span>
-          <span className="mt-1 block text-xs leading-5 text-muted">بحث اختياري بموافقتك. قد تصل كلفته إلى 0.002 دولار لكل سؤال بحث (عمليتا بحث كحد أقصى)، إضافة إلى أي تكلفة نموذج إن وجدت. لا يُفعّل تلقائياً.</span>
+          <span className="mt-1 block text-xs leading-5 text-muted">بحث اختياري بموافقتك ويبقى مفعّلاً حتى توقفه. قد تصل كلفته إلى 0.002 دولار لكل سؤال بحث (عمليتا بحث كحد أقصى)، إضافة إلى أي تكلفة نموذج إن وجدت. لا يُفعّل تلقائياً.</span>
         </span>
       </label>
 
