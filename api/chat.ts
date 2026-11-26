@@ -64,8 +64,10 @@ function redactPersonalData(value: string): string {
 
 const DAILY_LIMIT = Number(environment().CHAT_DAILY_LIMIT) > 0 ? Number(environment().CHAT_DAILY_LIMIT) : 30;
 
-const MAX_MESSAGES = 12;
+const MAX_MESSAGES = 100;
 const MAX_CHARS = 2000;
+/** ميزانية إجمالية لسجل المحادثة المرسل، لتفادي الطلبات الضخمة مع إبقاء أحدث السياق. */
+const MAX_CONVERSATION_CHARS = 48000;
 /** أقصى طول لنص الملف المرفق (محدود لأن الحصص المجانية صغيرة) */
 const MAX_ATTACH_CHARS = 8000;
 /** أقصى طول لملخص مستوى الطالب */
@@ -190,14 +192,21 @@ function sanitize(body: unknown): Msg[] | null {
   const raw = (body as { messages?: unknown }).messages;
   if (!Array.isArray(raw)) return null;
 
-  const out: Msg[] = [];
-  for (const m of raw.slice(-MAX_MESSAGES)) {
+  const selected: Msg[] = [];
+  let remaining = MAX_CONVERSATION_CHARS;
+  // نبدأ من أحدث الرسائل حتى تبقى نهاية الحوار كاملة عند بلوغ ميزانية السياق.
+  for (const m of raw.slice(-MAX_MESSAGES).reverse()) {
     if (typeof m !== 'object' || m === null) return null;
     const { role, content } = m as { role?: unknown; content?: unknown };
     if ((role !== 'user' && role !== 'assistant') || typeof content !== 'string') return null;
-    const text = redactPersonalData(content.trim()).slice(0, MAX_CHARS);
-    if (text) out.push({ role, content: text });
+    const cleanText = redactPersonalData(content.trim()).slice(0, Math.min(MAX_CHARS, remaining));
+    if (cleanText) {
+      selected.push({ role, content: cleanText });
+      remaining -= cleanText.length;
+    }
+    if (remaining <= 0) break;
   }
+  const out = selected.reverse();
   if (out.length === 0 || out[out.length - 1].role !== 'user') return null;
   return out;
 }
@@ -442,7 +451,7 @@ async function overLimit(ip: string): Promise<boolean | null> {
   return cur.count > DAILY_LIMIT;
 }
 
-const MAX_REQUEST_BYTES = 64 * 1024;
+const MAX_REQUEST_BYTES = 128 * 1024;
 
 /** يفرض حدّاً فعلياً على جسم الطلب أثناء القراءة، حتى عند غياب Content-Length أو عدم صحته. */
 async function readBoundedJson(request: Request): Promise<{ body: unknown } | { response: Response }> {
