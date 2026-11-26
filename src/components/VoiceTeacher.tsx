@@ -10,7 +10,7 @@ const PHASE_COPY: Record<Phase, { title: string; hint: string }> = {
   idle: { title: 'جاهز للاتصال', hint: 'ابدأ المحادثة الصوتية مع دليل' },
   listening: { title: 'أستمع إليك', hint: 'تحدث الآن… أنا أتابع كلامك' },
   thinking: { title: 'أرتّب إجابتي', hint: 'لحظة واحدة، أفكر في أفضل رد' },
-  speaking: { title: 'دليل يتحدث', hint: 'يمكنك الاستماع، وسأعود إليك بعد انتهاء الرد' },
+  speaking: { title: 'دليل يتحدث', hint: 'يمكنك مقاطعة دليل والبدء بالكلام في أي لحظة' },
 };
 
 function formatDuration(seconds: number): string {
@@ -98,6 +98,15 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
     });
   };
   startListeningRef.current = startListening;
+
+  const interruptAssistant = () => {
+    if (!activeRef.current || phase !== 'speaking') return;
+    // Stop the current TTS queue immediately, then hand the microphone back to the user.
+    stopSpeaking();
+    setError(null);
+    setLiveTranscript('');
+    startListeningRef.current();
+  };
 
   const closeCall = () => { stopTeacher(); onClose(); };
 
@@ -247,6 +256,12 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
 
         <footer className="w-full pb-2 pt-3">
           {error && <p role="alert" className="mb-4 rounded-xl border border-red-300/20 bg-red-400/10 px-3 py-2.5 text-center text-xs leading-6 text-red-100">{error}</p>}
+          {active && phase === 'speaking' && (
+            <button type="button" onClick={interruptAssistant} className="mb-4 flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-200/25 bg-cyan-300/10 px-4 py-3 text-sm font-bold text-cyan-100 transition hover:bg-cyan-300/20 active:scale-[.99]" aria-label="مقاطعة دليل والتحدث">
+              <Mic size={17} />
+              قاطع دليل وتحدث
+            </button>
+          )}
           {active && phase === 'idle' && <button type="button" onClick={() => startListeningRef.current()} className="mb-4 w-full rounded-xl border border-sky-200/20 bg-sky-300/10 px-4 py-3 text-sm font-bold text-sky-100 transition hover:bg-sky-300/15">إعادة الاستماع</button>}
           <div className="flex items-center justify-center gap-8">
             <div className="flex min-w-[64px] flex-col items-center gap-2 text-sky-100/65">
