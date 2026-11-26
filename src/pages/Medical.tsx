@@ -7,6 +7,7 @@ import {
 import { PageTitle } from '../components/ui';
 import { extractFileText } from '../lib/fileText';
 import { requestMedicalAnalysis } from '../lib/chatStore';
+import { MedicalFlashcards } from '../components/medical/MedicalFlashcards';
 
 type CollegeId = 'medicine' | 'dentistry' | 'pharmacy' | 'nursing';
 type Track = 'systems' | 'rotations';
@@ -295,6 +296,16 @@ export default function Medical() {
           </div>
         )}
       </section>
+
+      {analysis && (
+        <MedicalFlashcards
+          analysis={analysis}
+          college={selectedCollege.label}
+          year={year}
+          subject={lectureSubject || 'مادة غير محددة'}
+          sourceName={lectureName}
+        />
+      )}
 
       <section className="space-y-3">
         <div><h2 className="text-lg font-extrabold">أدواتك الطبية</h2><p className="mt-1 text-xs text-muted">الهيكل المعتمد للأدوات المتخصصة التي ستُبنى تباعاً.</p></div>
