@@ -89,6 +89,8 @@ export const useChat = create<ChatState>((set, get) => ({
     if (!content || get().loading) return;
     const messages = [...get().messages, { role: 'user' as const, content }];
     set({ messages, loading: true, error: null, extraUsagePending: false });
+    // Save the unanswered prompt locally before any network request; retry survives app closure.
+    await db.chatLogs.put({ key: 'main', messages: messages.slice(-40), at: Date.now() }).catch(() => undefined);
     try {
       const res = await postChat({
         messages: messages.slice(-12),

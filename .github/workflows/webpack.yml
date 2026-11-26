@@ -5,9 +5,11 @@ on:
     branches:
       - atheer-masar-brand-preview
       - fix/masar-dalil-reliability
+      - fix/dalil-reliability-preview
   pull_request:
     branches:
       - atheer-masar-brand-preview
+      - fix/masar-dalil-reliability
 
 permissions:
   contents: read
