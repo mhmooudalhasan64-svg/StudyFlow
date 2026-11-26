@@ -39,4 +39,19 @@ describe('medical flashcards', () => {
     expect(again.reps).toBe(0);
     expect(easy.intervalDays).toBe(3);
   });
+
+  it('extends Hard reviews gradually without exceeding 90 days', () => {
+    const hard = scheduleMedicalReview({ intervalDays: 7, reps: 3 }, 'hard', 0);
+    const capped = scheduleMedicalReview({ intervalDays: 120, reps: 8 }, 'hard', 0);
+    expect(hard.intervalDays).toBe(9);
+    expect(hard.reps).toBe(3);
+    expect(capped.intervalDays).toBe(90);
+  });
+
+  it('recovers safely from invalid saved scheduling values', () => {
+    const result = scheduleMedicalReview({ intervalDays: Number.NaN, reps: -4 }, 'good', 0);
+    expect(result.intervalDays).toBe(1);
+    expect(result.reps).toBe(1);
+    expect(Number.isFinite(result.dueAt)).toBe(true);
+  });
 });
