@@ -81,14 +81,18 @@ export async function saveMedicalQuestions(args: {
 }
 
 export async function recordMedicalAnswer(question: MedicalQuestion, selectedIndex: number): Promise<boolean> {
-  if (!question.id || !Number.isInteger(selectedIndex) || selectedIndex < 0 || selectedIndex > 3) {
+  if (question.id == null || !Number.isInteger(selectedIndex) || selectedIndex < 0 || selectedIndex > 3) {
     throw new Error('محاولة الإجابة غير صالحة.');
   }
   const correct = selectedIndex === question.answerIndex;
-  await db.medicalQuestions.update(question.id, {
-    attempts: question.attempts + 1,
-    correctAttempts: question.correctAttempts + (correct ? 1 : 0),
-    lastAttemptAt: Date.now(),
+  await db.transaction('rw', db.medicalQuestions, async () => {
+    const current = await db.medicalQuestions.get(question.id!);
+    if (!current) throw new Error('السؤال غير موجود في قاعدة البيانات المحلية.');
+    await db.medicalQuestions.update(question.id!, {
+      attempts: current.attempts + 1,
+      correctAttempts: current.correctAttempts + (correct ? 1 : 0),
+      lastAttemptAt: Date.now(),
+    });
   });
   return correct;
 }
