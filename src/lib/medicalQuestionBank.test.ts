@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
-import { filterMedicalQuestions, parseMedicalQuestions } from './medicalQuestionBank';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { db, type MedicalQuestion } from '../db';
+import { filterMedicalQuestions, parseMedicalQuestions, recordMedicalAnswer } from './medicalQuestionBank';
 
 describe('medical question bank parser', () => {
   const valid = {
@@ -62,5 +63,42 @@ describe('medical question history filters', () => {
 
   it('returns an empty list when no questions match a filter', () => {
     expect(filterMedicalQuestions([], 'new')).toEqual([]);
+  });
+});
+
+
+describe('medical answer recording', () => {
+  beforeEach(async () => {
+    await db.medicalQuestions.clear();
+  });
+
+  it('increments attempts from the latest stored value, not a stale snapshot', async () => {
+    const id = await db.medicalQuestions.add({
+      questionKey: 'test|1', college: 'medicine', year: '1', subject: 'Anatomy',
+      sourceName: 'Test', vignette: '', stem: 'Question?', options: ['A', 'B', 'C', 'D'],
+      answerIndex: 1, explanations: ['a', 'b', 'c', 'd'], rationale: '',
+      learningPoint: '', sourceQuote: '', createdAt: 1, attempts: 0,
+      correctAttempts: 0, lastAttemptAt: null,
+    });
+    const staleQuestion = (await db.medicalQuestions.get(id)) as MedicalQuestion;
+    await recordMedicalAnswer(staleQuestion, 1);
+    await recordMedicalAnswer(staleQuestion, 1);
+    const updated = await db.medicalQuestions.get(id);
+    expect(updated?.attempts).toBe(2);
+    expect(updated?.correctAttempts).toBe(2);
+  });
+
+  it('rejects invalid answers without changing the stored counters', async () => {
+    const id = await db.medicalQuestions.add({
+      questionKey: 'test|2', college: 'medicine', year: '1', subject: 'Anatomy',
+      sourceName: 'Test', vignette: '', stem: 'Question?', options: ['A', 'B', 'C', 'D'],
+      answerIndex: 1, explanations: ['a', 'b', 'c', 'd'], rationale: '',
+      learningPoint: '', sourceQuote: '', createdAt: 1, attempts: 0,
+      correctAttempts: 0, lastAttemptAt: null,
+    });
+    const question = (await db.medicalQuestions.get(id)) as MedicalQuestion;
+    await expect(recordMedicalAnswer(question, 4)).rejects.toThrow();
+    const unchanged = await db.medicalQuestions.get(id);
+    expect(unchanged?.attempts).toBe(0);
   });
 });
