@@ -183,9 +183,9 @@ function sanitizeAttachment(body: unknown): Attachment | null {
   const a = (body as { attachment?: unknown }).attachment;
   if (typeof a !== 'object' || a === null) return null;
   const { name, text, imageDataUrl } = a as { name?: unknown; text?: unknown; imageDataUrl?: unknown };
-  const safeName = (typeof name === 'string' ? name : 'ملف').replace(/[\\r\\n"«»]/g, ' ').trim().slice(0, 80) || 'ملف';
+  const safeName = (typeof name === 'string' ? name : 'ملف').replace(/[\r\n"«»]/g, ' ').trim().slice(0, 80) || 'ملف';
   if (typeof imageDataUrl === 'string') {
-    if (imageDataUrl.length > 2_800_000 || !/^data:image\\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+=*$/.test(imageDataUrl)) return null;
+    if (imageDataUrl.length > 2_800_000 || !/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+=*$/.test(imageDataUrl)) return null;
     return { name: redactPersonalData(safeName), text: '', imageDataUrl };
   }
   if (typeof text !== 'string' || !text.trim()) return null;
@@ -336,6 +336,7 @@ function systemPrompt(att: Attachment | null, profile = '', bookAsk = false, foc
 - عند تكرار الخطأ، غيّر التمثيل أو المثال أو تسلسل الخطوات بدلاً من تكرار الشرح نفسه.
 - لا تكشف بيانات المؤشرات الداخلية للطالب إلا إذا سأل عن تقدمه، ولا تدّعِ أن التكيف تشخيص نفسي أو تربوي رسمي.`;
   if (!att) return out;
+  if (att.imageDataUrl) return `${out}\n\nأرفق الطالب صورة باسم «${att.name}». حلّل العناصر الظاهرة والنصوص والرسوم والمعادلات بدقة. لا تفترض تفاصيل غير واضحة؛ اذكر إن كانت الصورة غير مقروءة أو تحتاج إلى لقطة أوضح.`;
   return `${out}
 
 أرفق الطالب ملفاً باسم «${att.name}» ونصّه أدناه (قد يكون مقتطعاً لطوله). اعتمد عليه عند الإجابة، وإن لم تجد الجواب فيه فقل ذلك بوضوح ولا تخترع.
