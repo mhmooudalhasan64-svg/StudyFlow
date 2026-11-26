@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertCircle, BookCheck, CheckCircle2, ClipboardList, Loader2, RefreshCw, Sparkles, XCircle } from 'lucide-react';
+import { AlertCircle, BookCheck, CheckCircle2, ClipboardList, Loader2, Sparkles, XCircle } from 'lucide-react';
 import { db, type MedicalQuestion } from '../../db';
 import { requestMedicalQuiz } from '../../lib/chatStore';
 import { parseMedicalQuestions, recordMedicalAnswer, saveMedicalQuestions } from '../../lib/medicalQuestionBank';
