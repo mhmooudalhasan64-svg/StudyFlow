@@ -4,7 +4,7 @@ import { db, type MedicalFlashcard } from '../../db';
 import { buildMedicalFlashcards, saveMedicalFlashcards, scheduleMedicalReview, type MedicalCardSource, type MedicalCardRating } from '../../lib/medicalFlashcards';
 
 interface Props {
-  analysis: MedicalCardSource;
+  analysis: MedicalCardSource | null;
   college: string;
   year: string;
   subject: string;
@@ -28,7 +28,7 @@ export function MedicalFlashcards({ analysis, college, year, subject, sourceName
 
   const refresh = useCallback(async () => {
     const rows = await db.medicalCards.where('college').equals(college).toArray();
-    setCards(rows.filter((card) => card.year === year && card.subject === subject.trim())
+    setCards(rows.filter((card) => card.year === year && (!subject.trim() || card.subject === subject.trim()))
       .sort((a, b) => a.dueAt - b.dueAt));
   }, [college, year, subject]);
 
@@ -45,10 +45,11 @@ export function MedicalFlashcards({ analysis, college, year, subject, sourceName
   const active = dueCards.find((card) => card.id === activeId) ?? dueCards[0] ?? null;
 
   const createCards = async () => {
+    if (!analysis) return;
     setBusy(true);
     setMessage('');
     try {
-      const generated = buildMedicalFlashcards({ analysis, college, year, subject, sourceName });
+      const generated = buildMedicalFlashcards({ analysis, college, year, subject: subject.trim() || 'مادة غير محددة', sourceName });
       if (!generated.length) {
         setMessage('لا توجد مصطلحات أو نقاط عالية الأهمية كافية لتوليد بطاقات من هذا التحليل.');
         return;
@@ -87,7 +88,7 @@ export function MedicalFlashcards({ analysis, college, year, subject, sourceName
           <span className="feature-icon feature-icon-blue"><Layers3 size={21}/></span>
           <div><h3 className="font-extrabold">بطاقات الحفظ الذكي</h3><p className="mt-1 text-xs leading-6 text-muted">بطاقات من مصطلحات المحاضرة ونقاطها المهمة، محفوظة محلياً على هذا الجهاز.</p></div>
         </div>
-        <button type="button" className="btn btn-primary" onClick={() => void createCards()} disabled={busy}>
+        <button type="button" className="btn btn-primary" onClick={() => void createCards()} disabled={busy || !analysis}>
           {busy ? <RotateCcw size={15} className="animate-spin"/> : <Sparkles size={15}/>} توليد وحفظ البطاقات
         </button>
       </div>
