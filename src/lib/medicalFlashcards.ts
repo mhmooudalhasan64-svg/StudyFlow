@@ -58,18 +58,20 @@ export function scheduleMedicalReview(
 ): Pick<MedicalFlashcard, 'dueAt' | 'intervalDays' | 'reps' | 'lastReviewedAt' | 'lastRating'> {
   const goodIntervals = [1, 3, 7, 14, 30, 60, 90];
   const easyIntervals = [3, 7, 14, 30, 60, 90];
+  const previousReps = Number.isInteger(card.reps) && card.reps >= 0 ? card.reps : 0;
+  const previousInterval = Number.isFinite(card.intervalDays) && card.intervalDays > 0 ? card.intervalDays : 1;
   let intervalDays: number;
   let reps: number;
   if (rating === 'again') {
     intervalDays = 1;
     reps = 0;
   } else if (rating === 'hard') {
-    intervalDays = Math.max(1, Math.ceil((card.intervalDays || 1) * 1.2));
-    reps = card.reps;
+    intervalDays = Math.min(90, Math.max(1, Math.ceil(previousInterval * 1.2)));
+    reps = previousReps;
   } else {
     const sequence = rating === 'easy' ? easyIntervals : goodIntervals;
-    intervalDays = sequence[Math.min(card.reps, sequence.length - 1)];
-    reps = card.reps + 1;
+    intervalDays = sequence[Math.min(previousReps, sequence.length - 1)];
+    reps = previousReps + 1;
   }
   return {
     dueAt: now + intervalDays * 24 * 60 * 60 * 1000,
