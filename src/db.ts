@@ -176,6 +176,26 @@ export interface ChatLog {
   at: number;
 }
 
+/** بطاقة تعليمية طبية مستقلة عن بطاقات المنهاج المدرسي. */
+export interface MedicalFlashcard {
+  id?: number;
+  /** مفتاح ثابت يمنع إنشاء البطاقة نفسها مرتين من المصدر نفسه. */
+  cardKey: string;
+  college: string;
+  year: string;
+  subject: string;
+  sourceName: string;
+  category: 'term' | 'high_yield';
+  front: string;
+  back: string;
+  createdAt: number;
+  dueAt: number;
+  intervalDays: number;
+  reps: number;
+  lastReviewedAt: number | null;
+  lastRating?: 'again' | 'hard' | 'good' | 'easy';
+}
+
 class StudyDB extends Dexie {
   subjects!: EntityTable<Subject, 'id'>;
   tasks!: EntityTable<Task, 'id'>;
@@ -193,6 +213,7 @@ class StudyDB extends Dexie {
   bookTexts!: EntityTable<BookText, 'key'>;
   chatLogs!: EntityTable<ChatLog, 'key'>;
   videoStudy!: EntityTable<VideoStudyCache, 'videoId'>;
+  medicalCards!: EntityTable<MedicalFlashcard, 'id'>;
 
   constructor() {
     super('studyflow');
@@ -225,6 +246,10 @@ class StudyDB extends Dexie {
     // الإصدار 5: تخزين تفريغات الفيديو وملخصاتها محلياً لإعادة فتحها دون إعادة الالتقاط.
     this.version(5).stores({
       videoStudy: 'videoId, updatedAt',
+    });
+    // الإصدار 6: بطاقات طبية منفصلة مع جدولة مراجعة مستقلة.
+    this.version(6).stores({
+      medicalCards: '++id, &cardKey, dueAt, college, year, subject',
     });
   }
 }
