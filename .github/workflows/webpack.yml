@@ -9,6 +9,7 @@ on:
       - feat/dalil-conversational-intelligence
       - feat/dalil-intelligence-core
       - feat/dalil-live-call-ui
+      - feat/dalil-voice-barge-in
   pull_request:
     branches:
       - atheer-masar-brand-preview
@@ -16,6 +17,7 @@ on:
       - fix/dalil-reliability-preview
       - feat/dalil-conversational-intelligence
       - feat/dalil-intelligence-core
+      - feat/dalil-live-call-ui
 
 permissions:
   contents: read
