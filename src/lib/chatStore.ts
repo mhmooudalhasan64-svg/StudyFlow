@@ -14,6 +14,7 @@ export interface ChatAttachment {
   text: string;
   /** هل اقتُطع النص لطوله */
   truncated: boolean;
+  imageDataUrl?: string;
 }
 
 function postChat(body: unknown): Promise<Response> {
@@ -36,6 +37,9 @@ interface ChatState {
   /** أسلوب الرد */
   style: ChatStyle;
   setStyle: (s: ChatStyle) => void;
+  /** البحث الخارجي اختياري ويتطلب تفعيل المستخدم لكل جلسة */
+  webSearchEnabled: boolean;
+  setWebSearchEnabled: (enabled: boolean) => void;
   /** يعيد توليد آخر رد */
   regenerate: () => void;
   messages: ChatMsg[];
@@ -72,6 +76,8 @@ export const useChat = create<ChatState>((set, get) => ({
   setSubject: (subject) => set({ subject }),
   style: 'normal',
   setStyle: (style) => set({ style }),
+  webSearchEnabled: false,
+  setWebSearchEnabled: (webSearchEnabled) => set({ webSearchEnabled }),
 
   regenerate: () => {
     const { messages, loading } = get();
@@ -94,10 +100,11 @@ export const useChat = create<ChatState>((set, get) => ({
     try {
       const res = await postChat({
         messages: messages.slice(-12),
+        ...(get().webSearchEnabled ? { webSearch: true } : {}),
         ...(get().subject ? { subject: get().subject } : {}),
         ...(get().style !== 'normal' ? { style: get().style } : {}),
         ...(get().useProfile ? { profile: learnerProfile() } : {}),
-        ...(get().attachment ? { attachment: { name: get().attachment!.name, text: get().attachment!.text } } : {}),
+        ...(get().attachment ? { attachment: { name: get().attachment!.name, text: get().attachment!.text, ...(get().attachment!.imageDataUrl ? { imageDataUrl: get().attachment!.imageDataUrl } : {}) } } : {}),
       });
       const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string; code?: string };
       if (res.status === 402 && data.code === 'extra_usage_consent_required') {
@@ -135,10 +142,11 @@ export const useChat = create<ChatState>((set, get) => ({
       const res = await postChat({
         messages: current.messages.slice(-12),
         extraUsageConsent: true,
+        ...(current.webSearchEnabled ? { webSearch: true } : {}),
         ...(current.subject ? { subject: current.subject } : {}),
         ...(current.style !== 'normal' ? { style: current.style } : {}),
         ...(current.useProfile ? { profile: learnerProfile() } : {}),
-        ...(current.attachment ? { attachment: { name: current.attachment.name, text: current.attachment.text } } : {}),
+        ...(current.attachment ? { attachment: { name: current.attachment.name, text: current.attachment.text, ...(current.attachment.imageDataUrl ? { imageDataUrl: current.attachment.imageDataUrl } : {}) } } : {}),
       });
       const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
       if (!res.ok || !data.reply) {
