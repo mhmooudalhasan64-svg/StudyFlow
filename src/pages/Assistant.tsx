@@ -22,7 +22,7 @@ const FILE_SUGGESTIONS = [
 ];
 
 export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
-  const { messages, attachment, loading, error, extraUsagePending, continueWithExtraUsage, cancelExtraUsage, send, setAttachment, clear, useProfile, setUseProfile, subject, setSubject, style, setStyle, regenerate, conversations, activeConversationId, previousSummary, refreshConversations, newConversation, openConversation, deleteConversation, renameConversation } = useChat();
+  const { messages, attachment, loading, error, extraUsagePending, continueWithExtraUsage, cancelExtraUsage, send, setAttachment, useProfile, setUseProfile, subject, setSubject, style, setStyle, regenerate, conversations, activeConversationId, previousSummary, refreshConversations, newConversation, openConversation, deleteConversation, renameConversation } = useChat();
   const [copied, setCopied] = useState<number | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [historySearch, setHistorySearch] = useState('');
@@ -199,7 +199,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
     <div className="masar-chat-shell relative mx-auto flex min-h-[calc(100dvh-7rem)] w-full max-w-7xl overflow-hidden rounded-2xl border border-line bg-card/70 shadow-xl shadow-black/5">
       {historyOpen && <button type="button" aria-label="إغلاق سجل المحادثات" className="absolute inset-0 z-20 bg-black/45 md:hidden" onClick={() => setHistoryOpen(false)} />}
 
-      <aside className={\`masar-chat-sidebar absolute inset-y-0 right-0 z-30 flex w-[min(84vw,19rem)] flex-col border-l border-line bg-base/95 p-3 backdrop-blur-xl transition-transform md:static md:z-auto md:w-72 md:translate-x-0 \${historyOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}\`}>
+      <aside className={`masar-chat-sidebar absolute inset-y-0 right-0 z-30 flex w-[min(84vw,19rem)] flex-col border-l border-line bg-base/95 p-3 backdrop-blur-xl transition-transform md:static md:z-auto md:w-72 md:translate-x-0 ${historyOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}`}>
         <div className="mb-3 flex items-center justify-between gap-2 px-1">
           <div className="flex items-center gap-2 font-bold"><Bot size={19} className="text-accent" /><span>دليل</span></div>
           <button type="button" className="rounded-lg p-2 text-muted hover:bg-card md:hidden" onClick={() => setHistoryOpen(false)} aria-label="إغلاق القائمة"><X size={18} /></button>
@@ -216,16 +216,16 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
           {filteredConversations.length === 0 ? (
             <p className="px-2 py-6 text-center text-xs leading-6 text-muted">{conversations.length ? 'لا توجد محادثة تطابق البحث.' : 'ستظهر محادثاتك هنا بعد بدء أول محادثة.'}</p>
           ) : filteredConversations.map((conversation) => (
-            <div key={conversation.id} className={\`group flex items-center gap-1 rounded-xl px-2 py-1.5 transition \${activeConversationId === conversation.id ? 'bg-accent/10 text-main' : 'hover:bg-card'}\`}>
+            <div key={conversation.id} className={`group flex items-center gap-1 rounded-xl px-2 py-1.5 transition ${activeConversationId === conversation.id ? 'bg-accent/10 text-main' : 'hover:bg-card'}`}>
               <button type="button" disabled={loading} className="min-w-0 flex-1 py-1 text-start" onClick={() => { void openConversation(conversation.id); setHistoryOpen(false); }}>
                 <span className="block truncate text-[13px] font-medium">{conversation.title}</span>
                 <span className="mt-1 block text-[10px] text-muted">{conversation.messages.length} رسالة · {new Date(conversation.updatedAt).toLocaleDateString('ar')}</span>
               </button>
               <div className="flex shrink-0 items-center opacity-100 md:opacity-0 md:group-hover:opacity-100">
-                <button type="button" className="rounded-lg p-1.5 text-muted hover:bg-base hover:text-main" title="إعادة تسمية" aria-label={\`إعادة تسمية \${conversation.title}\`} onClick={() => { const value = window.prompt('اكتب اسماً للمحادثة', conversation.title); if (value?.trim()) void renameConversation(conversation.id, value); }}>
+                <button type="button" className="rounded-lg p-1.5 text-muted hover:bg-base hover:text-main" title="إعادة تسمية" aria-label={`إعادة تسمية ${conversation.title}`} onClick={() => { const value = window.prompt('اكتب اسماً للمحادثة', conversation.title); if (value?.trim()) void renameConversation(conversation.id, value); }}>
                   <Pencil size={14} />
                 </button>
-                <button type="button" className="rounded-lg p-1.5 text-muted hover:bg-bad/10 hover:text-bad" title="حذف المحادثة" aria-label={\`حذف \${conversation.title}\`} onClick={() => { if (window.confirm('هل تريد حذف هذه المحادثة نهائياً من هذا الجهاز؟')) void deleteConversation(conversation.id); }}>
+                <button type="button" className="rounded-lg p-1.5 text-muted hover:bg-bad/10 hover:text-bad" title="حذف المحادثة" aria-label={`حذف ${conversation.title}`} onClick={() => { if (window.confirm('هل تريد حذف هذه المحادثة نهائياً من هذا الجهاز؟')) void deleteConversation(conversation.id); }}>
                   <Trash2 size={14} />
                 </button>
               </div>
@@ -247,6 +247,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-1.5">
+            <button type="button" className="rounded-xl border border-line px-2.5 py-2 text-xs text-muted hover:bg-base" onClick={onCallOpen} aria-label="فتح المعلم الصوتي" title="المعلم الصوتي"><Phone size={15} /></button>
             <button type="button" className="rounded-xl border border-line px-2.5 py-2 text-xs text-muted hover:bg-base" onClick={() => { setHistoryOpen(true); void refreshConversations(); }}><History size={15} className="inline" /> <span className="hidden sm:inline">السجل</span></button>
             <button type="button" className="rounded-xl bg-accent px-3 py-2 text-xs font-semibold text-onaccent hover:brightness-110" onClick={() => newConversation()}><Plus size={15} className="inline" /> جديد</button>
           </div>
@@ -269,13 +270,13 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
             ) : (
               <div className="mx-auto max-w-3xl space-y-7">
                 {messages.map((message, index) => (
-                  <article key={index} className={\`flex gap-3 \${message.role === 'user' ? 'justify-start' : 'justify-start'}\`}>
-                    <div className={\`mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full \${message.role === 'assistant' ? 'bg-accent/15 text-accent' : 'bg-base text-muted'}\`}>
+                  <article key={index} className={`flex gap-3 ${message.role === 'user' ? 'justify-start' : 'justify-start'}`}>
+                    <div className={`mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full ${message.role === 'assistant' ? 'bg-accent/15 text-accent' : 'bg-base text-muted'}`}>
                       {message.role === 'assistant' ? <Bot size={17} /> : <span className="text-xs font-bold">أنت</span>}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="mb-1 text-xs font-bold">{message.role === 'assistant' ? 'دليل' : 'أنت'}</div>
-                      <div className={\`chat-message-content text-sm leading-8 \${message.role === 'user' ? 'rounded-2xl bg-base px-4 py-3' : 'px-0 py-1'}\`}>
+                      <div className={`chat-message-content text-sm leading-8 ${message.role === 'user' ? 'rounded-2xl bg-base px-4 py-3' : 'px-0 py-1'}`}>
                         <MessageBody content={message.content} />
                       </div>
                       {message.role === 'assistant' && (
@@ -309,8 +310,8 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
                     <label className="mt-2 flex items-center justify-between gap-3 text-xs"><span>استخدامه لتخصيص الشرح</span><input type="checkbox" className="h-5 w-5 accent-[rgb(var(--accent))]" checked={useProfile} onChange={(e) => setUseProfile(e.target.checked)} /></label>
                   </details>
                   <div className="flex flex-wrap gap-1.5" role="group" aria-label="مادة السؤال">
-                    <button type="button" aria-pressed={subject === null} className={\`chip \${subject === null ? '!border-accent !text-accent' : ''}\`} onClick={() => setSubject(null)}>كل المواد</button>
-                    {app.subjects.map((item) => <button key={item.id} type="button" aria-pressed={subject === item.name} className={\`chip \${subject === item.name ? '!border-accent !text-accent' : ''}\`} onClick={() => setSubject(subject === item.name ? null : item.name)}>{item.name}</button>)}
+                    <button type="button" aria-pressed={subject === null} className={`chip ${subject === null ? '!border-accent !text-accent' : ''}`} onClick={() => setSubject(null)}>كل المواد</button>
+                    {app.subjects.map((item) => <button key={item.id} type="button" aria-pressed={subject === item.name} className={`chip ${subject === item.name ? '!border-accent !text-accent' : ''}`} onClick={() => setSubject(subject === item.name ? null : item.name)}>{item.name}</button>)}
                   </div>
                   <select className="input" aria-label="أسلوب الرد" value={style} onChange={(e) => setStyle(e.target.value as ChatStyle)}>
                     <option value="normal">أسلوب الرد: عادي</option><option value="explain">اشرح ببساطة مع مثال</option><option value="steps">حل خطوة بخطوة</option><option value="summary">لخّص في نقاط</option><option value="coach">درّبني بأسئلة موجِّهة</option><option value="diagnose">شخّص نقطة ضعفي أولاً</option><option value="exam_coach">مدرّب الامتحان</option><option value="mastery">مسار الإتقان التفاعلي</option><option value="problem_solver">مساعد حل المسائل خطوة بخطوة</option><option value="voice_teacher">المدرّس الصوتي</option>
@@ -342,8 +343,8 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
                   <div className="flex items-center gap-1">
                     <input ref={fileRef} type="file" accept={ACCEPT} hidden onChange={(e) => void pickFile(e)} />
                     <button type="button" className="rounded-lg p-2 text-muted hover:bg-card hover:text-main" aria-label="إرفاق ملف" title="إرفاق ملف PDF أو Word أو Excel" disabled={reading || loading} onClick={() => fileRef.current?.click()}><Paperclip size={18} /></button>
-                    {canListen() && <button type="button" className={\`rounded-lg p-2 hover:bg-card \${handsFree ? 'text-accent' : 'text-muted'}\`} aria-pressed={handsFree} aria-label={handsFree ? 'إيقاف المحادثة الصوتية المستمرة' : 'بدء المحادثة الصوتية المستمرة'} disabled={loading} onClick={toggleHandsFree}><Phone size={17} /></button>}
-                    {canListen() && <button type="button" className={\`rounded-lg p-2 hover:bg-card \${listening ? 'text-accent' : 'text-muted'}\`} aria-pressed={listening} aria-label={listening ? 'إيقاف الإملاء الصوتي' : 'إملاء السؤال بصوتك'} disabled={loading} onClick={toggleMic}>{listening ? <Square size={17} /> : <Mic size={17} />}</button>}
+                    {canListen() && <button type="button" className={`rounded-lg p-2 hover:bg-card ${handsFree ? 'text-accent' : 'text-muted'}`} aria-pressed={handsFree} aria-label={handsFree ? 'إيقاف المحادثة الصوتية المستمرة' : 'بدء المحادثة الصوتية المستمرة'} disabled={loading} onClick={toggleHandsFree}><Phone size={17} /></button>}
+                    {canListen() && <button type="button" className={`rounded-lg p-2 hover:bg-card ${listening ? 'text-accent' : 'text-muted'}`} aria-pressed={listening} aria-label={listening ? 'إيقاف الإملاء الصوتي' : 'إملاء السؤال بصوتك'} disabled={loading} onClick={toggleMic}>{listening ? <Square size={17} /> : <Mic size={17} />}</button>}
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="hidden text-[10px] text-muted sm:inline">Enter للإرسال · Shift+Enter لسطر جديد</span>
