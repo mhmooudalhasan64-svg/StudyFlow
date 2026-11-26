@@ -1,5 +1,18 @@
 import { db, type MedicalQuestion } from '../db';
 
+
+export type MedicalQuestionHistoryFilter = 'all' | 'weak' | 'new';
+
+export function filterMedicalQuestions(
+  questions: MedicalQuestion[],
+  filter: MedicalQuestionHistoryFilter,
+): MedicalQuestion[] {
+  if (filter === 'new') return questions.filter((question) => question.attempts === 0);
+  if (filter === 'weak') return questions.filter((question) =>
+    question.attempts > 0 && question.correctAttempts / question.attempts < 0.6);
+  return questions;
+}
+
 export interface MedicalQuestionDraft {
   vignette: string;
   stem: string;
