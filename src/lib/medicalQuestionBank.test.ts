@@ -34,6 +34,15 @@ describe('medical question bank parser', () => {
     invalid.questions[0].answerIndex = 4;
     expect(() => parseMedicalQuestions(JSON.stringify(invalid))).toThrow();
   });
+
+  it('rejects coerced answer indexes such as strings and booleans', () => {
+    const stringIndex = structuredClone(valid);
+    stringIndex.questions[0].answerIndex = '2' as unknown as number;
+    const booleanIndex = structuredClone(valid);
+    booleanIndex.questions[0].answerIndex = true as unknown as number;
+    expect(() => parseMedicalQuestions(JSON.stringify(stringIndex))).toThrow();
+    expect(() => parseMedicalQuestions(JSON.stringify(booleanIndex))).toThrow();
+  });
 });
 
 
