@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
-import { Bot, Copy, FileText, Loader2, Mic, Paperclip, Phone, RefreshCw, Send, Square, Trash2, Volume2, X } from 'lucide-react';
+import { Bot, Copy, FileText, History, Loader2, Mic, Paperclip, Phone, Plus, RefreshCw, Send, Square, Trash2, Volume2, X } from 'lucide-react';
 import { useChat, type ChatStyle } from '../lib/chatStore';
 import { PageTitle } from '../components/ui';
 import Advisor from '../components/Advisor';
@@ -23,8 +23,9 @@ const FILE_SUGGESTIONS = [
 ];
 
 export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
-  const { messages, attachment, loading, error, extraUsagePending, continueWithExtraUsage, cancelExtraUsage, send, setAttachment, clear, useProfile, setUseProfile, subject, setSubject, style, setStyle, regenerate } = useChat();
+  const { messages, attachment, loading, error, extraUsagePending, continueWithExtraUsage, cancelExtraUsage, send, setAttachment, clear, useProfile, setUseProfile, subject, setSubject, style, setStyle, regenerate, conversations, activeConversationId, refreshConversations, newConversation, openConversation } = useChat();
   const [copied, setCopied] = useState<number | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const app = useApp();
   const profile = useMemo(() => buildLearnerProfile(contextFrom(app, toDateKey())), [app]);
   const [listening, setListening] = useState(false);
@@ -58,6 +59,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
 
   useEffect(() => {
     void useChat.getState().load();
+    void refreshConversations();
   }, []);
 
   // نوقف القراءة والاستماع عند مغادرة الصفحة
@@ -198,13 +200,48 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
         title="دليل"
         subtitle="خطة مراجعة تلقائية، وأسئلة عن دروسك"
         action={
-          messages.length > 0 ? (
-            <button type="button" className="btn btn-ghost !py-1.5" onClick={clear} aria-label="مسح المحادثة">
-              <Trash2 size={15} /> مسح
+          <div className="flex items-center gap-1">
+            <button type="button" className={`btn !py-1.5 ${historyOpen ? 'btn-primary' : 'btn-ghost'}`} onClick={() => { setHistoryOpen((open) => !open); void refreshConversations(); }} aria-expanded={historyOpen} aria-label="المحادثات السابقة">
+              <History size={15} /> السجل
             </button>
-          ) : undefined
+            <button type="button" className="btn btn-ghost !py-1.5" onClick={() => { newConversation(); setHistoryOpen(false); }} aria-label="محادثة جديدة">
+              <Plus size={15} /> جديد
+            </button>
+          </div>
         }
       />
+
+      {historyOpen && (
+        <section className="card mb-3 !p-3" aria-label="المحادثات السابقة">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <div>
+              <h2 className="font-bold">المحادثات السابقة</h2>
+              <p className="text-xs text-muted">محفوظة على هذا الجهاز فقط.</p>
+            </div>
+            <span className="text-xs text-muted">{conversations.length} محادثة</span>
+          </div>
+          {conversations.length === 0 ? (
+            <p className="py-4 text-center text-sm text-muted">لا توجد محادثات محفوظة بعد. ابدأ محادثة وسيُحفظ سجلها تلقائياً.</p>
+          ) : (
+            <div className="max-h-64 space-y-1 overflow-y-auto">
+              {conversations.map((conversation) => (
+                <button
+                  key={conversation.id}
+                  type="button"
+                  className={`w-full rounded-xl border px-3 py-2 text-start transition-colors ${activeConversationId === conversation.id ? 'border-accent bg-accent/10' : 'border-line hover:bg-base/60'}`}
+                  onClick={() => { void openConversation(conversation.id); setHistoryOpen(false); }}
+                >
+                  <span className="block truncate text-sm font-medium">{conversation.title}</span>
+                  <span className="mt-1 flex items-center justify-between gap-2 text-[11px] text-muted">
+                    <span>{conversation.messages.length} رسالة</span>
+                    <time>{new Date(conversation.updatedAt).toLocaleString('ar', { dateStyle: 'short', timeStyle: 'short' })}</time>
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       {sourcePage && <div className="mb-3 rounded-xl border border-accent/25 bg-accent/5 px-3 py-2 text-xs text-muted">سياق المساعدة: فتحت دليل من صفحة <strong className="text-main">{sourcePage}</strong>، لذلك ستكون الإجابات مرتبطة بها.</div>}
 
