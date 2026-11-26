@@ -6,10 +6,12 @@ on:
       - atheer-masar-brand-preview
       - fix/masar-dalil-reliability
       - fix/dalil-reliability-preview
+      - feat/dalil-conversational-intelligence
   pull_request:
     branches:
       - atheer-masar-brand-preview
       - fix/masar-dalil-reliability
+      - fix/dalil-reliability-preview
 
 permissions:
   contents: read
