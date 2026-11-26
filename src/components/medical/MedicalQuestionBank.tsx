@@ -156,7 +156,7 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
               const chosen = selected === index;
               const style = selected === null ? 'border-line bg-card hover:border-accent/50' : isCorrect ? 'border-good bg-good/10' : chosen ? 'border-bad bg-bad/10' : 'border-line bg-card opacity-75';
               return (
-                <button key={index} type="button" disabled={selected !== null || answerBusy} onClick={() => void answer(index)} className={`flex w-full items-start gap-3 rounded-xl border p-3 text-right text-xs leading-6 transition ${style}`}>
+                <button key={index} type="button" disabled={selected !== null || answerBusy} aria-pressed={selected === index} onClick={() => void answer(index)} className={`flex w-full items-start gap-3 rounded-xl border p-3 text-right text-xs leading-6 transition ${style}`}>
                   <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-base text-[10px] font-black">{['A','B','C','D'][index]}</span>
                   <span className="flex-1">{option}</span>
                   {selected !== null && isCorrect && <CheckCircle2 size={17} className="shrink-0 text-good"/>}
@@ -166,7 +166,7 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
             })}
           </div>
           {selected !== null && (
-            <div className="space-y-3 rounded-xl bg-card p-3">
+            <div role="status" aria-live="polite" className="space-y-3 rounded-xl bg-card p-3">
               <p className={`text-sm font-extrabold ${selected === active.answerIndex ? 'text-good' : 'text-bad'}`}>{selected === active.answerIndex ? 'إجابة صحيحة' : `الإجابة الصحيحة: ${['A','B','C','D'][active.answerIndex]}`}</p>
               <div className="space-y-2">{active.explanations.map((explanation, index) => <p key={index} className="text-xs leading-6"><strong>{['A','B','C','D'][index]}:</strong> {explanation}</p>)}</div>
               {active.rationale && <p className="border-t border-line pt-2 text-xs leading-6 text-muted">{active.rationale}</p>}
