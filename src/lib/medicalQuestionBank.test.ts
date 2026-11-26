@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseMedicalQuestions } from './medicalQuestionBank';
+import { filterMedicalQuestions, parseMedicalQuestions } from './medicalQuestionBank';
 
 describe('medical question bank parser', () => {
   const valid = {
@@ -32,5 +32,26 @@ describe('medical question bank parser', () => {
     const invalid = structuredClone(valid);
     invalid.questions[0].answerIndex = 4;
     expect(() => parseMedicalQuestions(JSON.stringify(invalid))).toThrow();
+  });
+});
+
+
+describe('medical question history filters', () => {
+  const questions = [
+    { id: 1, attempts: 0, correctAttempts: 0 },
+    { id: 2, attempts: 5, correctAttempts: 2 },
+    { id: 3, attempts: 5, correctAttempts: 4 },
+  ] as import('../db').MedicalQuestion[];
+
+  it('returns unanswered questions for the new filter', () => {
+    expect(filterMedicalQuestions(questions, 'new').map((q) => q.id)).toEqual([1]);
+  });
+
+  it('returns only questions below 60% accuracy for review', () => {
+    expect(filterMedicalQuestions(questions, 'weak').map((q) => q.id)).toEqual([2]);
+  });
+
+  it('returns the full bank for the all filter', () => {
+    expect(filterMedicalQuestions(questions, 'all')).toHaveLength(3);
   });
 });
