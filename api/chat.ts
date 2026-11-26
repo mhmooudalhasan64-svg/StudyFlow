@@ -258,11 +258,11 @@ function medicalAnalysisRequest(body: unknown, att: Attachment | null): { system
   const b = body as { mode?: unknown; college?: unknown; year?: unknown; subject?: unknown };
   if (b.mode !== 'medical_analyze') return null;
   if (!att || att.imageDataUrl || !att.text.trim()) return 'invalid';
-  const college = typeof b.college === 'string' ? b.college.replace(/[\\r\\n]+/g, ' ').slice(0, 60) : 'كلية طبية';
+  const college = typeof b.college === 'string' ? b.college.replace(/[\r\n]+/g, ' ').slice(0, 60) : 'كلية طبية';
   const year = typeof b.year === 'string' || typeof b.year === 'number' ? String(b.year).slice(0, 12) : '';
-  const subject = typeof b.subject === 'string' ? b.subject.replace(/[\\r\\n]+/g, ' ').slice(0, 80) : '';
+  const subject = typeof b.subject === 'string' ? b.subject.replace(/[\r\n]+/g, ' ').slice(0, 80) : '';
   return {
-    system: `${MEDICAL_ANALYSIS_PROMPT}\\n\\nالكلية: ${college}. السنة: ${year || 'غير محددة'}. المادة: ${subject || 'غير محددة'}.\\n\\n${fileBlock(att)}`,
+    system: `${MEDICAL_ANALYSIS_PROMPT}\n\nالكلية: ${college}. السنة: ${year || 'غير محددة'}. المادة: ${subject || 'غير محددة'}.\n\n${fileBlock(att)}`,
     messages: [{ role: 'user', content: 'حلّل المحاضرة المرفقة وأعد كائن JSON وفق البنية والقواعد المحددة. لا تستخدم معلومات خارج النص.' }],
   };
 }
