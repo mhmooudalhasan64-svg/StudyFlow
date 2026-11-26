@@ -247,6 +247,7 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
 
         <footer className="w-full pb-2 pt-3">
           {error && <p role="alert" className="mb-4 rounded-xl border border-red-300/20 bg-red-400/10 px-3 py-2.5 text-center text-xs leading-6 text-red-100">{error}</p>}
+          {active && phase === 'idle' && <button type="button" onClick={() => startListeningRef.current()} className="mb-4 w-full rounded-xl border border-sky-200/20 bg-sky-300/10 px-4 py-3 text-sm font-bold text-sky-100 transition hover:bg-sky-300/15">إعادة الاستماع</button>}
           <div className="flex items-center justify-center gap-8">
             <div className="flex min-w-[64px] flex-col items-center gap-2 text-sky-100/65">
               <span className={`grid h-12 w-12 place-items-center rounded-full border ${phase === 'listening' ? 'border-cyan-200/35 bg-cyan-300/15 text-cyan-100' : 'border-white/10 bg-white/[0.06]'}`}>
