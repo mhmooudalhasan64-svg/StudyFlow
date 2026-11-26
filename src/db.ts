@@ -177,6 +177,18 @@ export interface ChatLog {
 }
 
 /** بطاقة تعليمية طبية مستقلة عن بطاقات المنهاج المدرسي. */
+export interface MedicalSimulationResult {
+  id?: number;
+  caseTitle: string;
+  college: string;
+  year: string;
+  subject: string;
+  score: number;
+  total: number;
+  createdAt: number;
+  completedAt: number;
+}
+
 export interface MedicalQuestion {
   id?: number;
   questionKey: string;
@@ -236,6 +248,7 @@ class StudyDB extends Dexie {
   videoStudy!: EntityTable<VideoStudyCache, 'videoId'>;
   medicalCards!: EntityTable<MedicalFlashcard, 'id'>;
   medicalQuestions!: EntityTable<MedicalQuestion, 'id'>;
+  medicalSimulations!: EntityTable<MedicalSimulationResult, 'id'>;
 
   constructor() {
     super('studyflow');
@@ -276,6 +289,10 @@ class StudyDB extends Dexie {
     // الإصدار 7: بنك أسئلة طبية وسجل محاولات مستقل عن بنك البكالوريا.
     this.version(7).stores({
       medicalQuestions: '++id, &questionKey, college, year, subject, createdAt',
+    });
+    // الإصدار 8: سجل محاكاة الحالات السريرية مستقلاً عن نتائج اختبارات البكالوريا.
+    this.version(8).stores({
+      medicalSimulations: '++id, college, year, subject, completedAt',
     });
   }
 }
