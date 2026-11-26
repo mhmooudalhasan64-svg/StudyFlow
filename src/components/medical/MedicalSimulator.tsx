@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { AlertCircle, CheckCircle2, ClipboardList, Loader2, RefreshCw, ShieldAlert, Sparkles, Stethoscope, XCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle2, ClipboardList, Loader2, ShieldAlert, Sparkles, Stethoscope, XCircle } from 'lucide-react';
 import { db, type MedicalSimulationResult } from '../../db';
 import { requestMedicalCase } from '../../lib/chatStore';
 import { parseMedicalCase, type MedicalCaseDraft } from '../../lib/medicalCaseSimulator';
