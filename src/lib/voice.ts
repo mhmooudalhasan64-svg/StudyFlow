@@ -177,6 +177,78 @@ export function stopSpeaking(): void {
   if (canSpeak()) window.speechSynthesis.cancel();
 }
 
+
+export interface VoiceActivityOptions {
+  onSpeechStart: () => void;
+  /** Minimum RMS level; tuned conservatively to reduce TTS echo false positives. */
+  threshold?: number;
+}
+
+/**
+ * Local microphone VAD for barge-in. Audio is analysed in memory only:
+ * no recording, upload, transcription, or external service is used.
+ * Returns a disposer; unsupported/denied microphone access rejects so callers
+ * can keep the manual interruption control available.
+ */
+export async function monitorVoiceActivity(options: VoiceActivityOptions): Promise<() => void> {
+  if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
+    throw new Error('Microphone stream unavailable');
+  }
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+  });
+  const AudioContextCtor = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!AudioContextCtor) {
+    stream.getTracks().forEach(track => track.stop());
+    throw new Error('Web Audio unavailable');
+  }
+  const context = new AudioContextCtor();
+  const source = context.createMediaStreamSource(stream);
+  const analyser = context.createAnalyser();
+  analyser.fftSize = 2048;
+  analyser.smoothingTimeConstant = 0.15;
+  source.connect(analyser);
+  const samples = new Float32Array(analyser.fftSize);
+  let disposed = false;
+  let frame = 0;
+  let calibrationFrames = 0;
+  let noiseFloor = 0.006;
+  let speechFrames = 0;
+  const minimum = options.threshold ?? 0.022;
+  const dispose = () => {
+    if (disposed) return;
+    disposed = true;
+    if (frame) window.cancelAnimationFrame(frame);
+    source.disconnect();
+    analyser.disconnect();
+    stream.getTracks().forEach(track => track.stop());
+    void context.close().catch(() => undefined);
+  };
+  const analyse = () => {
+    if (disposed) return;
+    analyser.getFloatTimeDomainData(samples);
+    let sum = 0;
+    for (let i = 0; i < samples.length; i++) sum += samples[i] * samples[i];
+    const rms = Math.sqrt(sum / samples.length);
+    // Learn ambient noise briefly, then require sustained speech-level energy.
+    if (calibrationFrames < 8) {
+      noiseFloor = noiseFloor * 0.7 + rms * 0.3;
+      calibrationFrames++;
+    } else {
+      const threshold = Math.max(minimum, Math.min(0.065, noiseFloor * 3.2));
+      speechFrames = rms > threshold ? speechFrames + 1 : Math.max(0, speechFrames - 1);
+      if (speechFrames >= 5) {
+        dispose();
+        options.onSpeechStart();
+        return;
+      }
+    }
+    frame = window.requestAnimationFrame(analyse);
+  };
+  if (context.state === 'suspended') await context.resume();
+  frame = window.requestAnimationFrame(analyse);
+  return dispose;
+}
 export interface ListenHandlers { onText: (text: string) => void; onEnd: () => void; onError: (message: string) => void; lang?: string }
 export function listen(h: ListenHandlers): () => void {
   if (isNative()) {

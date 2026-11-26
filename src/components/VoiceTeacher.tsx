@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Phone, PhoneOff, AudioLines, Mic, Volume2, X, Radio, Clock3, Sparkles } from 'lucide-react';
 import { useChat } from '../lib/chatStore';
 import { useApp } from '../store';
-import { canListen, canSpeak, listen, prepareVoice, speak, stopSpeaking } from '../lib/voice';
+import { canListen, canSpeak, listen, monitorVoiceActivity, prepareVoice, speak, stopSpeaking } from '../lib/voice';
 
 type Phase = 'idle' | 'listening' | 'thinking' | 'speaking';
 
@@ -32,6 +32,7 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
   const transcriptRef = useRef('');
   const callStartedAtRef = useRef<number | null>(null);
   const stopListenRef = useRef<(() => void) | null>(null);
+  const stopVoiceActivityRef = useRef<(() => void) | null>(null);
   const startListeningRef = useRef<() => void>(() => {});
   const previousStyleRef = useRef<ReturnType<typeof useChat.getState>['style'] | null>(null);
 
@@ -43,6 +44,8 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
     setLiveTranscript('');
     stopListenRef.current?.();
     stopListenRef.current = null;
+    stopVoiceActivityRef.current?.();
+    stopVoiceActivityRef.current = null;
     stopSpeaking();
     if (previousStyleRef.current !== null) {
       useChat.getState().setStyle(previousStyleRef.current);
@@ -102,6 +105,8 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
   const interruptAssistant = () => {
     if (!activeRef.current || phase !== 'speaking') return;
     // Stop the current TTS queue immediately, then hand the microphone back to the user.
+    stopVoiceActivityRef.current?.();
+    stopVoiceActivityRef.current = null;
     stopSpeaking();
     setError(null);
     setLiveTranscript('');
@@ -135,6 +140,38 @@ export default function VoiceTeacher({ open, onClose }: { open: boolean; onClose
       setError(cause instanceof Error ? cause.message : 'تعذّر تهيئة الميكروفون والصوت. تحقق من أذونات التطبيق.');
     }
   };
+
+  useEffect(() => {
+    if (!active || phase !== 'speaking') {
+      stopVoiceActivityRef.current?.();
+      stopVoiceActivityRef.current = null;
+      return;
+    }
+    let cancelled = false;
+    // On-device VAD listens during TTS. If WebView/browser microphone capture is
+    // unavailable, the existing manual barge-in button remains fully functional.
+    void monitorVoiceActivity({
+      onSpeechStart: () => {
+        if (!activeRef.current) return;
+        stopVoiceActivityRef.current?.();
+        stopVoiceActivityRef.current = null;
+        stopSpeaking();
+        setError(null);
+        setLiveTranscript('');
+        startListeningRef.current();
+      },
+    }).then(dispose => {
+      if (cancelled) dispose();
+      else stopVoiceActivityRef.current = dispose;
+    }).catch(() => {
+      // Permission/device limitations are non-fatal; manual interruption stays available.
+    });
+    return () => {
+      cancelled = true;
+      stopVoiceActivityRef.current?.();
+      stopVoiceActivityRef.current = null;
+    };
+  }, [active, phase]);
 
   useEffect(() => {
     if (!active) return;
