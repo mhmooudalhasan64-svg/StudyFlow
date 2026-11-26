@@ -23,7 +23,7 @@ const FILE_SUGGESTIONS = [
 ];
 
 export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
-  const { messages, attachment, loading, error, extraUsagePending, continueWithExtraUsage, cancelExtraUsage, send, setAttachment, clear, useProfile, setUseProfile, subject, setSubject, style, setStyle, regenerate } = useChat();
+  const { messages, attachment, loading, error, extraUsagePending, continueWithExtraUsage, cancelExtraUsage, send, retryLast, setAttachment, clear, useProfile, setUseProfile, subject, setSubject, style, setStyle, regenerate } = useChat();
   const [copied, setCopied] = useState<number | null>(null);
   const app = useApp();
   const profile = useMemo(() => buildLearnerProfile(contextFrom(app, toDateKey())), [app]);
@@ -346,9 +346,18 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
           </div>
         )}
         {error && (
-          <p role="alert" className="rounded-xl border border-bad/40 bg-bad/10 px-3 py-2 text-sm text-bad">
-            {error}
-          </p>
+          <div role="alert" className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-bad/40 bg-bad/10 px-3 py-2 text-sm text-bad">
+            <span>{error}</span>
+            {messages[messages.length - 1]?.role === 'user' && (
+              <button
+                type="button"
+                onClick={retryLast}
+                className="shrink-0 rounded-lg border border-current/30 px-3 py-1.5 font-semibold hover:bg-bad/10"
+              >
+                إعادة المحاولة
+              </button>
+            )}
+          </div>
         )}
         <div ref={endRef} />
       </div>
