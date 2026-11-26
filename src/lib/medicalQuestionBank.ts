@@ -6,7 +6,7 @@ export type MedicalQuestionHistoryFilter = 'all' | 'weak' | 'new';
 export function filterMedicalQuestions(
   questions: Pick<MedicalQuestion, 'id' | 'attempts' | 'correctAttempts'>[],
   filter: MedicalQuestionHistoryFilter,
-): MedicalQuestion[] {
+): Pick<MedicalQuestion, 'id' | 'attempts' | 'correctAttempts'>[] {
   if (filter === 'new') return questions.filter((question) => question.attempts === 0);
   if (filter === 'weak') return questions.filter((question) =>
     question.attempts > 0 && question.correctAttempts / question.attempts < 0.6);
