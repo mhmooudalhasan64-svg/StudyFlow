@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 import { Bot, Copy, FileText, History, Loader2, Menu, Mic, Paperclip, Pencil, Phone, Plus, RefreshCw, Search, Send, Square, Trash2, Volume2, X } from 'lucide-react';
 import { useChat, type ChatStyle } from '../lib/chatStore';
 import Advisor from '../components/Advisor';
@@ -381,7 +381,7 @@ function MessageBody({ content }: { content: string }) {
           return <pre key={index} dir="ltr" className="chat-code-block overflow-x-auto rounded-xl border border-line bg-base p-3 text-xs leading-6"><code>{code}</code></pre>;
         }
         const lines = segment.split('\n');
-        const nodes: JSX.Element[] = [];
+        const nodes: ReactNode[] = [];
         let list: string[] = [];
         let listType: 'ul' | 'ol' | null = null;
         const flush = () => {
