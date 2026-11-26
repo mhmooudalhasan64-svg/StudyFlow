@@ -169,6 +169,15 @@ export interface VideoStudyCache {
   updatedAt: number;
 }
 
+/** محادثة مستقلة محفوظة محلياً على الجهاز، مع سجل رسائلها. */
+export interface ChatConversation {
+  id: string;
+  title: string;
+  messages: { role: 'user' | 'assistant'; content: string }[];
+  createdAt: number;
+  updatedAt: number;
+}
+
 /** سجل محادثة المساعد (محلي فقط، لا يدخل في النسخ الاحتياطي) */
 export interface ChatLog {
   key: 'main';
@@ -192,6 +201,7 @@ class StudyDB extends Dexie {
   results!: EntityTable<ExamResult, 'id'>;
   bookTexts!: EntityTable<BookText, 'key'>;
   chatLogs!: EntityTable<ChatLog, 'key'>;
+  conversations!: EntityTable<ChatConversation, 'id'>;
   videoStudy!: EntityTable<VideoStudyCache, 'videoId'>;
 
   constructor() {
@@ -225,6 +235,10 @@ class StudyDB extends Dexie {
     // الإصدار 5: تخزين تفريغات الفيديو وملخصاتها محلياً لإعادة فتحها دون إعادة الالتقاط.
     this.version(5).stores({
       videoStudy: 'videoId, updatedAt',
+    });
+    // الإصدار 6: سجل محادثات مستقل قابل للرجوع إليه وإعادة فتحه.
+    this.version(6).stores({
+      conversations: 'id, updatedAt',
     });
   }
 }
