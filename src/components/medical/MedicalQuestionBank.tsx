@@ -18,6 +18,7 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
   const [questions, setQuestions] = useState<MedicalQuestion[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
+  const [answerBusy, setAnswerBusy] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -81,13 +82,19 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
   };
 
   const answer = async (index: number) => {
-    if (!active || selected !== null) return;
-    setSelected(index);
+    if (!active || selected !== null || answerBusy) return;
+    setAnswerBusy(true);
+    setError('');
     try {
       await recordMedicalAnswer(active, index);
-      await refresh();
-      setSelected(index);
-      // Keep the just-answered question visible; refresh preserves the list but reorders by attempts.
+    } catch {
+      setError('تعذّر تسجيل المحاولة محلياً؛ لم يتم اعتماد الإجابة. يمكنك المحاولة مجدداً.');
+      setAnswerBusy(false);
+      return;
+    }
+    setSelected(index);
+    try {
+      // Keep the answered question visible without resetting its feedback state.
       const refreshed = await db.medicalQuestions.where('college').equals(college).toArray();
       const filtered = refreshed.filter((q) => q.year === year && (!subject.trim() || q.subject === subject.trim()));
       const answered = filtered.find((q) => q.id === active.id);
@@ -95,7 +102,9 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
       setQuestions([...(answered ? [answered] : []), ...others]);
       setActiveIndex(0);
     } catch {
-      setError('تعذّر تسجيل المحاولة محلياً.');
+      setError('تم تسجيل الإجابة، لكن تعذّر تحديث ترتيب سجل الأسئلة. أعد تحميل القسم لمتابعة المراجعة.');
+    } finally {
+      setAnswerBusy(false);
     }
   };
 
@@ -148,7 +157,7 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
               const chosen = selected === index;
               const style = selected === null ? 'border-line bg-card hover:border-accent/50' : isCorrect ? 'border-good bg-good/10' : chosen ? 'border-bad bg-bad/10' : 'border-line bg-card opacity-75';
               return (
-                <button key={index} type="button" disabled={selected !== null} onClick={() => void answer(index)} className={`flex w-full items-start gap-3 rounded-xl border p-3 text-right text-xs leading-6 transition ${style}`}>
+                <button key={index} type="button" disabled={selected !== null || answerBusy} onClick={() => void answer(index)} className={`flex w-full items-start gap-3 rounded-xl border p-3 text-right text-xs leading-6 transition ${style}`}>
                   <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-base text-[10px] font-black">{['A','B','C','D'][index]}</span>
                   <span className="flex-1">{option}</span>
                   {selected !== null && isCorrect && <CheckCircle2 size={17} className="shrink-0 text-good"/>}
