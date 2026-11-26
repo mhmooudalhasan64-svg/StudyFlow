@@ -271,3 +271,31 @@ export async function requestMindMap(args: {
   if (!res.ok || !data.reply) throw new Error(data.error ?? 'تعذّر إنشاء الخريطة الذهنية.');
   return data.reply;
 }
+
+/** تحليل محاضرة طبية منظمة اعتماداً على النص المستخرج محلياً من ملف الطالب. */
+export async function requestMedicalAnalysis(args: {
+  name: string;
+  text: string;
+  college: string;
+  year: string;
+  subject?: string;
+}): Promise<string> {
+  const source = args.text.trim().slice(0, 8000);
+  if (source.length < 40) throw new Error('أضف نصاً أطول للمحاضرة حتى يتمكن دليل من تحليلها.');
+  let res: Response;
+  try {
+    res = await postChat({
+      mode: 'medical_analyze',
+      college: args.college.slice(0, 60),
+      year: args.year.slice(0, 12),
+      subject: (args.subject ?? '').slice(0, 80),
+      attachment: { name: args.name.slice(0, 80), text: source },
+    });
+  } catch {
+    throw new Error('تعذّر الاتصال بخدمة دليل لتحليل المحاضرة. تحقّق من الاتصال وأعد المحاولة.');
+  }
+  const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
+  if (!res.ok || !data.reply) throw new Error(data.error ?? 'تعذّر تحليل المحاضرة الطبية.');
+  return data.reply;
+}
+
