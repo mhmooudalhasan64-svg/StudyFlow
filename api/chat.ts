@@ -379,20 +379,45 @@ async function handlePost(request: Request): Promise<Response> {
       ? 'https://api.openai.com/v1/chat/completions'
       : provider.endpoint;
     const model = extraUsageConsent ? 'gpt-4.1-mini' : provider.model;
-    try {
-      upstream = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', authorization: `Bearer ${fallbackKey}` },
-        body: JSON.stringify({
-          model,
-          messages: [{ role: 'system', content: activeSystem }, ...messages],
-          max_tokens: quiz ? 2600 : 1200,
-          temperature: quiz ? 0.3 : 0.4,
-        }),
-        signal: AbortSignal.timeout(40_000),
+    const payload = JSON.stringify({
+      model,
+      messages: [{ role: 'system', content: activeSystem }, ...messages],
+      max_tokens: quiz ? 2600 : 1200,
+      temperature: quiz ? 0.3 : 0.4,
+    });
+
+    // OpenAI-compatible providers may briefly throttle or return 5xx.
+    // Retry once with a bounded timeout; never retry authentication/configuration errors.
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        upstream = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', authorization: `Bearer ${fallbackKey}` },
+          body: payload,
+          signal: AbortSignal.timeout(16_000),
+        });
+      } catch (error) {
+        upstream = null;
+        const errorName = error instanceof Error ? error.name : 'UnknownError';
+        console.warn('[DALIL] provider request failed', {
+          provider: extraUsageConsent ? 'OpenAI' : provider.name,
+          attempt: attempt + 1,
+          errorName,
+          elapsedMs: Date.now() - started,
+        });
+      }
+
+      if (upstream?.ok) break;
+      const transient = upstream === null || upstream.status === 408
+        || upstream.status === 429 || upstream.status >= 500;
+      if (!transient || attempt === 1) break;
+
+      console.warn('[DALIL] retrying transient provider response', {
+        provider: extraUsageConsent ? 'OpenAI' : provider.name,
+        status: upstream?.status ?? null,
+        attempt: attempt + 1,
       });
-    } catch {
-      upstream = null;
+      await new Promise((resolve) => setTimeout(resolve, 700));
     }
   } else {
     const geminiPayload = {
@@ -433,9 +458,20 @@ async function handlePost(request: Request): Promise<Response> {
       upstream.status === 401 || upstream.status === 403
         ? 'تعذّر التحقق من إعدادات خدمة الذكاء الاصطناعي.'
         : upstream.status === 429
-          ? 'الخدمة مشغولة أو انتهت الحصة المتاحة، جرّب بعد قليل.'
-          : 'حدث خطأ من خدمة الذكاء الاصطناعي.';
-    return json({ error: msg }, 502);
+          ? 'الخدمة مشغولة حالياً أو انتهت الحصة المجانية. سؤالك محفوظ؛ أعد المحاولة بعد قليل.'
+          : 'حدث خطأ من خدمة الذكاء الاصطناعي. سؤالك محفوظ؛ أعد المحاولة.';
+    if (upstream.status === 429 && !extraUsageConsent && clean(environment().OPENAI_API_KEY)) {
+      return json({
+        code: 'extra_usage_consent_required',
+        error: 'وصل دليل إلى حدّ الاستخدام المجاني المؤقت. هل توافق على المتابعة باستخدام رصيد إضافي قد تترتب عليه تكلفة؟ لن يتم ذلك دون موافقتك.',
+      }, 402);
+    }
+    console.warn('[DALIL] provider returned non-success response', {
+      provider: extraUsageConsent ? 'OpenAI' : provider.name,
+      status: upstream.status,
+      elapsedMs: Date.now() - started,
+    });
+    return json({ error: msg }, upstream.status === 429 ? 429 : 502);
   }
 
   type ChatCompletion = { choices?: { message?: { content?: string } }[] };
