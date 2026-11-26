@@ -4,7 +4,7 @@ import { db, type MedicalQuestion } from '../db';
 export type MedicalQuestionHistoryFilter = 'all' | 'weak' | 'new';
 
 export function filterMedicalQuestions(
-  questions: MedicalQuestion[],
+  questions: Pick<MedicalQuestion, 'id' | 'attempts' | 'correctAttempts'>[],
   filter: MedicalQuestionHistoryFilter,
 ): MedicalQuestion[] {
   if (filter === 'new') return questions.filter((question) => question.attempts === 0);
