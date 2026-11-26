@@ -8,7 +8,15 @@ import { PageTitle } from '../components/ui';
 
 type Item = { href: string; label: string; Icon: LucideIcon; tone: string };
 
-const GROUPS: { title: string; description: string; items: Item[] }[] = [\n  {\n    title: 'طلاب الجامعة',\n    description: 'مساحة مستقلة للمقررات والمحاضرات والتكليفات والامتحانات والمسار المهني.',\n    items: [\n      { href: '#/university', label: 'مساحة طلاب الجامعة', Icon: GraduationCap, tone: 'blue' },\n    ],\n  },
+const GROUPS: { title: string; description: string; items: Item[] }[] = [
+  {
+    title: 'طلاب الجامعة',
+    description: 'مساحة مستقلة للمقررات والمحاضرات والتكليفات والامتحانات والمسار المهني.',
+    items: [
+      { href: '#/university', label: 'مساحة طلاب الجامعة', Icon: GraduationCap, tone: 'blue' },
+      { href: '#/medical', label: 'MASAR MEDICAL — الكليات الطبية', Icon: GraduationCap, tone: 'cyan' },
+    ],
+  },
   {
     title: 'التعلم وتنظيم الدراسة',
     description: 'خطط دراستك، تابع المنهاج، وراجع دروسك.',
