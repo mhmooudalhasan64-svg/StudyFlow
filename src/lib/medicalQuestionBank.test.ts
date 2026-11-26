@@ -54,4 +54,13 @@ describe('medical question history filters', () => {
   it('returns the full bank for the all filter', () => {
     expect(filterMedicalQuestions(questions, 'all')).toHaveLength(3);
   });
+
+  it('does not flag exactly 60% accuracy as needing review', () => {
+    const boundary = [{ id: 4, attempts: 5, correctAttempts: 3 }];
+    expect(filterMedicalQuestions(boundary, 'weak')).toHaveLength(0);
+  });
+
+  it('returns an empty list when no questions match a filter', () => {
+    expect(filterMedicalQuestions([], 'new')).toEqual([]);
+  });
 });
