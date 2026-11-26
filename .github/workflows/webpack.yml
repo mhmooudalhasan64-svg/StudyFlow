@@ -12,6 +12,8 @@ on:
       - feat/dalil-voice-barge-in
       - feat/dalil-local-auto-barge-in
       - feat/masar-university-hub
+      - feat/masar-university-hub
+      - feat/masar-medical-hub
   pull_request:
     branches:
       - atheer-masar-brand-preview
