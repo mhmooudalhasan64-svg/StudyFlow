@@ -23,7 +23,7 @@ const FILE_SUGGESTIONS = [
 ];
 
 export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
-  const { messages, attachment, loading, error, extraUsagePending, continueWithExtraUsage, cancelExtraUsage, send, setAttachment, clear, useProfile, setUseProfile, subject, setSubject, style, setStyle, regenerate, conversations, activeConversationId, refreshConversations, newConversation, openConversation } = useChat();
+  const { messages, attachment, loading, error, extraUsagePending, continueWithExtraUsage, cancelExtraUsage, send, setAttachment, clear, useProfile, setUseProfile, subject, setSubject, style, setStyle, regenerate, conversations, activeConversationId, previousSummary, refreshConversations, newConversation, openConversation } = useChat();
   const [copied, setCopied] = useState<number | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
   const app = useApp();
@@ -305,6 +305,12 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
       <div className="card mb-3 min-h-[40vh] space-y-3" aria-live="polite">
         {messages.length === 0 && (
           <div className="space-y-3 py-4 text-center">
+            {previousSummary && (
+              <div className="rounded-xl border border-accent/20 bg-accent/5 px-3 py-2 text-start text-xs leading-6 text-muted">
+                <strong className="text-main">ذاكرة المحادثة السابقة مفعّلة.</strong>
+                {' '}سيستخدم دليل هذه النبذة لفهم استمرارية الموضوع، دون دمج سجل المحادثتين.
+              </div>
+            )}
             <Bot className="mx-auto text-accent" size={36} />
             <p className="text-sm text-muted">
               {attachment ? 'تم إرفاق الملف. اسأل عنه أو اختر مما يلي:' : 'مرحباً! أنا دليل، مساعدك الدراسي. جرّب أحد هذه الأسئلة:'}
