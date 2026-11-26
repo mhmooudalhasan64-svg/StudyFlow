@@ -64,7 +64,7 @@ const tools = [
   { title: 'بطاقات الحفظ الذكي', detail: 'بطاقات مراجعة وجدولة تكرار متباعد.', icon: Layers3, tag: 'حفظ' },
   { title: 'بنك الأسئلة الطبية', detail: 'أسئلة سريرية متعددة الخيارات مع تفسير البدائل.', icon: ClipboardList, tag: 'اختبارات' },
   { title: 'المحاكي السريري', detail: 'حالات افتراضية وتقييم خطوات التفكير السريري.', icon: Stethoscope, tag: 'تدريب' },
-  { title: 'الجداول والمخططات', detail: 'مقارنات منظمة ومسارات تشخيص وآليات دوائية.', icon: Table2, tag: 'مراجعة' },
+  { title: 'الجداول والمخططات', detail: 'مقارنات تفاعلية ومسارات خطوة بخطوة من المحاضرات.', icon: Table2, tag: 'مراجعة' },
 ];
 
 interface MedicalAnalysisResult {
@@ -291,8 +291,6 @@ export default function Medical() {
             {!!analysis.keyPoints?.length && <div><h4 className="mb-2 text-sm font-bold">النقاط الأساسية</h4><ul className="space-y-2">{analysis.keyPoints.map((item, i) => <li key={i} className="rounded-lg bg-base/70 p-3 text-xs leading-6">{item}</li>)}</ul></div>}
             {!!analysis.terminology?.length && <div className="space-y-2"><h4 className="text-sm font-bold">المصطلحات الطبية</h4>{analysis.terminology.map((item, i) => <article key={i} className="rounded-xl border border-line p-3"><h5 className="font-bold text-sm" dir="auto">{item.term}</h5><p className="mt-1 text-xs leading-6 text-muted">{item.meaning}</p><div className="mt-2 flex flex-wrap gap-1.5 text-[10px]"><span className="rounded-md bg-accent/10 px-2 py-1">Prefix: {item.prefix}</span><span className="rounded-md bg-accent/10 px-2 py-1">Root: {item.root}</span><span className="rounded-md bg-accent/10 px-2 py-1">Suffix: {item.suffix}</span></div><p className="mt-2 border-s-2 border-line pe-2 text-[10px] leading-5 text-muted">من المصدر: «{item.evidenceQuote}»</p></article>)}</div>}
             {!!analysis.highYield?.length && <div className="space-y-2"><h4 className="text-sm font-bold">نقاط عالية الأهمية</h4>{analysis.highYield.map((item, i) => <article key={i} className="rounded-xl bg-accent/5 p-3"><p className="text-xs font-semibold leading-6">{item.fact}</p><p className="mt-1 text-xs leading-5 text-muted">{item.why}</p><p className="mt-2 text-[10px] text-muted">«{item.evidenceQuote}»</p></article>)}</div>}
-            {!!analysis.comparisonTables?.length && <div className="space-y-3"><h4 className="text-sm font-bold">جداول المقارنة</h4>{analysis.comparisonTables.map((table, i) => <div key={i} className="overflow-x-auto rounded-xl border border-line"><h5 className="p-3 text-xs font-bold">{table.title}</h5><table className="w-full min-w-[420px] text-right text-xs"><thead className="bg-base"><tr>{table.columns.map((column, j) => <th key={j} className="p-2 font-bold">{column}</th>)}</tr></thead><tbody>{table.rows.map((row, j) => <tr key={j} className="border-t border-line">{row.map((cell, k) => <td key={k} className="p-2 align-top leading-5">{cell}</td>)}</tr>)}</tbody></table></div>)}</div>}
-            {!!analysis.pathways?.length && <div className="space-y-2"><h4 className="text-sm font-bold">المسارات والآليات</h4>{analysis.pathways.map((path, i) => <article key={i} className="rounded-xl border border-line p-3"><h5 className="text-xs font-bold">{path.title}</h5><ol className="mt-2 list-decimal space-y-1 pe-5 text-xs leading-6 text-muted">{path.steps.map((step, j) => <li key={j}>{step}</li>)}</ol></article>)}</div>}
             {!!analysis.reviewQuestions?.length && <div className="space-y-2"><h4 className="text-sm font-bold">أسئلة مراجعة</h4>{analysis.reviewQuestions.map((item, i) => <details key={i} className="rounded-xl border border-line p-3"><summary className="cursor-pointer text-xs font-semibold leading-6">{item.question}</summary><p className="mt-2 text-xs leading-6"><strong>الإجابة:</strong> {item.answer}</p><p className="mt-1 text-xs leading-6 text-muted">{item.explanation}</p></details>)}</div>}
             {!!analysis.limitations?.length && <div className="rounded-xl bg-bad/5 p-3"><h4 className="text-xs font-bold">ملاحظات على المصدر</h4><ul className="mt-1 list-disc space-y-1 pe-5 text-xs leading-5 text-muted">{analysis.limitations.map((item, i) => <li key={i}>{item}</li>)}</ul></div>}
             <p className="text-[10px] leading-5 text-muted">راجع المصطلحات والاشتقاقات مع مرجعك الدراسي؛ قد يخطئ النموذج في تحليل بعض الجذور أو اللواحق. هذا التحليل تعليمي ولا يقدم تشخيصاً أو توصية علاجية.</p>
@@ -329,14 +327,14 @@ export default function Medical() {
       />
 
       <section className="space-y-3">
-        <div><h2 className="text-lg font-extrabold">أدواتك الطبية</h2><p className="mt-1 text-xs text-muted">الهيكل المعتمد للأدوات المتخصصة التي ستُبنى تباعاً.</p></div>
+        <div><h2 className="text-lg font-extrabold">أدواتك الطبية</h2><p className="mt-1 text-xs text-muted">أدوات متخصصة للمراجعة والتحليل والتدريب الطبي.</p></div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {tools.map(({ title, detail, icon: Icon, tag }, index) => (
             <article key={title} className="card flex min-h-36 flex-col !p-4">
               <div className="flex items-start justify-between gap-2"><span className="feature-icon feature-icon-blue"><Icon size={21}/></span><span className="rounded-full border border-line px-2 py-1 text-[10px] text-muted">{tag}</span></div>
               <h3 className="mt-3 font-bold">{title}</h3>
               <p className="mt-1 flex-1 text-xs leading-6 text-muted">{detail}</p>
-              <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-accent">{index === 1 ? 'ابدأ من مكتبتك' : 'ضمن خارطة التطوير'} <ArrowLeft size={13}/></span>
+              <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-accent">{index === 1 ? 'ابدأ من مكتبتك' : 'متاحة ضمن مساحة الطب'} <ArrowLeft size={13}/></span>
             </article>
           ))}
         </div>
