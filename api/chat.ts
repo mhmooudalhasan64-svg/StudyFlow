@@ -655,7 +655,7 @@ async function handlePost(request: Request): Promise<Response> {
 
   let activeProvider = targets[0]?.name ?? provider.name;
   let timedOut = false;
-  const maxTokens = medical ? 2600 : quiz ? 2000 : 1100;
+  const maxTokens = medical ? 2600 : medicalQuiz ? 2600 : quiz ? 2000 : 1100;
 
   for (const target of targets) {
     if (!target.key) continue;
@@ -686,7 +686,7 @@ async function handlePost(request: Request): Promise<Response> {
                 : message),
             ],
             max_tokens: maxTokens,
-            temperature: medical ? 0.2 : quiz ? 0.3 : 0.4,
+            temperature: medical ? 0.2 : medicalQuiz ? 0.25 : quiz ? 0.3 : 0.4,
             ...(webSearch ? {
               tools: [{ type: 'openrouter:web_search', parameters: { engine: 'parallel', mode: 'turbo', max_results: 3, max_uses: 2 } }],
               max_tool_calls: 2,
