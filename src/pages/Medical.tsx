@@ -81,11 +81,37 @@ function parseMedicalAnalysis(raw: string): MedicalAnalysisResult {
   const start = cleaned.indexOf('{');
   const end = cleaned.lastIndexOf('}');
   if (start < 0 || end <= start) throw new Error('وصل رد غير منسق من دليل. أعد المحاولة.');
-  try {
-    return JSON.parse(cleaned.slice(start, end + 1)) as MedicalAnalysisResult;
-  } catch {
-    throw new Error('تعذّر قراءة نتائج التحليل. أعد المحاولة أو قلّل حجم النص.');
-  }
+  let value: unknown;
+  try { value = JSON.parse(cleaned.slice(start, end + 1)); }
+  catch { throw new Error('تعذّر قراءة نتائج التحليل. أعد المحاولة أو قلّل حجم النص.'); }
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('بنية نتائج التحليل غير صالحة.');
+  const data = value as Record<string, unknown>;
+  const str = (item: unknown) => typeof item === 'string' ? item : '';
+  const list = (item: unknown) => Array.isArray(item) ? item : [];
+  return {
+    title: str(data.title),
+    summary: str(data.summary),
+    learningObjectives: list(data.learningObjectives).filter((x): x is string => typeof x === 'string'),
+    keyPoints: list(data.keyPoints).filter((x): x is string => typeof x === 'string'),
+    terminology: list(data.terminology).filter((x): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x)).map((x) => ({
+      term: str(x.term), prefix: str(x.prefix), root: str(x.root), suffix: str(x.suffix), meaning: str(x.meaning), evidenceQuote: str(x.evidenceQuote),
+    })).filter((x) => x.term && x.meaning),
+    highYield: list(data.highYield).filter((x): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x)).map((x) => ({
+      fact: str(x.fact), why: str(x.why), evidenceQuote: str(x.evidenceQuote),
+    })).filter((x) => x.fact),
+    comparisonTables: list(data.comparisonTables).filter((x): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x)).map((x) => ({
+      title: str(x.title),
+      columns: list(x.columns).filter((v): v is string => typeof v === 'string'),
+      rows: list(x.rows).filter((row): row is unknown[] => Array.isArray(row)).map((row) => row.map(str)),
+    })).filter((x) => x.columns.length > 0 && x.rows.length > 0),
+    pathways: list(data.pathways).filter((x): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x)).map((x) => ({
+      title: str(x.title), steps: list(x.steps).filter((v): v is string => typeof v === 'string'),
+    })).filter((x) => x.title && x.steps.length > 0),
+    reviewQuestions: list(data.reviewQuestions).filter((x): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x)).map((x) => ({
+      question: str(x.question), answer: str(x.answer), explanation: str(x.explanation),
+    })).filter((x) => x.question && x.answer),
+    limitations: list(data.limitations).filter((x): x is string => typeof x === 'string'),
+  };
 }
 
 export default function Medical() {
@@ -188,7 +214,7 @@ export default function Medical() {
         </div>
         <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
           {colleges.map(({ id, label, icon: Icon, description }) => (
-            <button key={id} type="button" onClick={() => { setCollege(id); setTrack('systems'); }} aria-pressed={college === id} className={`rounded-2xl border p-3 text-right transition ${college === id ? 'border-accent bg-accent/10 shadow-sm' : 'border-line bg-card hover:border-accent/50'}`}>
+            <button key={id} type="button" onClick={() => { setCollege(id); setTrack('systems'); setAnalysis(null); }} aria-pressed={college === id} className={`rounded-2xl border p-3 text-right transition ${college === id ? 'border-accent bg-accent/10 shadow-sm' : 'border-line bg-card hover:border-accent/50'}`}>
               <span className={`mb-3 grid h-10 w-10 place-items-center rounded-xl ${college === id ? 'bg-accent text-white' : 'bg-base text-accent'}`}><Icon size={21}/></span>
               <span className="block text-sm font-bold">{label}</span>
               <span className="mt-1 block text-[11px] leading-5 text-muted">{description}</span>
@@ -202,7 +228,7 @@ export default function Medical() {
           <div><h2 className="font-extrabold">مسارك الأكاديمي</h2><p className="mt-1 text-xs text-muted">{selectedCollege.short} · السنة {year} · اختر نمط تنظيم المحتوى.</p></div>
           <label className="flex items-center gap-2 text-xs font-semibold text-muted">السنة الدراسية
             <span className="relative">
-              <select value={year} onChange={(event) => setYear(event.target.value)} className="min-w-24 appearance-none rounded-xl border border-line bg-base py-2 pe-8 ps-3 text-sm font-bold text-main outline-none focus:border-accent">
+              <select value={year} onChange={(event) => { setYear(event.target.value); setAnalysis(null); }} className="min-w-24 appearance-none rounded-xl border border-line bg-base py-2 pe-8 ps-3 text-sm font-bold text-main outline-none focus:border-accent">
                 {[1,2,3,4,5,6].map((n) => <option key={n} value={n}>السنة {n}</option>)}
               </select>
               <ChevronDown size={14} className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-muted"/>
@@ -234,7 +260,7 @@ export default function Medical() {
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label className="space-y-1 text-xs font-semibold text-muted">اسم المادة
-            <input className="input" value={lectureSubject} onChange={(event) => setLectureSubject(event.target.value)} maxLength={80} placeholder="مثلاً: علم الأدوية"/>
+            <input className="input" value={lectureSubject} onChange={(event) => { setLectureSubject(event.target.value); setAnalysis(null); }} maxLength={80} placeholder="مثلاً: علم الأدوية"/>
           </label>
           <div className="flex items-end">
             <input ref={fileInput} type="file" accept=".pdf,.docx,.xlsx,.txt,.csv" className="hidden" onChange={(event) => void handleLectureFile(event)}/>
