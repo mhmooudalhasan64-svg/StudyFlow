@@ -89,7 +89,7 @@ async function persistConversation(id: string, messages: ChatMsg[]): Promise<voi
 
 export const useChat = create<ChatState>((set, get) => ({
   conversations: [],
-  activeConversationId: null,
+  activeConversationId: newConversationId(),
   messages: [],
   attachment: null,
   useProfile: true,
@@ -213,6 +213,11 @@ export const useChat = create<ChatState>((set, get) => ({
       return;
     }
     let rows = await db.conversations.orderBy('updatedAt').reverse().toArray().catch(() => []);
+    // إذا بدأ المستخدم محادثة أثناء تحميل السجل، لا نستبدلها بمحادثة أقدم.
+    if (get().messages.length > 0) {
+      await get().refreshConversations();
+      return;
+    }
     // ترحيل سجل النسخة السابقة دون فقد المحادثة القديمة.
     if (rows.length === 0) {
       const legacy = await db.chatLogs.get('main').catch(() => undefined);
