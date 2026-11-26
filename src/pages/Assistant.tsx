@@ -201,10 +201,10 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
         subtitle="خطة مراجعة تلقائية، وأسئلة عن دروسك"
         action={
           <div className="flex items-center gap-1">
-            <button type="button" className={`btn !py-1.5 ${historyOpen ? 'btn-primary' : 'btn-ghost'}`} onClick={() => { setHistoryOpen((open) => !open); void refreshConversations(); }} aria-expanded={historyOpen} aria-label="المحادثات السابقة">
+            <button type="button" className={`btn !py-1.5 ${historyOpen ? 'btn-primary' : 'btn-ghost'}`} onClick={() => { setHistoryOpen((open) => !open); void refreshConversations(); }} disabled={loading} aria-expanded={historyOpen} aria-label="المحادثات السابقة">
               <History size={15} /> السجل
             </button>
-            <button type="button" className="btn btn-ghost !py-1.5" onClick={() => { newConversation(); setHistoryOpen(false); }} aria-label="محادثة جديدة">
+            <button type="button" className="btn btn-ghost !py-1.5" onClick={() => { newConversation(); setHistoryOpen(false); }} disabled={loading} aria-label="محادثة جديدة">
               <Plus size={15} /> جديد
             </button>
           </div>
@@ -228,6 +228,7 @@ export default function Assistant({ onCallOpen }: { onCallOpen: () => void }) {
                 <button
                   key={conversation.id}
                   type="button"
+                  disabled={loading}
                   className={`w-full rounded-xl border px-3 py-2 text-start transition-colors ${activeConversationId === conversation.id ? 'border-accent bg-accent/10' : 'border-line hover:bg-base/60'}`}
                   onClick={() => { void openConversation(conversation.id); setHistoryOpen(false); }}
                 >
