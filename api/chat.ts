@@ -224,7 +224,7 @@ function sanitizePreviousContext(body: unknown): string {
   if (typeof body !== 'object' || body === null) return '';
   const value = (body as { previousContext?: unknown }).previousContext;
   if (typeof value !== 'string') return '';
-  return redactPersonalData(value.replace(/[\\r\\n]+/g, ' ').trim()).slice(0, MAX_PREVIOUS_CONTEXT_CHARS);
+  return redactPersonalData(value.replace(/[\r\n]+/g, ' ').trim()).slice(0, MAX_PREVIOUS_CONTEXT_CHARS);
 }
 
 function fileBlock(att: Attachment): string {
