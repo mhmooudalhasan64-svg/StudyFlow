@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import {
-  Award, BarChart3, BookOpen, Bot, Calculator, CalendarClock, CalendarCheck,
+  Award, BarChart3, BookOpen, Bot, Calculator, CalendarClock, CalendarCheck, GraduationCap,
   FileBarChart, GitBranch, Layers, ListChecks, Repeat, Info,
   Settings as SettingsIcon, Timer as TimerIcon, CircleHelp, Youtube,
 } from 'lucide-react';
@@ -8,7 +8,7 @@ import { PageTitle } from '../components/ui';
 
 type Item = { href: string; label: string; Icon: LucideIcon; tone: string };
 
-const GROUPS: { title: string; description: string; items: Item[] }[] = [
+const GROUPS: { title: string; description: string; items: Item[] }[] = [\n  {\n    title: 'طلاب الجامعة',\n    description: 'مساحة مستقلة للمقررات والمحاضرات والتكليفات والامتحانات والمسار المهني.',\n    items: [\n      { href: '#/university', label: 'مساحة طلاب الجامعة', Icon: GraduationCap, tone: 'blue' },\n    ],\n  },
   {
     title: 'التعلم وتنظيم الدراسة',
     description: 'خطط دراستك، تابع المنهاج، وراجع دروسك.',
