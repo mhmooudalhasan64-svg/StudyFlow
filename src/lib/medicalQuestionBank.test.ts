@@ -41,7 +41,7 @@ describe('medical question history filters', () => {
     { id: 1, attempts: 0, correctAttempts: 0 },
     { id: 2, attempts: 5, correctAttempts: 2 },
     { id: 3, attempts: 5, correctAttempts: 4 },
-  ] as import('../db').MedicalQuestion[];
+  ] as { id: number; attempts: number; correctAttempts: number }[];
 
   it('returns unanswered questions for the new filter', () => {
     expect(filterMedicalQuestions(questions, 'new').map((q) => q.id)).toEqual([1]);
