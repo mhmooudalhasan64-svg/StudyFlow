@@ -297,15 +297,13 @@ export default function Medical() {
         )}
       </section>
 
-      {analysis && (
-        <MedicalFlashcards
-          analysis={analysis}
-          college={selectedCollege.label}
-          year={year}
-          subject={lectureSubject || 'مادة غير محددة'}
-          sourceName={lectureName}
-        />
-      )}
+      <MedicalFlashcards
+        analysis={analysis}
+        college={selectedCollege.label}
+        year={year}
+        subject={lectureSubject}
+        sourceName={lectureName}
+      />
 
       <section className="space-y-3">
         <div><h2 className="text-lg font-extrabold">أدواتك الطبية</h2><p className="mt-1 text-xs text-muted">الهيكل المعتمد للأدوات المتخصصة التي ستُبنى تباعاً.</p></div>
