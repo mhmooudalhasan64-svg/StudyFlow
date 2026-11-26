@@ -95,9 +95,16 @@ export function MedicalVisuals({ pathways = [], comparisonTables = [] }: Medical
                   </thead>
                   <tbody>
                     {table.rows.map((row, rowIndex) => (
-                      <tr key={rowIndex} onClick={() => setHighlightedRow(highlightedRow === rowIndex ? null : rowIndex)}
+                      <tr key={rowIndex} tabIndex={0}
+                        onClick={() => setHighlightedRow(highlightedRow === rowIndex ? null : rowIndex)}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            setHighlightedRow(highlightedRow === rowIndex ? null : rowIndex);
+                          }
+                        }}
                         aria-selected={highlightedRow === rowIndex}
-                        className={`cursor-pointer transition ${highlightedRow === rowIndex ? 'bg-accent/10' : 'hover:bg-base/70'}`}>
+                        className={`cursor-pointer transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${highlightedRow === rowIndex ? 'bg-accent/10' : 'hover:bg-base/70'}`}>
                         {table.columns.map((_, columnIndex) => <td key={columnIndex} className="border-b border-line/70 px-3 py-3 align-top leading-6">{row[columnIndex] ?? '—'}</td>)}
                       </tr>
                     ))}
