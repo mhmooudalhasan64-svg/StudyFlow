@@ -1,10 +1,12 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState, type ChangeEvent } from 'react';
 import {
   Activity, ArrowLeft, BookOpen, Brain, BriefcaseMedical, ChevronDown,
   ClipboardList, FileText, FlaskConical, GraduationCap, Layers3,
-  Microscope, Pill, Search, ShieldCheck, Stethoscope, Syringe, Table2, Waves,
+  Microscope, Pill, Search, ShieldCheck, Stethoscope, Syringe, Table2, Waves, FileUp, Loader2, AlertCircle,
 } from 'lucide-react';
 import { PageTitle } from '../components/ui';
+import { extractFileText } from '../lib/fileText';
+import { requestMedicalAnalysis } from '../lib/chatStore';
 
 type CollegeId = 'medicine' | 'dentistry' | 'pharmacy' | 'nursing';
 type Track = 'systems' | 'rotations';
@@ -61,10 +63,43 @@ const tools = [
   { title: 'الجداول والمخططات', detail: 'مقارنات منظمة ومسارات تشخيص وآليات دوائية.', icon: Table2, tag: 'مراجعة' },
 ];
 
+interface MedicalAnalysisResult {
+  title?: string;
+  summary?: string;
+  learningObjectives?: string[];
+  keyPoints?: string[];
+  terminology?: { term: string; prefix: string; root: string; suffix: string; meaning: string; evidenceQuote: string }[];
+  highYield?: { fact: string; why: string; evidenceQuote: string }[];
+  comparisonTables?: { title: string; columns: string[]; rows: string[][] }[];
+  pathways?: { title: string; steps: string[] }[];
+  reviewQuestions?: { question: string; answer: string; explanation: string }[];
+  limitations?: string[];
+}
+
+function parseMedicalAnalysis(raw: string): MedicalAnalysisResult {
+  const cleaned = raw.trim().replace(/^\x60{3}(?:json)?\s*/i, '').replace(/\s*\x60{3}$/i, '');
+  const start = cleaned.indexOf('{');
+  const end = cleaned.lastIndexOf('}');
+  if (start < 0 || end <= start) throw new Error('وصل رد غير منسق من دليل. أعد المحاولة.');
+  try {
+    return JSON.parse(cleaned.slice(start, end + 1)) as MedicalAnalysisResult;
+  } catch {
+    throw new Error('تعذّر قراءة نتائج التحليل. أعد المحاولة أو قلّل حجم النص.');
+  }
+}
+
 export default function Medical() {
   const [college, setCollege] = useState<CollegeId>('medicine');
   const [year, setYear] = useState('1');
   const [track, setTrack] = useState<Track>('systems');
+  const [lectureText, setLectureText] = useState('');
+  const [lectureName, setLectureName] = useState('نص المحاضرة');
+  const [lectureSubject, setLectureSubject] = useState('');
+  const [analysis, setAnalysis] = useState<MedicalAnalysisResult | null>(null);
+  const [analysisError, setAnalysisError] = useState('');
+  const [analysisBusy, setAnalysisBusy] = useState(false);
+  const [extractBusy, setExtractBusy] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
   const selectedCollege = colleges.find((item) => item.id === college)!;
   const modules = useMemo(() => {
     if (track === 'rotations') return clinicalTracks[college];
@@ -88,6 +123,46 @@ export default function Medical() {
       { title: 'الأدوية وسلامة المريض', detail: 'مبادئ الإعطاء والسلامة الدوائية', icon: Pill },
     ];
   }, [college, track]);
+
+  const handleLectureFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+    setExtractBusy(true);
+    setAnalysisError('');
+    setAnalysis(null);
+    try {
+      const extracted = await extractFileText(file);
+      setLectureName(extracted.name);
+      setLectureText(extracted.text);
+      if (extracted.truncated) setAnalysisError('تم اقتطاع النص إلى 8000 حرف بسبب حد الإرسال. راجعه قبل التحليل.');
+    } catch (error) {
+      setAnalysisError(error instanceof Error ? error.message : 'تعذّر استخراج نص المحاضرة.');
+    } finally {
+      setExtractBusy(false);
+    }
+  };
+
+  const analyzeLecture = async () => {
+    if (lectureText.trim().length < 40 || analysisBusy) return;
+    setAnalysisBusy(true);
+    setAnalysisError('');
+    setAnalysis(null);
+    try {
+      const raw = await requestMedicalAnalysis({
+        name: lectureName,
+        text: lectureText,
+        college: selectedCollege.label,
+        year,
+        subject: lectureSubject,
+      });
+      setAnalysis(parseMedicalAnalysis(raw));
+    } catch (error) {
+      setAnalysisError(error instanceof Error ? error.message : 'تعذّر تحليل المحاضرة.');
+    } finally {
+      setAnalysisBusy(false);
+    }
+  };
 
   return (
     <div className="mx-auto max-w-5xl space-y-6" dir="rtl">
@@ -147,6 +222,52 @@ export default function Medical() {
           ))}
         </div>
         <p className="text-[11px] leading-5 text-muted">هذا تنظيم أولي قابل للتخصيص؛ تختلف الخطط الدراسية وعدد السنوات والستاجات بين الجامعات، لذلك لا يفترض هذا النموذج منهجاً رسمياً موحداً.</p>
+      </section>
+
+      <section className="card space-y-4 !p-4 sm:!p-5">
+        <div className="flex items-start gap-3">
+          <span className="feature-icon feature-icon-blue"><FileText size={21}/></span>
+          <div className="min-w-0 flex-1">
+            <h2 className="font-extrabold">حلّل محاضرتك مع دليل</h2>
+            <p className="mt-1 text-xs leading-6 text-muted">استخرج المصطلحات والنقاط عالية الأهمية والجداول والأسئلة من محاضرتك. تتم قراءة الملف على جهازك، ويُرسل النص المستخرج فقط إلى خدمة دليل لإجراء التحليل.</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <label className="space-y-1 text-xs font-semibold text-muted">اسم المادة
+            <input className="input" value={lectureSubject} onChange={(event) => setLectureSubject(event.target.value)} maxLength={80} placeholder="مثلاً: علم الأدوية"/>
+          </label>
+          <div className="flex items-end">
+            <input ref={fileInput} type="file" accept=".pdf,.docx,.xlsx,.txt,.csv" className="hidden" onChange={(event) => void handleLectureFile(event)}/>
+            <button type="button" className="btn btn-secondary w-full" onClick={() => fileInput.current?.click()} disabled={extractBusy || analysisBusy}>
+              {extractBusy ? <Loader2 size={16} className="animate-spin"/> : <FileUp size={16}/>}
+              {extractBusy ? 'جارٍ استخراج النص…' : 'اختيار ملف محاضرة'}
+            </button>
+          </div>
+        </div>
+        <div className="space-y-1">
+          <div className="flex items-center justify-between gap-2"><label htmlFor="medical-lecture-text" className="text-xs font-semibold text-muted">نص المحاضرة</label><span className="text-[10px] text-muted">{lectureText.length.toLocaleString('ar')} / 8000</span></div>
+          <textarea id="medical-lecture-text" className="input min-h-40 resize-y leading-7" value={lectureText} onChange={(event) => { setLectureText(event.target.value.slice(0, 8000)); setAnalysis(null); }} maxLength={8000} placeholder="يمكنك لصق نص المحاضرة هنا، أو اختيار ملف لاستخراج نصه تلقائياً."/>
+          <p className="text-[11px] text-muted">الملفات المدعومة: PDF وDOCX وXLSX وTXT وCSV. الحد الأقصى للنص المرسل 8000 حرف. ملفات PDF المصوّرة التي لا تحتوي نصاً قابلاً للاستخراج تحتاج إلى OCR، وهو غير متاح في هذه المرحلة.</p>
+        </div>
+        <button type="button" className="btn btn-primary w-full" onClick={() => void analyzeLecture()} disabled={lectureText.trim().length < 40 || analysisBusy || extractBusy}>
+          {analysisBusy ? <Loader2 size={16} className="animate-spin"/> : <Brain size={16}/>}
+          {analysisBusy ? 'دليل يحلل المحاضرة…' : 'ابدأ التحليل الطبي'}
+        </button>
+        {analysisError && <p role="alert" className="flex items-start gap-2 rounded-xl bg-bad/10 p-3 text-xs leading-6 text-bad"><AlertCircle size={16} className="mt-0.5 shrink-0"/>{analysisError}</p>}
+        {analysis && (
+          <div className="space-y-4 border-t border-line pt-4">
+            <div><span className="text-[10px] font-bold text-accent">نتائج التحليل</span><h3 className="mt-1 text-lg font-extrabold">{analysis.title || lectureName}</h3><p className="mt-2 text-sm leading-7 text-muted">{analysis.summary}</p></div>
+            {!!analysis.learningObjectives?.length && <div><h4 className="mb-2 text-sm font-bold">الأهداف التعليمية</h4><ul className="list-disc space-y-1 pe-5 text-xs leading-6 text-muted">{analysis.learningObjectives.map((item, i) => <li key={i}>{item}</li>)}</ul></div>}
+            {!!analysis.keyPoints?.length && <div><h4 className="mb-2 text-sm font-bold">النقاط الأساسية</h4><ul className="space-y-2">{analysis.keyPoints.map((item, i) => <li key={i} className="rounded-lg bg-base/70 p-3 text-xs leading-6">{item}</li>)}</ul></div>}
+            {!!analysis.terminology?.length && <div className="space-y-2"><h4 className="text-sm font-bold">المصطلحات الطبية</h4>{analysis.terminology.map((item, i) => <article key={i} className="rounded-xl border border-line p-3"><h5 className="font-bold text-sm" dir="auto">{item.term}</h5><p className="mt-1 text-xs leading-6 text-muted">{item.meaning}</p><div className="mt-2 flex flex-wrap gap-1.5 text-[10px]"><span className="rounded-md bg-accent/10 px-2 py-1">Prefix: {item.prefix}</span><span className="rounded-md bg-accent/10 px-2 py-1">Root: {item.root}</span><span className="rounded-md bg-accent/10 px-2 py-1">Suffix: {item.suffix}</span></div><p className="mt-2 border-s-2 border-line pe-2 text-[10px] leading-5 text-muted">من المصدر: «{item.evidenceQuote}»</p></article>)}</div>}
+            {!!analysis.highYield?.length && <div className="space-y-2"><h4 className="text-sm font-bold">نقاط عالية الأهمية</h4>{analysis.highYield.map((item, i) => <article key={i} className="rounded-xl bg-accent/5 p-3"><p className="text-xs font-semibold leading-6">{item.fact}</p><p className="mt-1 text-xs leading-5 text-muted">{item.why}</p><p className="mt-2 text-[10px] text-muted">«{item.evidenceQuote}»</p></article>)}</div>}
+            {!!analysis.comparisonTables?.length && <div className="space-y-3"><h4 className="text-sm font-bold">جداول المقارنة</h4>{analysis.comparisonTables.map((table, i) => <div key={i} className="overflow-x-auto rounded-xl border border-line"><h5 className="p-3 text-xs font-bold">{table.title}</h5><table className="w-full min-w-[420px] text-right text-xs"><thead className="bg-base"><tr>{table.columns.map((column, j) => <th key={j} className="p-2 font-bold">{column}</th>)}</tr></thead><tbody>{table.rows.map((row, j) => <tr key={j} className="border-t border-line">{row.map((cell, k) => <td key={k} className="p-2 align-top leading-5">{cell}</td>)}</tr>)}</tbody></table></div>)}</div>}
+            {!!analysis.pathways?.length && <div className="space-y-2"><h4 className="text-sm font-bold">المسارات والآليات</h4>{analysis.pathways.map((path, i) => <article key={i} className="rounded-xl border border-line p-3"><h5 className="text-xs font-bold">{path.title}</h5><ol className="mt-2 list-decimal space-y-1 pe-5 text-xs leading-6 text-muted">{path.steps.map((step, j) => <li key={j}>{step}</li>)}</ol></article>)}</div>}
+            {!!analysis.reviewQuestions?.length && <div className="space-y-2"><h4 className="text-sm font-bold">أسئلة مراجعة</h4>{analysis.reviewQuestions.map((item, i) => <details key={i} className="rounded-xl border border-line p-3"><summary className="cursor-pointer text-xs font-semibold leading-6">{item.question}</summary><p className="mt-2 text-xs leading-6"><strong>الإجابة:</strong> {item.answer}</p><p className="mt-1 text-xs leading-6 text-muted">{item.explanation}</p></details>)}</div>}
+            {!!analysis.limitations?.length && <div className="rounded-xl bg-bad/5 p-3"><h4 className="text-xs font-bold">ملاحظات على المصدر</h4><ul className="mt-1 list-disc space-y-1 pe-5 text-xs leading-5 text-muted">{analysis.limitations.map((item, i) => <li key={i}>{item}</li>)}</ul></div>}
+            <p className="text-[10px] leading-5 text-muted">راجع المصطلحات والاشتقاقات مع مرجعك الدراسي؛ قد يخطئ النموذج في تحليل بعض الجذور أو اللواحق. هذا التحليل تعليمي ولا يقدم تشخيصاً أو توصية علاجية.</p>
+          </div>
+        )}
       </section>
 
       <section className="space-y-3">
