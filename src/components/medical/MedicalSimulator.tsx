@@ -3,6 +3,7 @@ import { AlertCircle, CheckCircle2, ClipboardList, Loader2, ShieldAlert, Sparkle
 import { db, type MedicalSimulationResult } from '../../db';
 import { requestMedicalCase } from '../../lib/chatStore';
 import { parseMedicalCase, type MedicalCaseDraft } from '../../lib/medicalCaseSimulator';
+import { getMedicalSimulationStats } from '../../lib/medicalSimulationStats';
 
 interface Props {
   college: string;
@@ -106,10 +107,7 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
   };
 
   const station = caseData?.stations[stationIndex];
-  const completedCount = history.length;
-  const average = completedCount
-    ? Math.round(history.reduce((sum, item) => sum + item.score / item.total, 0) / completedCount * 100)
-    : 0;
+  const stats = getMedicalSimulationStats(history);
 
   return (
     <section className="card space-y-4 !p-4 sm:!p-5">
@@ -118,9 +116,12 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
         <div><h3 className="font-extrabold">المحاكي السريري · OSCE</h3><p className="mt-1 text-xs leading-6 text-muted">حالة افتراضية تتقدم عبر أربع محطات: القصة، الفحص، الاستقصاءات، والاستدلال التفريقي.</p></div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        <div className="rounded-xl bg-base p-3"><p className="text-[10px] text-muted">محاكاة مكتملة</p><p className="mt-1 text-xl font-black tabular-nums">{completedCount}</p></div>
-        <div className="rounded-xl bg-base p-3"><p className="text-[10px] text-muted">متوسط النتائج</p><p className="mt-1 text-xl font-black tabular-nums">{average}%</p></div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        <div className="rounded-xl bg-base p-3"><p className="text-[10px] text-muted">محاكاة مكتملة</p><p className="mt-1 text-xl font-black tabular-nums">{stats.completed}</p></div>
+        <div className="rounded-xl bg-base p-3"><p className="text-[10px] text-muted">متوسط النتائج</p><p className="mt-1 text-xl font-black tabular-nums">{stats.averagePercent}%</p></div>
+        <div className="rounded-xl bg-base p-3"><p className="text-[10px] text-muted">أفضل نتيجة</p><p className="mt-1 text-xl font-black tabular-nums">{stats.bestPercent}%</p></div>
+        <div className="rounded-xl bg-base p-3"><p className="text-[10px] text-muted">آخر نتيجة</p><p className="mt-1 text-xl font-black tabular-nums">{stats.latestPercent}%</p></div>
+        <div className="rounded-xl bg-base p-3"><p className="text-[10px] text-muted">تحتاج إلى تدريب</p><p className="mt-1 text-xl font-black tabular-nums">{stats.needsPractice}</p></div>
       </div>
 
       {!caseData && (
@@ -183,14 +184,16 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
           <p className="text-xs leading-7">{caseData.finalSummary}</p>
           {caseData.learningObjectives.length > 0 && <div><h5 className="text-xs font-bold">الأهداف التعليمية</h5><ul className="mt-1 list-disc space-y-1 pe-5 text-xs leading-6 text-muted">{caseData.learningObjectives.map((item, index) => <li key={index}>{item}</li>)}</ul></div>}
           {caseData.safetyNote && <p className="rounded-lg bg-base p-2 text-[10px] leading-5 text-muted">{caseData.safetyNote}</p>}
-          <button type="button" className="btn btn-primary w-full" onClick={() => { setCaseData(null); setFinished(false); setSelected(null); setStationIndex(0); setScore(0); setError(''); setNotice(''); }}>إنشاء حالة أخرى</button>
+          <button type="button" className="btn btn-primary w-full" disabled={saving} onClick={() => { setCaseData(null); setFinished(false); setSelected(null); setStationIndex(0); setScore(0); setError(''); setNotice(''); }}>
+            {saving ? <><Loader2 size={15} className="animate-spin"/> جارٍ حفظ النتيجة…</> : 'إنشاء حالة أخرى'}
+          </button>
         </div>
       )}
 
       {history.length > 0 && (
         <div className="space-y-2">
           <h4 className="flex items-center gap-2 text-xs font-bold"><ClipboardList size={15}/> سجل المحاكاة</h4>
-          {history.slice(0, 5).map((item) => <div key={item.id} className="flex items-center justify-between gap-3 rounded-lg border border-line p-3 text-xs"><span className="min-w-0 flex-1 truncate">{item.caseTitle}</span><strong className="shrink-0 tabular-nums">{item.score}/{item.total}</strong><span className="shrink-0 text-[10px] text-muted">{new Date(item.completedAt).toLocaleDateString('ar')}</span></div>)}
+          {history.slice(0, 5).map((item) => <div key={item.id} className="flex items-center justify-between gap-3 rounded-lg border border-line p-3 text-xs"><span className="min-w-0 flex-1 truncate">{item.caseTitle}</span><strong className="shrink-0 tabular-nums">{item.score}/{item.total} · {item.total > 0 ? Math.round(item.score / item.total * 100) : 0}%</strong><span className="shrink-0 text-[10px] text-muted">{new Date(item.completedAt).toLocaleDateString('ar')}</span></div>)}
         </div>
       )}
 
