@@ -249,7 +249,7 @@ export async function monitorVoiceActivity(options: VoiceActivityOptions): Promi
   frame = window.requestAnimationFrame(analyse);
   return dispose;
 }
-\nexport interface ListenHandlers { onText: (text: string) => void; onEnd: () => void; onError: (message: string) => void; lang?: string }
+export interface ListenHandlers { onText: (text: string) => void; onEnd: () => void; onError: (message: string) => void; lang?: string }
 export function listen(h: ListenHandlers): () => void {
   if (isNative()) {
     let stopped = false;
