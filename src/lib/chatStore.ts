@@ -14,6 +14,7 @@ export interface ChatAttachment {
   text: string;
   /** هل اقتُطع النص لطوله */
   truncated: boolean;
+  imageDataUrl?: string;
 }
 
 function postChat(body: unknown): Promise<Response> {
@@ -97,7 +98,7 @@ export const useChat = create<ChatState>((set, get) => ({
         ...(get().subject ? { subject: get().subject } : {}),
         ...(get().style !== 'normal' ? { style: get().style } : {}),
         ...(get().useProfile ? { profile: learnerProfile() } : {}),
-        ...(get().attachment ? { attachment: { name: get().attachment!.name, text: get().attachment!.text } } : {}),
+        ...(get().attachment ? { attachment: { name: get().attachment!.name, text: get().attachment!.text, ...(get().attachment!.imageDataUrl ? { imageDataUrl: get().attachment!.imageDataUrl } : {}) } } : {}),
       });
       const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string; code?: string };
       if (res.status === 402 && data.code === 'extra_usage_consent_required') {
@@ -138,7 +139,7 @@ export const useChat = create<ChatState>((set, get) => ({
         ...(current.subject ? { subject: current.subject } : {}),
         ...(current.style !== 'normal' ? { style: current.style } : {}),
         ...(current.useProfile ? { profile: learnerProfile() } : {}),
-        ...(current.attachment ? { attachment: { name: current.attachment.name, text: current.attachment.text } } : {}),
+        ...(current.attachment ? { attachment: { name: current.attachment.name, text: current.attachment.text, ...(current.attachment.imageDataUrl ? { imageDataUrl: current.attachment.imageDataUrl } : {}) } } : {}),
       });
       const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
       if (!res.ok || !data.reply) {
