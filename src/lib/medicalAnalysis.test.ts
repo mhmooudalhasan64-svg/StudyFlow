@@ -25,7 +25,7 @@ describe('parseMedicalAnalysis', () => {
   });
 
   it('rejects malformed JSON and non-object payloads', () => {
-    expect(() => parseMedicalAnalysis('{broken', source)).toThrow('تعذّر قراءة');
+    expect(() => parseMedicalAnalysis('{"broken":}', source)).toThrow('تعذّر قراءة');
     expect(() => parseMedicalAnalysis('[]', source)).toThrow('غير منسق');
   });
 
