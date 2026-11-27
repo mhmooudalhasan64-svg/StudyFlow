@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import {
-  Award, BarChart3, BookOpen, Bot, Calculator, CalendarClock, CalendarCheck, GraduationCap,
+  Award, BarChart3, BookOpen, Bot, Calculator, CalendarClock, CalendarCheck, GraduationCap, AudioLines,
   FileBarChart, GitBranch, Layers, ListChecks, Repeat, Info,
   Settings as SettingsIcon, Timer as TimerIcon, CircleHelp, Youtube,
 } from 'lucide-react';
@@ -26,6 +26,7 @@ const GROUPS: { title: string; description: string; items: Item[] }[] = [
       { href: '#/mindmap', label: 'الخرائط الذهنية التفاعلية', Icon: GitBranch, tone: 'violet' },
       { href: '#/review', label: 'المراجعة الذكية', Icon: Repeat, tone: 'teal' },
       { href: '#/cards', label: 'البطاقات التعليمية', Icon: Layers, tone: 'indigo' },
+      { href: '#/pronunciation', label: 'مدرّب مخارج الحروف', Icon: AudioLines, tone: 'teal' },
     ],
   },
   {
