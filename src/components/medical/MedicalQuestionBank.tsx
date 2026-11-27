@@ -52,7 +52,7 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
       setQuestions(rows.filter((q) => q.year === year && (!subject.trim() || q.subject === subject.trim()))
         .sort((a, b) => (a.attempts - b.attempts) || (b.createdAt - a.createdAt)));
     }).catch(() => { if (alive) setError('تعذّر تحميل بنك الأسئلة المحفوظ.'); });
-    return () => { alive = false; };
+    return () => { alive = false; generationRequestId.current += 1; };
   }, [college, year, subject, contextKey]);
 
   const active = questions[activeIndex] ?? null;
