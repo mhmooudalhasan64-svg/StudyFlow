@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { db, type MedicalQuestion } from '../db';
-import { filterMedicalQuestions, parseMedicalQuestions, recordMedicalAnswer } from './medicalQuestionBank';
+import { filterMedicalQuestions, parseMedicalQuestions, recordMedicalAnswer, saveMedicalQuestions } from './medicalQuestionBank';
 
 const valid = {
   questions: [{
@@ -63,6 +63,25 @@ describe('medical question bank parser', () => {
   });
 });
 
+
+describe('medical question persistence', () => {
+  beforeEach(async () => {
+    await db.medicalQuestions.clear();
+  });
+
+  it('redacts labelled personal details from persisted source filenames', async () => {
+    await saveMedicalQuestions({
+      drafts: parseMedicalQuestions(JSON.stringify(valid)),
+      college: 'Medicine',
+      year: '1',
+      subject: 'Anatomy',
+      sourceName: 'Patient name: Jane Doe.pdf',
+    });
+    const [stored] = await db.medicalQuestions.toArray();
+    expect(stored.sourceName).toBe('Patient name: [personal details removed].pdf');
+    expect(stored.sourceName).not.toContain('Jane Doe');
+  });
+});
 
 describe('medical question history filters', () => {
   const questions = [
