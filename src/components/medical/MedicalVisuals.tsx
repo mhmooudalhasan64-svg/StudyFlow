@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, GitBranch, Table2 } from 'lucide-react';
 
 interface MedicalVisualsProps {
@@ -6,11 +6,21 @@ interface MedicalVisualsProps {
   comparisonTables?: { title: string; columns: string[]; rows: string[][]; evidenceQuote: string }[];
 }
 
-export function MedicalVisuals({ pathways = [], comparisonTables = [] }: MedicalVisualsProps) {
+const EMPTY_PATHWAYS: NonNullable<MedicalVisualsProps['pathways']> = [];
+const EMPTY_TABLES: NonNullable<MedicalVisualsProps['comparisonTables']> = [];
+
+export function MedicalVisuals({ pathways = EMPTY_PATHWAYS, comparisonTables = EMPTY_TABLES }: MedicalVisualsProps) {
   const [activePathway, setActivePathway] = useState(0);
   const [activeStep, setActiveStep] = useState(0);
   const [activeTable, setActiveTable] = useState(0);
   const [highlightedRow, setHighlightedRow] = useState<number | null>(null);
+
+  useEffect(() => {
+    setActivePathway(0);
+    setActiveStep(0);
+    setActiveTable(0);
+    setHighlightedRow(null);
+  }, [pathways, comparisonTables]);
 
   if (!pathways.length && !comparisonTables.length) return null;
 
