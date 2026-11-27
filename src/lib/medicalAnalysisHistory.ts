@@ -1,6 +1,6 @@
 import { db, type MedicalAnalysisRecord } from '../db';
 import { assertMedicalDataWriteAllowed, getMedicalDataEpoch } from './medicalDataPrivacy';
-import { sanitizeMedicalSourceName } from './medicalDataSanitization';
+import { sanitizeMedicalMetadata, sanitizeMedicalSourceName } from './medicalDataSanitization';
 
 export const MEDICAL_ANALYSIS_HISTORY_LIMIT = 30;
 
@@ -13,7 +13,7 @@ export async function saveMedicalAnalysis(
   assertMedicalDataWriteAllowed(epoch);
   return db.transaction('rw', db.medicalAnalyses, async () => {
     assertMedicalDataWriteAllowed(epoch);
-    const id = await db.medicalAnalyses.add({ ...record, sourceName: sanitizeMedicalSourceName(record.sourceName), createdAt: now });
+    const id = await db.medicalAnalyses.add({ ...record, subject: sanitizeMedicalMetadata(record.subject), sourceName: sanitizeMedicalSourceName(record.sourceName), createdAt: now });
     if (id == null) throw new Error('تعذّر تحديد سجل التحليل المحفوظ.');
     const count = await db.medicalAnalyses.count();
     if (count > MEDICAL_ANALYSIS_HISTORY_LIMIT) {
