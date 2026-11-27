@@ -15,6 +15,7 @@ on:
       - feat/masar-medical-hub
   pull_request:
     branches:
+      - main
       - atheer-masar-brand-preview
       - fix/masar-dalil-reliability
       - fix/dalil-reliability-preview
