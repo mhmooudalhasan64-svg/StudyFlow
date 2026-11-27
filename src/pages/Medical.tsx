@@ -1,6 +1,6 @@
-import { useMemo, useRef, useState, type ChangeEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import {
-  Activity, ArrowLeft, BookOpen, Brain, BriefcaseMedical, ChevronDown,
+  Activity, ArrowLeft, BookOpen, Brain, BriefcaseMedical, ChevronDown, History, Save, Trash2,
   ClipboardList, FileText, FlaskConical, GraduationCap, Layers3,
   Microscope, Pill, Search, ShieldCheck, Stethoscope, Syringe, Table2, Waves, FileUp, Loader2, AlertCircle,
 } from 'lucide-react';
@@ -8,6 +8,8 @@ import { PageTitle } from '../components/ui';
 import { extractFileText } from '../lib/fileText';
 import { requestMedicalAnalysis } from '../lib/chatStore';
 import { parseMedicalAnalysis, type MedicalAnalysisResult } from '../lib/medicalAnalysis';
+import { deleteMedicalAnalysis, listMedicalAnalyses, saveMedicalAnalysis } from '../lib/medicalAnalysisHistory';
+import type { MedicalAnalysisRecord } from '../db';
 import { MedicalFlashcards } from '../components/medical/MedicalFlashcards';
 import { MedicalQuestionBank } from '../components/medical/MedicalQuestionBank';
 import { MedicalSimulator } from '../components/medical/MedicalSimulator';
@@ -79,8 +81,49 @@ export default function Medical() {
   const [analysisError, setAnalysisError] = useState('');
   const [analysisBusy, setAnalysisBusy] = useState(false);
   const [extractBusy, setExtractBusy] = useState(false);
+  const [analysisHistory, setAnalysisHistory] = useState<MedicalAnalysisRecord[]>([]);
+  const [historyBusy, setHistoryBusy] = useState(false);
+  const [historyError, setHistoryError] = useState('');
   const fileInput = useRef<HTMLInputElement>(null);
   const analysisRequestId = useRef(0);
+  useEffect(() => {
+    let active = true;
+    void listMedicalAnalyses().then((items) => {
+      if (active) setAnalysisHistory(items);
+    }).catch(() => {
+      if (active) setHistoryError('تعذّر تحميل سجل التحليلات المحفوظ محلياً.');
+    });
+    return () => { active = false; };
+  }, []);
+
+  const saveCurrentAnalysis = async () => {
+    if (!analysis || historyBusy) return;
+    setHistoryBusy(true);
+    setHistoryError('');
+    try {
+      await saveMedicalAnalysis({
+        college: selectedCollege.label,
+        year,
+        subject: lectureSubject,
+        sourceName: lectureName,
+        analysis,
+      });
+      setAnalysisHistory(await listMedicalAnalyses());
+    } catch {
+      setHistoryError('تعذّر حفظ التحليل على هذا الجهاز. تحقق من مساحة التخزين.');
+    } finally {
+      setHistoryBusy(false);
+    }
+  };
+
+  const removeHistoryItem = async (id: number) => {
+    try {
+      await deleteMedicalAnalysis(id);
+      setAnalysisHistory(await listMedicalAnalyses());
+    } catch {
+      setHistoryError('تعذّر حذف هذا التحليل من السجل المحلي.');
+    }
+  };
   const invalidateAnalysis = () => {
     analysisRequestId.current += 1;
     setAnalysis(null);
@@ -246,7 +289,13 @@ export default function Medical() {
         {analysisError && <p role="alert" className="flex items-start gap-2 rounded-xl bg-bad/10 p-3 text-xs leading-6 text-bad"><AlertCircle size={16} className="mt-0.5 shrink-0"/>{analysisError}</p>}
         {analysis && (
           <div className="space-y-4 border-t border-line pt-4">
-            <div><span className="text-[10px] font-bold text-accent">نتائج التحليل</span><h3 className="mt-1 text-lg font-extrabold">{analysis.title || lectureName}</h3><p className="mt-2 text-sm leading-7 text-muted">{analysis.summary}</p></div>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0 flex-1"><span className="text-[10px] font-bold text-accent">نتائج التحليل</span><h3 className="mt-1 text-lg font-extrabold">{analysis.title || lectureName}</h3><p className="mt-2 text-sm leading-7 text-muted">{analysis.summary}</p></div>
+              <button type="button" className="btn btn-secondary shrink-0" onClick={() => void saveCurrentAnalysis()} disabled={historyBusy}>
+                {historyBusy ? <Loader2 size={15} className="animate-spin"/> : <Save size={15}/>}
+                {historyBusy ? 'جارٍ الحفظ…' : 'حفظ التحليل محلياً'}
+              </button>
+            </div>
             {!!analysis.learningObjectives?.length && <div><h4 className="mb-2 text-sm font-bold">الأهداف التعليمية</h4><ul className="list-disc space-y-1 pe-5 text-xs leading-6 text-muted">{analysis.learningObjectives.map((item, i) => <li key={i}>{item}</li>)}</ul></div>}
             {!!analysis.keyPoints?.length && <div><h4 className="mb-2 text-sm font-bold">النقاط الأساسية</h4><ul className="space-y-2">{analysis.keyPoints.map((item, i) => <li key={i} className="rounded-lg bg-base/70 p-3 text-xs leading-6">{item}</li>)}</ul></div>}
             {!!analysis.terminology?.length && <div className="space-y-2"><h4 className="text-sm font-bold">المصطلحات الطبية</h4>{analysis.terminology.map((item, i) => <article key={i} className="rounded-xl border border-line p-3"><h5 className="font-bold text-sm" dir="auto">{item.term}</h5><p className="mt-1 text-xs leading-6 text-muted">{item.meaning}</p><div className="mt-2 flex flex-wrap gap-1.5 text-[10px]"><span className="rounded-md bg-accent/10 px-2 py-1">Prefix: {item.prefix}</span><span className="rounded-md bg-accent/10 px-2 py-1">Root: {item.root}</span><span className="rounded-md bg-accent/10 px-2 py-1">Suffix: {item.suffix}</span></div><p className="mt-2 border-s-2 border-line pe-2 text-[10px] leading-5 text-muted">من المصدر: «{item.evidenceQuote}»</p></article>)}</div>}
@@ -254,6 +303,42 @@ export default function Medical() {
             {!!analysis.reviewQuestions?.length && <div className="space-y-2"><h4 className="text-sm font-bold">أسئلة مراجعة</h4>{analysis.reviewQuestions.map((item, i) => <details key={i} className="rounded-xl border border-line p-3"><summary className="cursor-pointer text-xs font-semibold leading-6">{item.question}</summary><p className="mt-2 text-xs leading-6"><strong>الإجابة:</strong> {item.answer}</p><p className="mt-1 text-xs leading-6 text-muted">{item.explanation}</p></details>)}</div>}
             {!!analysis.limitations?.length && <div className="rounded-xl bg-bad/5 p-3"><h4 className="text-xs font-bold">ملاحظات على المصدر</h4><ul className="mt-1 list-disc space-y-1 pe-5 text-xs leading-5 text-muted">{analysis.limitations.map((item, i) => <li key={i}>{item}</li>)}</ul></div>}
             <p className="text-[10px] leading-5 text-muted">راجع المصطلحات والاشتقاقات مع مرجعك الدراسي؛ قد يخطئ النموذج في تحليل بعض الجذور أو اللواحق. هذا التحليل تعليمي ولا يقدم تشخيصاً أو توصية علاجية.</p>
+          </div>
+        )}
+      </section>
+
+      <section className="card space-y-3 !p-4 sm:!p-5">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2"><History size={18} className="text-accent"/><div><h2 className="font-extrabold">سجل تحليلات المحاضرات</h2><p className="mt-1 text-[11px] text-muted">آخر 30 تحليلاً محفوظاً على هذا الجهاز فقط.</p></div></div>
+          <span className="rounded-full bg-base px-2.5 py-1 text-xs font-bold tabular-nums">{analysisHistory.length}</span>
+        </div>
+        {historyError && <p role="alert" className="text-xs text-bad">{historyError}</p>}
+        {analysisHistory.length === 0 ? (
+          <p className="rounded-xl bg-base/70 p-3 text-xs leading-6 text-muted">لا توجد تحليلات محفوظة بعد. استخدم زر «حفظ التحليل محلياً» بعد انتهاء التحليل للاحتفاظ بنسخة منه.</p>
+        ) : (
+          <div className="space-y-2">
+            {analysisHistory.map((item) => (
+              <details key={item.id} className="rounded-xl border border-line p-3">
+                <summary className="cursor-pointer list-none">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="truncate text-sm font-bold">{item.analysis.title || item.sourceName}</h3>
+                      <p className="mt-1 text-[11px] text-muted">{item.college} · السنة {item.year}{item.subject ? ` · ${item.subject}` : ''}</p>
+                      <p className="mt-1 text-[10px] text-muted">{new Date(item.createdAt).toLocaleString('ar')}</p>
+                    </div>
+                    <span className="text-[11px] text-accent">عرض الملخص</span>
+                  </div>
+                </summary>
+                <div className="mt-3 border-t border-line pt-3">
+                  <p className="text-xs leading-6 text-muted">{item.analysis.summary || 'لا يوجد ملخص محفوظ.'}</p>
+                  {!!item.analysis.keyPoints?.length && <ul className="mt-2 list-disc space-y-1 pe-5 text-xs leading-5">{item.analysis.keyPoints.map((point, index) => <li key={index}>{point}</li>)}</ul>}
+                  <div className="mt-3 flex items-center justify-between gap-2">
+                    <span className="text-[10px] text-muted">المصدر: {item.sourceName} · لم يُحفظ نص المحاضرة</span>
+                    <button type="button" className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-bad hover:bg-bad/10" onClick={() => item.id != null && void removeHistoryItem(item.id)}><Trash2 size={13}/> حذف</button>
+                  </div>
+                </div>
+              </details>
+            ))}
           </div>
         )}
       </section>
