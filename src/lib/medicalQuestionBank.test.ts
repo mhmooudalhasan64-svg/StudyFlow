@@ -2,20 +2,20 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { db, type MedicalQuestion } from '../db';
 import { filterMedicalQuestions, parseMedicalQuestions, recordMedicalAnswer } from './medicalQuestionBank';
 
-describe('medical question bank parser', () => {
-  const valid = {
-    questions: [{
-      vignette: 'حالة افتراضية تعليمية.',
-      stem: 'أي بنية مسؤولة عن الوظيفة المذكورة؟',
-      options: ['A', 'B', 'C', 'D'],
-      answerIndex: 2,
-      explanations: ['خطأ A', 'خطأ B', 'صحيح C', 'خطأ D'],
-      rationale: 'شرح الاستدلال.',
-      learningPoint: 'نقطة التعلم.',
-      sourceQuote: 'اقتباس من المصدر',
-    }],
-  };
+const valid = {
+  questions: [{
+    vignette: 'حالة افتراضية تعليمية.',
+    stem: 'أي بنية مسؤولة عن الوظيفة المذكورة؟',
+    options: ['A', 'B', 'C', 'D'],
+    answerIndex: 2,
+    explanations: ['خطأ A', 'خطأ B', 'صحيح C', 'خطأ D'],
+    rationale: 'شرح الاستدلال.',
+    learningPoint: 'نقطة التعلم.',
+    sourceQuote: 'اقتباس من المصدر',
+  }],
+};
 
+describe('medical question bank parser', () => {
   it('parses a valid four-option question with all option explanations', () => {
     const result = parseMedicalQuestions(JSON.stringify(valid));
     expect(result).toHaveLength(1);
