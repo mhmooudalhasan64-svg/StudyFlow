@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BookOpenCheck, Clock3, Layers3, RotateCcw, Sparkles } from 'lucide-react';
 import { db, type MedicalFlashcard } from '../../db';
 import { buildMedicalFlashcards, saveMedicalFlashcards, scheduleMedicalReview, type MedicalCardSource, type MedicalCardRating } from '../../lib/medicalFlashcards';
@@ -24,60 +24,75 @@ export function MedicalFlashcards({ analysis, college, year, subject, sourceName
   const [revealed, setRevealed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
+  const contextKey = `${college}|${year}|${subject.trim()}`;
+  const activeContext = useRef(contextKey);
   const now = Date.now();
 
   const refresh = useCallback(async () => {
+    const requestContext = contextKey;
     const rows = await db.medicalCards.where('college').equals(college).toArray();
+    if (activeContext.current !== requestContext) return;
     setCards(rows.filter((card) => card.year === year && (!subject.trim() || card.subject === subject.trim()))
       .sort((a, b) => a.dueAt - b.dueAt));
-  }, [college, year, subject]);
+  }, [college, year, subject, contextKey]);
 
   useEffect(() => {
+    activeContext.current = contextKey;
+    setActiveId(null);
+    setRevealed(false);
+    setBusy(false);
     let alive = true;
     void db.medicalCards.where('college').equals(college).toArray().then((rows) => {
       if (alive) setCards(rows.filter((card) => card.year === year && (!subject.trim() || card.subject === subject.trim()))
         .sort((a, b) => a.dueAt - b.dueAt));
     }).catch(() => { if (alive) setMessage('تعذّر تحميل البطاقات المحفوظة من الجهاز.'); });
     return () => { alive = false; };
-  }, [college, year, subject]);
+  }, [college, year, subject, contextKey]);
 
   const dueCards = useMemo(() => cards.filter((card) => card.dueAt <= now), [cards, now]);
   const active = dueCards.find((card) => card.id === activeId) ?? dueCards[0] ?? null;
 
   const createCards = async () => {
     if (!analysis) return;
+    const saveContext = contextKey;
     setBusy(true);
     setMessage('');
     try {
       const generated = buildMedicalFlashcards({ analysis, college, year, subject: subject.trim() || 'مادة غير محددة', sourceName });
       if (!generated.length) {
-        setMessage('لا توجد مصطلحات أو نقاط عالية الأهمية كافية لتوليد بطاقات من هذا التحليل.');
+        if (activeContext.current === saveContext) setMessage('لا توجد مصطلحات أو نقاط عالية الأهمية كافية لتوليد بطاقات من هذا التحليل.');
         return;
       }
       const added = await saveMedicalFlashcards(generated);
+      if (activeContext.current !== saveContext) return;
       await refresh();
-      setActiveId(null);
-      setRevealed(false);
-      setMessage(added ? `حُفظت ${added} بطاقة جديدة. البطاقات المكررة لم تُضف مرة ثانية.` : 'هذه البطاقات محفوظة مسبقاً؛ لم تتم إضافة نسخ مكررة.');
+      if (activeContext.current === saveContext) {
+        setActiveId(null);
+        setRevealed(false);
+        setMessage(added ? `حُفظت ${added} بطاقة جديدة. البطاقات المكررة لم تُضف مرة ثانية.` : 'هذه البطاقات محفوظة مسبقاً؛ لم تتم إضافة نسخ مكررة.');
+      }
     } catch {
-      setMessage('تعذّر حفظ البطاقات محلياً. تحقق من مساحة التخزين ثم أعد المحاولة.');
+      if (activeContext.current === saveContext) setMessage('تعذّر حفظ البطاقات محلياً. تحقق من مساحة التخزين ثم أعد المحاولة.');
     } finally {
-      setBusy(false);
+      if (activeContext.current === saveContext) setBusy(false);
     }
   };
 
   const rateCard = async (rating: MedicalCardRating) => {
     if (!active?.id || busy) return;
+    const reviewContext = contextKey;
     setBusy(true);
     try {
       await db.medicalCards.update(active.id, scheduleMedicalReview(active, rating));
-      setActiveId(null);
-      setRevealed(false);
-      await refresh();
+      if (activeContext.current === reviewContext) {
+        setActiveId(null);
+        setRevealed(false);
+        await refresh();
+      }
     } catch {
-      setMessage('تعذّر تحديث موعد المراجعة. لم يتم تغيير البطاقة.');
+      if (activeContext.current === reviewContext) setMessage('تعذّر تحديث موعد المراجعة. لم يتم تغيير البطاقة.');
     } finally {
-      setBusy(false);
+      if (activeContext.current === reviewContext) setBusy(false);
     }
   };
 
