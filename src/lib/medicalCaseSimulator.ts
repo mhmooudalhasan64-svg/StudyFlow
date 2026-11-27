@@ -49,7 +49,7 @@ export function parseMedicalCase(raw: string, sourceText = ''): MedicalCaseDraft
     const answerIndex = station.answerIndex;
     const sourceQuote = str(station.sourceQuote, 500);
     if (station.stage !== STAGES[index] || !str(station.title) || !str(station.prompt) ||
-      options.length !== 4 || options.some((v) => !v) || feedback.length !== 4 || feedback.some((v) => !v) ||
+      options.length !== 4 || options.some((v) => !v) || new Set(options.map((option) => option.toLocaleLowerCase())).size !== 4 || feedback.length !== 4 || feedback.some((v) => !v) ||
       !str(station.rationale, 1200) || !str(station.scoringCriteria, 800) ||
       (sourceText.trim() && (!sourceQuote || !sourceText.includes(sourceQuote))) ||
       typeof answerIndex !== 'number' || !Number.isInteger(answerIndex) || answerIndex < 0 || answerIndex > 3) {
