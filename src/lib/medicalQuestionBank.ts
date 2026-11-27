@@ -24,7 +24,10 @@ export interface MedicalQuestionDraft {
   sourceQuote: string;
 }
 
-export function parseMedicalQuestions(raw: string): MedicalQuestionDraft[] {
+export function parseMedicalQuestions(raw: string, sourceText = ''): MedicalQuestionDraft[] {
+  if (typeof raw !== 'string' || raw.length > 100_000 || typeof sourceText !== 'string' || sourceText.length > 8_000) {
+    throw new Error('حجم بيانات بنك الأسئلة غير صالح. قلّل حجم المصدر وأعد المحاولة.');
+  }
   const cleaned = raw.trim().replace(/^`{3}(?:json)?\s*/i, '').replace(/\s*`{3}$/i, '');
   const start = cleaned.indexOf('{');
   const end = cleaned.lastIndexOf('}');
@@ -36,19 +39,20 @@ export function parseMedicalQuestions(raw: string): MedicalQuestionDraft[] {
   const list = (parsed as Record<string, unknown>).questions;
   if (!Array.isArray(list)) throw new Error('لم يتضمن الرد قائمة أسئلة.');
   const output: MedicalQuestionDraft[] = [];
-  for (const value of list) {
+  for (const value of list.slice(0, 20)) {
     if (!value || typeof value !== 'object' || Array.isArray(value)) continue;
     const q = value as Record<string, unknown>;
-    const str = (v: unknown) => typeof v === 'string' ? v.trim() : '';
-    const options = Array.isArray(q.options) ? q.options.filter((v): v is string => typeof v === 'string').map((v) => v.trim()) : [];
-    const explanations = Array.isArray(q.explanations) ? q.explanations.filter((v): v is string => typeof v === 'string').map((v) => v.trim()) : [];
+    const str = (v: unknown, max = 800) => typeof v === 'string' ? v.trim().slice(0, max) : '';
+    const options = Array.isArray(q.options) ? q.options.slice(0, 5).filter((v): v is string => typeof v === 'string').map((v) => v.trim().slice(0, 500)) : [];
+    const explanations = Array.isArray(q.explanations) ? q.explanations.slice(0, 5).filter((v): v is string => typeof v === 'string').map((v) => v.trim().slice(0, 700)) : [];
     const answerIndex = q.answerIndex;
-    if (!str(q.stem) || options.length !== 4 || options.some((v) => !v) ||
+    const sourceQuote = str(q.sourceQuote, 500);
+    if ((sourceText && (!sourceQuote || !sourceText.includes(sourceQuote))) || !str(q.stem, 800) || options.length !== 4 || options.some((v) => !v) ||
         explanations.length !== 4 || explanations.some((v) => !v) ||
         typeof answerIndex !== 'number' || !Number.isInteger(answerIndex) || answerIndex < 0 || answerIndex > 3) continue;
     output.push({
-      vignette: str(q.vignette), stem: str(q.stem), options, answerIndex, explanations,
-      rationale: str(q.rationale), learningPoint: str(q.learningPoint), sourceQuote: str(q.sourceQuote),
+      vignette: str(q.vignette, 1200), stem: str(q.stem, 800), options, answerIndex, explanations,
+      rationale: str(q.rationale, 1200), learningPoint: str(q.learningPoint, 500), sourceQuote: str(q.sourceQuote, 500),
     });
   }
   if (!output.length) throw new Error('لم ينتج دليل أسئلة مكتملة بأربعة خيارات وتفسيرات لكل البدائل.');
