@@ -113,7 +113,11 @@ export default function Medical() {
         sourceName: lectureName,
         analysis,
       });
-      setAnalysisHistory(await listMedicalAnalyses());
+      try {
+        setAnalysisHistory(await listMedicalAnalyses());
+      } catch {
+        setHistoryError('حُفظ التحليل، لكن تعذّر تحديث قائمة السجل المعروضة. أعد تحميل القسم.');
+      }
     } catch {
       setHistoryError('تعذّر حفظ التحليل على هذا الجهاز. تحقق من مساحة التخزين.');
     } finally {
@@ -124,7 +128,12 @@ export default function Medical() {
   const removeHistoryItem = async (id: number) => {
     try {
       await deleteMedicalAnalysis(id);
-      setAnalysisHistory(await listMedicalAnalyses());
+      setAnalysisHistory((items) => items.filter((item) => item.id !== id));
+      try {
+        setAnalysisHistory(await listMedicalAnalyses());
+      } catch {
+        setHistoryError('حُذف التحليل، لكن تعذّر تحديث قائمة السجل المعروضة. أعد تحميل القسم.');
+      }
     } catch {
       setHistoryError('تعذّر حذف هذا التحليل من السجل المحلي.');
     }
