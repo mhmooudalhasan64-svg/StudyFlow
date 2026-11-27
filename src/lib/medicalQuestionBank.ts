@@ -1,4 +1,5 @@
 import { db, type MedicalQuestion } from '../db';
+import { assertMedicalDataWriteAllowed, getMedicalDataEpoch } from './medicalDataPrivacy';
 
 
 export type MedicalQuestionHistoryFilter = 'all' | 'weak' | 'new';
@@ -66,8 +67,11 @@ export async function saveMedicalQuestions(args: {
   subject: string;
   sourceName: string;
 }): Promise<number> {
+  const epoch = getMedicalDataEpoch();
+  assertMedicalDataWriteAllowed(epoch);
   let added = 0;
   await db.transaction('rw', db.medicalQuestions, async () => {
+    assertMedicalDataWriteAllowed(epoch);
     for (const draft of args.drafts) {
       const questionKey = [args.college, args.year, args.subject, draft.stem].join('|').toLocaleLowerCase();
       const exists = await db.medicalQuestions.where('questionKey').equals(questionKey).first();
@@ -88,8 +92,11 @@ export async function recordMedicalAnswer(question: MedicalQuestion, selectedInd
   if (question.id == null || !Number.isInteger(selectedIndex) || selectedIndex < 0 || selectedIndex > 3) {
     throw new Error('محاولة الإجابة غير صالحة.');
   }
+  const epoch = getMedicalDataEpoch();
+  assertMedicalDataWriteAllowed(epoch);
   const correct = selectedIndex === question.answerIndex;
   await db.transaction('rw', db.medicalQuestions, async () => {
+    assertMedicalDataWriteAllowed(epoch);
     const current = await db.medicalQuestions.get(question.id!);
     if (!current) throw new Error('السؤال غير موجود في قاعدة البيانات المحلية.');
     await db.medicalQuestions.update(question.id!, {
