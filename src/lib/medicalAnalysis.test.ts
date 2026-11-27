@@ -64,4 +64,15 @@ describe('parseMedicalAnalysis', () => {
     expect(result.pathways?.[0].steps).toHaveLength(12);
     expect(result.reviewQuestions).toHaveLength(8);
   });
+
+  it('drops tables, pathways, and review questions without exact source evidence', () => {
+    const result = parseMedicalAnalysis(JSON.stringify({
+      comparisonTables: [{ title: 'Unsupported', columns: ['A'], rows: [['B']], evidenceQuote: 'not in source' }],
+      pathways: [{ title: 'Unsupported', steps: ['Step'], evidenceQuote: 'not in source' }],
+      reviewQuestions: [{ question: 'Q', answer: 'A', explanation: 'E', evidenceQuote: 'not in source' }],
+    }), source);
+    expect(result.comparisonTables).toHaveLength(0);
+    expect(result.pathways).toHaveLength(0);
+    expect(result.reviewQuestions).toHaveLength(0);
+  });
 });
