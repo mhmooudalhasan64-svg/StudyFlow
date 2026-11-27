@@ -26,6 +26,22 @@ describe('backup', () => {
   });
 
   it('keeps MASAR MEDICAL records out of backups and preserves them on restore', async () => {
+    await db.medicalCards.add({
+      cardKey: 'medical-card-private', college: 'Medicine', year: '1', subject: 'Anatomy',
+      sourceName: 'medical-card-private.pdf', category: 'term', front: 'Card question', back: 'Card answer',
+      createdAt: 1, dueAt: 1, intervalDays: 0, reps: 0, lastReviewedAt: null,
+    });
+    await db.medicalQuestions.add({
+      questionKey: 'medical-question-private', college: 'Medicine', year: '1', subject: 'Anatomy',
+      sourceName: 'medical-question-private.pdf', vignette: 'Fictional vignette', stem: 'Question?',
+      options: ['A', 'B', 'C', 'D'], answerIndex: 0, explanations: ['a', 'b', 'c', 'd'],
+      rationale: 'Rationale', learningPoint: 'Learning point', sourceQuote: '',
+      createdAt: 1, attempts: 0, correctAttempts: 0, lastAttemptAt: null,
+    });
+    await db.medicalSimulations.add({
+      caseTitle: 'medical-simulation-private', college: 'Medicine', year: '1', subject: 'Anatomy',
+      score: 1, total: 4, createdAt: 1, completedAt: 1,
+    });
     await db.medicalAnalyses.add({
       college: 'Medicine', year: '1', subject: 'Anatomy', sourceName: 'lecture.pdf',
       analysis: { summary: 'private medical study data' }, createdAt: 1,
@@ -35,6 +51,9 @@ describe('backup', () => {
 
     const parsed = parseBackup(backup);
     await importBackup(parsed);
+    expect(await db.medicalCards.count()).toBe(1);
+    expect(await db.medicalQuestions.count()).toBe(1);
+    expect(await db.medicalSimulations.count()).toBe(1);
     expect(await db.medicalAnalyses.count()).toBe(1);
     expect((await db.medicalAnalyses.toArray())[0].analysis.summary).toBe('private medical study data');
   });
