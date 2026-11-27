@@ -1,6 +1,6 @@
 import { createClient } from 'redis';
 import { buildDalilContext } from './dalil-intelligence';
-import { redactPersonalData, formatUntrustedFileBlock } from '../src/lib/medicalDataSanitization';
+import { redactPersonalData, formatUntrustedFileBlock, sanitizeMedicalSourceText } from '../src/lib/medicalDataSanitization';
 
 /**
  * DALIL uses Groq's free API tier as its primary engine, with OpenRouter as an
@@ -181,7 +181,7 @@ function sanitizeAttachment(body: unknown): Attachment | null {
     return { name: redactPersonalData(safeName), text: '', imageDataUrl };
   }
   if (typeof text !== 'string' || !text.trim()) return null;
-  return { name: redactPersonalData(safeName), text: redactPersonalData(text.trim()).slice(0, MAX_ATTACH_CHARS) };
+  return { name: redactPersonalData(safeName), text: sanitizeMedicalSourceText(text, MAX_ATTACH_CHARS) };
 }
 
 function sanitizeProfile(body: unknown): string {
