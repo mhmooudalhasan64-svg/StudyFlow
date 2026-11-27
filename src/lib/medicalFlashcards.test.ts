@@ -15,6 +15,16 @@ describe('medical flashcards', () => {
     expect(cards[0].front).toContain('Cardiomegaly');
   });
 
+  it('does not retain labelled personal details in source metadata or deduplication keys', () => {
+    const cards = buildMedicalFlashcards({
+      college: 'medicine', year: '1', subject: 'Anatomy',
+      sourceName: 'Patient name: Jane Doe.pdf', now: 1,
+      analysis: { terminology: [{ term: 'Neuro', meaning: 'متعلق بالأعصاب' }] },
+    });
+    expect(cards[0].sourceName).not.toContain('Jane Doe');
+    expect(cards[0].cardKey).not.toContain('Jane Doe');
+  });
+
   it('does not create duplicate card keys for the same source item', () => {
     const args = {
       college: 'medicine', year: '1', subject: 'Anatomy', sourceName: 'Lecture', now: 1,
