@@ -12,6 +12,9 @@ export interface MedicalAnalysisResult {
 }
 
 export function parseMedicalAnalysis(raw: string, sourceText: string): MedicalAnalysisResult {
+  if (typeof raw !== 'string' || raw.length > 100_000 || typeof sourceText !== 'string' || sourceText.length > 8_000) {
+    throw new Error('حجم بيانات التحليل غير صالح. قلّل حجم المحاضرة وأعد المحاولة.');
+  }
   const cleaned = raw.trim().replace(/^`{3}(?:json)?\s*/i, '').replace(/\s*`{3}$/i, '');
   const start = cleaned.indexOf('{');
   const end = cleaned.lastIndexOf('}');
@@ -32,10 +35,10 @@ export function parseMedicalAnalysis(raw: string, sourceText: string): MedicalAn
   const str = (item: unknown, max = 1200): string =>
     typeof item === 'string' ? item.trim().slice(0, max) : '';
   const strings = (item: unknown, maxItems: number, maxLength = 500): string[] =>
-    list(item).filter((entry): entry is string => typeof entry === 'string')
+    list(item).slice(0, maxItems * 2).filter((entry): entry is string => typeof entry === 'string')
       .map((entry) => str(entry, maxLength)).filter(Boolean).slice(0, maxItems);
   const objects = (item: unknown): Record<string, unknown>[] =>
-    list(item).filter((entry): entry is Record<string, unknown> =>
+    list(item).slice(0, 40).filter((entry): entry is Record<string, unknown> =>
       !!entry && typeof entry === 'object' && !Array.isArray(entry));
 
   const terminology = objects(data.terminology).map((item) => ({
@@ -59,7 +62,7 @@ export function parseMedicalAnalysis(raw: string, sourceText: string): MedicalAn
 
   const comparisonTables = objects(data.comparisonTables).map((item) => {
     const columns = strings(item.columns, 6, 100);
-    const rows = list(item.rows).filter(Array.isArray)
+    const rows = list(item.rows).slice(0, 40).filter(Array.isArray)
       .map((row) => (row as unknown[]).map((cell) => str(cell, 300)))
       .filter((row) => columns.length > 0 && row.length === columns.length && row.every(Boolean))
       .slice(0, 20);
@@ -72,14 +75,14 @@ export function parseMedicalAnalysis(raw: string, sourceText: string): MedicalAn
   })).filter((item) => item.title && item.steps.length > 0).slice(0, 4);
 
   const reviewQuestions = objects(data.reviewQuestions).map((item) => ({
-    question: str(item.question, 500),
-    answer: str(item.answer, 500),
-    explanation: str(item.explanation, 700),
+    question: str(item.question, 300),
+    answer: str(item.answer, 300),
+    explanation: str(item.explanation, 500),
   })).filter((item) => item.question && item.answer).slice(0, 8);
 
   return {
     title: str(data.title, 160),
-    summary: str(data.summary, 3000),
+    summary: str(data.summary, 1600),
     learningObjectives: strings(data.learningObjectives, 8),
     keyPoints: strings(data.keyPoints, 12),
     terminology,
