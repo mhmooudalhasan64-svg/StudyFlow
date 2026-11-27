@@ -86,6 +86,7 @@ export default function Medical() {
   const [historyError, setHistoryError] = useState('');
   const fileInput = useRef<HTMLInputElement>(null);
   const analysisRequestId = useRef(0);
+  const extractRequestId = useRef(0);
   useEffect(() => {
     let active = true;
     void listMedicalAnalyses().then((items) => {
@@ -126,9 +127,11 @@ export default function Medical() {
   };
   const invalidateAnalysis = () => {
     analysisRequestId.current += 1;
+    extractRequestId.current += 1;
     setAnalysis(null);
     setAnalysisError('');
     setAnalysisBusy(false);
+    setExtractBusy(false);
   };
   const selectedCollege = colleges.find((item) => item.id === college)!;
   const modules = useMemo(() => {
@@ -159,16 +162,20 @@ export default function Medical() {
     event.target.value = '';
     if (!file) return;
     invalidateAnalysis();
+    const requestId = ++extractRequestId.current;
     setExtractBusy(true);
     try {
       const extracted = await extractFileText(file);
+      if (requestId !== extractRequestId.current) return;
       setLectureName(extracted.name);
       setLectureText(extracted.text);
       if (extracted.truncated) setAnalysisError('تم اقتطاع النص إلى 8000 حرف بسبب حد الإرسال. راجعه قبل التحليل.');
     } catch (error) {
-      setAnalysisError(error instanceof Error ? error.message : 'تعذّر استخراج نص المحاضرة.');
+      if (requestId === extractRequestId.current) {
+        setAnalysisError(error instanceof Error ? error.message : 'تعذّر استخراج نص المحاضرة.');
+      }
     } finally {
-      setExtractBusy(false);
+      if (requestId === extractRequestId.current) setExtractBusy(false);
     }
   };
 
