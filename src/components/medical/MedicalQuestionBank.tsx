@@ -3,7 +3,7 @@ import { AlertCircle, BookCheck, CheckCircle2, ClipboardList, Loader2, Sparkles,
 import { db, type MedicalQuestion } from '../../db';
 import { requestMedicalQuiz } from '../../lib/chatStore';
 import { filterMedicalQuestions, parseMedicalQuestions, recordMedicalAnswer, saveMedicalQuestions } from '../../lib/medicalQuestionBank';
-import { getMedicalDataEpoch } from '../../lib/medicalDataPrivacy';
+import { getMedicalDataEpoch, isMedicalDataClearing } from '../../lib/medicalDataPrivacy';
 
 interface Props {
   college: string;
@@ -66,6 +66,7 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
   );
 
   const generate = async () => {
+    if (isMedicalDataClearing()) { setError('انتظر انتهاء حذف البيانات الطبية ثم أعد المحاولة.'); return; }
     if (!topic.trim() && sourceText.trim().length < 40) {
       setError('اكتب موضوعاً طبياً أو حمّل محاضرة نصية أولاً.');
       return;
@@ -82,7 +83,7 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
         college: requestContext.college, year: requestContext.year, subject: requestContext.subject,
         ...(requestContext.sourceText.trim().length >= 40 ? { source: { name: requestContext.sourceName, text: requestContext.sourceText } } : {}),
       });
-      if (requestId !== generationRequestId.current || dataEpoch !== getMedicalDataEpoch()) return;
+      if (requestId !== generationRequestId.current || dataEpoch !== getMedicalDataEpoch() || isMedicalDataClearing()) return;
       const drafts = parseMedicalQuestions(raw, requestContext.sourceText.trim().length >= 40 ? requestContext.sourceText : '');
       const added = await saveMedicalQuestions({
         drafts, college: requestContext.college, year: requestContext.year,
@@ -102,6 +103,7 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
   };
 
   const answer = async (index: number) => {
+    if (isMedicalDataClearing()) { setError('انتظر انتهاء حذف البيانات الطبية ثم أعد المحاولة.'); return; }
     if (!active || selected !== null || answerBusy) return;
     setAnswerBusy(true);
     setError('');
