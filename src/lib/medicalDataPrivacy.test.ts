@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../db';
-import { clearMedicalData } from './medicalDataPrivacy';
+import { clearMedicalData, getMedicalDataEpoch, isMedicalDataClearing } from './medicalDataPrivacy';
 
 describe('clear local medical data', () => {
   beforeEach(async () => {
@@ -12,6 +12,15 @@ describe('clear local medical data', () => {
       db.medicalAnalyses.clear(),
       db.tasks.clear(),
     ]);
+  });
+
+  it('invalidates pending work across the entire clear operation', async () => {
+    const before = getMedicalDataEpoch();
+
+    await clearMedicalData();
+
+    expect(getMedicalDataEpoch()).toBe(before + 2);
+    expect(isMedicalDataClearing()).toBe(false);
   });
 
   it('removes all four medical datasets atomically and preserves study data', async () => {
