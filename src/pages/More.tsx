@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import {
-  Award, BarChart3, BookOpen, Bot, Calculator, CalendarClock, CalendarCheck, GraduationCap,
+  Award, BarChart3, BookOpen, Bot, Calculator, CalendarClock, CalendarCheck, GraduationCap, AudioLines,
   FileBarChart, GitBranch, Layers, ListChecks, Repeat, Info,
   Settings as SettingsIcon, Timer as TimerIcon, CircleHelp, Youtube,
 } from 'lucide-react';
@@ -8,7 +8,15 @@ import { PageTitle } from '../components/ui';
 
 type Item = { href: string; label: string; Icon: LucideIcon; tone: string };
 
-const GROUPS: { title: string; description: string; items: Item[] }[] = [\n  {\n    title: 'طلاب الجامعة',\n    description: 'مساحة مستقلة للمقررات والمحاضرات والتكليفات والامتحانات والمسار المهني.',\n    items: [\n      { href: '#/university', label: 'مساحة طلاب الجامعة', Icon: GraduationCap, tone: 'blue' },\n    ],\n  },
+const GROUPS: { title: string; description: string; items: Item[] }[] = [
+  {
+    title: 'طلاب الجامعة',
+    description: 'مساحة مستقلة للمقررات والمحاضرات والتكليفات والامتحانات والمسار المهني.',
+    items: [
+      { href: '#/university', label: 'مساحة طلاب الجامعة', Icon: GraduationCap, tone: 'blue' },
+      { href: '#/medical', label: 'MASAR MEDICAL — الكليات الطبية', Icon: GraduationCap, tone: 'cyan' },
+    ],
+  },
   {
     title: 'التعلم وتنظيم الدراسة',
     description: 'خطط دراستك، تابع المنهاج، وراجع دروسك.',
@@ -18,6 +26,7 @@ const GROUPS: { title: string; description: string; items: Item[] }[] = [\n  {\n
       { href: '#/mindmap', label: 'الخرائط الذهنية التفاعلية', Icon: GitBranch, tone: 'violet' },
       { href: '#/review', label: 'المراجعة الذكية', Icon: Repeat, tone: 'teal' },
       { href: '#/cards', label: 'البطاقات التعليمية', Icon: Layers, tone: 'indigo' },
+      { href: '#/pronunciation', label: 'مدرّب مخارج الحروف', Icon: AudioLines, tone: 'teal' },
     ],
   },
   {

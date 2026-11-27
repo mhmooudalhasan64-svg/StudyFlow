@@ -46,6 +46,7 @@ export default function University() {
           <div className="mt-5 flex flex-wrap gap-2">
             <a href="#/plan" className="btn btn-primary inline-flex items-center gap-2"><CalendarDays size={16}/> افتح خطتي</a>
             <a href="#/library" className="btn btn-secondary inline-flex items-center gap-2"><LibraryBig size={16}/> مكتبتي الجامعية</a>
+            <a href="#/medical" className="btn btn-secondary inline-flex items-center gap-2"><GraduationCap size={16}/> القسم الطبي</a>
           </div>
         </div>
         <GraduationCap className="pointer-events-none absolute -left-5 -bottom-8 h-44 w-44 text-accent/10" strokeWidth={1}/>

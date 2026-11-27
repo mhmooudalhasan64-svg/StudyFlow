@@ -48,7 +48,10 @@ const Reports = lazy(() => import('./pages/Reports'));
 const More = lazy(() => import('./pages/More'));
 const MindMap = lazy(() => import('./pages/MindMap'));
 const Help = lazy(() => import('./pages/Help'));
-const Today = lazy(() => import('./pages/Today'));\nconst University = lazy(() => import('./pages/University'));
+const Today = lazy(() => import('./pages/Today'));
+const University = lazy(() => import('./pages/University'));
+const Medical = lazy(() => import('./pages/Medical'));
+const PronunciationCoach = lazy(() => import('./pages/PronunciationCoach'));
 
 type NavItem = { route: Route; label: string; Icon: LucideIcon };
 
@@ -64,11 +67,17 @@ const PAGE_HINTS: Partial<Record<Route, string>> = {
   stats: 'تعرض الإحصاءات ما سجلته فعلياً من جلسات وإجابات.',
   assistant: 'اكتب سؤالك أو أرفق ملفاً. إذا فتحت المساعد من صفحة أخرى فسيعرف سياقها.',
   youtube: 'أدخل رابط فيديو، ثم أضف نص الترجمة لتسأل دليل عن محتواه.',
-  today: 'هذه لوحة مختصرة تجمع مهامك ومراجعاتك ووقت تركيزك لهذا اليوم.',\n  university: 'مساحة مخصصة لتنظيم مقرراتك ومحاضراتك وتكليفاتك وامتحاناتك الجامعية.',
+  today: 'هذه لوحة مختصرة تجمع مهامك ومراجعاتك ووقت تركيزك لهذا اليوم.',
+  university: 'مساحة مخصصة لتنظيم مقرراتك ومحاضراتك وتكليفاتك وامتحاناتك الجامعية.',
+  medical: 'قسم طبي متخصص لطلاب الطب البشري وطب الأسنان والصيدلة والتمريض.',
+  pronunciation: 'تدرّب على مخارج الحروف العربية، واستمع إلى النماذج وكرّر بصوتك.'
 };
 
 const SEARCH_PAGES: { route: Route; label: string; keywords: string }[] = [
-  { route: 'home', label: 'الرئيسية', keywords: 'ملخص تقدم اليوم' },\n  { route: 'university', label: 'مساحة طلاب الجامعة', keywords: 'جامعة مقررات محاضرات تكليفات أبحاث معدل تدريب تخرج' },
+  { route: 'home', label: 'الرئيسية', keywords: 'ملخص تقدم اليوم' },
+  { route: 'university', label: 'مساحة طلاب الجامعة', keywords: 'جامعة مقررات محاضرات تكليفات أبحاث معدل تدريب تخرج' },
+  { route: 'medical', label: 'MASAR MEDICAL', keywords: 'طب بشري أسنان صيدلة تمريض مصطلحات طبية محاضرات سريري' },
+  { route: 'pronunciation', label: 'مدرّب مخارج الحروف', keywords: 'النطق مخارج الحروف تدريب صوت قراءة فصحى' }, 
   { route: 'today', label: 'يومي الدراسي', keywords: 'مهام اليوم مراجعات مستحقة وقت التركيز' },
   { route: 'plan', label: 'الخطة', keywords: 'جدول مهام تنظيم أسبوع' },
   { route: 'timer', label: 'المؤقت', keywords: 'تركيز بومودورو استراحة' },
@@ -132,7 +141,10 @@ const PAGES: Record<Route, ComponentType<any>> = {
   more: More,
   about: About,
   help: Help,
-  today: Today,\n  university: University,
+  today: Today,
+  university: University,
+  medical: Medical,
+  pronunciation: PronunciationCoach,
 };
 
 function useOnline(): boolean {

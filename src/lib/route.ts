@@ -23,7 +23,10 @@ export const ROUTES = [
   'more',
   'about',
   'help',
-  'today',\n  'university',
+  'today',
+  'university',
+  'medical',
+  'pronunciation',
 ] as const;
 export type Route = (typeof ROUTES)[number];
 

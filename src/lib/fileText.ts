@@ -100,7 +100,7 @@ export function rowsToText(rows: readonly (readonly unknown[])[], maxRows = MAX_
     .join('\n');
 }
 
-async function readPdf(file: File): Promise<string> {
+async function readPdf(file: File): Promise<{ text: string; truncated: boolean }> {
   // @ts-ignore: مسار النسخة القديمة (legacy) يدعم متصفحات أكثر
   const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
   // @ts-ignore: ‎?url يعيد عنوان ملف العامل (worker) من Vite
@@ -110,16 +110,28 @@ async function readPdf(file: File): Promise<string> {
   const doc = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
   const pages = Math.min(doc.numPages, MAX_PDF_PAGES);
   let out = '';
-  for (let p = 1; p <= pages; p++) {
-    const page = await doc.getPage(p);
-    const content = await page.getTextContent();
-    out +=
-      (content.items as { str?: string; hasEOL?: boolean }[])
-        .map((it) => (typeof it.str === 'string' ? it.str + (it.hasEOL ? '\n' : ' ') : ''))
-        .join('') + '\n\n';
-    if (out.length > MAX_TEXT_CHARS * 3) break; // يكفي ما جمعناه
+  let stoppedEarly = false;
+  try {
+    for (let p = 1; p <= pages; p++) {
+      const page = await doc.getPage(p);
+      try {
+        const content = await page.getTextContent();
+        out +=
+          (content.items as { str?: string; hasEOL?: boolean }[])
+            .map((it) => (typeof it.str === 'string' ? it.str + (it.hasEOL ? '\n' : ' ') : ''))
+            .join('') + '\n\n';
+      } finally {
+        page.cleanup();
+      }
+      if (out.length > MAX_TEXT_CHARS * 3) {
+        stoppedEarly = p < doc.numPages;
+        break;
+      }
+    }
+    return { text: out, truncated: doc.numPages > pages || stoppedEarly };
+  } finally {
+    await doc.destroy();
   }
-  return out;
 }
 
 const MAX_BOOK_BYTES = 40 * 1024 * 1024; // الكتب أكبر من الملفات العادية
@@ -163,7 +175,7 @@ async function readDocx(file: File): Promise<string> {
   return res.value;
 }
 
-async function readXlsx(file: File): Promise<string> {
+async function readXlsx(file: File): Promise<{ text: string; truncated: boolean }> {
   // @ts-ignore: read-excel-file
   const mod = await import('read-excel-file');
   const read = ((mod as { default?: unknown }).default ?? mod) as (
@@ -173,12 +185,14 @@ async function readXlsx(file: File): Promise<string> {
 
   const sheets = (await read(file, { getSheets: true })) as { name: string }[];
   const parts: string[] = [];
+  let truncated = sheets.length > MAX_SHEETS;
   for (const s of sheets.slice(0, MAX_SHEETS)) {
     const rows = (await read(file, { sheet: s.name })) as unknown[][];
+    if (rows.length > MAX_ROWS) truncated = true;
     const text = rowsToText(rows);
     if (text) parts.push(`## ورقة: ${s.name}\n${text}`);
   }
-  return parts.join('\n\n');
+  return { text: parts.join('\n\n'), truncated };
 }
 
 export async function extractFileText(file: File): Promise<ExtractedFile> {
@@ -191,8 +205,15 @@ export async function extractFileText(file: File): Promise<ExtractedFile> {
   }
 
   let raw: string;
+  let sourceTruncated = false;
   try {
-    raw = kind === 'pdf' ? await readPdf(file) : kind === 'docx' ? await readDocx(file) : kind === 'xlsx' ? await readXlsx(file) : await file.text();
+    if (kind === 'pdf' || kind === 'xlsx') {
+      const result = kind === 'pdf' ? await readPdf(file) : await readXlsx(file);
+      raw = result.text;
+      sourceTruncated = result.truncated;
+    } else {
+      raw = kind === 'docx' ? await readDocx(file) : await file.text();
+    }
   } catch (e) {
     if (e instanceof FileTextError) throw e;
     throw new FileTextError('تعذّرت قراءة الملف. تأكد أنه سليم وغير محمي بكلمة سر.');
@@ -207,5 +228,5 @@ export async function extractFileText(file: File): Promise<ExtractedFile> {
     );
   }
   const { text, truncated } = clipText(full);
-  return { name: file.name, text, truncated, originalChars: full.length };
+  return { name: file.name, text, truncated: truncated || sourceTruncated, originalChars: full.length };
 }

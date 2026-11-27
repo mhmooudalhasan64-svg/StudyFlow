@@ -271,3 +271,91 @@ export async function requestMindMap(args: {
   if (!res.ok || !data.reply) throw new Error(data.error ?? 'تعذّر إنشاء الخريطة الذهنية.');
   return data.reply;
 }
+
+/** تحليل محاضرة طبية منظمة اعتماداً على النص المستخرج محلياً من ملف الطالب. */
+export async function requestMedicalAnalysis(args: {
+  name: string;
+  text: string;
+  college: string;
+  year: string;
+  subject?: string;
+}): Promise<string> {
+  const source = args.text.trim().slice(0, 8000);
+  if (source.length < 40) throw new Error('أضف نصاً أطول للمحاضرة حتى يتمكن دليل من تحليلها.');
+  let res: Response;
+  try {
+    res = await postChat({
+      mode: 'medical_analyze',
+      college: args.college.slice(0, 60),
+      year: args.year.slice(0, 12),
+      subject: (args.subject ?? '').slice(0, 80),
+      attachment: { name: args.name.slice(0, 80), text: source },
+    });
+  } catch {
+    throw new Error('تعذّر الاتصال بخدمة دليل لتحليل المحاضرة. تحقّق من الاتصال وأعد المحاولة.');
+  }
+  const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
+  if (!res.ok || !data.reply) throw new Error(data.error ?? 'تعذّر تحليل المحاضرة الطبية.');
+  return data.reply;
+}
+
+
+/** توليد بنك أسئلة طبية افتراضية بأسلوب USMLE، مع خيار حصرها في نص المحاضرة. */
+export async function requestMedicalQuiz(args: {
+  topic: string;
+  count: number;
+  college: string;
+  year: string;
+  subject: string;
+  source?: { name: string; text: string };
+}): Promise<string> {
+  const topic = args.topic.trim().slice(0, 180);
+  const sourceText = args.source?.text.trim().slice(0, 8000) ?? '';
+  if (!topic && sourceText.length < 40) throw new Error('اكتب موضوعاً طبياً أو أرفق نص محاضرة كافياً.');
+  let res: Response;
+  try {
+    res = await postChat({
+      mode: 'medical_quiz',
+      topic,
+      count: Math.min(10, Math.max(3, args.count)),
+      college: args.college.slice(0, 60),
+      year: args.year.slice(0, 12),
+      subject: args.subject.slice(0, 80),
+      ...(sourceText ? { attachment: { name: (args.source?.name ?? 'محاضرة طبية').slice(0, 80), text: sourceText } } : {}),
+    });
+  } catch {
+    throw new Error('تعذّر الاتصال بخدمة دليل لإنشاء الأسئلة. تحقّق من الاتصال وأعد المحاولة.');
+  }
+  const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
+  if (!res.ok || !data.reply) throw new Error(data.error ?? 'تعذّر إنشاء الأسئلة الطبية.');
+  return data.reply;
+}
+
+/** توليد محاكاة سريرية افتراضية من أربع محطات OSCE. */
+export async function requestMedicalCase(args: {
+  topic: string;
+  college: string;
+  year: string;
+  subject: string;
+  source?: { name: string; text: string };
+}): Promise<string> {
+  const topic = args.topic.trim().slice(0, 180);
+  const sourceText = args.source?.text.trim().slice(0, 8000) ?? '';
+  if (!topic && sourceText.length < 40) throw new Error('اكتب موضوع الحالة أو أرفق نص محاضرة كافياً.');
+  let res: Response;
+  try {
+    res = await postChat({
+      mode: 'medical_case',
+      topic,
+      college: args.college.slice(0, 60),
+      year: args.year.slice(0, 12),
+      subject: args.subject.slice(0, 80),
+      ...(sourceText ? { attachment: { name: (args.source?.name ?? 'محاضرة طبية').slice(0, 80), text: sourceText } } : {}),
+    });
+  } catch {
+    throw new Error('تعذّر الاتصال بخدمة دليل لإنشاء المحاكاة. تحقّق من الاتصال وأعد المحاولة.');
+  }
+  const data = (await res.json().catch(() => ({}))) as { reply?: string; error?: string };
+  if (!res.ok || !data.reply) throw new Error(data.error ?? 'تعذّر إنشاء الحالة السريرية.');
+  return data.reply;
+}

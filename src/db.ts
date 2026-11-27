@@ -176,6 +176,70 @@ export interface ChatLog {
   at: number;
 }
 
+/** بطاقة تعليمية طبية مستقلة عن بطاقات المنهاج المدرسي. */
+export interface MedicalSimulationResult {
+  id?: number;
+  caseTitle: string;
+  college: string;
+  year: string;
+  subject: string;
+  score: number;
+  total: number;
+  createdAt: number;
+  completedAt: number;
+}
+
+export interface MedicalQuestion {
+  id?: number;
+  questionKey: string;
+  college: string;
+  year: string;
+  subject: string;
+  sourceName: string;
+  vignette: string;
+  stem: string;
+  options: string[];
+  answerIndex: number;
+  explanations: string[];
+  rationale: string;
+  learningPoint: string;
+  sourceQuote: string;
+  createdAt: number;
+  attempts: number;
+  correctAttempts: number;
+  lastAttemptAt: number | null;
+}
+
+/** تحليل محاضرة طبية محفوظ محلياً؛ لا يتضمن نص الملف الأصلي. */
+export interface MedicalAnalysisRecord {
+  id?: number;
+  college: string;
+  year: string;
+  subject: string;
+  sourceName: string;
+  analysis: import('./lib/medicalAnalysis').MedicalAnalysisResult;
+  createdAt: number;
+}
+
+export interface MedicalFlashcard {
+  id?: number;
+  /** مفتاح ثابت يمنع إنشاء البطاقة نفسها مرتين من المصدر نفسه. */
+  cardKey: string;
+  college: string;
+  year: string;
+  subject: string;
+  sourceName: string;
+  category: 'term' | 'high_yield';
+  front: string;
+  back: string;
+  createdAt: number;
+  dueAt: number;
+  intervalDays: number;
+  reps: number;
+  lastReviewedAt: number | null;
+  lastRating?: 'again' | 'hard' | 'good' | 'easy';
+}
+
 class StudyDB extends Dexie {
   subjects!: EntityTable<Subject, 'id'>;
   tasks!: EntityTable<Task, 'id'>;
@@ -193,6 +257,10 @@ class StudyDB extends Dexie {
   bookTexts!: EntityTable<BookText, 'key'>;
   chatLogs!: EntityTable<ChatLog, 'key'>;
   videoStudy!: EntityTable<VideoStudyCache, 'videoId'>;
+  medicalCards!: EntityTable<MedicalFlashcard, 'id'>;
+  medicalQuestions!: EntityTable<MedicalQuestion, 'id'>;
+  medicalSimulations!: EntityTable<MedicalSimulationResult, 'id'>;
+  medicalAnalyses!: EntityTable<MedicalAnalysisRecord, 'id'>;
 
   constructor() {
     super('studyflow');
@@ -225,6 +293,22 @@ class StudyDB extends Dexie {
     // الإصدار 5: تخزين تفريغات الفيديو وملخصاتها محلياً لإعادة فتحها دون إعادة الالتقاط.
     this.version(5).stores({
       videoStudy: 'videoId, updatedAt',
+    });
+    // الإصدار 6: بطاقات طبية منفصلة مع جدولة مراجعة مستقلة.
+    this.version(6).stores({
+      medicalCards: '++id, &cardKey, dueAt, college, year, subject',
+    });
+    // الإصدار 7: بنك أسئلة طبية وسجل محاولات مستقل عن بنك البكالوريا.
+    this.version(7).stores({
+      medicalQuestions: '++id, &questionKey, college, year, subject, createdAt',
+    });
+    // الإصدار 8: سجل محاكاة الحالات السريرية مستقلاً عن نتائج اختبارات البكالوريا.
+    this.version(8).stores({
+      medicalSimulations: '++id, college, year, subject, completedAt',
+    });
+    // الإصدار 9: سجل اختياري لتحليلات المحاضرات، محلي فقط ومن دون تخزين نص المصدر.
+    this.version(9).stores({
+      medicalAnalyses: '++id, college, year, subject, createdAt',
     });
   }
 }
