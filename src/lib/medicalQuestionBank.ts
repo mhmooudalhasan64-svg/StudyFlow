@@ -35,7 +35,7 @@ export function parseMedicalQuestions(raw: string, sourceText = ''): MedicalQues
   if (start < 0 || end <= start) throw new Error('وصل رد غير منسق من دليل.');
   let parsed: unknown;
   try { parsed = JSON.parse(cleaned.slice(start, end + 1)); }
-  catch { throw new Error('تعذّر قراءة بنك الأسئلة. أعد المحاولة.'); }
+  catch { throw new Error('تعذّرت قراءة بنك الأسئلة. أعد المحاولة.'); }
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('بنية بنك الأسئلة غير صالحة.');
   const list = (parsed as Record<string, unknown>).questions;
   if (!Array.isArray(list)) throw new Error('لم يتضمن الرد قائمة أسئلة.');
@@ -44,19 +44,25 @@ export function parseMedicalQuestions(raw: string, sourceText = ''): MedicalQues
     if (!value || typeof value !== 'object' || Array.isArray(value)) continue;
     const q = value as Record<string, unknown>;
     const str = (v: unknown, max = 800) => typeof v === 'string' ? v.trim().slice(0, max) : '';
+    const vignette = str(q.vignette, 1200);
+    const stem = str(q.stem, 800);
     const options = Array.isArray(q.options) ? q.options.slice(0, 5).filter((v): v is string => typeof v === 'string').map((v) => v.trim().slice(0, 500)) : [];
     const explanations = Array.isArray(q.explanations) ? q.explanations.slice(0, 5).filter((v): v is string => typeof v === 'string').map((v) => v.trim().slice(0, 700)) : [];
+    const rationale = str(q.rationale, 1200);
+    const learningPoint = str(q.learningPoint, 500);
     const answerIndex = q.answerIndex;
     const sourceQuote = str(q.sourceQuote, 500);
-    if ((sourceText && (!sourceQuote || !sourceText.includes(sourceQuote))) || !str(q.stem, 800) || options.length !== 4 || options.some((v) => !v) ||
+    if ((sourceText && (!sourceQuote || !sourceText.includes(sourceQuote))) ||
+        !vignette || !stem || options.length !== 4 || options.some((v) => !v) ||
+        new Set(options.map((option) => option.toLocaleLowerCase())).size !== 4 ||
         explanations.length !== 4 || explanations.some((v) => !v) ||
+        !rationale || !learningPoint ||
         typeof answerIndex !== 'number' || !Number.isInteger(answerIndex) || answerIndex < 0 || answerIndex > 3) continue;
     output.push({
-      vignette: str(q.vignette, 1200), stem: str(q.stem, 800), options, answerIndex, explanations,
-      rationale: str(q.rationale, 1200), learningPoint: str(q.learningPoint, 500), sourceQuote: str(q.sourceQuote, 500),
+      vignette, stem, options, answerIndex, explanations, rationale, learningPoint, sourceQuote,
     });
   }
-  if (!output.length) throw new Error('لم ينتج دليل أسئلة مكتملة بأربعة خيارات وتفسيرات لكل البدائل.');
+  if (!output.length) throw new Error('لم ينتج دليل أسئلة مكتملة بأربعة خيارات مختلفة وتفسيرات لكل البدائل وشرح ونقطة تعلم.');
   return output.slice(0, 10);
 }
 
