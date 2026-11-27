@@ -37,6 +37,7 @@ describe('formatUntrustedFileBlock', () => {
 describe('sanitizeMedicalSourceName', () => {
   it('redacts labelled personal details and bounds persisted filenames', () => {
     expect(sanitizeMedicalSourceName('Patient name: Jane Doe.pdf')).toBe('Patient name: [personal details removed].pdf');
+    expect(sanitizeMedicalSourceName('Medical Lecture 01.pdf')).toBe('Medical Lecture 01.pdf');
     expect(sanitizeMedicalSourceName('x'.repeat(100))).toHaveLength(80);
   });
 });
