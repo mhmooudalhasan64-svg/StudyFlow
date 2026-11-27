@@ -9,6 +9,7 @@ export interface MedicalCaseStation {
   feedback: string[];
   rationale: string;
   scoringCriteria: string;
+  sourceQuote: string;
 }
 
 export interface MedicalCaseDraft {
@@ -24,7 +25,7 @@ export interface MedicalCaseDraft {
 
 const STAGES: MedicalStationStage[] = ['history', 'examination', 'investigations', 'differential'];
 
-export function parseMedicalCase(raw: string): MedicalCaseDraft {
+export function parseMedicalCase(raw: string, sourceText = ''): MedicalCaseDraft {
   if (typeof raw !== 'string' || raw.length > 100_000) throw new Error('حجم بيانات المحاكاة غير صالح. أعد المحاولة.');
   const cleaned = raw.trim().replace(/^\x60{3}(?:json)?\s*/i, '').replace(/\s*\x60{3}$/i, '');
   const start = cleaned.indexOf('{');
@@ -46,15 +47,18 @@ export function parseMedicalCase(raw: string): MedicalCaseDraft {
     const options = Array.isArray(station.options) ? station.options.slice(0, 5).filter((v): v is string => typeof v === 'string').map((v) => v.trim().slice(0, 500)) : [];
     const feedback = Array.isArray(station.feedback) ? station.feedback.slice(0, 5).filter((v): v is string => typeof v === 'string').map((v) => v.trim().slice(0, 700)) : [];
     const answerIndex = station.answerIndex;
+    const sourceQuote = str(station.sourceQuote, 500);
     if (station.stage !== STAGES[index] || !str(station.title) || !str(station.prompt) ||
       options.length !== 4 || options.some((v) => !v) || feedback.length !== 4 || feedback.some((v) => !v) ||
+      !str(station.rationale, 1200) || !str(station.scoringCriteria, 800) ||
+      (sourceText.trim() && (!sourceQuote || !sourceText.includes(sourceQuote))) ||
       typeof answerIndex !== 'number' || !Number.isInteger(answerIndex) || answerIndex < 0 || answerIndex > 3) {
       throw new Error('محطة غير مكتملة: تحقق من ترتيب المراحل وأربعة الخيارات وتفسيراتها.');
     }
     stations.push({
       stage: STAGES[index], title: str(station.title, 180), prompt: str(station.prompt, 1200),
       options, answerIndex, feedback, rationale: str(station.rationale, 1200),
-      scoringCriteria: str(station.scoringCriteria, 800),
+      scoringCriteria: str(station.scoringCriteria, 800), sourceQuote,
     });
   }
   const objectives = Array.isArray(data.learningObjectives)

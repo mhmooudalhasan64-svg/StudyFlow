@@ -10,7 +10,7 @@ const makeCase = () => ({
     stage, title: 'محطة', prompt: 'ما الخطوة التعليمية الأنسب؟',
     options: ['A', 'B', 'C', 'D'], answerIndex: 1,
     feedback: ['شرح A', 'شرح B', 'شرح C', 'شرح D'],
-    rationale: 'شرح الاستدلال', scoringCriteria: 'معيار التقييم',
+    rationale: 'شرح الاستدلال', scoringCriteria: 'معيار التقييم', sourceQuote: '',
   })),
   finalSummary: 'ملخص',
   learningObjectives: ['هدف'],
@@ -40,6 +40,21 @@ describe('medical OSCE case parser', () => {
     const invalid = makeCase();
     invalid.stations[0].stage = 'differential';
     expect(() => parseMedicalCase(JSON.stringify(invalid))).toThrow();
+  });
+
+  it('requires a literal source quote for every station when a lecture is supplied', () => {
+    const draft = makeCase();
+    const source = 'معلومة تعليمية موثقة في المحاضرة الطبية.';
+    draft.stations.forEach((station) => { station.sourceQuote = 'معلومة تعليمية'; });
+    expect(parseMedicalCase(JSON.stringify(draft), source).stations).toHaveLength(4);
+    draft.stations[2].sourceQuote = 'اقتباس غير موجود';
+    expect(() => parseMedicalCase(JSON.stringify(draft), source)).toThrow();
+  });
+
+  it('requires rationale and scoring criteria for every station', () => {
+    const draft = makeCase();
+    draft.stations[0].rationale = '';
+    expect(() => parseMedicalCase(JSON.stringify(draft))).toThrow();
   });
 
   it('rejects oversized model output', () => {

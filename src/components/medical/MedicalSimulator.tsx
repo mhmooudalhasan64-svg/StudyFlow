@@ -88,7 +88,7 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
         year: requestContext.year, subject: requestContext.subject,
         ...(requestContext.sourceText.trim().length >= 40 ? { source: { name: requestContext.sourceName, text: requestContext.sourceText } } : {}),
       });
-      if (requestId === generationRequestId.current && dataEpoch === getMedicalDataEpoch() && !isMedicalDataClearing()) setCaseData(parseMedicalCase(raw));
+      if (requestId === generationRequestId.current && dataEpoch === getMedicalDataEpoch() && !isMedicalDataClearing()) setCaseData(parseMedicalCase(raw, requestContext.sourceText.trim().length >= 40 ? requestContext.sourceText : ''));
     } catch (cause) {
       if (requestId === generationRequestId.current) {
         setError(cause instanceof Error ? cause.message : 'تعذّر إنشاء الحالة السريرية.');
@@ -209,6 +209,7 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
               {station.feedback.map((line, index) => <p key={index} className="text-xs leading-6"><strong>{['A','B','C','D'][index]}:</strong> {line}</p>)}
               {station.rationale && <p className="border-t border-line pt-2 text-xs leading-6 text-muted">{station.rationale}</p>}
               {station.scoringCriteria && <p className="rounded-lg bg-accent/10 p-2 text-xs leading-6"><strong>معيار المحطة:</strong> {station.scoringCriteria}</p>}
+              {station.sourceQuote && <p className="border-s-2 border-accent/40 ps-2 text-[10px] leading-5 text-muted"><strong>دليل من المحاضرة:</strong> «{station.sourceQuote}»</p>}
               <button type="button" className="btn btn-primary w-full" onClick={() => void continueCase()}>{stationIndex === 3 ? 'إنهاء المحاكاة وعرض النتيجة' : 'المحطة التالية'}</button>
             </div>
           )}
