@@ -44,7 +44,7 @@ export function parseMedicalCase(raw: string): MedicalCaseDraft {
     const station = value as Record<string, unknown>;
     const options = Array.isArray(station.options) ? station.options.filter((v): v is string => typeof v === 'string').map((v) => v.trim()) : [];
     const feedback = Array.isArray(station.feedback) ? station.feedback.filter((v): v is string => typeof v === 'string').map((v) => v.trim()) : [];
-    const answerIndex = Number(station.answerIndex);
+    const answerIndex = station.answerIndex;
     if (station.stage !== STAGES[index] || !str(station.title) || !str(station.prompt) ||
       options.length !== 4 || options.some((v) => !v) || feedback.length !== 4 || feedback.some((v) => !v) ||
       !Number.isInteger(answerIndex) || answerIndex < 0 || answerIndex > 3) {
