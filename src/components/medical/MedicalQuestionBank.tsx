@@ -91,9 +91,11 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
         sourceName: requestContext.sourceText.trim().length >= 40 ? requestContext.sourceName : 'توليد موضوعي',
       });
       if (requestId !== generationRequestId.current || dataEpoch !== getMedicalDataEpoch()) return;
-      await refresh();
-      if (requestId === generationRequestId.current) {
-        setNotice(added ? `أُضيفت ${added} أسئلة جديدة إلى بنكك. الأسئلة المكررة لم تُحفظ ثانية.` : 'الأسئلة الناتجة محفوظة مسبقاً؛ لم تتم إضافة نسخ مكررة.');
+      setNotice(added ? `أُضيفت ${added} أسئلة جديدة إلى بنكك. الأسئلة المكررة لم تُحفظ ثانية.` : 'الأسئلة الناتجة محفوظة مسبقاً؛ لم تتم إضافة نسخ مكررة.');
+      try {
+        await refresh();
+      } catch {
+        if (requestId === generationRequestId.current) setError('حُفظت الأسئلة، لكن تعذّر تحديث القائمة المعروضة. أعد تحميل القسم لمراجعتها.');
       }
     } catch (cause) {
       if (requestId === generationRequestId.current) setError(cause instanceof Error ? cause.message : 'تعذّر إنشاء بنك الأسئلة.');
