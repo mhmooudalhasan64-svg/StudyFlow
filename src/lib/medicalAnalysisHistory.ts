@@ -8,7 +8,10 @@ export async function saveMedicalAnalysis(
   record: Omit<MedicalAnalysisRecord, 'id' | 'createdAt'>,
   now = Date.now(),
 ): Promise<number> {
+  const epoch = getMedicalDataEpoch();
+  assertMedicalDataWriteAllowed(epoch);
   return db.transaction('rw', db.medicalAnalyses, async () => {
+    assertMedicalDataWriteAllowed(epoch);
     const id = await db.medicalAnalyses.add({ ...record, createdAt: now });
     if (id == null) throw new Error('تعذّر تحديد سجل التحليل المحفوظ.');
     const count = await db.medicalAnalyses.count();
