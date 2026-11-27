@@ -57,8 +57,8 @@ describe('parseMedicalAnalysis', () => {
   it('caps generated summaries and nested collections', () => {
     const result = parseMedicalAnalysis(JSON.stringify({
       summary: 's'.repeat(4_000),
-      pathways: [{ title: 'Path', steps: Array.from({ length: 30 }, (_, i) => 'Step ' + i) }],
-      reviewQuestions: Array.from({ length: 20 }, (_, i) => ({ question: 'Q' + i, answer: 'A', explanation: 'E' })),
+      pathways: [{ title: 'Path', evidenceQuote: 'myocardium contracts', steps: Array.from({ length: 30 }, (_, i) => 'Step ' + i) }],
+      reviewQuestions: Array.from({ length: 20 }, (_, i) => ({ question: 'Q' + i, answer: 'A', explanation: 'E', evidenceQuote: 'myocardium contracts' })),
     }), source);
     expect(result.summary).toHaveLength(1_600);
     expect(result.pathways?.[0].steps).toHaveLength(12);
