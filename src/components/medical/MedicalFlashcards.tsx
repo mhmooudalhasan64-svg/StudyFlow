@@ -65,11 +65,13 @@ export function MedicalFlashcards({ analysis, college, year, subject, sourceName
       }
       const added = await saveMedicalFlashcards(generated);
       if (activeContext.current !== saveContext) return;
-      await refresh();
-      if (activeContext.current === saveContext) {
-        setActiveId(null);
-        setRevealed(false);
-        setMessage(added ? `حُفظت ${added} بطاقة جديدة. البطاقات المكررة لم تُضف مرة ثانية.` : 'هذه البطاقات محفوظة مسبقاً؛ لم تتم إضافة نسخ مكررة.');
+      setActiveId(null);
+      setRevealed(false);
+      setMessage(added ? `حُفظت ${added} بطاقة جديدة. البطاقات المكررة لم تُضف مرة ثانية.` : 'هذه البطاقات محفوظة مسبقاً؛ لم تتم إضافة نسخ مكررة.');
+      try {
+        await refresh();
+      } catch {
+        if (activeContext.current === saveContext) setMessage('حُفظت البطاقات، لكن تعذّر تحديث القائمة المعروضة. أعد تحميل القسم لمراجعتها.');
       }
     } catch {
       if (activeContext.current === saveContext) setMessage('تعذّر حفظ البطاقات محلياً. تحقق من مساحة التخزين ثم أعد المحاولة.');
@@ -87,7 +89,12 @@ export function MedicalFlashcards({ analysis, college, year, subject, sourceName
       if (activeContext.current === reviewContext) {
         setActiveId(null);
         setRevealed(false);
-        await refresh();
+        setMessage('تم تحديث موعد مراجعة البطاقة.');
+        try {
+          await refresh();
+        } catch {
+          if (activeContext.current === reviewContext) setMessage('تم تحديث موعد البطاقة، لكن تعذّر تحديث القائمة المعروضة. أعد تحميل القسم.');
+        }
       }
     } catch {
       if (activeContext.current === reviewContext) setMessage('تعذّر تحديث موعد المراجعة. لم يتم تغيير البطاقة.');
