@@ -1,5 +1,6 @@
 import { db, type MedicalQuestion } from '../db';
 import { assertMedicalDataWriteAllowed, getMedicalDataEpoch } from './medicalDataPrivacy';
+import { sanitizeMedicalSourceName } from './medicalDataSanitization';
 
 
 export type MedicalQuestionHistoryFilter = 'all' | 'weak' | 'new';
@@ -84,7 +85,7 @@ export async function saveMedicalQuestions(args: {
       if (exists) continue;
       const record: Omit<MedicalQuestion, 'id'> = {
         questionKey, college: args.college, year: args.year, subject: args.subject,
-        sourceName: args.sourceName, ...draft, createdAt: Date.now(),
+        sourceName: sanitizeMedicalSourceName(args.sourceName), ...draft, createdAt: Date.now(),
         attempts: 0, correctAttempts: 0, lastAttemptAt: null,
       };
       await db.medicalQuestions.add(record);
