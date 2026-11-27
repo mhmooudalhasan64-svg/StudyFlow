@@ -377,7 +377,7 @@ export default function Medical() {
         <MedicalVisuals pathways={analysis.pathways} comparisonTables={analysis.comparisonTables} />
       ) : null}
 
-      <MedicalFlashcards
+      <MedicalFlashcards key={medicalDataRevision}
         analysis={analysis}
         college={selectedCollege.label}
         year={year}
@@ -385,7 +385,7 @@ export default function Medical() {
         sourceName={lectureName}
       />
 
-      <MedicalQuestionBank
+      <MedicalQuestionBank key={medicalDataRevision}
         college={selectedCollege.label}
         year={year}
         subject={lectureSubject}
@@ -393,7 +393,7 @@ export default function Medical() {
         sourceName={lectureName}
       />
 
-      <MedicalSimulator
+      <MedicalSimulator key={medicalDataRevision}
         college={selectedCollege.label}
         year={year}
         subject={lectureSubject}
