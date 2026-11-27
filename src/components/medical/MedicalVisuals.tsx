@@ -43,6 +43,7 @@ export function MedicalVisuals({ pathways = [], comparisonTables = [] }: Medical
           {pathway && (
             <div className="space-y-3">
               <h4 className="text-sm font-bold">{pathway.title}</h4>
+              <p className="rounded-lg border-s-2 border-accent/40 bg-base/70 px-3 py-2 text-[11px] leading-6 text-muted"><strong>دليل من المحاضرة:</strong> «{pathway.evidenceQuote}»</p>
               <div className="grid gap-2 sm:grid-cols-2">
                 {pathway.steps.map((step, index) => (
                   <button key={`${index}-${step}`} type="button" onClick={() => setActiveStep(index)}
