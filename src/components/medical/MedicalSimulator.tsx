@@ -4,7 +4,7 @@ import { db, type MedicalSimulationResult } from '../../db';
 import { requestMedicalCase } from '../../lib/chatStore';
 import { parseMedicalCase, type MedicalCaseDraft } from '../../lib/medicalCaseSimulator';
 import { getMedicalSimulationStats } from '../../lib/medicalSimulationStats';
-import { getMedicalDataEpoch } from '../../lib/medicalDataPrivacy';
+import { getMedicalDataEpoch, isMedicalDataClearing } from '../../lib/medicalDataPrivacy';
 
 interface Props {
   college: string;
@@ -66,6 +66,7 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
   }, [college, year, subject, contextKey]);
 
   const generate = async () => {
+    if (isMedicalDataClearing()) { setError('انتظر انتهاء حذف البيانات الطبية ثم أعد المحاولة.'); return; }
     if (!topic.trim() && sourceText.trim().length < 40) {
       setError('اكتب محور الحالة أو أرفق نص محاضرة قابلاً للقراءة.');
       return;
@@ -87,7 +88,7 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
         year: requestContext.year, subject: requestContext.subject,
         ...(requestContext.sourceText.trim().length >= 40 ? { source: { name: requestContext.sourceName, text: requestContext.sourceText } } : {}),
       });
-      if (requestId === generationRequestId.current && dataEpoch === getMedicalDataEpoch()) setCaseData(parseMedicalCase(raw));
+      if (requestId === generationRequestId.current && dataEpoch === getMedicalDataEpoch() && !isMedicalDataClearing()) setCaseData(parseMedicalCase(raw));
     } catch (cause) {
       if (requestId === generationRequestId.current) {
         setError(cause instanceof Error ? cause.message : 'تعذّر إنشاء الحالة السريرية.');
@@ -103,6 +104,7 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
   };
 
   const continueCase = async () => {
+    if (isMedicalDataClearing()) { setError('انتظر انتهاء حذف البيانات الطبية ثم أعد المحاولة.'); return; }
     if (!caseData || selected === null) return;
     const nextScore = score + (selected === caseData.stations[stationIndex].answerIndex ? 1 : 0);
     setScore(nextScore);
@@ -116,7 +118,7 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
     setFinished(true);
     setSaving(true);
     try {
-      if (dataEpoch !== getMedicalDataEpoch()) return;
+      if (dataEpoch !== getMedicalDataEpoch() || isMedicalDataClearing()) return;
       const completedAt = Date.now();
       await db.medicalSimulations.add({
         caseTitle: caseData.caseTitle,
