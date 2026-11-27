@@ -3,6 +3,7 @@ import { AlertCircle, BookCheck, CheckCircle2, ClipboardList, Loader2, Sparkles,
 import { db, type MedicalQuestion } from '../../db';
 import { requestMedicalQuiz } from '../../lib/chatStore';
 import { filterMedicalQuestions, parseMedicalQuestions, recordMedicalAnswer, saveMedicalQuestions } from '../../lib/medicalQuestionBank';
+import { getMedicalDataEpoch } from '../../lib/medicalDataPrivacy';
 
 interface Props {
   college: string;
@@ -70,6 +71,7 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
       return;
     }
     const requestId = ++generationRequestId.current;
+    const dataEpoch = getMedicalDataEpoch();
     const requestContext = { college, year, subject, sourceText, sourceName, topic, count };
     setBusy(true);
     setError('');
@@ -80,14 +82,14 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
         college: requestContext.college, year: requestContext.year, subject: requestContext.subject,
         ...(requestContext.sourceText.trim().length >= 40 ? { source: { name: requestContext.sourceName, text: requestContext.sourceText } } : {}),
       });
-      if (requestId !== generationRequestId.current) return;
+      if (requestId !== generationRequestId.current || dataEpoch !== getMedicalDataEpoch()) return;
       const drafts = parseMedicalQuestions(raw, requestContext.sourceText.trim().length >= 40 ? requestContext.sourceText : '');
       const added = await saveMedicalQuestions({
         drafts, college: requestContext.college, year: requestContext.year,
         subject: requestContext.subject.trim() || requestContext.topic.trim() || 'موضوع طبي',
         sourceName: requestContext.sourceText.trim().length >= 40 ? requestContext.sourceName : 'توليد موضوعي',
       });
-      if (requestId !== generationRequestId.current) return;
+      if (requestId !== generationRequestId.current || dataEpoch !== getMedicalDataEpoch()) return;
       await refresh();
       if (requestId === generationRequestId.current) {
         setNotice(added ? `أُضيفت ${added} أسئلة جديدة إلى بنكك. الأسئلة المكررة لم تُحفظ ثانية.` : 'الأسئلة الناتجة محفوظة مسبقاً؛ لم تتم إضافة نسخ مكررة.');
