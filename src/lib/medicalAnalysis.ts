@@ -1,9 +1,11 @@
+export type MedicalEvidenceItem = string | { text: string; evidenceQuote: string };
+
 export interface MedicalAnalysisResult {
   title?: string;
   summary?: string;
   summaryEvidenceQuote?: string;
-  learningObjectives?: { text: string; evidenceQuote: string }[];
-  keyPoints?: { text: string; evidenceQuote: string }[];
+  learningObjectives?: MedicalEvidenceItem[];
+  keyPoints?: MedicalEvidenceItem[];
   terminology?: { term: string; prefix: string; root: string; suffix: string; meaning: string; evidenceQuote: string }[];
   highYield?: { fact: string; why: string; evidenceQuote: string }[];
   comparisonTables?: { title: string; columns: string[]; rows: string[][]; evidenceQuote: string }[];
