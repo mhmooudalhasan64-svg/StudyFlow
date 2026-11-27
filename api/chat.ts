@@ -654,6 +654,7 @@ async function handlePost(request: Request): Promise<Response> {
   const openRouterFallbackKey = !extraUsageConsent && provider.name === 'Groq'
     ? clean(environment().OPENROUTER_API_KEY)
     : undefined;
+  const medicalRequest = Boolean(medical || medicalQuiz || medicalCase);
 
   const targets = webSearch
     ? (clean(environment().OPENROUTER_API_KEY)
@@ -679,7 +680,7 @@ async function handlePost(request: Request): Promise<Response> {
           key: provider.key,
           endpoint: provider.endpoint,
           model: provider.model,
-          timeoutMs: 11_000,
+          timeoutMs: medicalRequest && !openRouterFallbackKey ? 18_000 : 11_000,
         },
         ...(openRouterFallbackKey ? [{
           name: 'OpenRouter',
@@ -701,9 +702,10 @@ async function handlePost(request: Request): Promise<Response> {
     if (!target.key) continue;
     activeProvider = target.name;
 
-    // With a single free provider, retry one transient failure within the
-    // frontend's 23s request budget. Paid/consented requests are never duplicated.
-    const attempts = !extraUsageConsent && targets.length === 1 ? 2 : 1;
+    // General chat retries briefly within the frontend's 23s budget. Structured
+    // medical generation gets one longer attempt so a valid long response is not
+    // cut off at the short retry timeout. Paid/consented requests are never duplicated.
+    const attempts = !medicalRequest && !extraUsageConsent && targets.length === 1 ? 2 : 1;
     let providerSucceeded = false;
 
     for (let attempt = 0; attempt < attempts; attempt++) {
