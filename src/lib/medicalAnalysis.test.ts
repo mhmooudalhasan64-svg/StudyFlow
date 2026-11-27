@@ -48,4 +48,20 @@ describe('parseMedicalAnalysis', () => {
     const result = parseMedicalAnalysis('```json\n{"title":"Test"}\n```', source);
     expect(result.title).toBe('Test');
   });
+
+  it('rejects oversized model output and oversized source text', () => {
+    expect(() => parseMedicalAnalysis(' '.repeat(100_001), source)).toThrow('حجم بيانات');
+    expect(() => parseMedicalAnalysis('{"title":"ok"}', 'x'.repeat(8_001))).toThrow('حجم بيانات');
+  });
+
+  it('caps generated summaries and nested collections', () => {
+    const result = parseMedicalAnalysis(JSON.stringify({
+      summary: 's'.repeat(4_000),
+      pathways: [{ title: 'Path', steps: Array.from({ length: 30 }, (_, i) => 'Step ' + i) }],
+      reviewQuestions: Array.from({ length: 20 }, (_, i) => ({ question: 'Q' + i, answer: 'A', explanation: 'E' })),
+    }), source);
+    expect(result.summary).toHaveLength(1_600);
+    expect(result.pathways?.[0].steps).toHaveLength(12);
+    expect(result.reviewQuestions).toHaveLength(8);
+  });
 });
