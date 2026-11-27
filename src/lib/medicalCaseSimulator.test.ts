@@ -31,6 +31,11 @@ describe('medical OSCE case parser', () => {
     invalid.stations[1].options.pop();
     expect(() => parseMedicalCase(JSON.stringify(invalid))).toThrow();
   });
+  it('rejects duplicate answer options in an OSCE station', () => {
+    const invalid = makeCase();
+    invalid.stations[2].options = ['A', 'A', 'C', 'D'];
+    expect(() => parseMedicalCase(JSON.stringify(invalid))).toThrow();
+  });
   it('rejects string answer indexes instead of coercing them', () => {
     const invalid = makeCase();
     invalid.stations[0].answerIndex = '1' as unknown as number;
