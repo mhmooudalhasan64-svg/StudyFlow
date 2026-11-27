@@ -257,7 +257,7 @@ function medicalAnalysisRequest(body: unknown, att: Attachment | null): { system
   if (b.mode !== 'medical_analyze') return null;
   if (!att || att.imageDataUrl || !att.text.trim()) return 'invalid';
   const college = typeof b.college === 'string' ? b.college.replace(/[\r\n]+/g, ' ').slice(0, 60) : 'كلية طبية';
-  const year = typeof b.year === 'string' || typeof b.year === 'number' ? String(b.year).slice(0, 12) : '';
+  const year = typeof b.year === 'string' || typeof b.year === 'number' ? redactPersonalData(String(b.year)).slice(0, 12) : '';
   const subject = typeof b.subject === 'string' ? b.subject.replace(/[\r\n]+/g, ' ').slice(0, 80) : '';
   return {
     system: MEDICAL_ANALYSIS_PROMPT,
