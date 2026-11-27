@@ -81,7 +81,7 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
         ...(requestContext.sourceText.trim().length >= 40 ? { source: { name: requestContext.sourceName, text: requestContext.sourceText } } : {}),
       });
       if (requestId !== generationRequestId.current) return;
-      const drafts = parseMedicalQuestions(raw);
+      const drafts = parseMedicalQuestions(raw, requestContext.sourceText.trim().length >= 40 ? requestContext.sourceText : '');
       const added = await saveMedicalQuestions({
         drafts, college: requestContext.college, year: requestContext.year,
         subject: requestContext.subject.trim() || requestContext.topic.trim() || 'موضوع طبي',
