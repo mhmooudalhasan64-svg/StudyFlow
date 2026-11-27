@@ -1,8 +1,9 @@
 export interface MedicalAnalysisResult {
   title?: string;
   summary?: string;
-  learningObjectives?: string[];
-  keyPoints?: string[];
+  summaryEvidenceQuote?: string;
+  learningObjectives?: { text: string; evidenceQuote: string }[];
+  keyPoints?: { text: string; evidenceQuote: string }[];
   terminology?: { term: string; prefix: string; root: string; suffix: string; meaning: string; evidenceQuote: string }[];
   highYield?: { fact: string; why: string; evidenceQuote: string }[];
   comparisonTables?: { title: string; columns: string[]; rows: string[][]; evidenceQuote: string }[];
@@ -82,11 +83,18 @@ export function parseMedicalAnalysis(raw: string, sourceText: string): MedicalAn
     evidenceQuote: str(item.evidenceQuote, 500),
   })).filter((item) => item.question && item.answer && item.evidenceQuote && sourceText.includes(item.evidenceQuote)).slice(0, 8);
 
+  const summaryEvidenceQuote = str(data.summaryEvidenceQuote, 500);
+  const summary = summaryEvidenceQuote && sourceText.includes(summaryEvidenceQuote) ? str(data.summary, 1600) : '';
+  const evidenceItems = (value: unknown, max: number) => objects(value).map((item) => ({
+    text: str(item.text, 500), evidenceQuote: str(item.evidenceQuote, 500),
+  })).filter((item) => item.text && item.evidenceQuote && sourceText.includes(item.evidenceQuote)).slice(0, max);
+
   return {
     title: str(data.title, 160),
-    summary: str(data.summary, 1600),
-    learningObjectives: strings(data.learningObjectives, 8),
-    keyPoints: strings(data.keyPoints, 12),
+    summary,
+    summaryEvidenceQuote: summary ? summaryEvidenceQuote : '',
+    learningObjectives: evidenceItems(data.learningObjectives, 8),
+    keyPoints: evidenceItems(data.keyPoints, 12),
     terminology,
     highYield,
     comparisonTables,
