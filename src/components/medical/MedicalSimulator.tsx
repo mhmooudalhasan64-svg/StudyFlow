@@ -3,6 +3,7 @@ import { AlertCircle, CheckCircle2, ClipboardList, Loader2, ShieldAlert, Sparkle
 import { db, type MedicalSimulationResult } from '../../db';
 import { requestMedicalCase } from '../../lib/chatStore';
 import { parseMedicalCase, type MedicalCaseDraft } from '../../lib/medicalCaseSimulator';
+import { sanitizeMedicalSourceText } from '../../lib/medicalDataSanitization';
 import { getMedicalSimulationStats } from '../../lib/medicalSimulationStats';
 import { assertMedicalDataWriteAllowed, getMedicalDataEpoch, isMedicalDataClearing } from '../../lib/medicalDataPrivacy';
 
@@ -88,7 +89,7 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
         year: requestContext.year, subject: requestContext.subject,
         ...(requestContext.sourceText.trim().length >= 40 ? { source: { name: requestContext.sourceName, text: requestContext.sourceText } } : {}),
       });
-      if (requestId === generationRequestId.current && dataEpoch === getMedicalDataEpoch() && !isMedicalDataClearing()) setCaseData(parseMedicalCase(raw, requestContext.sourceText.trim().length >= 40 ? requestContext.sourceText : ''));
+      if (requestId === generationRequestId.current && dataEpoch === getMedicalDataEpoch() && !isMedicalDataClearing()) setCaseData(parseMedicalCase(raw, requestContext.sourceText.trim().length >= 40 ? sanitizeMedicalSourceText(requestContext.sourceText.slice(0, 8_000)) : ''));
     } catch (cause) {
       if (requestId === generationRequestId.current) {
         setError(cause instanceof Error ? cause.message : 'تعذّر إنشاء الحالة السريرية.');
