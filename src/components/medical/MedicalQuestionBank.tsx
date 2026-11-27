@@ -29,13 +29,15 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
   const activeContext = useRef(contextKey);
 
   const refresh = useCallback(async () => {
+    const requestContext = contextKey;
     const rows = await db.medicalQuestions.where('college').equals(college).toArray();
+    if (activeContext.current !== requestContext) return;
     const filtered = rows.filter((q) => q.year === year && (!subject.trim() || q.subject === subject.trim()))
       .sort((a, b) => (a.attempts - b.attempts) || (b.createdAt - a.createdAt));
     setQuestions(filtered);
     setActiveIndex(0);
     setSelected(null);
-  }, [college, year, subject]);
+  }, [college, year, subject, contextKey]);
 
   useEffect(() => {
     activeContext.current = contextKey;
