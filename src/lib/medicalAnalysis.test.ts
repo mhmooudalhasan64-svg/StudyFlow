@@ -8,6 +8,7 @@ describe('parseMedicalAnalysis', () => {
     const result = parseMedicalAnalysis(JSON.stringify({
       title: 'Cardiac function',
       summary: 'A short summary.',
+      summaryEvidenceQuote: 'The myocardium contracts',
       terminology: [
         { term: 'Myocardium', meaning: 'عضلة القلب', prefix: '', root: '', suffix: '', evidenceQuote: 'The myocardium contracts' },
         { term: 'Invented term', meaning: 'شرح', evidenceQuote: 'not present in source' },
@@ -31,7 +32,7 @@ describe('parseMedicalAnalysis', () => {
 
   it('limits output size and rejects malformed comparison table rows', () => {
     const result = parseMedicalAnalysis(JSON.stringify({
-      learningObjectives: Array.from({ length: 20 }, (_, i) => 'Objective ' + i),
+      learningObjectives: Array.from({ length: 20 }, (_, i) => ({ text: 'Objective ' + i, evidenceQuote: 'myocardium contracts' })),
       comparisonTables: [{
         title: 'Comparison', evidenceQuote: 'myocardium contracts',
         columns: ['A', 'B'],
@@ -56,13 +57,24 @@ describe('parseMedicalAnalysis', () => {
 
   it('caps generated summaries and nested collections', () => {
     const result = parseMedicalAnalysis(JSON.stringify({
-      summary: 's'.repeat(4_000),
+      summary: 's'.repeat(4_000), summaryEvidenceQuote: 'myocardium contracts',
       pathways: [{ title: 'Path', evidenceQuote: 'myocardium contracts', steps: Array.from({ length: 30 }, (_, i) => 'Step ' + i) }],
       reviewQuestions: Array.from({ length: 20 }, (_, i) => ({ question: 'Q' + i, answer: 'A', explanation: 'E', evidenceQuote: 'myocardium contracts' })),
     }), source);
     expect(result.summary).toHaveLength(1_600);
     expect(result.pathways?.[0].steps).toHaveLength(12);
     expect(result.reviewQuestions).toHaveLength(8);
+  });
+
+  it('drops summaries, objectives, and key points without exact source evidence', () => {
+    const result = parseMedicalAnalysis(JSON.stringify({
+      summary: 'Unsupported summary', summaryEvidenceQuote: 'not in source',
+      learningObjectives: [{ text: 'Objective', evidenceQuote: 'not in source' }],
+      keyPoints: [{ text: 'Key point', evidenceQuote: 'not in source' }],
+    }), source);
+    expect(result.summary).toBe('');
+    expect(result.learningObjectives).toHaveLength(0);
+    expect(result.keyPoints).toHaveLength(0);
   });
 
   it('drops tables, pathways, and review questions without exact source evidence', () => {
