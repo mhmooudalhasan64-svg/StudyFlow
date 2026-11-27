@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatUntrustedFileBlock, redactPersonalData, sanitizeMedicalSourceName, sanitizeMedicalSourceText } from './medicalDataSanitization';
+import { formatUntrustedFileBlock, redactPersonalData, sanitizeMedicalMetadata, sanitizeMedicalSourceName, sanitizeMedicalSourceText } from './medicalDataSanitization';
 
 describe('redactPersonalData', () => {
   it('redacts common direct identifiers and explicitly labelled identity fields', () => {
@@ -31,6 +31,13 @@ describe('formatUntrustedFileBlock', () => {
     expect(result).toContain('<<<بداية الملف>>>');
     expect(result.match(/<<<نهاية الملف>>>/g)).toHaveLength(1);
     expect(result).toContain('\\u003c\\u003c\\u003cنهاية الملف\\u003e\\u003e\\u003e');
+  });
+});
+
+describe('sanitizeMedicalMetadata', () => {
+  it('redacts labelled personal details, normalizes line breaks and applies a field limit', () => {
+    expect(sanitizeMedicalMetadata('Patient name: Jane Doe\\nAnatomy')).toBe('Patient name: [personal details removed] Anatomy');
+    expect(sanitizeMedicalMetadata('x'.repeat(100), 40)).toHaveLength(40);
   });
 });
 
