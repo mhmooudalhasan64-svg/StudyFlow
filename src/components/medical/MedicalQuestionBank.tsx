@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AlertCircle, BookCheck, CheckCircle2, ClipboardList, Loader2, Sparkles, XCircle } from 'lucide-react';
 import { db, type MedicalQuestion } from '../../db';
 import { requestMedicalQuiz } from '../../lib/chatStore';
@@ -24,6 +24,9 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
   const [notice, setNotice] = useState('');
   const [showAll, setShowAll] = useState(false);
   const [historyFilter, setHistoryFilter] = useState<'all' | 'weak' | 'new'>('all');
+  const generationRequestId = useRef(0);
+  const contextKey = `${college}|${year}|${subject.trim()}`;
+  const activeContext = useRef(contextKey);
 
   const refresh = useCallback(async () => {
     const rows = await db.medicalQuestions.where('college').equals(college).toArray();
@@ -35,6 +38,12 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
   }, [college, year, subject]);
 
   useEffect(() => {
+    activeContext.current = contextKey;
+    generationRequestId.current += 1;
+    setBusy(false);
+    setAnswerBusy(false);
+    setSelected(null);
+    setActiveIndex(0);
     let alive = true;
     void db.medicalQuestions.where('college').equals(college).toArray().then((rows) => {
       if (!alive) return;
@@ -42,7 +51,7 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
         .sort((a, b) => (a.attempts - b.attempts) || (b.createdAt - a.createdAt)));
     }).catch(() => { if (alive) setError('تعذّر تحميل بنك الأسئلة المحفوظ.'); });
     return () => { alive = false; };
-  }, [college, year, subject]);
+  }, [college, year, subject, contextKey]);
 
   const active = questions[activeIndex] ?? null;
   const correctTotal = useMemo(() => questions.reduce((sum, q) => sum + q.correctAttempts, 0), [questions]);
@@ -58,25 +67,33 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
       setError('اكتب موضوعاً طبياً أو حمّل محاضرة نصية أولاً.');
       return;
     }
+    const requestId = ++generationRequestId.current;
+    const requestContext = { college, year, subject, sourceText, sourceName, topic, count };
     setBusy(true);
     setError('');
     setNotice('');
     try {
       const raw = await requestMedicalQuiz({
-        topic, count, college, year, subject,
-        ...(sourceText.trim().length >= 40 ? { source: { name: sourceName, text: sourceText } } : {}),
+        topic: requestContext.topic, count: requestContext.count,
+        college: requestContext.college, year: requestContext.year, subject: requestContext.subject,
+        ...(requestContext.sourceText.trim().length >= 40 ? { source: { name: requestContext.sourceName, text: requestContext.sourceText } } : {}),
       });
+      if (requestId !== generationRequestId.current) return;
       const drafts = parseMedicalQuestions(raw);
       const added = await saveMedicalQuestions({
-        drafts, college, year, subject: subject.trim() || topic.trim() || 'موضوع طبي',
-        sourceName: sourceText.trim().length >= 40 ? sourceName : 'توليد موضوعي',
+        drafts, college: requestContext.college, year: requestContext.year,
+        subject: requestContext.subject.trim() || requestContext.topic.trim() || 'موضوع طبي',
+        sourceName: requestContext.sourceText.trim().length >= 40 ? requestContext.sourceName : 'توليد موضوعي',
       });
+      if (requestId !== generationRequestId.current) return;
       await refresh();
-      setNotice(added ? `أُضيفت ${added} أسئلة جديدة إلى بنكك. الأسئلة المكررة لم تُحفظ ثانية.` : 'الأسئلة الناتجة محفوظة مسبقاً؛ لم تتم إضافة نسخ مكررة.');
+      if (requestId === generationRequestId.current) {
+        setNotice(added ? `أُضيفت ${added} أسئلة جديدة إلى بنكك. الأسئلة المكررة لم تُحفظ ثانية.` : 'الأسئلة الناتجة محفوظة مسبقاً؛ لم تتم إضافة نسخ مكررة.');
+      }
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'تعذّر إنشاء بنك الأسئلة.');
+      if (requestId === generationRequestId.current) setError(cause instanceof Error ? cause.message : 'تعذّر إنشاء بنك الأسئلة.');
     } finally {
-      setBusy(false);
+      if (requestId === generationRequestId.current) setBusy(false);
     }
   };
 
@@ -84,17 +101,22 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
     if (!active || selected !== null || answerBusy) return;
     setAnswerBusy(true);
     setError('');
+    const answerContext = contextKey;
     try {
       await recordMedicalAnswer(active, index);
     } catch {
-      setError('تعذّر تسجيل المحاولة محلياً؛ لم يتم اعتماد الإجابة. يمكنك المحاولة مجدداً.');
-      setAnswerBusy(false);
+      if (activeContext.current === answerContext) {
+        setError('تعذّر تسجيل المحاولة محلياً؛ لم يتم اعتماد الإجابة. يمكنك المحاولة مجدداً.');
+        setAnswerBusy(false);
+      }
       return;
     }
+    if (activeContext.current !== answerContext) return;
     setSelected(index);
     try {
       // Keep the answered question visible without resetting its feedback state.
       const refreshed = await db.medicalQuestions.where('college').equals(college).toArray();
+      if (activeContext.current !== answerContext) return;
       const filtered = refreshed.filter((q) => q.year === year && (!subject.trim() || q.subject === subject.trim()));
       const answered = filtered.find((q) => q.id === active.id);
       const others = filtered.filter((q) => q.id !== active.id).sort((a, b) => a.attempts - b.attempts);
