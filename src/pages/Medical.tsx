@@ -7,6 +7,7 @@ import {
 import { PageTitle } from '../components/ui';
 import { extractFileText } from '../lib/fileText';
 import { requestMedicalAnalysis } from '../lib/chatStore';
+import { parseMedicalAnalysis } from '../lib/medicalAnalysis';
 import { MedicalFlashcards } from '../components/medical/MedicalFlashcards';
 import { MedicalQuestionBank } from '../components/medical/MedicalQuestionBank';
 import { MedicalSimulator } from '../components/medical/MedicalSimulator';
@@ -66,57 +67,6 @@ const tools = [
   { title: 'المحاكي السريري', detail: 'حالات افتراضية وتقييم خطوات التفكير السريري.', icon: Stethoscope, tag: 'تدريب' },
   { title: 'الجداول والمخططات', detail: 'مقارنات تفاعلية ومسارات خطوة بخطوة من المحاضرات.', icon: Table2, tag: 'مراجعة' },
 ];
-
-interface MedicalAnalysisResult {
-  title?: string;
-  summary?: string;
-  learningObjectives?: string[];
-  keyPoints?: string[];
-  terminology?: { term: string; prefix: string; root: string; suffix: string; meaning: string; evidenceQuote: string }[];
-  highYield?: { fact: string; why: string; evidenceQuote: string }[];
-  comparisonTables?: { title: string; columns: string[]; rows: string[][] }[];
-  pathways?: { title: string; steps: string[] }[];
-  reviewQuestions?: { question: string; answer: string; explanation: string }[];
-  limitations?: string[];
-}
-
-function parseMedicalAnalysis(raw: string): MedicalAnalysisResult {
-  const cleaned = raw.trim().replace(/^\x60{3}(?:json)?\s*/i, '').replace(/\s*\x60{3}$/i, '');
-  const start = cleaned.indexOf('{');
-  const end = cleaned.lastIndexOf('}');
-  if (start < 0 || end <= start) throw new Error('وصل رد غير منسق من دليل. أعد المحاولة.');
-  let value: unknown;
-  try { value = JSON.parse(cleaned.slice(start, end + 1)); }
-  catch { throw new Error('تعذّر قراءة نتائج التحليل. أعد المحاولة أو قلّل حجم النص.'); }
-  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('بنية نتائج التحليل غير صالحة.');
-  const data = value as Record<string, unknown>;
-  const str = (item: unknown) => typeof item === 'string' ? item : '';
-  const list = (item: unknown) => Array.isArray(item) ? item : [];
-  return {
-    title: str(data.title),
-    summary: str(data.summary),
-    learningObjectives: list(data.learningObjectives).filter((x): x is string => typeof x === 'string'),
-    keyPoints: list(data.keyPoints).filter((x): x is string => typeof x === 'string'),
-    terminology: list(data.terminology).filter((x): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x)).map((x) => ({
-      term: str(x.term), prefix: str(x.prefix), root: str(x.root), suffix: str(x.suffix), meaning: str(x.meaning), evidenceQuote: str(x.evidenceQuote),
-    })).filter((x) => x.term && x.meaning),
-    highYield: list(data.highYield).filter((x): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x)).map((x) => ({
-      fact: str(x.fact), why: str(x.why), evidenceQuote: str(x.evidenceQuote),
-    })).filter((x) => x.fact),
-    comparisonTables: list(data.comparisonTables).filter((x): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x)).map((x) => ({
-      title: str(x.title),
-      columns: list(x.columns).filter((v): v is string => typeof v === 'string'),
-      rows: list(x.rows).filter((row): row is unknown[] => Array.isArray(row)).map((row) => row.map(str)),
-    })).filter((x) => x.columns.length > 0 && x.rows.length > 0),
-    pathways: list(data.pathways).filter((x): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x)).map((x) => ({
-      title: str(x.title), steps: list(x.steps).filter((v): v is string => typeof v === 'string'),
-    })).filter((x) => x.title && x.steps.length > 0),
-    reviewQuestions: list(data.reviewQuestions).filter((x): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x)).map((x) => ({
-      question: str(x.question), answer: str(x.answer), explanation: str(x.explanation),
-    })).filter((x) => x.question && x.answer),
-    limitations: list(data.limitations).filter((x): x is string => typeof x === 'string'),
-  };
-}
 
 export default function Medical() {
   const [college, setCollege] = useState<CollegeId>('medicine');
@@ -194,7 +144,7 @@ export default function Medical() {
     setAnalysis(null);
     try {
       const raw = await requestMedicalAnalysis(requestContext);
-      if (requestId === analysisRequestId.current) setAnalysis(parseMedicalAnalysis(raw));
+      if (requestId === analysisRequestId.current) setAnalysis(parseMedicalAnalysis(raw, requestContext.text));
     } catch (error) {
       if (requestId === analysisRequestId.current) {
         setAnalysisError(error instanceof Error ? error.message : 'تعذّر تحليل المحاضرة.');
