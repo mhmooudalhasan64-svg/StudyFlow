@@ -10,7 +10,7 @@ import { requestMedicalAnalysis } from '../lib/chatStore';
 import { parseMedicalAnalysis, type MedicalAnalysisResult } from '../lib/medicalAnalysis';
 import { sanitizeMedicalSourceText } from '../lib/medicalDataSanitization';
 import { deleteMedicalAnalysis, listMedicalAnalyses, saveMedicalAnalysis } from '../lib/medicalAnalysisHistory';
-import { clearMedicalData } from '../lib/medicalDataPrivacy';
+import { clearMedicalData, getMedicalDataEpoch, isMedicalDataClearing } from '../lib/medicalDataPrivacy';
 import type { MedicalAnalysisRecord } from '../db';
 import { MedicalFlashcards } from '../components/medical/MedicalFlashcards';
 import { MedicalQuestionBank } from '../components/medical/MedicalQuestionBank';
@@ -94,16 +94,22 @@ export default function Medical() {
   const extractRequestId = useRef(0);
   useEffect(() => {
     let active = true;
+    const dataEpoch = getMedicalDataEpoch();
     void listMedicalAnalyses().then((items) => {
-      if (active) setAnalysisHistory(items);
+      if (active && dataEpoch === getMedicalDataEpoch() && !isMedicalDataClearing()) {
+        setAnalysisHistory(items);
+      }
     }).catch(() => {
-      if (active) setHistoryError('تعذّر تحميل سجل التحليلات المحفوظ محلياً.');
+      if (active && dataEpoch === getMedicalDataEpoch() && !isMedicalDataClearing()) {
+        setHistoryError('تعذّر تحميل سجل التحليلات المحفوظ محلياً.');
+      }
     });
     return () => { active = false; };
   }, []);
 
   const saveCurrentAnalysis = async () => {
     if (!analysis || historyBusy) return;
+    const dataEpoch = getMedicalDataEpoch();
     setHistoryBusy(true);
     setHistoryError('');
     try {
@@ -114,10 +120,14 @@ export default function Medical() {
         sourceName: lectureName,
         analysis,
       });
+      if (dataEpoch !== getMedicalDataEpoch() || isMedicalDataClearing()) return;
       try {
-        setAnalysisHistory(await listMedicalAnalyses());
+        const items = await listMedicalAnalyses();
+        if (dataEpoch === getMedicalDataEpoch() && !isMedicalDataClearing()) setAnalysisHistory(items);
       } catch {
-        setHistoryError('حُفظ التحليل، لكن تعذّر تحديث قائمة السجل المعروضة. أعد تحميل القسم.');
+        if (dataEpoch === getMedicalDataEpoch() && !isMedicalDataClearing()) {
+          setHistoryError('حُفظ التحليل، لكن تعذّر تحديث قائمة السجل المعروضة. أعد تحميل القسم.');
+        }
       }
     } catch {
       setHistoryError('تعذّر حفظ التحليل على هذا الجهاز. تحقق من مساحة التخزين.');
@@ -127,16 +137,23 @@ export default function Medical() {
   };
 
   const removeHistoryItem = async (id: number) => {
+    const dataEpoch = getMedicalDataEpoch();
     try {
       await deleteMedicalAnalysis(id);
+      if (dataEpoch !== getMedicalDataEpoch() || isMedicalDataClearing()) return;
       setAnalysisHistory((items) => items.filter((item) => item.id !== id));
       try {
-        setAnalysisHistory(await listMedicalAnalyses());
+        const items = await listMedicalAnalyses();
+        if (dataEpoch === getMedicalDataEpoch() && !isMedicalDataClearing()) setAnalysisHistory(items);
       } catch {
-        setHistoryError('حُذف التحليل، لكن تعذّر تحديث قائمة السجل المعروضة. أعد تحميل القسم.');
+        if (dataEpoch === getMedicalDataEpoch() && !isMedicalDataClearing()) {
+          setHistoryError('حُذف التحليل، لكن تعذّر تحديث قائمة السجل المعروضة. أعد تحميل القسم.');
+        }
       }
     } catch {
-      setHistoryError('تعذّر حذف هذا التحليل من السجل المحلي.');
+      if (dataEpoch === getMedicalDataEpoch() && !isMedicalDataClearing()) {
+        setHistoryError('تعذّر حذف هذا التحليل من السجل المحلي.');
+      }
     }
   };
   const clearAllMedicalData = async () => {
