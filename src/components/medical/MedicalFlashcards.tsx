@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BookOpenCheck, Clock3, Layers3, RotateCcw, Sparkles } from 'lucide-react';
 import { db, type MedicalFlashcard } from '../../db';
 import { buildMedicalFlashcards, saveMedicalFlashcards, scheduleMedicalReview, type MedicalCardSource, type MedicalCardRating } from '../../lib/medicalFlashcards';
+import { isMedicalDataClearing } from '../../lib/medicalDataPrivacy';
 
 interface Props {
   analysis: MedicalCardSource | null;
@@ -53,6 +54,7 @@ export function MedicalFlashcards({ analysis, college, year, subject, sourceName
   const active = dueCards.find((card) => card.id === activeId) ?? dueCards[0] ?? null;
 
   const createCards = async () => {
+    if (isMedicalDataClearing()) { setMessage('انتظر انتهاء حذف البيانات الطبية ثم أعد المحاولة.'); return; }
     if (!analysis) return;
     const saveContext = contextKey;
     setBusy(true);
@@ -63,6 +65,7 @@ export function MedicalFlashcards({ analysis, college, year, subject, sourceName
         if (activeContext.current === saveContext) setMessage('لا توجد مصطلحات أو نقاط عالية الأهمية كافية لتوليد بطاقات من هذا التحليل.');
         return;
       }
+      if (isMedicalDataClearing()) return;
       const added = await saveMedicalFlashcards(generated);
       if (activeContext.current !== saveContext) return;
       setActiveId(null);
@@ -81,6 +84,7 @@ export function MedicalFlashcards({ analysis, college, year, subject, sourceName
   };
 
   const rateCard = async (rating: MedicalCardRating) => {
+    if (isMedicalDataClearing()) { setMessage('انتظر انتهاء حذف البيانات الطبية ثم أعد المحاولة.'); return; }
     if (!active?.id || busy) return;
     const reviewContext = contextKey;
     setBusy(true);
