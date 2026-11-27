@@ -3,7 +3,7 @@ import { AlertCircle, CheckCircle2, ClipboardList, Loader2, ShieldAlert, Sparkle
 import { db, type MedicalSimulationResult } from '../../db';
 import { requestMedicalCase } from '../../lib/chatStore';
 import { parseMedicalCase, type MedicalCaseDraft } from '../../lib/medicalCaseSimulator';
-import { sanitizeMedicalSourceText } from '../../lib/medicalDataSanitization';
+import { sanitizeMedicalMetadata, sanitizeMedicalSourceText } from '../../lib/medicalDataSanitization';
 import { getMedicalSimulationStats } from '../../lib/medicalSimulationStats';
 import { assertMedicalDataWriteAllowed, getMedicalDataEpoch, isMedicalDataClearing } from '../../lib/medicalDataPrivacy';
 
@@ -124,8 +124,8 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
       await db.transaction('rw', db.medicalSimulations, async () => {
         assertMedicalDataWriteAllowed(dataEpoch);
         await db.medicalSimulations.add({
-          caseTitle: caseData.caseTitle,
-          college, year, subject: subject.trim() || topic.trim() || 'موضوع طبي',
+          caseTitle: sanitizeMedicalMetadata(caseData.caseTitle, 160),
+          college, year, subject: sanitizeMedicalMetadata(subject.trim() || topic.trim() || 'موضوع طبي'),
           score: nextScore, total: caseData.stations.length,
           createdAt: completedAt, completedAt,
         });
