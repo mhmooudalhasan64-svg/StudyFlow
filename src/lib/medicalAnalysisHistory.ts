@@ -9,6 +9,7 @@ export async function saveMedicalAnalysis(
 ): Promise<number> {
   return db.transaction('rw', db.medicalAnalyses, async () => {
     const id = await db.medicalAnalyses.add({ ...record, createdAt: now });
+    if (id == null) throw new Error('تعذّر تحديد سجل التحليل المحفوظ.');
     const count = await db.medicalAnalyses.count();
     if (count > MEDICAL_ANALYSIS_HISTORY_LIMIT) {
       const oldest = await db.medicalAnalyses.orderBy('createdAt')
