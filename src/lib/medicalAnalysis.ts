@@ -66,19 +66,21 @@ export function parseMedicalAnalysis(raw: string, sourceText: string): MedicalAn
       .map((row) => (row as unknown[]).map((cell) => str(cell, 300)))
       .filter((row) => columns.length > 0 && row.length === columns.length && row.every(Boolean))
       .slice(0, 20);
-    return { title: str(item.title, 160), columns, rows };
-  }).filter((item) => item.title && item.columns.length > 0 && item.rows.length > 0).slice(0, 4);
+    return { title: str(item.title, 160), columns, rows, evidenceQuote: str(item.evidenceQuote, 500) };
+  }).filter((item) => item.title && item.columns.length > 0 && item.rows.length > 0 && item.evidenceQuote && sourceText.includes(item.evidenceQuote)).slice(0, 4);
 
   const pathways = objects(data.pathways).map((item) => ({
     title: str(item.title, 160),
     steps: strings(item.steps, 12, 300),
-  })).filter((item) => item.title && item.steps.length > 0).slice(0, 4);
+    evidenceQuote: str(item.evidenceQuote, 500),
+  })).filter((item) => item.title && item.steps.length > 0 && item.evidenceQuote && sourceText.includes(item.evidenceQuote)).slice(0, 4);
 
   const reviewQuestions = objects(data.reviewQuestions).map((item) => ({
     question: str(item.question, 300),
     answer: str(item.answer, 300),
     explanation: str(item.explanation, 500),
-  })).filter((item) => item.question && item.answer).slice(0, 8);
+    evidenceQuote: str(item.evidenceQuote, 500),
+  })).filter((item) => item.question && item.answer && item.evidenceQuote && sourceText.includes(item.evidenceQuote)).slice(0, 8);
 
   return {
     title: str(data.title, 160),
