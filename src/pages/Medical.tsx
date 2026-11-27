@@ -269,7 +269,7 @@ export default function Medical() {
           <span className="feature-icon feature-icon-blue"><FileText size={21}/></span>
           <div className="min-w-0 flex-1">
             <h2 className="font-extrabold">حلّل محاضرتك مع دليل</h2>
-            <p className="mt-1 text-xs leading-6 text-muted">استخرج المصطلحات والنقاط عالية الأهمية والجداول والأسئلة من محاضرتك. تتم قراءة الملف على جهازك، ويُرسل النص المستخرج فقط إلى خدمة دليل لإجراء التحليل.</p>
+            <p className="mt-1 text-xs leading-6 text-muted">استخرج المصطلحات والنقاط عالية الأهمية والجداول والأسئلة من محاضرتك. تتم قراءة الملف على جهازك، ويُرسل النص المستخرج فقط إلى خدمة دليل لإجراء التحليل. لا ترفع سجلات مرضى حقيقيين أو أسماءهم أو أرقامهم أو أي بيانات صحية تعرّف بشخص؛ استخدم مواد دراسية وحالات منزوعة الهوية فقط.</p>
           </div>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
