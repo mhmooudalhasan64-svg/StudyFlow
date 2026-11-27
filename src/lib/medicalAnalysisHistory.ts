@@ -1,4 +1,5 @@
 import { db, type MedicalAnalysisRecord } from '../db';
+import { assertMedicalDataWriteAllowed, getMedicalDataEpoch } from './medicalDataPrivacy';
 
 export const MEDICAL_ANALYSIS_HISTORY_LIMIT = 30;
 
@@ -25,5 +26,10 @@ export async function listMedicalAnalyses(): Promise<MedicalAnalysisRecord[]> {
 }
 
 export async function deleteMedicalAnalysis(id: number): Promise<void> {
-  await db.medicalAnalyses.delete(id);
+  const epoch = getMedicalDataEpoch();
+  assertMedicalDataWriteAllowed(epoch);
+  await db.transaction('rw', db.medicalAnalyses, async () => {
+    assertMedicalDataWriteAllowed(epoch);
+    await db.medicalAnalyses.delete(id);
+  });
 }
