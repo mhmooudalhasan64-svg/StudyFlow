@@ -1,6 +1,6 @@
 import { db, type MedicalQuestion } from '../db';
 import { assertMedicalDataWriteAllowed, getMedicalDataEpoch } from './medicalDataPrivacy';
-import { sanitizeMedicalSourceName } from './medicalDataSanitization';
+import { sanitizeMedicalMetadata, sanitizeMedicalSourceName } from './medicalDataSanitization';
 
 
 export type MedicalQuestionHistoryFilter = 'all' | 'weak' | 'new';
@@ -77,14 +77,15 @@ export async function saveMedicalQuestions(args: {
   const epoch = getMedicalDataEpoch();
   assertMedicalDataWriteAllowed(epoch);
   let added = 0;
+  const safeSubject = sanitizeMedicalMetadata(args.subject);
   await db.transaction('rw', db.medicalQuestions, async () => {
     assertMedicalDataWriteAllowed(epoch);
     for (const draft of args.drafts) {
-      const questionKey = [args.college, args.year, args.subject, draft.stem].join('|').toLocaleLowerCase();
+      const questionKey = [args.college, args.year, safeSubject, draft.stem].join('|').toLocaleLowerCase();
       const exists = await db.medicalQuestions.where('questionKey').equals(questionKey).first();
       if (exists) continue;
       const record: Omit<MedicalQuestion, 'id'> = {
-        questionKey, college: args.college, year: args.year, subject: args.subject,
+        questionKey, college: args.college, year: args.year, subject: safeSubject,
         sourceName: sanitizeMedicalSourceName(args.sourceName), ...draft, createdAt: Date.now(),
         attempts: 0, correctAttempts: 0, lastAttemptAt: null,
       };
