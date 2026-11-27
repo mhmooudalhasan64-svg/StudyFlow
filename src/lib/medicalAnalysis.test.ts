@@ -33,7 +33,7 @@ describe('parseMedicalAnalysis', () => {
     const result = parseMedicalAnalysis(JSON.stringify({
       learningObjectives: Array.from({ length: 20 }, (_, i) => 'Objective ' + i),
       comparisonTables: [{
-        title: 'Comparison',
+        title: 'Comparison', evidenceQuote: 'myocardium contracts',
         columns: ['A', 'B'],
         rows: [['one', 'two'], ['only one'], ['three', 'four', 'extra']],
       }],
