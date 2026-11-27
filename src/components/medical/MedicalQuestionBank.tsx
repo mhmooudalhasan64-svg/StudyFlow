@@ -3,6 +3,7 @@ import { AlertCircle, BookCheck, CheckCircle2, ClipboardList, Loader2, Sparkles,
 import { db, type MedicalQuestion } from '../../db';
 import { requestMedicalQuiz } from '../../lib/chatStore';
 import { filterMedicalQuestions, parseMedicalQuestions, recordMedicalAnswer, saveMedicalQuestions } from '../../lib/medicalQuestionBank';
+import { sanitizeMedicalSourceText } from '../../lib/medicalDataSanitization';
 import { getMedicalDataEpoch, isMedicalDataClearing } from '../../lib/medicalDataPrivacy';
 
 interface Props {
@@ -84,7 +85,7 @@ export function MedicalQuestionBank({ college, year, subject, sourceText, source
         ...(requestContext.sourceText.trim().length >= 40 ? { source: { name: requestContext.sourceName, text: requestContext.sourceText } } : {}),
       });
       if (requestId !== generationRequestId.current || dataEpoch !== getMedicalDataEpoch() || isMedicalDataClearing()) return;
-      const drafts = parseMedicalQuestions(raw, requestContext.sourceText.trim().length >= 40 ? requestContext.sourceText : '');
+      const drafts = parseMedicalQuestions(raw, requestContext.sourceText.trim().length >= 40 ? sanitizeMedicalSourceText(requestContext.sourceText.slice(0, 8_000)) : '');
       const added = await saveMedicalQuestions({
         drafts, college: requestContext.college, year: requestContext.year,
         subject: requestContext.subject.trim() || requestContext.topic.trim() || 'موضوع طبي',
