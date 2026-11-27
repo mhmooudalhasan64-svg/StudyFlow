@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AlertCircle, CheckCircle2, ClipboardList, Loader2, ShieldAlert, Sparkles, Stethoscope, XCircle } from 'lucide-react';
 import { db, type MedicalSimulationResult } from '../../db';
 import { requestMedicalCase } from '../../lib/chatStore';
@@ -32,27 +32,45 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [history, setHistory] = useState<MedicalSimulationResult[]>([]);
+  const contextKey = `${college}|${year}|${subject.trim()}`;
+  const activeContext = useRef(contextKey);
+  const generationRequestId = useRef(0);
 
   const refreshHistory = useCallback(async () => {
+    const requestContext = contextKey;
     const rows = await db.medicalSimulations.where('college').equals(college).toArray();
+    if (activeContext.current !== requestContext) return;
     setHistory(rows.filter((row) => row.year === year && (!subject.trim() || row.subject === subject.trim()))
       .sort((a, b) => b.completedAt - a.completedAt));
-  }, [college, year, subject]);
+  }, [college, year, subject, contextKey]);
 
   useEffect(() => {
+    activeContext.current = contextKey;
+    generationRequestId.current += 1;
+    setBusy(false);
+    setSaving(false);
+    setCaseData(null);
+    setStationIndex(0);
+    setSelected(null);
+    setScore(0);
+    setFinished(false);
+    setError('');
+    setNotice('');
     let alive = true;
     void db.medicalSimulations.where('college').equals(college).toArray().then((rows) => {
       if (alive) setHistory(rows.filter((row) => row.year === year && (!subject.trim() || row.subject === subject.trim()))
         .sort((a, b) => b.completedAt - a.completedAt));
     }).catch(() => { if (alive) setError('تعذّر تحميل سجل المحاكاة المحفوظ.'); });
     return () => { alive = false; };
-  }, [college, year, subject]);
+  }, [college, year, subject, contextKey]);
 
   const generate = async () => {
     if (!topic.trim() && sourceText.trim().length < 40) {
       setError('اكتب محور الحالة أو أرفق نص محاضرة قابلاً للقراءة.');
       return;
     }
+    const requestId = ++generationRequestId.current;
+    const requestContext = { topic, college, year, subject, sourceText, sourceName };
     setBusy(true);
     setError('');
     setNotice('');
@@ -63,14 +81,17 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
     setStationIndex(0);
     try {
       const raw = await requestMedicalCase({
-        topic, college, year, subject,
-        ...(sourceText.trim().length >= 40 ? { source: { name: sourceName, text: sourceText } } : {}),
+        topic: requestContext.topic, college: requestContext.college,
+        year: requestContext.year, subject: requestContext.subject,
+        ...(requestContext.sourceText.trim().length >= 40 ? { source: { name: requestContext.sourceName, text: requestContext.sourceText } } : {}),
       });
-      setCaseData(parseMedicalCase(raw));
+      if (requestId === generationRequestId.current) setCaseData(parseMedicalCase(raw));
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'تعذّر إنشاء الحالة السريرية.');
+      if (requestId === generationRequestId.current) {
+        setError(cause instanceof Error ? cause.message : 'تعذّر إنشاء الحالة السريرية.');
+      }
     } finally {
-      setBusy(false);
+      if (requestId === generationRequestId.current) setBusy(false);
     }
   };
 
@@ -88,6 +109,7 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
       setSelected(null);
       return;
     }
+    const saveContext = contextKey;
     setFinished(true);
     setSaving(true);
     try {
@@ -98,16 +120,18 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
         score: nextScore, total: caseData.stations.length,
         createdAt: completedAt, completedAt,
       });
-      setNotice('حُفظت نتيجة المحاكاة على هذا الجهاز.');
-      try {
-        await refreshHistory();
-      } catch {
-        setError('حُفظت النتيجة، لكن تعذّر تحديث سجل المحاكاة المعروض.');
+      if (activeContext.current === saveContext) {
+        setNotice('حُفظت نتيجة المحاكاة على هذا الجهاز.');
+        try {
+          await refreshHistory();
+        } catch {
+          if (activeContext.current === saveContext) setError('حُفظت النتيجة، لكن تعذّر تحديث سجل المحاكاة المعروض.');
+        }
       }
     } catch {
-      setError('اكتملت المحاكاة، لكن تعذّر حفظ النتيجة محلياً.');
+      if (activeContext.current === saveContext) setError('اكتملت المحاكاة، لكن تعذّر حفظ النتيجة محلياً.');
     } finally {
-      setSaving(false);
+      if (activeContext.current === saveContext) setSaving(false);
     }
   };
 
