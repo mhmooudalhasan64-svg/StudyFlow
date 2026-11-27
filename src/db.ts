@@ -210,6 +210,17 @@ export interface MedicalQuestion {
   lastAttemptAt: number | null;
 }
 
+/** تحليل محاضرة طبية محفوظ محلياً؛ لا يتضمن نص الملف الأصلي. */
+export interface MedicalAnalysisRecord {
+  id?: number;
+  college: string;
+  year: string;
+  subject: string;
+  sourceName: string;
+  analysis: import('./lib/medicalAnalysis').MedicalAnalysisResult;
+  createdAt: number;
+}
+
 export interface MedicalFlashcard {
   id?: number;
   /** مفتاح ثابت يمنع إنشاء البطاقة نفسها مرتين من المصدر نفسه. */
@@ -249,6 +260,7 @@ class StudyDB extends Dexie {
   medicalCards!: EntityTable<MedicalFlashcard, 'id'>;
   medicalQuestions!: EntityTable<MedicalQuestion, 'id'>;
   medicalSimulations!: EntityTable<MedicalSimulationResult, 'id'>;
+  medicalAnalyses!: EntityTable<MedicalAnalysisRecord, 'id'>;
 
   constructor() {
     super('studyflow');
@@ -293,6 +305,10 @@ class StudyDB extends Dexie {
     // الإصدار 8: سجل محاكاة الحالات السريرية مستقلاً عن نتائج اختبارات البكالوريا.
     this.version(8).stores({
       medicalSimulations: '++id, college, year, subject, completedAt',
+    });
+    // الإصدار 9: سجل اختياري لتحليلات المحاضرات، محلي فقط ومن دون تخزين نص المصدر.
+    this.version(9).stores({
+      medicalAnalyses: '++id, college, year, subject, createdAt',
     });
   }
 }
