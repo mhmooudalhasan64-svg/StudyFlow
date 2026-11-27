@@ -8,6 +8,7 @@ import { PageTitle } from '../components/ui';
 import { extractFileText } from '../lib/fileText';
 import { requestMedicalAnalysis } from '../lib/chatStore';
 import { parseMedicalAnalysis, type MedicalAnalysisResult } from '../lib/medicalAnalysis';
+import { sanitizeMedicalSourceText } from '../lib/medicalDataSanitization';
 import { deleteMedicalAnalysis, listMedicalAnalyses, saveMedicalAnalysis } from '../lib/medicalAnalysisHistory';
 import { clearMedicalData } from '../lib/medicalDataPrivacy';
 import type { MedicalAnalysisRecord } from '../db';
@@ -235,7 +236,7 @@ export default function Medical() {
     setAnalysis(null);
     try {
       const raw = await requestMedicalAnalysis(requestContext);
-      if (requestId === analysisRequestId.current) setAnalysis(parseMedicalAnalysis(raw, requestContext.text));
+      if (requestId === analysisRequestId.current) setAnalysis(parseMedicalAnalysis(raw, sanitizeMedicalSourceText(requestContext.text.slice(0, 8_000))));
     } catch (error) {
       if (requestId === analysisRequestId.current) {
         setAnalysisError(error instanceof Error ? error.message : 'تعذّر تحليل المحاضرة.');
