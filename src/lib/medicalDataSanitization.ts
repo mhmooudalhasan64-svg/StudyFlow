@@ -21,9 +21,14 @@ export function formatUntrustedFileBlock(value: string): string {
   ].join('\n');
 }
 
+/** Redacts common identifiers and bounds user/model-provided medical metadata before local persistence. */
+export function sanitizeMedicalMetadata(value: string, maxChars = 80): string {
+  return redactPersonalData(value.replace(/[\r\n\t]+/g, ' ').trim()).slice(0, maxChars);
+}
+
 /** Redacts common identifiers from a source filename before local metadata is persisted. */
 export function sanitizeMedicalSourceName(value: string): string {
-  return redactPersonalData(value.replace(/[\r\n\t]+/g, ' ').trim()).slice(0, 80);
+  return sanitizeMedicalMetadata(value, 80);
 }
 
 /** Mirrors the server-side attachment sanitization before source-quote validation. */
