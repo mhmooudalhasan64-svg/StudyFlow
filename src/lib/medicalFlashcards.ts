@@ -1,5 +1,6 @@
 import { db, type MedicalFlashcard } from '../db';
 import { assertMedicalDataWriteAllowed, getMedicalDataEpoch } from './medicalDataPrivacy';
+import { sanitizeMedicalSourceName } from './medicalDataSanitization';
 
 export interface MedicalCardSource {
   title?: string;
@@ -26,7 +27,7 @@ export function buildMedicalFlashcards(args: {
     const cardKey = [args.college, args.year, args.subject, args.sourceName, category, suffix].join('|').toLocaleLowerCase();
     cards.push({
       cardKey, college: args.college, year: args.year, subject: args.subject.trim(),
-      sourceName: args.sourceName, category, front: cleanFront, back: cleanBack,
+      sourceName: sanitizeMedicalSourceName(args.sourceName), category, front: cleanFront, back: cleanBack,
       createdAt: now, dueAt: now, intervalDays: 0, reps: 0, lastReviewedAt: null,
     });
   };
