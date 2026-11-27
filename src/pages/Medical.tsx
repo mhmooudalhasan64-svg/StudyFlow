@@ -130,7 +130,9 @@ export default function Medical() {
         }
       }
     } catch {
-      setHistoryError('تعذّر حفظ التحليل على هذا الجهاز. تحقق من مساحة التخزين.');
+      if (dataEpoch === getMedicalDataEpoch() && !isMedicalDataClearing()) {
+        setHistoryError('تعذّر حفظ التحليل على هذا الجهاز. تحقق من مساحة التخزين.');
+      }
     } finally {
       setHistoryBusy(false);
     }
