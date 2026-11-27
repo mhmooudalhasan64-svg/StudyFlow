@@ -310,9 +310,9 @@ export default function Medical() {
             </span>
           </label>
         </div>
-        <div className="flex flex-wrap gap-2" role="tablist" aria-label="نمط تنظيم المواد">
-          <button type="button" role="tab" aria-selected={track === 'systems'} onClick={() => setTrack('systems')} className={`rounded-xl px-3 py-2 text-xs font-bold transition ${track === 'systems' ? 'bg-accent text-white' : 'border border-line bg-base text-muted'}`}>حسب الأجهزة والمواد</button>
-          <button type="button" role="tab" aria-selected={track === 'rotations'} onClick={() => setTrack('rotations')} className={`rounded-xl px-3 py-2 text-xs font-bold transition ${track === 'rotations' ? 'bg-accent text-white' : 'border border-line bg-base text-muted'}`}>الستاجات والتدريب</button>
+        <div className="flex flex-wrap gap-2" role="group" aria-label="نمط تنظيم المواد">
+          <button type="button" aria-pressed={track === 'systems'} onClick={() => setTrack('systems')} className={`rounded-xl px-3 py-2 text-xs font-bold transition ${track === 'systems' ? 'bg-accent text-white' : 'border border-line bg-base text-muted'}`}>حسب الأجهزة والمواد</button>
+          <button type="button" aria-pressed={track === 'rotations'} onClick={() => setTrack('rotations')} className={`rounded-xl px-3 py-2 text-xs font-bold transition ${track === 'rotations' ? 'bg-accent text-white' : 'border border-line bg-base text-muted'}`}>الستاجات والتدريب</button>
         </div>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {modules.map(({ title, detail, icon: Icon }) => (
