@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { ChevronLeft, ChevronRight, GitBranch, Table2 } from 'lucide-react';
 
 interface MedicalVisualsProps {
-  pathways?: { title: string; steps: string[] }[];
-  comparisonTables?: { title: string; columns: string[]; rows: string[][] }[];
+  pathways?: { title: string; steps: string[]; evidenceQuote: string }[];
+  comparisonTables?: { title: string; columns: string[]; rows: string[][]; evidenceQuote: string }[];
 }
 
 export function MedicalVisuals({ pathways = [], comparisonTables = [] }: MedicalVisualsProps) {
