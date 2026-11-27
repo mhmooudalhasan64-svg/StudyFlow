@@ -20,3 +20,8 @@ export function formatUntrustedFileBlock(value: string): string {
     '<<<نهاية الملف>>>',
   ].join('\n');
 }
+
+/** Mirrors the server-side attachment sanitization before source-quote validation. */
+export function sanitizeMedicalSourceText(value: string, maxChars = 8_000): string {
+  return redactPersonalData(value.trim()).slice(0, maxChars);
+}
