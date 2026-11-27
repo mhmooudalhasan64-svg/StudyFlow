@@ -74,12 +74,14 @@ describe('medical question persistence', () => {
       drafts: parseMedicalQuestions(JSON.stringify(valid)),
       college: 'Medicine',
       year: '1',
-      subject: 'Anatomy',
+      subject: 'Patient name: Jane Doe',
       sourceName: 'Patient name: Jane Doe.pdf',
     });
     const [stored] = await db.medicalQuestions.toArray();
     expect(stored.sourceName).toBe('Patient name: [personal details removed].pdf');
     expect(stored.sourceName).not.toContain('Jane Doe');
+    expect(stored.subject).toBe('Patient name: [personal details removed]');
+    expect(stored.questionKey).not.toContain('Jane Doe');
   });
 });
 
