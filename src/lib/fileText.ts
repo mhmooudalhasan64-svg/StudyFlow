@@ -100,7 +100,7 @@ export function rowsToText(rows: readonly (readonly unknown[])[], maxRows = MAX_
     .join('\n');
 }
 
-async function readPdf(file: File): Promise<string> {
+async function readPdf(file: File): Promise<{ text: string; truncated: boolean }> {
   // @ts-ignore: مسار النسخة القديمة (legacy) يدعم متصفحات أكثر
   const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
   // @ts-ignore: ‎?url يعيد عنوان ملف العامل (worker) من Vite
@@ -110,16 +110,28 @@ async function readPdf(file: File): Promise<string> {
   const doc = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
   const pages = Math.min(doc.numPages, MAX_PDF_PAGES);
   let out = '';
-  for (let p = 1; p <= pages; p++) {
-    const page = await doc.getPage(p);
-    const content = await page.getTextContent();
-    out +=
-      (content.items as { str?: string; hasEOL?: boolean }[])
-        .map((it) => (typeof it.str === 'string' ? it.str + (it.hasEOL ? '\n' : ' ') : ''))
-        .join('') + '\n\n';
-    if (out.length > MAX_TEXT_CHARS * 3) break; // يكفي ما جمعناه
+  let stoppedEarly = false;
+  try {
+    for (let p = 1; p <= pages; p++) {
+      const page = await doc.getPage(p);
+      try {
+        const content = await page.getTextContent();
+        out +=
+          (content.items as { str?: string; hasEOL?: boolean }[])
+            .map((it) => (typeof it.str === 'string' ? it.str + (it.hasEOL ? '\\n' : ' ') : ''))
+            .join('') + '\\n\\n';
+      } finally {
+        page.cleanup();
+      }
+      if (out.length > MAX_TEXT_CHARS * 3) {
+        stoppedEarly = p < doc.numPages;
+        break;
+      }
+    }
+    return { text: out, truncated: doc.numPages > pages || stoppedEarly };
+  } finally {
+    await doc.destroy();
   }
-  return out;
 }
 
 const MAX_BOOK_BYTES = 40 * 1024 * 1024; // الكتب أكبر من الملفات العادية
@@ -191,8 +203,15 @@ export async function extractFileText(file: File): Promise<ExtractedFile> {
   }
 
   let raw: string;
+  let sourceTruncated = false;
   try {
-    raw = kind === 'pdf' ? await readPdf(file) : kind === 'docx' ? await readDocx(file) : kind === 'xlsx' ? await readXlsx(file) : await file.text();
+    if (kind === 'pdf') {
+      const result = await readPdf(file);
+      raw = result.text;
+      sourceTruncated = result.truncated;
+    } else {
+      raw = kind === 'docx' ? await readDocx(file) : kind === 'xlsx' ? await readXlsx(file) : await file.text();
+    }
   } catch (e) {
     if (e instanceof FileTextError) throw e;
     throw new FileTextError('تعذّرت قراءة الملف. تأكد أنه سليم وغير محمي بكلمة سر.');
@@ -207,5 +226,5 @@ export async function extractFileText(file: File): Promise<ExtractedFile> {
     );
   }
   const { text, truncated } = clipText(full);
-  return { name: file.name, text, truncated, originalChars: full.length };
+  return { name: file.name, text, truncated: truncated || sourceTruncated, originalChars: full.length };
 }
