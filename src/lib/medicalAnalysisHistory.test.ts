@@ -19,7 +19,7 @@ describe('local medical analysis history', () => {
     const id = await saveMedicalAnalysis({
       college: 'الطب البشري',
       year: '2',
-      subject: 'الفيزيولوجيا',
+      subject: 'Patient name: Jane Doe',
       sourceName: 'Patient name: Jane Doe.pdf',
       analysis: result,
     }, 100);
@@ -27,6 +27,7 @@ describe('local medical analysis history', () => {
     const stored = await db.medicalAnalyses.get(id);
     expect(stored?.analysis).toEqual(result);
     expect(stored?.sourceName).toBe('Patient name: [personal details removed].pdf');
+    expect(stored?.subject).toBe('Patient name: [personal details removed]');
     expect(stored?.createdAt).toBe(100);
     expect(stored).not.toHaveProperty('sourceText');
     expect(stored).not.toHaveProperty('file');
