@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { db } from '../db';
-import { clearMedicalData, getMedicalDataEpoch, isMedicalDataClearing } from './medicalDataPrivacy';
+import { assertMedicalDataWriteAllowed, clearMedicalData, getMedicalDataEpoch, isMedicalDataClearing } from './medicalDataPrivacy';
 
 describe('clear local medical data', () => {
   beforeEach(async () => {
@@ -12,6 +12,18 @@ describe('clear local medical data', () => {
       db.medicalAnalyses.clear(),
       db.tasks.clear(),
     ]);
+  });
+
+  it('rejects stale writes and writes attempted during a purge', async () => {
+    const staleEpoch = getMedicalDataEpoch();
+    const clearing = clearMedicalData();
+
+    expect(isMedicalDataClearing()).toBe(true);
+    expect(() => assertMedicalDataWriteAllowed(staleEpoch)).toThrow();
+
+    await clearing;
+    expect(() => assertMedicalDataWriteAllowed(staleEpoch)).toThrow();
+    expect(() => assertMedicalDataWriteAllowed(getMedicalDataEpoch())).not.toThrow();
   });
 
   it('invalidates pending work across the entire clear operation', async () => {
