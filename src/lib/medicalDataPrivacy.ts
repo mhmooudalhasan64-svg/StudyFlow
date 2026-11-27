@@ -12,6 +12,13 @@ export function isMedicalDataClearing(): boolean {
   return medicalDataClearing;
 }
 
+/** Throws when a medical write belongs to work invalidated by a local data purge. */
+export function assertMedicalDataWriteAllowed(expectedEpoch: number): void {
+  if (medicalDataClearing || expectedEpoch !== medicalDataEpoch) {
+    throw new Error('Medical data is being cleared or this operation is stale.');
+  }
+}
+
 /** Removes every MASAR MEDICAL record from this device without touching study data. */
 export async function clearMedicalData(): Promise<void> {
   medicalDataClearing = true;
