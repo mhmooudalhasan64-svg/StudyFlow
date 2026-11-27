@@ -110,4 +110,25 @@ describe('medical answer recording', () => {
     const unchanged = await db.medicalQuestions.get(id);
     expect(unchanged?.attempts).toBe(0);
   });
+
+  it('requires exact source quotes when a lecture source is supplied', () => {
+    const source = 'The myocardium contracts to pump blood.';
+    const supported = structuredClone(valid);
+    supported.questions[0].sourceQuote = 'myocardium contracts';
+    expect(parseMedicalQuestions(JSON.stringify(supported), source)).toHaveLength(1);
+    const unsupported = structuredClone(valid);
+    unsupported.questions[0].sourceQuote = 'A claim absent from the lecture';
+    expect(() => parseMedicalQuestions(JSON.stringify(unsupported), source)).toThrow();
+  });
+
+  it('rejects oversized model output and source text', () => {
+    expect(() => parseMedicalQuestions(' '.repeat(100_001))).toThrow('حجم بيانات');
+    expect(() => parseMedicalQuestions(JSON.stringify(valid), 'x'.repeat(8_001))).toThrow('حجم بيانات');
+  });
+
+  it('caps long generated question fields', () => {
+    const large = structuredClone(valid);
+    large.questions[0].vignette = 'v'.repeat(2_000);
+    expect(parseMedicalQuestions(JSON.stringify(large))[0].vignette).toHaveLength(1_200);
+  });
 });
