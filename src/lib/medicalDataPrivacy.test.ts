@@ -26,6 +26,16 @@ describe('clear local medical data', () => {
     expect(() => assertMedicalDataWriteAllowed(getMedicalDataEpoch())).not.toThrow();
   });
 
+  it('coalesces overlapping clear requests into one protected transaction', async () => {
+    const before = getMedicalDataEpoch();
+    const first = clearMedicalData();
+    const second = clearMedicalData();
+    expect(second).toBe(first);
+    await Promise.all([first, second]);
+    expect(getMedicalDataEpoch()).toBe(before + 2);
+    expect(isMedicalDataClearing()).toBe(false);
+  });
+
   it('invalidates pending work across the entire clear operation', async () => {
     const before = getMedicalDataEpoch();
 
