@@ -175,7 +175,7 @@ async function readDocx(file: File): Promise<string> {
   return res.value;
 }
 
-async function readXlsx(file: File): Promise<string> {
+async function readXlsx(file: File): Promise<{ text: string; truncated: boolean }> {
   // @ts-ignore: read-excel-file
   const mod = await import('read-excel-file');
   const read = ((mod as { default?: unknown }).default ?? mod) as (
@@ -185,12 +185,14 @@ async function readXlsx(file: File): Promise<string> {
 
   const sheets = (await read(file, { getSheets: true })) as { name: string }[];
   const parts: string[] = [];
+  let truncated = sheets.length > MAX_SHEETS;
   for (const s of sheets.slice(0, MAX_SHEETS)) {
     const rows = (await read(file, { sheet: s.name })) as unknown[][];
+    if (rows.length > MAX_ROWS) truncated = true;
     const text = rowsToText(rows);
     if (text) parts.push(`## ورقة: ${s.name}\n${text}`);
   }
-  return parts.join('\n\n');
+  return { text: parts.join('\n\n'), truncated };
 }
 
 export async function extractFileText(file: File): Promise<ExtractedFile> {
@@ -205,12 +207,12 @@ export async function extractFileText(file: File): Promise<ExtractedFile> {
   let raw: string;
   let sourceTruncated = false;
   try {
-    if (kind === 'pdf') {
-      const result = await readPdf(file);
+    if (kind === 'pdf' || kind === 'xlsx') {
+      const result = kind === 'pdf' ? await readPdf(file) : await readXlsx(file);
       raw = result.text;
       sourceTruncated = result.truncated;
     } else {
-      raw = kind === 'docx' ? await readDocx(file) : kind === 'xlsx' ? await readXlsx(file) : await file.text();
+      raw = kind === 'docx' ? await readDocx(file) : await file.text();
     }
   } catch (e) {
     if (e instanceof FileTextError) throw e;
