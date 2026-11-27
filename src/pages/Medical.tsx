@@ -7,7 +7,7 @@ import {
 import { PageTitle } from '../components/ui';
 import { extractFileText } from '../lib/fileText';
 import { requestMedicalAnalysis } from '../lib/chatStore';
-import { parseMedicalAnalysis } from '../lib/medicalAnalysis';
+import { parseMedicalAnalysis, type MedicalAnalysisResult } from '../lib/medicalAnalysis';
 import { MedicalFlashcards } from '../components/medical/MedicalFlashcards';
 import { MedicalQuestionBank } from '../components/medical/MedicalQuestionBank';
 import { MedicalSimulator } from '../components/medical/MedicalSimulator';
