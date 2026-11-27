@@ -89,6 +89,7 @@ export function MedicalVisuals({ pathways = [], comparisonTables = [] }: Medical
           {table && (
             <div className="space-y-2">
               <h4 className="text-sm font-bold">{table.title}</h4>
+              <p className="rounded-lg border-s-2 border-accent/40 bg-base/70 px-3 py-2 text-[11px] leading-6 text-muted"><strong>دليل من المحاضرة:</strong> «{table.evidenceQuote}»</p>
               <div className="overflow-x-auto rounded-xl border border-line">
                 <table className="w-full min-w-[520px] border-collapse text-right text-xs">
                   <thead className="bg-base">
