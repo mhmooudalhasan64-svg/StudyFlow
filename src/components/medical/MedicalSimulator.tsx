@@ -61,7 +61,7 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
       if (alive) setHistory(rows.filter((row) => row.year === year && (!subject.trim() || row.subject === subject.trim()))
         .sort((a, b) => b.completedAt - a.completedAt));
     }).catch(() => { if (alive) setError('تعذّر تحميل سجل المحاكاة المحفوظ.'); });
-    return () => { alive = false; };
+    return () => { alive = false; generationRequestId.current += 1; };
   }, [college, year, subject, contextKey]);
 
   const generate = async () => {
