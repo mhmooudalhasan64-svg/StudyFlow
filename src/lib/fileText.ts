@@ -118,8 +118,8 @@ async function readPdf(file: File): Promise<{ text: string; truncated: boolean }
         const content = await page.getTextContent();
         out +=
           (content.items as { str?: string; hasEOL?: boolean }[])
-            .map((it) => (typeof it.str === 'string' ? it.str + (it.hasEOL ? '\\n' : ' ') : ''))
-            .join('') + '\\n\\n';
+            .map((it) => (typeof it.str === 'string' ? it.str + (it.hasEOL ? '\n' : ' ') : ''))
+            .join('') + '\n\n';
       } finally {
         page.cleanup();
       }
