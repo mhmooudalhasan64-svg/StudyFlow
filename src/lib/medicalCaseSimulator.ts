@@ -26,7 +26,7 @@ export interface MedicalCaseDraft {
 const STAGES: MedicalStationStage[] = ['history', 'examination', 'investigations', 'differential'];
 
 export function parseMedicalCase(raw: string, sourceText = ''): MedicalCaseDraft {
-  if (typeof raw !== 'string' || raw.length > 100_000) throw new Error('حجم بيانات المحاكاة غير صالح. أعد المحاولة.');
+  if (typeof raw !== 'string' || raw.length > 100_000 || typeof sourceText !== 'string' || sourceText.length > 8_000) throw new Error('حجم بيانات المحاكاة غير صالح. أعد المحاولة.');
   const cleaned = raw.trim().replace(/^\x60{3}(?:json)?\s*/i, '').replace(/\s*\x60{3}$/i, '');
   const start = cleaned.indexOf('{');
   const end = cleaned.lastIndexOf('}');
