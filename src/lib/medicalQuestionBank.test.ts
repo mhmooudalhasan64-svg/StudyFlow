@@ -43,6 +43,24 @@ describe('medical question bank parser', () => {
     expect(() => parseMedicalQuestions(JSON.stringify(stringIndex))).toThrow();
     expect(() => parseMedicalQuestions(JSON.stringify(booleanIndex))).toThrow();
   });
+
+  it('rejects questions with missing rationale or learning point', () => {
+    const missingRationale = structuredClone(valid);
+    missingRationale.questions[0].rationale = '';
+    const missingLearningPoint = structuredClone(valid);
+    missingLearningPoint.questions[0].learningPoint = '';
+    expect(() => parseMedicalQuestions(JSON.stringify(missingRationale))).toThrow();
+    expect(() => parseMedicalQuestions(JSON.stringify(missingLearningPoint))).toThrow();
+  });
+
+  it('rejects duplicate options and missing clinical vignette', () => {
+    const duplicateOptions = structuredClone(valid);
+    duplicateOptions.questions[0].options = ['A', 'A', 'C', 'D'];
+    const missingVignette = structuredClone(valid);
+    missingVignette.questions[0].vignette = '';
+    expect(() => parseMedicalQuestions(JSON.stringify(duplicateOptions))).toThrow();
+    expect(() => parseMedicalQuestions(JSON.stringify(missingVignette))).toThrow();
+  });
 });
 
 
