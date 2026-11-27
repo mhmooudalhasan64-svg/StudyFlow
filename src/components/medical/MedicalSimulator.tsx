@@ -123,8 +123,8 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
       await db.transaction('rw', db.medicalSimulations, async () => {
         assertMedicalDataWriteAllowed(dataEpoch);
         await db.medicalSimulations.add({
-        caseTitle: caseData.caseTitle,
-        college, year, subject: subject.trim() || topic.trim() || 'موضوع طبي',
+          caseTitle: caseData.caseTitle,
+          college, year, subject: subject.trim() || topic.trim() || 'موضوع طبي',
           score: nextScore, total: caseData.stations.length,
           createdAt: completedAt, completedAt,
         });
