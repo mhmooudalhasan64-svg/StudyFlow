@@ -41,4 +41,17 @@ describe('medical OSCE case parser', () => {
     invalid.stations[0].stage = 'differential';
     expect(() => parseMedicalCase(JSON.stringify(invalid))).toThrow();
   });
+
+  it('rejects oversized model output', () => {
+    expect(() => parseMedicalCase(' '.repeat(100_001))).toThrow('حجم بيانات');
+  });
+
+  it('caps generated station and case text lengths', () => {
+    const large = makeCase();
+    large.opening = 'o'.repeat(2_000);
+    large.stations[0].prompt = 'p'.repeat(2_000);
+    const parsed = parseMedicalCase(JSON.stringify(large));
+    expect(parsed.opening).toHaveLength(1_600);
+    expect(parsed.stations[0].prompt).toHaveLength(1_200);
+  });
 });
