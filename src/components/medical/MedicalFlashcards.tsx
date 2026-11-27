@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BookOpenCheck, Clock3, Layers3, RotateCcw, Sparkles } from 'lucide-react';
 import { db, type MedicalFlashcard } from '../../db';
 import { buildMedicalFlashcards, saveMedicalFlashcards, scheduleMedicalReview, type MedicalCardSource, type MedicalCardRating } from '../../lib/medicalFlashcards';
-import { isMedicalDataClearing } from '../../lib/medicalDataPrivacy';
+import { assertMedicalDataWriteAllowed, getMedicalDataEpoch, isMedicalDataClearing } from '../../lib/medicalDataPrivacy';
 
 interface Props {
   analysis: MedicalCardSource | null;
@@ -87,9 +87,14 @@ export function MedicalFlashcards({ analysis, college, year, subject, sourceName
     if (isMedicalDataClearing()) { setMessage('انتظر انتهاء حذف البيانات الطبية ثم أعد المحاولة.'); return; }
     if (!active?.id || busy) return;
     const reviewContext = contextKey;
+    const dataEpoch = getMedicalDataEpoch();
     setBusy(true);
     try {
-      await db.medicalCards.update(active.id, scheduleMedicalReview(active, rating));
+      assertMedicalDataWriteAllowed(dataEpoch);
+      await db.transaction('rw', db.medicalCards, async () => {
+        assertMedicalDataWriteAllowed(dataEpoch);
+        await db.medicalCards.update(active.id!, scheduleMedicalReview(active, rating));
+      });
       if (activeContext.current === reviewContext) {
         setActiveId(null);
         setRevealed(false);
