@@ -158,11 +158,24 @@ export default function PronunciationCoach() {
       <section className="space-y-3">
         <div className="flex flex-wrap gap-2">
           {GROUPS.map(group => (
-            <button key={group} type="button" onClick={() => setSelectedGroup(group)} className={`rounded-full border px-3 py-1.5 text-xs transition ${selectedGroup === group ? 'border-accent bg-accent/10 text-accent' : 'border-line text-muted hover:border-accent/50'}`}>
+            <button key={group} type="button" onClick={() => {
+              setSelectedGroup(group);
+              const firstLesson = LESSONS.find(item => group === 'الكل' || item.group === group);
+              if (firstLesson) setSelectedLetter(firstLesson.letter);
+              setHeard('');
+              transcriptRef.current = '';
+              setFeedback('');
+              setError('');
+              setRecognized(false);
+              stopPractice();
+              stopSpeaking();
+            }} className={`rounded-full border px-3 py-1.5 text-xs transition ${selectedGroup === group ? 'border-accent bg-accent/10 text-accent' : 'border-line text-muted hover:border-accent/50'}`}>
               {group}
             </button>
           ))}
         </div>
+        {!canListen() && <p className="text-xs leading-6 text-muted">التعرّف على الكلام غير متاح في هذا المتصفح أو الجهاز. يمكنك متابعة الدروس والاستماع إلى النماذج دون التدريب بالميكروفون.</p>}
+        {!canSpeak() && <p className="text-xs leading-6 text-muted">تشغيل النماذج الصوتية غير مدعوم هنا؛ يمكنك قراءة مواضع النطق والأمثلة النصية.</p>}
         <div className="grid grid-cols-5 gap-2 sm:grid-cols-7 md:grid-cols-10">
           {visibleLessons.map(item => (
             <button key={item.letter} type="button" onClick={() => { setSelectedLetter(item.letter); setHeard(''); transcriptRef.current = ''; setFeedback(''); setError(''); setRecognized(false); stopPractice(); stopSpeaking(); }} aria-pressed={selectedLetter === item.letter} className={`grid aspect-square place-items-center rounded-xl border text-2xl font-bold transition ${selectedLetter === item.letter ? 'border-accent bg-accent/15 text-accent shadow-sm' : 'border-line bg-card text-main hover:border-accent/50'}`}>
