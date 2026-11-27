@@ -9,6 +9,7 @@ import { extractFileText } from '../lib/fileText';
 import { requestMedicalAnalysis } from '../lib/chatStore';
 import { parseMedicalAnalysis, type MedicalAnalysisResult } from '../lib/medicalAnalysis';
 import { deleteMedicalAnalysis, listMedicalAnalyses, saveMedicalAnalysis } from '../lib/medicalAnalysisHistory';
+import { clearMedicalData } from '../lib/medicalDataPrivacy';
 import type { MedicalAnalysisRecord } from '../db';
 import { MedicalFlashcards } from '../components/medical/MedicalFlashcards';
 import { MedicalQuestionBank } from '../components/medical/MedicalQuestionBank';
@@ -84,6 +85,9 @@ export default function Medical() {
   const [analysisHistory, setAnalysisHistory] = useState<MedicalAnalysisRecord[]>([]);
   const [historyBusy, setHistoryBusy] = useState(false);
   const [historyError, setHistoryError] = useState('');
+  const [privacyBusy, setPrivacyBusy] = useState(false);
+  const [privacyMessage, setPrivacyMessage] = useState('');
+  const [medicalDataRevision, setMedicalDataRevision] = useState(0);
   const fileInput = useRef<HTMLInputElement>(null);
   const analysisRequestId = useRef(0);
   const extractRequestId = useRef(0);
@@ -125,6 +129,24 @@ export default function Medical() {
       setHistoryError('تعذّر حذف هذا التحليل من السجل المحلي.');
     }
   };
+  const clearAllMedicalData = async () => {
+    if (privacyBusy || !window.confirm('سيتم حذف جميع التحليلات والأسئلة والبطاقات ونتائج المحاكاة الطبية المحفوظة على هذا الجهاز. لن تتأثر بيانات الدراسة الأخرى. هل تريد المتابعة؟')) return;
+    setPrivacyBusy(true);
+    setPrivacyMessage('');
+    try {
+      await clearMedicalData();
+      setAnalysisHistory([]);
+      setAnalysis(null);
+      setLectureText('');
+      setPrivacyMessage('حُذفت جميع بيانات MASAR MEDICAL المحلية من هذا الجهاز.');
+      setMedicalDataRevision((value) => value + 1);
+    } catch {
+      setPrivacyMessage('تعذّر حذف البيانات الطبية. لم نؤكد اكتمال الحذف؛ أعد المحاولة.');
+    } finally {
+      setPrivacyBusy(false);
+    }
+  };
+
   const invalidateAnalysis = () => {
     analysisRequestId.current += 1;
     extractRequestId.current += 1;
@@ -288,6 +310,7 @@ export default function Medical() {
           <div className="flex items-center justify-between gap-2"><label htmlFor="medical-lecture-text" className="text-xs font-semibold text-muted">نص المحاضرة</label><span className="text-[10px] text-muted">{lectureText.length.toLocaleString('ar')} / 8000</span></div>
           <textarea id="medical-lecture-text" className="input min-h-40 resize-y leading-7" value={lectureText} onChange={(event) => { setLectureText(event.target.value.slice(0, 8000)); invalidateAnalysis(); }} maxLength={8000} placeholder="يمكنك لصق نص المحاضرة هنا، أو اختيار ملف لاستخراج نصه تلقائياً."/>
           <p className="text-[11px] text-muted">الملفات المدعومة: PDF وDOCX وXLSX وTXT وCSV. الحد الأقصى للنص المرسل 8000 حرف. ملفات PDF المصوّرة التي لا تحتوي نصاً قابلاً للاستخراج تحتاج إلى OCR، وهو غير متاح في هذه المرحلة.</p>
+          <p className="rounded-xl border border-line bg-base/70 p-3 text-[11px] leading-6 text-muted">الخصوصية: يُرسل النص المستخرج الذي تختاره للتحليل أو توليد الأسئلة والمحاكاة إلى مزوّد الذكاء الاصطناعي عبر خادم مسار. تُحذف أنماط شائعة من بيانات التعريف قبل الإرسال، لكن ذلك لا يضمن إخفاء كل البيانات الشخصية. لا ترفع سجلات مرضى حقيقيين أو بيانات صحية تكشف الهوية. لا يُحفظ الملف الأصلي هنا؛ أما التحليلات والأسئلة والبطاقات ونتائج المحاكاة فتُحفظ محلياً على هذا الجهاز فقط، ولا تدخل النسخة الاحتياطية العامة.</p>
         </div>
         <button type="button" className="btn btn-primary w-full" onClick={() => void analyzeLecture()} disabled={lectureText.trim().length < 40 || analysisBusy || extractBusy}>
           {analysisBusy ? <Loader2 size={16} className="animate-spin"/> : <Brain size={16}/>}
@@ -397,6 +420,17 @@ export default function Medical() {
           <ShieldCheck size={20} className="mt-0.5 shrink-0 text-accent"/>
           <div><h2 className="text-sm font-bold">تنبيه أكاديمي وسريري</h2><p className="mt-1 text-xs leading-6 text-muted">محتوى MASAR MEDICAL مخصص للتعلم والتدريب الأكاديمي باستخدام مواد وحالات افتراضية. لا يُعد تشخيصاً أو وصفة علاجية أو بديلاً عن إشراف المختصين والمراجع الطبية المعتمدة، ولا يجوز استخدام المحاكاة لاتخاذ قرارات تخص مرضى حقيقيين.</p></div>
         </div>
+      </section>
+      <section className="rounded-2xl border border-bad/20 bg-card p-4 space-y-3">
+        <div>
+          <h2 className="text-sm font-bold">إدارة البيانات الطبية المحلية</h2>
+          <p className="mt-1 text-xs leading-6 text-muted">يمكنك حذف كل ما حفظته مساحة الطب على هذا الجهاز: سجل التحليلات، بنك الأسئلة ومحاولاته، بطاقات المراجعة، ونتائج المحاكاة. هذا الإجراء لا يحذف بيانات الدراسة أو ملفات المكتبة الأخرى.</p>
+        </div>
+        {privacyMessage && <p role="status" aria-live="polite" className="text-xs leading-5 text-muted">{privacyMessage}</p>}
+        <button type="button" className="btn btn-secondary text-bad" onClick={() => void clearAllMedicalData()} disabled={privacyBusy}>
+          {privacyBusy ? <Loader2 size={15} className="animate-spin"/> : <Trash2 size={15}/>}
+          {privacyBusy ? 'جارٍ حذف البيانات…' : 'حذف جميع البيانات الطبية المحلية'}
+        </button>
       </section>
       <div className="flex justify-start"><a href="#/university" className="inline-flex items-center gap-2 text-xs font-semibold text-muted hover:text-accent"><ArrowLeft size={14}/> العودة إلى مساحة الجامعة</a></div>
     </div>
