@@ -57,8 +57,9 @@ describe('medical OSCE case parser', () => {
     expect(() => parseMedicalCase(JSON.stringify(draft))).toThrow();
   });
 
-  it('rejects oversized model output', () => {
+  it('rejects oversized model output and lecture source', () => {
     expect(() => parseMedicalCase(' '.repeat(100_001))).toThrow('حجم بيانات');
+    expect(() => parseMedicalCase(JSON.stringify(makeCase()), 'x'.repeat(8_001))).toThrow('حجم بيانات');
   });
 
   it('caps generated station and case text lengths', () => {
