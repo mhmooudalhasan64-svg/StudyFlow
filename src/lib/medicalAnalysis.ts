@@ -5,9 +5,9 @@ export interface MedicalAnalysisResult {
   keyPoints?: string[];
   terminology?: { term: string; prefix: string; root: string; suffix: string; meaning: string; evidenceQuote: string }[];
   highYield?: { fact: string; why: string; evidenceQuote: string }[];
-  comparisonTables?: { title: string; columns: string[]; rows: string[][] }[];
-  pathways?: { title: string; steps: string[] }[];
-  reviewQuestions?: { question: string; answer: string; explanation: string }[];
+  comparisonTables?: { title: string; columns: string[]; rows: string[][]; evidenceQuote: string }[];
+  pathways?: { title: string; steps: string[]; evidenceQuote: string }[];
+  reviewQuestions?: { question: string; answer: string; explanation: string; evidenceQuote: string }[];
   limitations?: string[];
 }
 
