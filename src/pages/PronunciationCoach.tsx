@@ -160,8 +160,13 @@ export default function PronunciationCoach() {
           {GROUPS.map(group => (
             <button key={group} type="button" onClick={() => {
               setSelectedGroup(group);
-              const firstLesson = LESSONS.find(item => group === 'الكل' || item.group === group);
-              if (firstLesson) setSelectedLetter(firstLesson.letter);
+              const selectedLessonVisible = LESSONS.some(item =>
+                item.letter === selectedLetter && (group === 'الكل' || item.group === group),
+              );
+              if (!selectedLessonVisible) {
+                const firstLesson = LESSONS.find(item => group === 'الكل' || item.group === group);
+                if (firstLesson) setSelectedLetter(firstLesson.letter);
+              }
               setHeard('');
               transcriptRef.current = '';
               setFeedback('');
