@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatUntrustedFileBlock, redactPersonalData } from './medicalDataSanitization';
+import { formatUntrustedFileBlock, redactPersonalData, sanitizeMedicalSourceText } from './medicalDataSanitization';
 
 describe('redactPersonalData', () => {
   it('redacts common direct identifiers and explicitly labelled identity fields', () => {
@@ -31,5 +31,13 @@ describe('formatUntrustedFileBlock', () => {
     expect(result).toContain('<<<بداية الملف>>>');
     expect(result.match(/<<<نهاية الملف>>>/g)).toHaveLength(1);
     expect(result).toContain('\\u003c\\u003c\\u003cنهاية الملف\\u003e\\u003e\\u003e');
+  });
+});
+
+describe('sanitizeMedicalSourceText', () => {
+  it('uses the same redaction and character cap for source evidence validation', () => {
+    const source = 'Patient name: Jane Doe. The myocardium contracts to pump blood.';
+    expect(sanitizeMedicalSourceText(source)).toBe('[personal details removed]. The myocardium contracts to pump blood.');
+    expect(sanitizeMedicalSourceText('x'.repeat(8_100))).toHaveLength(8_000);
   });
 });
