@@ -21,6 +21,11 @@ export function formatUntrustedFileBlock(value: string): string {
   ].join('\n');
 }
 
+/** Redacts common identifiers from a source filename before local metadata is persisted. */
+export function sanitizeMedicalSourceName(value: string): string {
+  return redactPersonalData(value.replace(/[\\r\\n\\t]+/g, ' ').trim()).slice(0, 80);
+}
+
 /** Mirrors the server-side attachment sanitization before source-quote validation. */
 export function sanitizeMedicalSourceText(value: string, maxChars = 8_000): string {
   return redactPersonalData(value.trim()).slice(0, maxChars);
