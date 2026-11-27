@@ -4,7 +4,7 @@ import { db, type MedicalSimulationResult } from '../../db';
 import { requestMedicalCase } from '../../lib/chatStore';
 import { parseMedicalCase, type MedicalCaseDraft } from '../../lib/medicalCaseSimulator';
 import { getMedicalSimulationStats } from '../../lib/medicalSimulationStats';
-import { getMedicalDataEpoch, isMedicalDataClearing } from '../../lib/medicalDataPrivacy';
+import { assertMedicalDataWriteAllowed, getMedicalDataEpoch, isMedicalDataClearing } from '../../lib/medicalDataPrivacy';
 
 interface Props {
   college: string;
@@ -118,13 +118,16 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
     setFinished(true);
     setSaving(true);
     try {
-      if (dataEpoch !== getMedicalDataEpoch() || isMedicalDataClearing()) return;
+      assertMedicalDataWriteAllowed(dataEpoch);
       const completedAt = Date.now();
-      await db.medicalSimulations.add({
+      await db.transaction('rw', db.medicalSimulations, async () => {
+        assertMedicalDataWriteAllowed(dataEpoch);
+        await db.medicalSimulations.add({
         caseTitle: caseData.caseTitle,
         college, year, subject: subject.trim() || topic.trim() || 'موضوع طبي',
-        score: nextScore, total: caseData.stations.length,
-        createdAt: completedAt, completedAt,
+          score: nextScore, total: caseData.stations.length,
+          createdAt: completedAt, completedAt,
+        });
       });
       if (activeContext.current === saveContext) {
         setNotice('حُفظت نتيجة المحاكاة على هذا الجهاز.');
