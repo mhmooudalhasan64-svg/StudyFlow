@@ -110,7 +110,7 @@ const STYLES: Record<string, string> = {
 function focusLine(body: unknown): string {
   if (typeof body !== 'object' || body === null) return '';
   const b = body as { subject?: unknown; style?: unknown };
-  const subject = typeof b.subject === 'string' ? redactPersonalData(b.subject.replace(/[\r\n]+/g, ' ').trim()).slice(0, 60) : '';
+  const subject = typeof b.subject === 'string' ? b.subject.replace(/[\r\n]+/g, ' ').trim().slice(0, 60) : '';
   const style = typeof b.style === 'string' ? STYLES[b.style] : undefined;
   const parts: string[] = [];
   if (subject) parts.push(`مادة الطالب الحالية: «${subject}». أجب ضمنها ما لم يسأل عن غيرها.`);
