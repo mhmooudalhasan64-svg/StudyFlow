@@ -130,6 +130,13 @@ export default function Medical() {
   const [analysisBusy, setAnalysisBusy] = useState(false);
   const [extractBusy, setExtractBusy] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
+  const analysisRequestId = useRef(0);
+  const invalidateAnalysis = () => {
+    analysisRequestId.current += 1;
+    setAnalysis(null);
+    setAnalysisError('');
+    setAnalysisBusy(false);
+  };
   const selectedCollege = colleges.find((item) => item.id === college)!;
   const modules = useMemo(() => {
     if (track === 'rotations') return clinicalTracks[college];
@@ -158,9 +165,8 @@ export default function Medical() {
     const file = event.target.files?.[0];
     event.target.value = '';
     if (!file) return;
+    invalidateAnalysis();
     setExtractBusy(true);
-    setAnalysisError('');
-    setAnalysis(null);
     try {
       const extracted = await extractFileText(file);
       setLectureName(extracted.name);
@@ -175,22 +181,26 @@ export default function Medical() {
 
   const analyzeLecture = async () => {
     if (lectureText.trim().length < 40 || analysisBusy) return;
+    const requestId = ++analysisRequestId.current;
+    const requestContext = {
+      name: lectureName,
+      text: lectureText,
+      college: selectedCollege.label,
+      year,
+      subject: lectureSubject,
+    };
     setAnalysisBusy(true);
     setAnalysisError('');
     setAnalysis(null);
     try {
-      const raw = await requestMedicalAnalysis({
-        name: lectureName,
-        text: lectureText,
-        college: selectedCollege.label,
-        year,
-        subject: lectureSubject,
-      });
-      setAnalysis(parseMedicalAnalysis(raw));
+      const raw = await requestMedicalAnalysis(requestContext);
+      if (requestId === analysisRequestId.current) setAnalysis(parseMedicalAnalysis(raw));
     } catch (error) {
-      setAnalysisError(error instanceof Error ? error.message : 'تعذّر تحليل المحاضرة.');
+      if (requestId === analysisRequestId.current) {
+        setAnalysisError(error instanceof Error ? error.message : 'تعذّر تحليل المحاضرة.');
+      }
     } finally {
-      setAnalysisBusy(false);
+      if (requestId === analysisRequestId.current) setAnalysisBusy(false);
     }
   };
 
@@ -218,7 +228,7 @@ export default function Medical() {
         </div>
         <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
           {colleges.map(({ id, label, icon: Icon, description }) => (
-            <button key={id} type="button" onClick={() => { setCollege(id); setTrack('systems'); setAnalysis(null); }} aria-pressed={college === id} className={`rounded-2xl border p-3 text-right transition ${college === id ? 'border-accent bg-accent/10 shadow-sm' : 'border-line bg-card hover:border-accent/50'}`}>
+            <button key={id} type="button" onClick={() => { setCollege(id); setTrack('systems'); invalidateAnalysis(); }} aria-pressed={college === id} className={`rounded-2xl border p-3 text-right transition ${college === id ? 'border-accent bg-accent/10 shadow-sm' : 'border-line bg-card hover:border-accent/50'}`}>
               <span className={`mb-3 grid h-10 w-10 place-items-center rounded-xl ${college === id ? 'bg-accent text-white' : 'bg-base text-accent'}`}><Icon size={21}/></span>
               <span className="block text-sm font-bold">{label}</span>
               <span className="mt-1 block text-[11px] leading-5 text-muted">{description}</span>
@@ -232,7 +242,7 @@ export default function Medical() {
           <div><h2 className="font-extrabold">مسارك الأكاديمي</h2><p className="mt-1 text-xs text-muted">{selectedCollege.short} · السنة {year} · اختر نمط تنظيم المحتوى.</p></div>
           <label className="flex items-center gap-2 text-xs font-semibold text-muted">السنة الدراسية
             <span className="relative">
-              <select value={year} onChange={(event) => { setYear(event.target.value); setAnalysis(null); }} className="min-w-24 appearance-none rounded-xl border border-line bg-base py-2 pe-8 ps-3 text-sm font-bold text-main outline-none focus:border-accent">
+              <select value={year} onChange={(event) => { setYear(event.target.value); invalidateAnalysis(); }} className="min-w-24 appearance-none rounded-xl border border-line bg-base py-2 pe-8 ps-3 text-sm font-bold text-main outline-none focus:border-accent">
                 {[1,2,3,4,5,6].map((n) => <option key={n} value={n}>السنة {n}</option>)}
               </select>
               <ChevronDown size={14} className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-muted"/>
@@ -264,7 +274,7 @@ export default function Medical() {
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label className="space-y-1 text-xs font-semibold text-muted">اسم المادة
-            <input className="input" value={lectureSubject} onChange={(event) => { setLectureSubject(event.target.value); setAnalysis(null); }} maxLength={80} placeholder="مثلاً: علم الأدوية"/>
+            <input className="input" value={lectureSubject} onChange={(event) => { setLectureSubject(event.target.value); invalidateAnalysis(); }} maxLength={80} placeholder="مثلاً: علم الأدوية"/>
           </label>
           <div className="flex items-end">
             <input ref={fileInput} type="file" accept=".pdf,.docx,.xlsx,.txt,.csv" className="hidden" onChange={(event) => void handleLectureFile(event)}/>
@@ -276,7 +286,7 @@ export default function Medical() {
         </div>
         <div className="space-y-1">
           <div className="flex items-center justify-between gap-2"><label htmlFor="medical-lecture-text" className="text-xs font-semibold text-muted">نص المحاضرة</label><span className="text-[10px] text-muted">{lectureText.length.toLocaleString('ar')} / 8000</span></div>
-          <textarea id="medical-lecture-text" className="input min-h-40 resize-y leading-7" value={lectureText} onChange={(event) => { setLectureText(event.target.value.slice(0, 8000)); setAnalysis(null); }} maxLength={8000} placeholder="يمكنك لصق نص المحاضرة هنا، أو اختيار ملف لاستخراج نصه تلقائياً."/>
+          <textarea id="medical-lecture-text" className="input min-h-40 resize-y leading-7" value={lectureText} onChange={(event) => { setLectureText(event.target.value.slice(0, 8000)); invalidateAnalysis(); }} maxLength={8000} placeholder="يمكنك لصق نص المحاضرة هنا، أو اختيار ملف لاستخراج نصه تلقائياً."/>
           <p className="text-[11px] text-muted">الملفات المدعومة: PDF وDOCX وXLSX وTXT وCSV. الحد الأقصى للنص المرسل 8000 حرف. ملفات PDF المصوّرة التي لا تحتوي نصاً قابلاً للاستخراج تحتاج إلى OCR، وهو غير متاح في هذه المرحلة.</p>
         </div>
         <button type="button" className="btn btn-primary w-full" onClick={() => void analyzeLecture()} disabled={lectureText.trim().length < 40 || analysisBusy || extractBusy}>
