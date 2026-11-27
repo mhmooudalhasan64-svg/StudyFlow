@@ -20,14 +20,15 @@ export function buildMedicalFlashcards(args: {
 }): Omit<MedicalFlashcard, 'id'>[] {
   const now = args.now ?? Date.now();
   const cards: Omit<MedicalFlashcard, 'id'>[] = [];
+  const safeSourceName = sanitizeMedicalSourceName(args.sourceName);
   const add = (category: MedicalFlashcard['category'], front: string, back: string, suffix: string) => {
     const cleanFront = front.trim();
     const cleanBack = back.trim();
     if (!cleanFront || !cleanBack) return;
-    const cardKey = [args.college, args.year, args.subject, args.sourceName, category, suffix].join('|').toLocaleLowerCase();
+    const cardKey = [args.college, args.year, args.subject, safeSourceName, category, suffix].join('|').toLocaleLowerCase();
     cards.push({
       cardKey, college: args.college, year: args.year, subject: args.subject.trim(),
-      sourceName: sanitizeMedicalSourceName(args.sourceName), category, front: cleanFront, back: cleanBack,
+      sourceName: safeSourceName, category, front: cleanFront, back: cleanBack,
       createdAt: now, dueAt: now, intervalDays: 0, reps: 0, lastReviewedAt: null,
     });
   };
