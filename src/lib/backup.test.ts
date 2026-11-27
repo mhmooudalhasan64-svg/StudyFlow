@@ -25,6 +25,20 @@ describe('backup', () => {
     expect(useApp.getState().subjects.length).toBeGreaterThan(0);
   });
 
+  it('keeps MASAR MEDICAL records out of backups and preserves them on restore', async () => {
+    await db.medicalAnalyses.add({
+      college: 'Medicine', year: '1', subject: 'Anatomy', sourceName: 'lecture.pdf',
+      analysis: { summary: 'private medical study data' }, createdAt: 1,
+    });
+    const backup = await exportBackup();
+    expect(backup).not.toContain('private medical study data');
+
+    const parsed = parseBackup(backup);
+    await importBackup(parsed);
+    expect(await db.medicalAnalyses.count()).toBe(1);
+    expect((await db.medicalAnalyses.toArray())[0].analysis.summary).toBe('private medical study data');
+  });
+
   it('rejects invalid files with Arabic messages', () => {
     expect(() => parseBackup('not json')).toThrow('الملف ليس نسخة احتياطية صالحة');
     expect(() => parseBackup('{"app":"other"}')).toThrow('ليس نسخة احتياطية من MASAR');
