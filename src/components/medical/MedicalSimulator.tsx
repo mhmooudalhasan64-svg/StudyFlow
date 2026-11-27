@@ -4,6 +4,7 @@ import { db, type MedicalSimulationResult } from '../../db';
 import { requestMedicalCase } from '../../lib/chatStore';
 import { parseMedicalCase, type MedicalCaseDraft } from '../../lib/medicalCaseSimulator';
 import { getMedicalSimulationStats } from '../../lib/medicalSimulationStats';
+import { getMedicalDataEpoch } from '../../lib/medicalDataPrivacy';
 
 interface Props {
   college: string;
@@ -70,6 +71,7 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
       return;
     }
     const requestId = ++generationRequestId.current;
+    const dataEpoch = getMedicalDataEpoch();
     const requestContext = { topic, college, year, subject, sourceText, sourceName };
     setBusy(true);
     setError('');
@@ -85,7 +87,7 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
         year: requestContext.year, subject: requestContext.subject,
         ...(requestContext.sourceText.trim().length >= 40 ? { source: { name: requestContext.sourceName, text: requestContext.sourceText } } : {}),
       });
-      if (requestId === generationRequestId.current) setCaseData(parseMedicalCase(raw));
+      if (requestId === generationRequestId.current && dataEpoch === getMedicalDataEpoch()) setCaseData(parseMedicalCase(raw));
     } catch (cause) {
       if (requestId === generationRequestId.current) {
         setError(cause instanceof Error ? cause.message : 'تعذّر إنشاء الحالة السريرية.');
@@ -110,9 +112,11 @@ export function MedicalSimulator({ college, year, subject, sourceText, sourceNam
       return;
     }
     const saveContext = contextKey;
+    const dataEpoch = getMedicalDataEpoch();
     setFinished(true);
     setSaving(true);
     try {
+      if (dataEpoch !== getMedicalDataEpoch()) return;
       const completedAt = Date.now();
       await db.medicalSimulations.add({
         caseTitle: caseData.caseTitle,
