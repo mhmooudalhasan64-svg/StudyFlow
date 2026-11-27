@@ -47,7 +47,7 @@ export function parseMedicalCase(raw: string): MedicalCaseDraft {
     const answerIndex = station.answerIndex;
     if (station.stage !== STAGES[index] || !str(station.title) || !str(station.prompt) ||
       options.length !== 4 || options.some((v) => !v) || feedback.length !== 4 || feedback.some((v) => !v) ||
-      !Number.isInteger(answerIndex) || answerIndex < 0 || answerIndex > 3) {
+      typeof answerIndex !== 'number' || !Number.isInteger(answerIndex) || answerIndex < 0 || answerIndex > 3) {
       throw new Error('محطة غير مكتملة: تحقق من ترتيب المراحل وأربعة الخيارات وتفسيراتها.');
     }
     stations.push({
