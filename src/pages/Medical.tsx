@@ -133,11 +133,21 @@ export default function Medical() {
     if (privacyBusy || !window.confirm('سيتم حذف جميع التحليلات والأسئلة والبطاقات ونتائج المحاكاة الطبية المحفوظة على هذا الجهاز. لن تتأثر بيانات الدراسة الأخرى. هل تريد المتابعة؟')) return;
     setPrivacyBusy(true);
     setPrivacyMessage('');
+    // Invalidate pending extraction/analysis before clearing persisted records.
+    analysisRequestId.current += 1;
+    extractRequestId.current += 1;
+    setAnalysisBusy(false);
+    setExtractBusy(false);
     try {
       await clearMedicalData();
       setAnalysisHistory([]);
       setAnalysis(null);
       setLectureText('');
+      setLectureName('نص المحاضرة');
+      setLectureSubject('');
+      setAnalysisError('');
+      setHistoryError('');
+      if (fileInput.current) fileInput.current.value = '';
       setPrivacyMessage('حُذفت جميع بيانات MASAR MEDICAL المحلية من هذا الجهاز.');
       setMedicalDataRevision((value) => value + 1);
     } catch {
@@ -321,7 +331,7 @@ export default function Medical() {
           <div className="space-y-4 border-t border-line pt-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0 flex-1"><span className="text-[10px] font-bold text-accent">نتائج التحليل</span><h3 className="mt-1 text-lg font-extrabold">{analysis.title || lectureName}</h3><p className="mt-2 text-sm leading-7 text-muted">{analysis.summary}</p></div>
-              <button type="button" className="btn btn-secondary shrink-0" onClick={() => void saveCurrentAnalysis()} disabled={historyBusy}>
+              <button type="button" className="btn btn-secondary shrink-0" onClick={() => void saveCurrentAnalysis()} disabled={historyBusy || privacyBusy}>
                 {historyBusy ? <Loader2 size={15} className="animate-spin"/> : <Save size={15}/>}
                 {historyBusy ? 'جارٍ الحفظ…' : 'حفظ التحليل محلياً'}
               </button>
