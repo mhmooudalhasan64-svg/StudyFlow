@@ -20,12 +20,13 @@ describe('local medical analysis history', () => {
       college: 'الطب البشري',
       year: '2',
       subject: 'الفيزيولوجيا',
-      sourceName: 'lecture.pdf',
+      sourceName: 'Patient name: Jane Doe.pdf',
       analysis: result,
     }, 100);
 
     const stored = await db.medicalAnalyses.get(id);
     expect(stored?.analysis).toEqual(result);
+    expect(stored?.sourceName).toBe('Patient name: [personal details removed].pdf');
     expect(stored?.createdAt).toBe(100);
     expect(stored).not.toHaveProperty('sourceText');
     expect(stored).not.toHaveProperty('file');
