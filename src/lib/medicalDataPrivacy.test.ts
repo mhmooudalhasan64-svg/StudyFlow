@@ -35,7 +35,7 @@ describe('clear local medical data', () => {
       college: 'Medicine', year: '1', subject: 'Anatomy', sourceName: 'lecture',
       analysis: { summary: 'Summary' }, createdAt: 1,
     });
-    await db.tasks.add({ title: 'Study task', subjectId: null, date: '2026-11-27', minutes: 20, done: false });
+    await db.tasks.add({ id: 1, title: 'Study task', subjectId: null, date: '2026-11-27', minutes: 20, done: false });
 
     await clearMedicalData();
 
