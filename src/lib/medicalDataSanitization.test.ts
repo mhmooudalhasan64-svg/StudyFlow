@@ -36,7 +36,7 @@ describe('formatUntrustedFileBlock', () => {
 
 describe('sanitizeMedicalMetadata', () => {
   it('redacts labelled personal details, normalizes line breaks and applies a field limit', () => {
-    expect(sanitizeMedicalMetadata('Patient name: Jane Doe\\nAnatomy')).toBe('Patient name: [personal details removed] Anatomy');
+    expect(sanitizeMedicalMetadata('Patient name: Jane Doe\nAnatomy')).toBe('Patient name: [personal details removed] Anatomy');
     expect(sanitizeMedicalMetadata('x'.repeat(100), 40)).toHaveLength(40);
   });
 });
