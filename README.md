@@ -231,7 +231,7 @@ Railway → StudyFlow → studyflow-preview → Variables
 "GROQ_API_KEY"| مزود الذكاء الاصطناعي الأساسي
 "OPENROUTER_API_KEY"| مزود احتياطي
 "REDIS_URL"| إدارة حدود الاستخدام
-"VAYORA_ALLOWED_ORIGINS"| تحديد نطاقات الواجهة المسموح لها
+"MASAR_ALLOWED_ORIGINS"| تحديد نطاقات الواجهة المسموح لها
 
 يكفي وجود مفتاح صالح لأحد مزودي الذكاء الاصطناعي المدعومين وفق إعدادات الخادم.
 
