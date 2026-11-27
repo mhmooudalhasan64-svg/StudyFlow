@@ -37,7 +37,7 @@ describe('formatUntrustedFileBlock', () => {
 describe('sanitizeMedicalSourceText', () => {
   it('uses the same redaction and character cap for source evidence validation', () => {
     const source = 'Patient name: Jane Doe. The myocardium contracts to pump blood.';
-    expect(sanitizeMedicalSourceText(source)).toBe('[personal details removed]. The myocardium contracts to pump blood.');
+    expect(sanitizeMedicalSourceText(source)).toBe('Patient name: [personal details removed]. The myocardium contracts to pump blood.');
     expect(sanitizeMedicalSourceText('x'.repeat(8_100))).toHaveLength(8_000);
   });
 });
