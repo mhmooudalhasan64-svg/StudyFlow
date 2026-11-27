@@ -1,4 +1,5 @@
 import { db, type MedicalFlashcard } from '../db';
+import { assertMedicalDataWriteAllowed, getMedicalDataEpoch } from './medicalDataPrivacy';
 
 export interface MedicalCardSource {
   title?: string;
@@ -80,8 +81,11 @@ export function scheduleMedicalReview(
 }
 
 export async function saveMedicalFlashcards(cards: Omit<MedicalFlashcard, 'id'>[]): Promise<number> {
+  const epoch = getMedicalDataEpoch();
+  assertMedicalDataWriteAllowed(epoch);
   let added = 0;
   await db.transaction('rw', db.medicalCards, async () => {
+    assertMedicalDataWriteAllowed(epoch);
     for (const card of cards) {
       const existing = await db.medicalCards.where('cardKey').equals(card.cardKey).first();
       if (!existing) {
